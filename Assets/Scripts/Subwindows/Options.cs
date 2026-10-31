@@ -1,3 +1,6 @@
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-30: Describe active-list reset/reload and preservation of inactive name files (spec 03B2).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 ﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
@@ -91,7 +94,7 @@ public class Options : MonoBehaviour
     public void ResetNamelists()
     {
         var box = Instantiate(State.GameManager.DialogBoxPrefab).GetComponent<DialogBox>();
-        box.SetData(ClearLists, "Yes, reset namelists", "Cancel", "This deletes all namelists from the 'Userdata' folder and restores them to defaults. Are you sure you want to do this? This cannot be undone. (Will take a moment to complete)");
+        box.SetData(ClearLists, "Yes, reset namelists", "Cancel", "This overwrites active namelists in 'Userdata' with shipped defaults. Retired-species and other unlisted files are left untouched. Are you sure you want to do this? This cannot be undone. (Will take a moment to complete)");
     }
 
     void ClearLists()
@@ -102,7 +105,7 @@ public class Options : MonoBehaviour
     public void UpdateNamelists()
     {
         var box = Instantiate(State.GameManager.DialogBoxPrefab).GetComponent<DialogBox>();
-        box.SetData(UpdateLists, "Update namelists", "Cancel", "This reloads all namelists from the 'Userdata' folder, immediately updating them in-game.");
+        box.SetData(UpdateLists, "Update namelists", "Cancel", "This reloads active namelists from 'Userdata', immediately updating them in-game. Retired-species name lists are ignored.");
     }
 
     void UpdateLists()

@@ -1,3 +1,6 @@
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-30: Validate new shape destinations before mutation; leave original-form restoration unrestricted (spec 03A2).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
 using OdinSerializer.Utilities;
 using System;
@@ -2543,12 +2546,16 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
 
     public void ChangeRace(Race race)
     {
+        if (!SpeciesPolicy.IsAllowed(race, SpeciesUse.Transformation))
+            return;
         Race = race;
         fixedPredator = false;
     }
 
     public void HideRace(Race race, Unit appearance = null)
     {
+        if (!SpeciesPolicy.IsAllowed(race, SpeciesUse.Transformation))
+            return;
         _hiddenUnit = Clone();
         Race = race;
         fixedPredator = false;
@@ -3288,6 +3295,8 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
 
     public void CreateRaceShape(Race race)
     {
+        if (!SpeciesPolicy.IsAllowed(race, SpeciesUse.Transformation))
+            return;
         var shape = new Unit(Side, race, (int)Experience, true, Type, ImmuneToDefections);
         foreach (Traits trait in ShifterShapes[0].PermanentTraits)
         {
@@ -3566,6 +3575,9 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
 
     internal void TriggerMorph(int duration)
     {
+        Race destination = MorphUnit == null ? State.RaceSettings.GetMorphRace(Race) : MorphUnit.Race;
+        if (!SpeciesPolicy.IsAllowed(destination, SpeciesUse.Transformation))
+            return;
         var wkns = GetStatusEffect(StatusEffectType.Morphed);
         if (wkns == null)
         {
@@ -3576,7 +3588,7 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
             ApplyStatusEffect(StatusEffectType.Morphed, 123, duration, clone);
             if (MorphUnit == null)
             {
-                Race = State.RaceSettings.GetMorphRace(Race);
+                Race = destination;
                 RandomizeAppearance();
                 ClearAllTraits();
                 PermanentTraits.Clear();
@@ -3631,6 +3643,11 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
     {
         if (TacticalCopy == null)
         {
+            return;
+        }
+        if (!SpeciesPolicy.IsAllowed(TacticalCopy.Race, SpeciesUse.Copy))
+        {
+            TacticalCopy = null;
             return;
         }
 
@@ -3962,6 +3979,8 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
         {
             return;
         }
+        if (!SpeciesPolicy.IsAllowed(attunedEeveeRace, SpeciesUse.Transformation))
+            return;
         Race = attunedEeveeRace;
         RandomizeAppearance();
         ClearAllTraits();

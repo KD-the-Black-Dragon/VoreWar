@@ -1,3 +1,6 @@
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-30: Remove the legacy player-event dispatcher; retain saved history fields (spec 04A).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using LegacyAI;
 using OdinSerializer;
 using System;
@@ -263,10 +266,6 @@ public class Empire
             EmpTraits = new List<Traits>();
     }
 
-    internal void CheckEvent()
-    {
-        State.EventList.CheckStartEvent(this);
-    }
 
 
 

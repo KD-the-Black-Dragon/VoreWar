@@ -1,3 +1,7 @@
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-30: Reject disallowed disguise templates before appearance, trait or side changes (spec 03A2).
+// 2026-10-30: 04B2: Replace callback prose with neutral action and status notices.
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
 using System;
 using System.Collections.Generic;
@@ -313,7 +317,7 @@ public class Actor_Unit
         if (Unit.HasTrait(Traits.RespawnerIII) && (State.GameManager.TacticalMode.currentTurn == 1) && State.GameManager.TacticalMode.attackersTurnCheck == true)
             Unit.ApplyStatusEffect(StatusEffectType.Respawns, 3, 3);
         if (Unit.Race == Race.Seville && !State.GameManager.TacticalMode.turboMode && TacticalUtilities.IsUnitControlledByPlayer(Unit) && (State.GameManager.TacticalMode.currentTurn == 1) && State.GameManager.TacticalMode.attackersTurnCheck == true && State.Rand.Next(20) == 1)
-            MiscUtilities.DelayedInvoke(() => State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"Looking upon the battlefield before her, {LogUtilities.GetRandomStringFrom($"<b>{Unit.Name}</b>", $"the {LogUtilities.GetRaceDescSingl(Unit)}")} {LogUtilities.GetRandomStringFrom("smiles", "laughs", "grins")} {LogUtilities.GetRandomStringFrom("devilishly", "mischievously", "maliciously", "wickedly", "naughtily")}. \"Well, you\'ve got my attention. Now let me reward your curiosssity...\""), .2f); //Delayed to let the game fully load before executing
+            MiscUtilities.DelayedInvoke(() => State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{Unit.Name} prepared for battle."), .2f); //Delayed to let the game fully load before executing
         int sizePenalty = (int)(PredatorComponent?.Fullness ?? 0);
         sizePenalty = (int)(sizePenalty * Unit.TraitBoosts.SpeedLossFromWeightMultiplier);
         int bonus = 0;
@@ -2177,9 +2181,9 @@ public class Actor_Unit
         {
             this.Damage(target.WeaponDamageAgainstTarget(this, false));
             if (State.Rand.Next(2) == 0)
-                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"In a final death throe <b>{target.Unit.Name}</b> attacks <b>{Unit.Name}</b> dealing <color=red>{target.WeaponDamageAgainstTarget(this, false)}</color> damage!");
+                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{target.Unit.Name} counterattacked {Unit.Name} for {target.WeaponDamageAgainstTarget(this, false)} damage.");
             else
-                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"In {LogUtilities.GPPHis(target.Unit)} last moments <b>{target.Unit.Name}</b> attacks <b>{Unit.Name}</b> dealing <color=red>{target.WeaponDamageAgainstTarget(this, false)}</color> damage!");
+                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{target.Unit.Name} counterattacked {Unit.Name} for {target.WeaponDamageAgainstTarget(this, false)} damage.");
         }
         if (target.Unit.GetStatusEffect(StatusEffectType.Respawns) != null)
         {
@@ -2728,17 +2732,8 @@ public class Actor_Unit
                 }
             if (seduce)
             {
-                var strings = new[] {$"<b>{target.Unit.Name}</b> decides to swap sides because <b>{Unit.Name}</b>'s rubs are just that sublime!",
-                            $"<b>{target.Unit.Name}</b> joins <b>{Unit.Name}</b>'s side to get more of those irresistible scritches later!",
-                            $"The way <b>{Unit.Name}</b> touches {LogUtilities.GPPHim(target.Unit)} moves something other than {LogUtilities.GPPHis(target.Unit)} prey-filled innards in <b>{target.Unit.Name}</b>, making {LogUtilities.GPPHim(target.Unit)} join {LogUtilities.GPPHim(Unit)}.",
-                            $"<b>{Unit.Name}</b> makes <b>{target.Unit.Name}</b> feel incredible, rearranging {LogUtilities.GPPHis(target.Unit)} priorities in this conflict...",
-                            $"<b>{target.Unit.Name}</b> slowly returns from a world of pure bliss and decides to stick with <b>{Unit.Name}</b> after all."};
-                if (target.Unit.Race == Race.Dogs)
-                    strings.Append($"<b>{Unit.Name}</b>’s attentive massage of <b>{target.Unit.Name}</b>’s stuffed midsection convinces the voracious canine to make {LogUtilities.GPPHim(Unit)} {LogUtilities.GPPHis(target.Unit)} master no matter the cost.");
                 target.UnitSprite.DisplaySeduce();
-                State.GameManager.TacticalMode.Log.RegisterMiscellaneous(
-                        LogUtilities.GetRandomStringFrom(strings)
-                );
+                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{target.Unit.Name}'s allegiance was updated after support from {Unit.Name}.");
                 if (target.Unit.Side != Unit.Side)
                     State.GameManager.TacticalMode.SwitchAlignment(target);
                 target.Unit.FixedSide = Unit.FixedSide;
@@ -2747,15 +2742,7 @@ public class Actor_Unit
             else if (distract)
             {
                 target.UnitSprite.DisplayDistract();
-                State.GameManager.TacticalMode.Log.RegisterMiscellaneous(
-                        LogUtilities.GetRandomStringFrom(
-                        $"<b>{target.Unit.Name}</b> is so enthralled by <b>{Unit.Name}</b>'s touch that {LogUtilities.GPPHe(target.Unit)} forgot what {LogUtilities.GPPHeWas(target.Unit)} gonna do.",
-                        $"Despite the battle, <b>{target.Unit.Name}</b> wants to spend {LogUtilities.GPPHis(target.Unit)} turn enjoying <b>{Unit.Name}</b>'s affection.",
-                        $"It looks like <b>{Unit.Name}</b>'s rubs take up 100% of <b>{target.Unit.Name}</b>'s attention right now.",
-                        $"<b>{target.Unit.Name}</b>'s aggression and tactics melt in <b>{Unit.Name}</b>'s hands",
-                        $"<b>{Unit.Name}</b>'s massage really hits the spot, causing <b>{target.Unit.Name}</b> to close {LogUtilities.GPPHis(target.Unit)} eyes and forget about the battle for a moment."
-                        )
-                );
+                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{target.Unit.Name} was distracted by {Unit.Name}.");
                 target.Paralyzed = true;
             }
         }
@@ -3299,7 +3286,7 @@ public class Actor_Unit
                 {
                     PredatorComponent?.FreeAnyAlivePrey();
                 }
-                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{Unit.Name} was a coward and surrendered");
+                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{Unit.Name} surrendered.");
             }
             if (Unit.HasTrait(Traits.TurnCoat))
             {
@@ -3330,14 +3317,14 @@ public class Actor_Unit
                 {
                     SetPos(target_tile);
                     State.GameManager.TacticalMode.Translator.SetTranslator(UnitSprite.transform, Position, target_tile, 0, State.GameManager.TacticalMode.IsPlayerTurn);
-                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{Unit.Name} disappears, only to reappear somewhere else.");
+                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{Unit.Name} teleported.");
                 }
                 else
                 {
                     if (unit_check.Unit.Predator)
                     {
                         unit_check.PredatorComponent.ForceConsumeAuto(this);
-                        State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{Unit.Name} disappears. {unit_check.Unit.Name} is surprised as {Unit.Name} ends up inside of them.");
+                        State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{Unit.Name} teleported into {unit_check.Unit.Name}.");
                     }
                 }
             }
@@ -3357,19 +3344,19 @@ public class Actor_Unit
                     if ((Config.GoddessMercy == GoddessMercy.Both) || (Config.GoddessMercy == GoddessMercy.DefectorOnly))
                     {
                         Unit.Health = Unit.MaxHealth;
-                        State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"A light shines from above on {Unit.Name}");
+                        State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{Unit.Name} recovered full HP after surrendering.");
                     }
                 }
                 else if ((Config.GoddessMercy == GoddessMercy.Both) || (Config.GoddessMercy == GoddessMercy.LoyalOnly))
                 {
                     Unit.Health = Unit.MaxHealth;
-                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"A light shines from above on {Unit.Name} for their loyalty");
+                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{Unit.Name} recovered full HP after surrendering.");
                 }
             }
             else if ((Config.GoddessMercy == GoddessMercy.Both) || (Config.GoddessMercy == GoddessMercy.LoyalOnly))
             {
                 Unit.Health = Unit.MaxHealth;
-                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"A light shines from above on {Unit.Name} for their loyalty");
+                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{Unit.Name} recovered full HP after surrendering.");
             }
             if (State.Rand.NextDouble() <= Config.SurrenderedPredAutoRegur)
             {
@@ -3402,7 +3389,7 @@ public class Actor_Unit
             {
                 Visible = false;
                 if (Unit.HasTrait(Traits.CloseCall))
-                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"Barely hanging on, {Unit.Name} quickly {LogUtilities.GetRandomStringFrom("flees", "bolts", "retreats")} out of combat with {LogUtilities.GPPHis(Unit)} life barely intact");
+                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{Unit.Name} fled.");
             }
 
             PredatorComponent?.FreeAnyAlivePrey();
@@ -3794,12 +3781,12 @@ public class Actor_Unit
         {
             if (binder.Unit.GetStat(Stat.Mind) > Unit.GetStat(Stat.Mind))
             {
-                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"<b>{Unit.Name}</b> tries to bind <b>{LogUtilities.ApostrophizeWithOrWithoutS(binder.Unit.Name)}</b> bound summon, <b>{t.Unit.Name}</b>, but <b>{LogUtilities.ApostrophizeWithOrWithoutS(binder.Unit.Name)}</b> magic is stronger");
+                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{Unit.Name} failed to take control of {t.Unit.Name} from {binder.Unit.Name}.");
             }
             else if (binder.Unit.GetStat(Stat.Mind) < Unit.GetStat(Stat.Mind))
             {
                 State.GameManager.SoundManager.PlaySpellCast(spell, this);
-                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"With {LogUtilities.GPPHis(Unit)} superior magic <b>{Unit.Name}</b> wrests control over the summoned {InfoPanel.RaceSingular(t.Unit)} from <b>{binder.Unit.Name}</b>.");
+                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{Unit.Name} took control of {t.Unit.Name} from {binder.Unit.Name}.");
                 binder.Unit.BoundUnit = null;
                 Unit.BoundUnit = t;
 
@@ -3816,13 +3803,13 @@ public class Actor_Unit
             else
             {
                 int outcome = State.Rand.Next(4);
-                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"<b>{Unit.Name}</b> and <b>{binder.Unit.Name}</b> both exert their magic for control over the summoned <b>{t.Unit.Name}</b>, but they are evenly matched! The energy crackles...");
+                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{Unit.Name} and {binder.Unit.Name} tied in a binding contest for {t.Unit.Name}.");
                 if (outcome == 3)
                 {
                     State.GameManager.SoundManager.PlayMisc("unbound", this);
                     var obj = UnityEngine.Object.Instantiate(State.GameManager.TacticalEffectPrefabList.ShunGokuSatsu);
                     obj.transform.SetPositionAndRotation(new Vector3(t.Position.x, t.Position.y), new Quaternion());
-                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"Suddenly, there is a flash of light and both casters stagger for a moment. What happened?.");
+                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{t.Unit.Name} became unbound.");
                     t.Unit.Type = UnitType.Adventurer;
                     binder.Unit.BoundUnit = null;
                     t.Unit.Name += " The Unbound";
@@ -3847,7 +3834,7 @@ public class Actor_Unit
                 }
                 else if (outcome == 2)
                 {
-                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"...But it looks like the Binding spell worked after all.");
+                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{Unit.Name} bound {t.Unit.Name}.");
                     State.GameManager.SoundManager.PlaySpellCast(spell, this);
                     binder.Unit.BoundUnit = null;
                     Unit.BoundUnit = t;
@@ -3865,14 +3852,14 @@ public class Actor_Unit
                 else if (outcome == 1)
                 {
                     State.GameManager.SoundManager.PlaySpellCast(spell, this);
-                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"...But it looks nothing's changed...");
+                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{Unit.Name}'s binding had no effect on {t.Unit.Name}.");
                 }
                 else if (outcome == 0)
                 {
                     State.GameManager.SoundManager.PlayMisc("unbound", this);
                     var obj = UnityEngine.Object.Instantiate(State.GameManager.TacticalEffectPrefabList.ShunGokuSatsu);
                     obj.transform.SetPositionAndRotation(new Vector3(t.Position.x, t.Position.y), new Quaternion());
-                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"Suddenly, there is a flash of light and both casters stagger for a moment. What happened?.");
+                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{t.Unit.Name} was banished.");
                     t.Unit.Type = UnitType.Adventurer;
                     t.Surrendered = true;
                     t.Damage(9999999, true, true);
@@ -3897,7 +3884,7 @@ public class Actor_Unit
             {
                 t.Unit.ApplyStatusEffect(StatusEffectType.Charmed, actorCharm.Strength, actorCharm.Duration);
             }
-            State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"<b>{Unit.Name}</b> has bound <b>{t.Unit.Name}</b> to {LogUtilities.GPPHis(Unit)} will.");
+            State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{Unit.Name} bound {t.Unit.Name}.");
         }
 
         if (Unit.TraitBoosts.SpellAttacks > 1)
@@ -3968,6 +3955,8 @@ public class Actor_Unit
 
     public bool ChangeRaceAny(Unit template, bool permanent, bool isPrey)
     {
+        if (template == null || !SpeciesPolicy.IsAllowed(template.Race, SpeciesUse.Transformation))
+            return false;
         if (Unit.HiddenRace == Unit.Race)
         {
             TacticalGraphicalEffects.CreateSmokeCloud(Position, Unit.GetScale() / 2);

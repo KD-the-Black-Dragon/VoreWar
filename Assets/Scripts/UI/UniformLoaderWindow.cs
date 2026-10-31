@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-30: Use metadata-only uniform previews while preserving an existing character appearance (spec 03A2).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -45,6 +48,10 @@ public class UniformLoaderWindow : MonoBehaviour
             return;
         foreach (UniformData uniformData in customs)
         {
+            Unit target = EnteredFromUnitEditor ? State.GameManager.UnitEditor.UnitEditor.Unit :
+                State.GameManager.Recruit_Mode.Customizer.Unit;
+            if (uniformData.Race != target.Race && !SpeciesPolicy.IsEnabled(uniformData.Race))
+                continue;
             GameObject obj = Instantiate(UnitDisplay, ActorFolder);
             UIUnitSprite sprite = obj.GetComponentInChildren<UIUnitSprite>();
             Unit tempUnit;
@@ -72,6 +79,10 @@ public class UniformLoaderWindow : MonoBehaviour
             customs = UniformDataStorer.GetIncompatibleCustomizations(State.GameManager.Recruit_Mode.Customizer.Unit);
         foreach (UniformData uniformData in customs)
         {
+            Unit target = EnteredFromUnitEditor ? State.GameManager.UnitEditor.UnitEditor.Unit :
+                State.GameManager.Recruit_Mode.Customizer.Unit;
+            if (uniformData.Race != target.Race && !SpeciesPolicy.IsEnabled(uniformData.Race))
+                continue;
             GameObject obj = Instantiate(UnitDisplay, ActorFolder);
             UIUnitSprite sprite = obj.GetComponentInChildren<UIUnitSprite>();
             Unit tempUnit;
@@ -90,7 +101,7 @@ public class UniformLoaderWindow : MonoBehaviour
                 rejectMessage = "Only for Males";
             else
                 rejectMessage = "Unspecified Error";
-            tempUnit = new Unit((int)uniformData.Race, uniformData.Race, 0, false, uniformData.Type);
+            tempUnit = new Unit(uniformData.Race) { Type = uniformData.Type };
             uniformData.CopyToUnit(tempUnit);
             Actor_Unit actor = new Actor_Unit(new Vec2i(0, 0), tempUnit);
             sprite.UpdateSprites(actor);

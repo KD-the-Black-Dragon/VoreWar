@@ -1,4 +1,8 @@
-﻿using TMPro;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-30: Use the requested metadata species for hover; restrict unapproved previews to the gated editor (spec 03A2).
+// 2026-10-30: Block permanently retired species even during developer inspection (spec 03B1).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,7 +11,7 @@ public class HoveringRacePicture : MonoBehaviour
     TextMeshProUGUI text;
     RectTransform rect;
     int remainingFrames = 0;
-    Race LastRace = Race.Selicia;
+    Race LastRace = Race.none;
     public UIUnitSprite ActorSprite;
     Actor_Unit Actor;
     float lastUpdate;
@@ -27,11 +31,20 @@ public class HoveringRacePicture : MonoBehaviour
 
     public void UpdateInformation(Race race)
     {
-        if (Actor == null)
-            Actor = new Actor_Unit(new Unit(Race.Cats));
-        if (LastRace != race)
+        bool developerInspection = State.GameManager.Menu.IsRaceEditorSessionActive;
+        if ((int)race < 0 || !System.Enum.IsDefined(typeof(Race), race) || SpeciesPolicy.IsRetired(race) ||
+            (!SpeciesPolicy.IsEnabled(race) && !developerInspection))
         {
-            Actor.Unit.Race = race;
+            gameObject.SetActive(false);
+            return;
+        }
+        if (rect == null)
+            rect = GetComponent<RectTransform>();
+        if (text == null)
+            text = GetComponentInChildren<TextMeshProUGUI>();
+        if (Actor == null || LastRace != race)
+        {
+            Actor = new Actor_Unit(new Unit(race));
             Actor.Unit.TotalRandomizeAppearance();
             ActorSprite.UpdateSprites(Actor);
             ActorSprite.Name.text = race.ToString();

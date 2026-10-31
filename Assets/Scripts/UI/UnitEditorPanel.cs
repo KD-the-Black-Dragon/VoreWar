@@ -1,4 +1,7 @@
-﻿using System;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-30: Block both retired Unit Editor opening paths (spec 02B).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -179,36 +182,7 @@ public class UnitEditorPanel : CustomizerPanel
 
     public void Open(Actor_Unit actor)
     {
-        gameObject.SetActive(true);
-        if (UnitEditor == null)
-        {
-            InfoPanel.ExpBar = ExpBar;
-            InfoPanel.HealthBar = HealthBar;
-            InfoPanel.BarrierBar = BarrierBar;
-            InfoPanel.ManaBar = ManaBar;
-            UnitEditor = new UnitEditor(actor, this, InfoPanel);
-            SetUpRaces();
-        }
-        else
-        {
-            UnitEditor.SetActor(actor);
-            UnitEditor.RefreshStats();
-        }
-        if (raceDict.TryGetValue(actor.Unit.Race, out int race))
-        {
-            RaceDropdown.value = race;
-        }
-        else
-            RaceDropdown.value = 0;
-        RaceDropdown.captionText.text = actor.Unit.Race.ToString();
-        AlignmentDropdown.captionText.text = DetermineAllignment(actor.Unit);
-        HiddenToggle.isOn = actor.Unit.hiddenFixedSide;
-        PopulateItems();
-        TraitList.text = UnitEditor.Unit.ListTraits();
-        SwapAlignment.gameObject.SetActive(State.GameManager.CurrentScene == State.GameManager.TacticalMode);
-        ChangeUnitButtons(actor.Unit);
-        UpdateButtons();
-
+        State.GameManager.Menu.ShowRetiredToolMessage();
     }
 
     private string DetermineAllignment(Unit unit)
@@ -225,34 +199,7 @@ public class UnitEditorPanel : CustomizerPanel
 
     public void Open(Unit unit)
     {
-        gameObject.SetActive(true);
-        if (UnitEditor == null)
-        {
-            InfoPanel.ExpBar = ExpBar;
-            InfoPanel.HealthBar = HealthBar;
-            InfoPanel.BarrierBar = BarrierBar;
-            InfoPanel.ManaBar = ManaBar;
-            UnitEditor = new UnitEditor(unit, this, InfoPanel);
-            SetUpRaces();
-        }
-        else
-        {
-            UnitEditor.SetUnit(unit);
-            UnitEditor.RefreshStats();
-        }
-        if (raceDict.TryGetValue(unit.Race, out int race))
-        {
-            RaceDropdown.value = race;
-        }
-        else
-            RaceDropdown.value = 0;
-        AlignmentDropdown.captionText.text = DetermineAllignment(unit);
-        HiddenToggle.isOn = unit.hiddenFixedSide;
-        PopulateItems();
-        TraitList.text = UnitEditor.Unit.ListTraits();
-        SwapAlignment.gameObject.SetActive(State.GameManager.CurrentScene == State.GameManager.TacticalMode);
-        ChangeUnitButtons(unit);
-        UpdateButtons();
+        State.GameManager.Menu.ShowRetiredToolMessage();
     }
 
     public void ClearStatus()

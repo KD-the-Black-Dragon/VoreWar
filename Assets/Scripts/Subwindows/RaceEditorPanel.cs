@@ -1,4 +1,8 @@
-﻿using System;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-30: Require an authorized editor session and revoke it on close (spec 02B).
+// 2026-10-30: Exclude retired metadata catalogs/previews and preserve unchanged mapping values (spec 03B1).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -110,133 +114,169 @@ public class RaceEditorPanel : MonoBehaviour
 
 
     Race PreviousRace = (Race)(-1);
+    bool loadingRace;
+
+    private void OnEnable()
+    {
+        if (State.GameManager == null || State.GameManager.Menu == null || !State.GameManager.Menu.HasRaceEditorAccess)
+            gameObject.SetActive(false);
+    }
+
+    private void OnDisable()
+    {
+        if (State.GameManager != null && State.GameManager.Menu != null)
+            State.GameManager.Menu.EndRaceEditorSession();
+    }
+
+    // Metadata inspection is broader than gameplay approval, but never includes retired species.
+    static bool IsEditableSpecies(Race race)
+    {
+        return (int)race >= 0 && Enum.IsDefined(typeof(Race), race) && !SpeciesPolicy.IsRetired(race);
+    }
+
+    static Race[] GetEditableSpecies()
+    {
+        return ((Race[])Enum.GetValues(typeof(Race))).Where(IsEditableSpecies).OrderBy(r => r.ToString()).ToArray();
+    }
+
+    static bool TrySelectedSpecies(TMP_Dropdown dropdown, out Race race)
+    {
+        race = Race.none;
+        if (dropdown.value < 0 || dropdown.value >= dropdown.options.Count)
+            return false;
+        Race selected;
+        if (!Enum.TryParse(dropdown.options[dropdown.value].text, out selected) || !IsEditableSpecies(selected))
+            return false;
+        race = selected;
+        return true;
+    }
+
+    static void PopulateSpeciesDropdown(TMP_Dropdown dropdown, bool mapping)
+    {
+        string previous = dropdown.value >= 0 && dropdown.value < dropdown.options.Count ?
+            dropdown.options[dropdown.value].text : null;
+        dropdown.ClearOptions();
+        if (mapping)
+            dropdown.options.Add(new TMP_Dropdown.OptionData("Keep existing mapping"));
+        foreach (Race race in GetEditableSpecies())
+            dropdown.options.Add(new TMP_Dropdown.OptionData(race.ToString()));
+        dropdown.value = Math.Max(0, dropdown.options.FindIndex(option => option.text == previous));
+        dropdown.RefreshShownValue();
+    }
+
+    static void SelectMapping(TMP_Dropdown dropdown, Race stored)
+    {
+        dropdown.value = Math.Max(0, dropdown.options.FindIndex(option => option.text == stored.ToString()));
+        dropdown.RefreshShownValue();
+    }
+
+    static Race ReadMapping(TMP_Dropdown dropdown, Race stored)
+    {
+        Race selected;
+        return TrySelectedSpecies(dropdown, out selected) ? selected : stored;
+    }
 
     internal void ShowPanel()
     {
-        if (RaceDropdown.options?.Any() == false)
+        bool wasLoading = loadingRace;
+        loadingRace = true;
+        try
         {
-            foreach (Race race in ((Race[])Enum.GetValues(typeof(Race))).Where(s => (int)s >= 0).OrderBy((s) => s.ToString()))
+            if (!State.GameManager.Menu.IsRaceEditorSessionActive)
+                return;
+            PopulateSpeciesDropdown(RaceDropdown, false);
+
+            TraitDropdown.options.Clear();
+                foreach (RandomizeList rl in State.RandomizeLists)
+                {
+                    TraitDropdown.options.Add(new TMP_Dropdown.OptionData(rl.name.ToString()));
+                }
+                foreach (CustomTraitBoost ct in State.CustomTraitList)
+                {
+                    TraitDropdown.options.Add(new TMP_Dropdown.OptionData(ct.name.ToString()));
+                }
+                foreach (ConditionalTraitContainer cdt in State.ConditionalTraitList)
+                {
+                    TraitDropdown.options.Add(new TMP_Dropdown.OptionData(cdt.name.ToString()));
+                }
+                foreach (Traits traitId in ((Traits[])Enum.GetValues(typeof(Traits))).OrderBy(s =>
+                 {
+                     return s >= Traits.LightningSpeed ? "ZZZ" + s.ToString() : s.ToString();
+                 }))
+                {
+                    TraitDropdown.options.Add(new TMP_Dropdown.OptionData(traitId.ToString()));
+                }
+                TraitDropdown.RefreshShownValue();
+
+                TagDropdown.options.Clear();
+                foreach (UnitTag ut in State.UnitTagList)
+                {
+                    TagDropdown.options.Add(new TMP_Dropdown.OptionData(ut.name));
+                }
+            TagDropdown.RefreshShownValue();
+
+            if (FavoredStat.options?.Any() == false)
             {
-                RaceDropdown.options.Add(new TMP_Dropdown.OptionData(race.ToString()));
+                foreach (Stat stat in ((Stat[])Enum.GetValues(typeof(Traits))).Where((s) => s < Stat.Leadership))
+                {
+                    FavoredStat.options.Add(new TMP_Dropdown.OptionData(stat.ToString()));
+                }
+                FavoredStat.RefreshShownValue();
             }
-            RaceDropdown.RefreshShownValue();
+
+            if (InnateSpellDropdown.options?.Any() == false)
+            {
+                foreach (SpellTypes type in ((SpellTypes[])Enum.GetValues(typeof(SpellTypes))).Where(s => (int)s < 100))
+                {
+                    InnateSpellDropdown.options.Add(new TMP_Dropdown.OptionData(type.ToString()));
+                }
+                InnateSpellDropdown.RefreshShownValue();
+            }
+
+            PopulateSpeciesDropdown(SpawnRaceDropdown, true);
+            PopulateSpeciesDropdown(ConversionRaceDropdown, true);
+            PopulateSpeciesDropdown(LeaderRaceDropdown, true);
+            PopulateSpeciesDropdown(MorphRaceDropdown, true);
+
+            if (BannerType.options.Count < 4)
+            {
+                foreach (BannerTypes type in (BannerTypes[])Enum.GetValues(typeof(BannerTypes)))
+                {
+                    BannerType.options.Add(new TMP_Dropdown.OptionData(type.ToString()));
+                }
+                for (int i = 0; i < CustomBannerTest.Sprites.Length; i++)
+                {
+                    if (CustomBannerTest.Sprites[i] == null)
+                        break;
+                    BannerType.options.Add(new TMP_Dropdown.OptionData($"Custom {i + 1}"));
+
+                }
+            }
+
+            if (RaceAIDropdown.options?.Any() == false)
+            {
+                foreach (RaceAI raceAI in ((RaceAI[])Enum.GetValues(typeof(RaceAI))))
+                {
+                    RaceAIDropdown.options.Add(new TMP_Dropdown.OptionData(raceAI.ToString()));
+                }
+                RaceAIDropdown.RefreshShownValue();
+            }
+
+            LoadRace();
+            UpdateInteractable();
+            ActivateGeneral();
+
         }
-
-        TraitDropdown.options.Clear();
-            foreach (RandomizeList rl in State.RandomizeLists)
-            {
-                TraitDropdown.options.Add(new TMP_Dropdown.OptionData(rl.name.ToString()));
-            }
-            foreach (CustomTraitBoost ct in State.CustomTraitList)
-            {
-                TraitDropdown.options.Add(new TMP_Dropdown.OptionData(ct.name.ToString()));
-            }
-            foreach (ConditionalTraitContainer cdt in State.ConditionalTraitList)
-            {
-                TraitDropdown.options.Add(new TMP_Dropdown.OptionData(cdt.name.ToString()));
-            }
-            foreach (Traits traitId in ((Traits[])Enum.GetValues(typeof(Traits))).OrderBy(s =>
-             {
-                 return s >= Traits.LightningSpeed ? "ZZZ" + s.ToString() : s.ToString();
-             }))
-            {
-                TraitDropdown.options.Add(new TMP_Dropdown.OptionData(traitId.ToString()));
-            }
-            TraitDropdown.RefreshShownValue();
-
-            TagDropdown.options.Clear();
-            foreach (UnitTag ut in State.UnitTagList)
-            {
-                TagDropdown.options.Add(new TMP_Dropdown.OptionData(ut.name));
-            }
-        TagDropdown.RefreshShownValue();
-
-        if (FavoredStat.options?.Any() == false)
+        finally
         {
-            foreach (Stat stat in ((Stat[])Enum.GetValues(typeof(Traits))).Where((s) => s < Stat.Leadership))
-            {
-                FavoredStat.options.Add(new TMP_Dropdown.OptionData(stat.ToString()));
-            }
-            FavoredStat.RefreshShownValue();
+            loadingRace = wasLoading;
         }
-
-        if (InnateSpellDropdown.options?.Any() == false)
-        {
-            foreach (SpellTypes type in ((SpellTypes[])Enum.GetValues(typeof(SpellTypes))).Where(s => (int)s < 100))
-            {
-                InnateSpellDropdown.options.Add(new TMP_Dropdown.OptionData(type.ToString()));
-            }
-            InnateSpellDropdown.RefreshShownValue();
-        }
-
-        if (SpawnRaceDropdown.options?.Any() == false)
-        {
-            foreach (Race race in ((Race[])Enum.GetValues(typeof(Race))).Where(s => (int)s >= 0).OrderBy((s) => s.ToString()))
-            {
-                SpawnRaceDropdown.options.Add(new TMP_Dropdown.OptionData(race.ToString()));
-            }
-            SpawnRaceDropdown.RefreshShownValue();
-        }
-
-        if (ConversionRaceDropdown.options?.Any() == false)
-        {
-            foreach (Race race in ((Race[])Enum.GetValues(typeof(Race))).Where(s => (int)s >= 0).OrderBy((s) => s.ToString()))
-            {
-                ConversionRaceDropdown.options.Add(new TMP_Dropdown.OptionData(race.ToString()));
-            }
-            ConversionRaceDropdown.RefreshShownValue();
-        }
-
-        if (LeaderRaceDropdown.options?.Any() == false)
-        {
-            foreach (Race race in ((Race[])Enum.GetValues(typeof(Race))).Where(s => (int)s >= 0).OrderBy((s) => s.ToString()))
-            {
-                LeaderRaceDropdown.options.Add(new TMP_Dropdown.OptionData(race.ToString()));
-            }
-            LeaderRaceDropdown.RefreshShownValue();
-        }
-
-        if (MorphRaceDropdown.options?.Any() == false)
-        {
-            foreach (Race race in ((Race[])Enum.GetValues(typeof(Race))).Where(s => (int)s >= 0).OrderBy((s) => s.ToString()))
-            {
-                MorphRaceDropdown.options.Add(new TMP_Dropdown.OptionData(race.ToString()));
-            }
-            MorphRaceDropdown.RefreshShownValue();
-        }
-
-        if (BannerType.options.Count < 4)
-        {
-            foreach (BannerTypes type in (BannerTypes[])Enum.GetValues(typeof(BannerTypes)))
-            {
-                BannerType.options.Add(new TMP_Dropdown.OptionData(type.ToString()));
-            }
-            for (int i = 0; i < CustomBannerTest.Sprites.Length; i++)
-            {
-                if (CustomBannerTest.Sprites[i] == null)
-                    break;
-                BannerType.options.Add(new TMP_Dropdown.OptionData($"Custom {i + 1}"));
-
-            }
-        }
-
-        if (RaceAIDropdown.options?.Any() == false)
-        {
-            foreach (RaceAI raceAI in ((RaceAI[])Enum.GetValues(typeof(RaceAI))))
-            {
-                RaceAIDropdown.options.Add(new TMP_Dropdown.OptionData(raceAI.ToString()));
-            }
-            RaceAIDropdown.RefreshShownValue();
-        }
-
-        LoadRace();
-        UpdateInteractable();
-        ActivateGeneral();
-
     }
 
     public void RaceChanged()
     {
+        if (loadingRace || !State.GameManager.Menu.IsRaceEditorSessionActive)
+            return;
         SaveRace();
         LoadRace();
         UpdateInteractable();
@@ -266,7 +306,7 @@ public class RaceEditorPanel : MonoBehaviour
     {
         if (State.RandomizeLists.Any(rl => rl.name == TraitDropdown.options[TraitDropdown.value].text))
         {
-            foreach (Race race in (Race[])Enum.GetValues(typeof(Race)))
+            foreach (Race race in GetEditableSpecies())
             {
                 RaceSettingsItem item = State.RaceSettings.Get(race);
                 item.RaceTraits.Add((Traits)State.RandomizeLists.Where(rl => rl.name == TraitDropdown.options[TraitDropdown.value].text).FirstOrDefault()?.id);
@@ -275,7 +315,7 @@ public class RaceEditorPanel : MonoBehaviour
         }
         if (State.CustomTraitList.Any(ct => ct.name == TraitDropdown.options[TraitDropdown.value].text))
         {
-            foreach (Race race in (Race[])Enum.GetValues(typeof(Race)))
+            foreach (Race race in GetEditableSpecies())
             {
                 RaceSettingsItem item = State.RaceSettings.Get(race);
                 item.RaceTraits.Add((Traits)State.CustomTraitList.Where(ct => ct.name == TraitDropdown.options[TraitDropdown.value].text).FirstOrDefault()?.id);
@@ -284,7 +324,7 @@ public class RaceEditorPanel : MonoBehaviour
         }
         if (State.ConditionalTraitList.Any(cdt => cdt.name == TraitDropdown.options[TraitDropdown.value].text))
         {
-            foreach (Race race in (Race[])Enum.GetValues(typeof(Race)))
+            foreach (Race race in GetEditableSpecies())
             {
                 RaceSettingsItem item = State.RaceSettings.Get(race);
                 item.RaceTraits.Add((Traits)State.ConditionalTraitList.Where(ct => ct.name == TraitDropdown.options[TraitDropdown.value].text).FirstOrDefault()?.id);
@@ -293,7 +333,7 @@ public class RaceEditorPanel : MonoBehaviour
         }
         if (Enum.TryParse(TraitDropdown.options[TraitDropdown.value].text, out Traits trait))
         {
-            foreach (Race race in (Race[])Enum.GetValues(typeof(Race)))
+            foreach (Race race in GetEditableSpecies())
             {
                 RaceSettingsItem item = State.RaceSettings.Get(race);
                 if (item.RaceTraits.Contains(trait) == false)
@@ -329,7 +369,7 @@ public class RaceEditorPanel : MonoBehaviour
     {
         if (State.RandomizeLists.Any(rl => rl.name == TraitDropdown.options[TraitDropdown.value].text))
         {
-            foreach (Race race in (Race[])Enum.GetValues(typeof(Race)))
+            foreach (Race race in GetEditableSpecies())
             {
                 RaceSettingsItem item = State.RaceSettings.Get(race);
                 item.RaceTraits.Remove((Traits)State.RandomizeLists.Where(rl => rl.name == TraitDropdown.options[TraitDropdown.value].text).FirstOrDefault()?.id);
@@ -338,7 +378,7 @@ public class RaceEditorPanel : MonoBehaviour
         }
         if (State.CustomTraitList.Any(ct => ct.name == TraitDropdown.options[TraitDropdown.value].text))
         {
-            foreach (Race race in (Race[])Enum.GetValues(typeof(Race)))
+            foreach (Race race in GetEditableSpecies())
             {
                 RaceSettingsItem item = State.RaceSettings.Get(race);
                 item.RaceTraits.Remove((Traits)State.CustomTraitList.Where(rl => rl.name == TraitDropdown.options[TraitDropdown.value].text).FirstOrDefault()?.id);
@@ -347,7 +387,7 @@ public class RaceEditorPanel : MonoBehaviour
         }
         if (State.ConditionalTraitList.Any(ct => ct.name == TraitDropdown.options[TraitDropdown.value].text))
         {
-            foreach (Race race in (Race[])Enum.GetValues(typeof(Race)))
+            foreach (Race race in GetEditableSpecies())
             {
                 RaceSettingsItem item = State.RaceSettings.Get(race);
                 item.RaceTraits.Remove((Traits)State.ConditionalTraitList.Where(rl => rl.name == TraitDropdown.options[TraitDropdown.value].text).FirstOrDefault()?.id);
@@ -356,7 +396,7 @@ public class RaceEditorPanel : MonoBehaviour
         }
         if (Enum.TryParse(TraitDropdown.options[TraitDropdown.value].text, out Traits trait))
         {
-            foreach (Race race in (Race[])Enum.GetValues(typeof(Race)))
+            foreach (Race race in GetEditableSpecies())
             {
                 RaceSettingsItem item = State.RaceSettings.Get(race);
                 item.RaceTraits.Remove(trait);
@@ -380,7 +420,7 @@ public class RaceEditorPanel : MonoBehaviour
     {
         if (State.UnitTagList.Any(ut => ut.name == TagDropdown.options[TagDropdown.value].text))
         {
-            foreach (Race race in (Race[])Enum.GetValues(typeof(Race)))
+            foreach (Race race in GetEditableSpecies())
             {
                 RaceSettingsItem item = State.RaceSettings.Get(race);
                 item.RaceTags.Add((int)State.UnitTagList.Where(ut => ut.name == TagDropdown.options[TagDropdown.value].text).FirstOrDefault()?.id);
@@ -403,7 +443,7 @@ public class RaceEditorPanel : MonoBehaviour
     {
         if (State.UnitTagList.Any(ut => ut.name == TagDropdown.options[TagDropdown.value].text))
         {
-            foreach (Race race in (Race[])Enum.GetValues(typeof(Race)))
+            foreach (Race race in GetEditableSpecies())
             {
                 RaceSettingsItem item = State.RaceSettings.Get(race);
                 item.RaceTags.Remove((int)State.UnitTagList.Where(ut => ut.name == TagDropdown.options[TagDropdown.value].text).FirstOrDefault()?.id);
@@ -414,9 +454,11 @@ public class RaceEditorPanel : MonoBehaviour
 
     internal void SaveRace()
     {
+        if (loadingRace || !State.GameManager.Menu.IsRaceEditorSessionActive)
+            return;
         try
         {
-            if (PreviousRace != (Race)(-1))
+            if (IsEditableSpecies(PreviousRace))
             {
                 RaceSettingsItem item = State.RaceSettings.Get(PreviousRace);
                 var racePar = RaceParameters.GetRaceTraits(PreviousRace);
@@ -447,14 +489,10 @@ public class RaceEditorPanel : MonoBehaviour
                 //    value = value - SpellTypes.Resurrection + SpellTypes.AlraunePuff - 1;
 
                 item.InnateSpell = value;
-                if(Enum.TryParse(SpawnRaceDropdown.options[SpawnRaceDropdown.value].text, out Race spawnRace))
-                    item.SpawnRace = spawnRace;
-                if (Enum.TryParse(ConversionRaceDropdown.options[ConversionRaceDropdown.value].text, out Race conversionRace))
-                    item.ConversionRace = conversionRace;
-                if (Enum.TryParse(LeaderRaceDropdown.options[LeaderRaceDropdown.value].text, out Race leaderRace))
-                    item.LeaderRace = leaderRace; 
-                if (Enum.TryParse(MorphRaceDropdown.options[MorphRaceDropdown.value].text, out Race morphRace))
-                    item.MorphRace = morphRace;    
+                item.SpawnRace = ReadMapping(SpawnRaceDropdown, item.SpawnRace);
+                item.ConversionRace = ReadMapping(ConversionRaceDropdown, item.ConversionRace);
+                item.LeaderRace = ReadMapping(LeaderRaceDropdown, item.LeaderRace);
+                item.MorphRace = ReadMapping(MorphRaceDropdown, item.MorphRace);
 
                 item.overrideBoob = OverrideBoob.isOn;
                 item.MinBoob = Convert.ToInt32(MinBoob.text) - 1;
@@ -630,166 +668,145 @@ public class RaceEditorPanel : MonoBehaviour
 
     internal void LoadRace()
     {
-        if (Enum.TryParse(RaceDropdown.options[RaceDropdown.value].text, out Race race))
+        bool wasLoading = loadingRace;
+        loadingRace = true;
+        try
         {
-            PreviousRace = race;
-            RaceSettingsItem item = State.RaceSettings.Get(race);
-            var racePar = RaceParameters.GetRaceTraits(race);
-            var raceData = Races.GetRace(race);
-            OverrideGender.isOn = item.OverrideGender;
-            OverrideFurry.isOn = item.OverrideFurry;
-            MaleFraction.value = 1 - item.maleFraction;
-            HermFraction.value = item.hermFraction;
-            FurryFraction.value = item.furryFraction;
-
-            BannerType.value = item.BannerType;
-
-            RaceAIDropdown.value = (int)item.RaceAI;
-            RaceAIDropdown.RefreshShownValue();
-
-            OverrideClothed.isOn = item.overrideClothes;
-            ClothedFraction.value = item.clothedFraction;
-
-            OverrideWeight.isOn = item.overrideWeight;
-            MinWeight.text = (1 + item.MinWeight).ToString();
-            MaxWeight.text = (1 + item.MaxWeight).ToString();
-
-            OverrideBoob.isOn = item.overrideBoob;
-            MinBoob.text = (1 + item.MinBoob).ToString();
-            MaxBoob.text = (1 + item.MaxBoob).ToString();
-
-            OverrideDick.isOn = item.overrideDick;
-            MinDick.text = (1 + item.MinDick).ToString();
-            MaxDick.text = (1 + item.MaxDick).ToString();
-
-            WeightText.text = $"Weight 1 - {Math.Max(raceData.BodySizes, 1)}";
-            BoobText.text = $"Breasts 1 - {Math.Max(raceData.BreastSizes, 1)}";
-            DickText.text = $"Dick 1 - {Math.Max(raceData.DickSizes, 1)}";
-
-            FavoredStat.value = (int)State.RaceSettings.GetFavoredStat(race);
-            FavoredStat.RefreshShownValue();
-
-            var spell = Array.IndexOf(Enum.GetValues(typeof(SpellTypes)), State.RaceSettings.GetInnateSpell(race));
-            //if (spell > SpellTypes.Resurrection)
-            //    spell = spell - SpellTypes.AlraunePuff + SpellTypes.Resurrection + 1;
-
-
-            InnateSpellDropdown.value = (int)spell;
-
-            InnateSpellDropdown.RefreshShownValue();
-
-            var spawnRace = State.RaceSettings.GetSpawnRace(race);
-            foreach(TMP_Dropdown.OptionData option in SpawnRaceDropdown.options.ToList())
-                if(option.text == spawnRace.ToString())
-                {
-                    SpawnRaceDropdown.value = SpawnRaceDropdown.options.IndexOf(option);
-                    break;
-                }
-
-            SpawnRaceDropdown.RefreshShownValue();
-
-            var conversionRace = State.RaceSettings.GetConversionRace(race);
-            foreach(TMP_Dropdown.OptionData option in ConversionRaceDropdown.options.ToList())
-                if(option.text == conversionRace.ToString())
-                {
-                    ConversionRaceDropdown.value = ConversionRaceDropdown.options.IndexOf(option);
-                    break;
-                }
-
-            ConversionRaceDropdown.RefreshShownValue();
-
-            var leaderRace = State.RaceSettings.GetLeaderRace(race);
-            foreach(TMP_Dropdown.OptionData option in LeaderRaceDropdown.options.ToList())
-                if(option.text == leaderRace.ToString())
-                {
-                    LeaderRaceDropdown.value = LeaderRaceDropdown.options.IndexOf(option);
-                    break;
-                }
-
-            LeaderRaceDropdown.RefreshShownValue();
-
-            var morphRace = State.RaceSettings.GetMorphRace(race);
-            foreach(TMP_Dropdown.OptionData option in MorphRaceDropdown.options.ToList())
-                if(option.text == morphRace.ToString())
-                {
-                    MorphRaceDropdown.value = MorphRaceDropdown.options.IndexOf(option);
-                    break;
-                }
-
-            MorphRaceDropdown.RefreshShownValue();
-
-            BodySize.text = item.BodySize.ToString();
-            StomachSize.text = item.StomachSize.ToString();
-
-            CurrentTraits = item.RaceTraits.ToList();
-            if (CurrentTraits == null)
-                CurrentTraits = new List<Traits>();
-            CurrentTags = item.RaceTags;
-            if (CurrentTags == null)
-                CurrentTags = new List<int>();
-            OralVoreDisabled.isOn = !item.AllowedVoreTypes.Contains(VoreType.Oral);
-            OralVoreDisabled.interactable = racePar.AllowedVoreTypes.Contains(VoreType.Oral);
-            UnbirthDisabled.isOn = !item.AllowedVoreTypes.Contains(VoreType.Unbirth);
-            UnbirthDisabled.interactable = racePar.AllowedVoreTypes.Contains(VoreType.Unbirth);
-            CockVoreDisabled.isOn = !item.AllowedVoreTypes.Contains(VoreType.CockVore);
-            CockVoreDisabled.interactable = racePar.AllowedVoreTypes.Contains(VoreType.CockVore);
-            AnalVoreDisabled.isOn = !item.AllowedVoreTypes.Contains(VoreType.Anal);
-            AnalVoreDisabled.interactable = racePar.AllowedVoreTypes.Contains(VoreType.Anal);
-            BreastVoreDisabled.isOn = !item.AllowedVoreTypes.Contains(VoreType.BreastVore);
-            BreastVoreDisabled.interactable = racePar.AllowedVoreTypes.Contains(VoreType.BreastVore);
-            TailVoreDisabled.isOn = !item.AllowedVoreTypes.Contains(VoreType.TailVore);
-            TailVoreDisabled.interactable = racePar.AllowedVoreTypes.Contains(VoreType.TailVore);
-            BladderVoreDisabled.isOn = !item.AllowedVoreTypes.Contains(VoreType.BladderVore);
-            BladderVoreDisabled.interactable = racePar.AllowedVoreTypes.Contains(VoreType.BladderVore);
-
-            MinStrength.text = item.Stats.Strength.Minimum.ToString();
-            MaxStrength.text = (item.Stats.Strength.Minimum + item.Stats.Strength.Roll - 1).ToString();
-            MinDexterity.text = item.Stats.Dexterity.Minimum.ToString();
-            MaxDexterity.text = (item.Stats.Dexterity.Minimum + item.Stats.Dexterity.Roll - 1).ToString();
-            MinEndurance.text = item.Stats.Endurance.Minimum.ToString();
-            MaxEndurance.text = (item.Stats.Endurance.Minimum + item.Stats.Endurance.Roll - 1).ToString();
-            MinMind.text = item.Stats.Mind.Minimum.ToString();
-            MaxMind.text = (item.Stats.Mind.Minimum + item.Stats.Mind.Roll - 1).ToString();
-            MinWill.text = item.Stats.Will.Minimum.ToString();
-            MaxWill.text = (item.Stats.Will.Minimum + item.Stats.Will.Roll - 1).ToString();
-            MinAgility.text = item.Stats.Agility.Minimum.ToString();
-            MaxAgility.text = (item.Stats.Agility.Minimum + item.Stats.Agility.Roll - 1).ToString();
-            MinVoracity.text = item.Stats.Voracity.Minimum.ToString();
-            MaxVoracity.text = (item.Stats.Voracity.Minimum + item.Stats.Voracity.Roll - 1).ToString();
-            MinStomach.text = item.Stats.Stomach.Minimum.ToString();
-            MaxStomach.text = (item.Stats.Stomach.Minimum + item.Stats.Stomach.Roll - 1).ToString();
-
-            var powerAdj = item.PowerAdjustment;
-            if (powerAdj == 0f)
+            if (TrySelectedSpecies(RaceDropdown, out Race race))
             {
-                powerAdj = racePar.PowerAdjustment;
-            }
-            PowerAdjustment.text = (powerAdj*100).ToString();
+                PreviousRace = race;
+                RaceSettingsItem item = State.RaceSettings.Get(race);
+                var racePar = RaceParameters.GetRaceTraits(race);
+                var raceData = Races.GetRace(race);
+                OverrideGender.isOn = item.OverrideGender;
+                OverrideFurry.isOn = item.OverrideFurry;
+                MaleFraction.value = 1 - item.maleFraction;
+                HermFraction.value = item.hermFraction;
+                FurryFraction.value = item.furryFraction;
 
-            var depCost = item.DeployCost;
-            if (depCost == 0f)
-            {
-                depCost = racePar.DeployCost;
-            }
-            DeployCost.text = depCost.ToString();
+                BannerType.value = item.BannerType;
 
-            var upMult = item.Upkeep;
-            if (upMult == 0f)
-            {
-                upMult = racePar.Upkeep;
-            }
-            Upkeep.text = upMult.ToString();
+                RaceAIDropdown.value = (int)item.RaceAI;
+                RaceAIDropdown.RefreshShownValue();
 
-            FemaleTraits.text = TraitListToText(item.FemaleTraits);
-            MaleTraits.text = TraitListToText(item.MaleTraits);
-            HermTraits.text = TraitListToText(item.HermTraits);
-            SpawnTraits.text = TraitListToText(item.SpawnTraits);
-            LeaderTraits.text = TraitListToText(item.LeaderTraits);
+                OverrideClothed.isOn = item.overrideClothes;
+                ClothedFraction.value = item.clothedFraction;
+
+                OverrideWeight.isOn = item.overrideWeight;
+                MinWeight.text = (1 + item.MinWeight).ToString();
+                MaxWeight.text = (1 + item.MaxWeight).ToString();
+
+                OverrideBoob.isOn = item.overrideBoob;
+                MinBoob.text = (1 + item.MinBoob).ToString();
+                MaxBoob.text = (1 + item.MaxBoob).ToString();
+
+                OverrideDick.isOn = item.overrideDick;
+                MinDick.text = (1 + item.MinDick).ToString();
+                MaxDick.text = (1 + item.MaxDick).ToString();
+
+                WeightText.text = $"Weight 1 - {Math.Max(raceData.BodySizes, 1)}";
+                BoobText.text = $"Breasts 1 - {Math.Max(raceData.BreastSizes, 1)}";
+                DickText.text = $"Dick 1 - {Math.Max(raceData.DickSizes, 1)}";
+
+                FavoredStat.value = (int)State.RaceSettings.GetFavoredStat(race);
+                FavoredStat.RefreshShownValue();
+
+                var spell = Array.IndexOf(Enum.GetValues(typeof(SpellTypes)), State.RaceSettings.GetInnateSpell(race));
+                //if (spell > SpellTypes.Resurrection)
+                //    spell = spell - SpellTypes.AlraunePuff + SpellTypes.Resurrection + 1;
+
+
+                InnateSpellDropdown.value = (int)spell;
+
+                InnateSpellDropdown.RefreshShownValue();
+
+                // Show raw saved values: a default, retired or unknown mapping stays unchanged on Save.
+                SelectMapping(SpawnRaceDropdown, item.SpawnRace);
+                SelectMapping(ConversionRaceDropdown, item.ConversionRace);
+                SelectMapping(LeaderRaceDropdown, item.LeaderRace);
+                SelectMapping(MorphRaceDropdown, item.MorphRace);
+
+                BodySize.text = item.BodySize.ToString();
+                StomachSize.text = item.StomachSize.ToString();
+
+                CurrentTraits = item.RaceTraits.ToList();
+                if (CurrentTraits == null)
+                    CurrentTraits = new List<Traits>();
+                CurrentTags = item.RaceTags;
+                if (CurrentTags == null)
+                    CurrentTags = new List<int>();
+                OralVoreDisabled.isOn = !item.AllowedVoreTypes.Contains(VoreType.Oral);
+                OralVoreDisabled.interactable = racePar.AllowedVoreTypes.Contains(VoreType.Oral);
+                UnbirthDisabled.isOn = !item.AllowedVoreTypes.Contains(VoreType.Unbirth);
+                UnbirthDisabled.interactable = racePar.AllowedVoreTypes.Contains(VoreType.Unbirth);
+                CockVoreDisabled.isOn = !item.AllowedVoreTypes.Contains(VoreType.CockVore);
+                CockVoreDisabled.interactable = racePar.AllowedVoreTypes.Contains(VoreType.CockVore);
+                AnalVoreDisabled.isOn = !item.AllowedVoreTypes.Contains(VoreType.Anal);
+                AnalVoreDisabled.interactable = racePar.AllowedVoreTypes.Contains(VoreType.Anal);
+                BreastVoreDisabled.isOn = !item.AllowedVoreTypes.Contains(VoreType.BreastVore);
+                BreastVoreDisabled.interactable = racePar.AllowedVoreTypes.Contains(VoreType.BreastVore);
+                TailVoreDisabled.isOn = !item.AllowedVoreTypes.Contains(VoreType.TailVore);
+                TailVoreDisabled.interactable = racePar.AllowedVoreTypes.Contains(VoreType.TailVore);
+                BladderVoreDisabled.isOn = !item.AllowedVoreTypes.Contains(VoreType.BladderVore);
+                BladderVoreDisabled.interactable = racePar.AllowedVoreTypes.Contains(VoreType.BladderVore);
+
+                MinStrength.text = item.Stats.Strength.Minimum.ToString();
+                MaxStrength.text = (item.Stats.Strength.Minimum + item.Stats.Strength.Roll - 1).ToString();
+                MinDexterity.text = item.Stats.Dexterity.Minimum.ToString();
+                MaxDexterity.text = (item.Stats.Dexterity.Minimum + item.Stats.Dexterity.Roll - 1).ToString();
+                MinEndurance.text = item.Stats.Endurance.Minimum.ToString();
+                MaxEndurance.text = (item.Stats.Endurance.Minimum + item.Stats.Endurance.Roll - 1).ToString();
+                MinMind.text = item.Stats.Mind.Minimum.ToString();
+                MaxMind.text = (item.Stats.Mind.Minimum + item.Stats.Mind.Roll - 1).ToString();
+                MinWill.text = item.Stats.Will.Minimum.ToString();
+                MaxWill.text = (item.Stats.Will.Minimum + item.Stats.Will.Roll - 1).ToString();
+                MinAgility.text = item.Stats.Agility.Minimum.ToString();
+                MaxAgility.text = (item.Stats.Agility.Minimum + item.Stats.Agility.Roll - 1).ToString();
+                MinVoracity.text = item.Stats.Voracity.Minimum.ToString();
+                MaxVoracity.text = (item.Stats.Voracity.Minimum + item.Stats.Voracity.Roll - 1).ToString();
+                MinStomach.text = item.Stats.Stomach.Minimum.ToString();
+                MaxStomach.text = (item.Stats.Stomach.Minimum + item.Stats.Stomach.Roll - 1).ToString();
+
+                var powerAdj = item.PowerAdjustment;
+                if (powerAdj == 0f)
+                {
+                    powerAdj = racePar.PowerAdjustment;
+                }
+                PowerAdjustment.text = (powerAdj*100).ToString();
+
+                var depCost = item.DeployCost;
+                if (depCost == 0f)
+                {
+                    depCost = racePar.DeployCost;
+                }
+                DeployCost.text = depCost.ToString();
+
+                var upMult = item.Upkeep;
+                if (upMult == 0f)
+                {
+                    upMult = racePar.Upkeep;
+                }
+                Upkeep.text = upMult.ToString();
+
+                FemaleTraits.text = TraitListToText(item.FemaleTraits);
+                MaleTraits.text = TraitListToText(item.MaleTraits);
+                HermTraits.text = TraitListToText(item.HermTraits);
+                SpawnTraits.text = TraitListToText(item.SpawnTraits);
+                LeaderTraits.text = TraitListToText(item.LeaderTraits);
+            }
+            else
+                PreviousRace = Race.none;
+        }
+        finally
+        {
+            loadingRace = wasLoading;
         }
     }
 
     public void UpdateInteractable()
     {
+        if (!IsEditableSpecies(PreviousRace))
+            return;
         var raceData = Races.GetRace(PreviousRace);
 
         if (raceData == null)
@@ -972,6 +989,8 @@ public class RaceEditorPanel : MonoBehaviour
 
     public void ResetThisRace()
     {
+        if (!IsEditableSpecies(PreviousRace))
+            return;
         State.RaceSettings.Reset(PreviousRace);
         LoadRace();
         UpdateInteractable();

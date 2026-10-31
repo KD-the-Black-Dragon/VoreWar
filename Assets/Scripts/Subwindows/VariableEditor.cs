@@ -1,4 +1,7 @@
-﻿using System;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-30: Retire exposed reflection editing without removing shared trait data (spec 02B).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -28,23 +31,7 @@ public class VariableEditor : MonoBehaviour
 
     internal void Open<T>(T obj)
     {
-        if (obj == null)
-        {
-            Debug.Log("Tried to open on null object!");
-            return;
-        }
-
-        gameObject.SetActive(true);
-        EditingObject = obj;
-
-        int children = Folder.childCount;
-        for (int i = children - 1; i >= 0; i--)
-        {
-            Destroy(Folder.GetChild(i).gameObject);
-        }
-
-        ProcessFields(obj);
-        //ProcessProperties(obj);
+        State.GameManager.Menu.ShowRetiredToolMessage();
     }
 
     private void ProcessFields<T>(T obj)

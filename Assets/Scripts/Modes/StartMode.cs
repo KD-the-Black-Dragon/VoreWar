@@ -1,4 +1,7 @@
-using OdinSerializer.Utilities;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-30: Retire startup authoring/tutorial/map routes and route trait warning through the gate (spec 02B).
+// 2026-10-30: Guard the empty approved roster before entering old campaign setup (spec 03A1).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,7 +19,6 @@ public class StartMode : SceneBase
     public GameObject TaggedTraitObject;
 
     public TaggedTraitPrefab TaggedTraitPrefab;
-    bool trait_tagger_open;
 
     public void Start()
     {
@@ -29,25 +31,17 @@ public class StartMode : SceneBase
         Preset3.onClick.AddListener(() => SetPreset(3));
         State.LoadRaceData();
         RunTaggedTraitCheck();
-        trait_tagger_open = false;
-        TagAlertButton.onClick.AddListener(() =>
-        {
-            if (trait_tagger_open)
-            {
-                CloseTaggedTraitCheck();
-                trait_tagger_open = false;
-            }
-            else 
-            {
-                OpenTaggedTraitCheck();
-                trait_tagger_open = true;
-            }
-        });
     }
 
     public CreateStrategicGame CreateStrategicGame;
     public void CreateStrategic()
     {
+        if (SpeciesPolicy.GetAvailable(SpeciesUse.Leader).Length == 0)
+        {
+            State.GameManager.CreateMessageBox(SpeciesPolicy.UnavailableMessage);
+            return;
+        }
+
         UI.SetActive(false);
         CreateStrategicGame.gameObject.SetActive(true);
         CreateStrategicGame.ClearState();
@@ -92,27 +86,28 @@ public class StartMode : SceneBase
 
     public void ChangeAssimilableTraits()
     {
-        State.AssimilateList.Initialize();
-        State.GameManager.VariableEditor.Open(State.AssimilateList);
+        State.GameManager.Menu.ShowRetiredToolMessage();
     }
 
     public void ChangeRandomizableTraits()
     {
-        State.GameManager.Menu.OpenRandomizerTraits();
+        State.GameManager.Menu.ShowRetiredToolMessage();
     }
 
     public void ModifyCustomTraits()
     {
-        State.GameManager.Menu.OpenCustomTraits();
+        State.GameManager.Menu.ShowRetiredToolMessage();
     }
 
     public void ModifyCondTraits()
     {
-        State.GameManager.Menu.OpenCondTraits();
+        State.GameManager.Menu.ShowRetiredToolMessage();
     }
 
     public void ReturnToStart()
     {
+        if (State.GameManager.Menu.RaceEditor.gameObject.activeSelf)
+            State.GameManager.Menu.RaceEditor.CloseWithoutSave();
         State.TutorialMode = false;
         State.GameManager.TutorialScript = null;
         UI.SetActive(true);
@@ -123,8 +118,7 @@ public class StartMode : SceneBase
 
     public void TutorialMode()
     {
-        State.GameManager.TutorialScript = new TutorialScript();
-        State.Load($"{Application.streamingAssetsPath}{System.IO.Path.DirectorySeparatorChar}Tutorial.sav", tutorial: true);
+        State.GameManager.Menu.ShowRetiredToolMessage();
     }
 
     public void LoadGame()
@@ -134,12 +128,12 @@ public class StartMode : SceneBase
 
     public void MapEditor()
     {
-        State.World = new World(true);
-        State.GameManager.SwitchToMapEditor();
+        State.GameManager.Menu.ShowRetiredToolMessage();
     }
 
     public override void ReceiveInput()
     {
+        State.GameManager.Menu.HandleRaceEditorInput();
         //Vector2 currentMousePos = GetComponent<Camera>().ScreenToWorldPoint(Input.mousePosition);
     }
 
@@ -150,49 +144,13 @@ public class StartMode : SceneBase
 
     public void RunTaggedTraitCheck()
     {
-        int children = TaggedTraitFolder.childCount;
-        for (int i = children - 1; i >= 0; i--)
-        {
-            Destroy(TaggedTraitFolder.GetChild(i).gameObject);
-        }
-        if (State.UntaggedTraits.Count > 0)
-        {
-            TagAlertButton.gameObject.SetActive(true);
-
-            foreach (var item in State.UntaggedTraits.Keys)
-            {
-                var obj = Instantiate(TaggedTraitPrefab, TaggedTraitFolder);
-                var tt = obj.GetComponent<TaggedTraitPrefab>();
-                tt.traitName.text = item.name;
-                tt.traitTier.text = item.tier;
-                tt.tags.text = "";
-                tt.id = 0;
-                tt.description.text = HoveringTooltip.GetTraitData(item.traitEnum);
-                tt.taggedTrait = item;
-                tt.save.onClick.AddListener(() =>
-                {
-                    if (tt.tag.Length > 0)
-                    {
-                        State.UntaggedTraits.Remove(item);
-                        RunTaggedTraitCheck();
-                    }
-                });
-                tt.addButton.gameObject.SetActive(false);
-                tt.removeButton.gameObject.SetActive(false);
-            }
-        }
-        else 
-        {
-            TagAlertButton.gameObject.SetActive(false);
-            TaggedTraitFolder.gameObject.SetActive(false);
-            TaggedTraitObject.gameObject.SetActive(false);
-        }
+        TagAlertButton.gameObject.SetActive(State.UntaggedTraits.Count > 0);
+        CloseTaggedTraitCheck();
     }
 
     public void OpenTaggedTraitCheck()
     {
-        TaggedTraitFolder.gameObject.SetActive(true);
-        TaggedTraitObject.gameObject.SetActive(true);
+        State.GameManager.Menu.OpenRaceEditor();
     }
 
     public void CloseTaggedTraitCheck()

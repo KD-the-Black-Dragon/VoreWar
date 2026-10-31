@@ -1,4 +1,7 @@
-﻿using OdinSerializer.Utilities;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-30: Restrict the retained nested tag editor to an authorized Race Editor session (spec 02B).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using OdinSerializer.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +22,8 @@ public class UnitTagEditor : MonoBehaviour
 
     internal void Open()
     {
+        if (!State.GameManager.Menu.IsRaceEditorSessionActive)
+            return;
         gameObject.SetActive(true);
 
         int children = Folder.childCount;

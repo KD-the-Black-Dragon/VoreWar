@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-30: 04B2: Replace callback prose with neutral action and status notices.
+// Upstream additional narrative contributions were credited to Tatltuae; credit retained after reset.
+// See CHANGES.md for the fork's change record and License.txt for GPL-3.0 terms.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -1462,7 +1466,7 @@ static class TacticalUtilities
         float r = (float)State.Rand.NextDouble();
         if (targetPred.Unit == actor.Unit)
         {
-            State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"<b>{actor.Unit.Name}</b> tries eating {LogUtilities.GPPHimself(actor.Unit)}... This did not work very well and {LogUtilities.GPPHe(actor.Unit)} just end{LogUtilities.SIfSingular(actor.Unit)} up licking {LogUtilities.GPPHimself(actor.Unit)} for an extended period of time; \"{LogUtilities.GetRandomStringFrom("Tasty~", "Mmmmmmm~", "Interesting flavor~", "Yummy~")}\"");
+            State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{actor.Unit.Name} cannot consume itself.");
             actor.Movement = 0;
         }
         else if (targetPred.Unit.Predator)
@@ -1493,68 +1497,7 @@ static class TacticalUtilities
         }
         else
         {
-            List<string> possibleLines = new List<string>();//Forcefeed Fail lines //Credits to Tatltuae for additional logs.
-            //Generic
-            possibleLines.Add($"<b>{actor.Unit.Name}</b> couldn't force feed {LogUtilities.GPPHimself(actor.Unit)} to <b>{targetPred.Unit.Name}</b>.");
-            possibleLines.Add($"<b>{LogUtilities.ApostrophizeWithOrWithoutS(actor.Unit.Name)}</b> attempt to force-feed {LogUtilities.GPPHimself(actor.Unit)} into <b>{targetPred.Unit.Name}</b> has been thwarted by the refusal of any holes on the {LogUtilities.ApostrophizeWithOrWithoutS(LogUtilities.GetRaceDescSingl(targetPred.Unit))} body to open anywhere near wide enough.");
-            //Oral
-            possibleLines.Add($"<b>{actor.Unit.Name}</b> tries to pull open <b>{LogUtilities.ApostrophizeWithOrWithoutS(targetPred.Unit.Name)}</b> mouth, but {LogUtilities.GPPHis(targetPred.Unit)} jaw just won't open far enough, much to <b>{LogUtilities.ApostrophizeWithOrWithoutS(actor.Unit.Name)}</b> disappointment.");
-            possibleLines.Add($"As <b>{actor.Unit.Name}</b> attempts to pry open <b>{LogUtilities.ApostrophizeWithOrWithoutS(targetPred.Unit.Name)}</b> mouth, {LogUtilities.GPPHeIs(actor.Unit)} rather surprised to find that the {LogUtilities.ApostrophizeWithOrWithoutS(LogUtilities.GetRaceDescSingl(targetPred.Unit))} mouth seems incapable of stretching far enough.");
-            //Redundant lines to make generic fails more common. If more generics are added please remove these.
-            possibleLines.Add($"<b>{actor.Unit.Name}</b> couldn't force feed {LogUtilities.GPPHimself(actor.Unit)} to <b>{targetPred.Unit.Name}</b>.");
-            possibleLines.Add($"<b>{LogUtilities.ApostrophizeWithOrWithoutS(actor.Unit.Name)}</b> attempt to force-feed {LogUtilities.GPPHimself(actor.Unit)} into <b>{targetPred.Unit.Name}</b> has been thwarted by the refusal of any holes on the {LogUtilities.ApostrophizeWithOrWithoutS(LogUtilities.GetRaceDescSingl(targetPred.Unit))} body to open anywhere near wide enough.");
-            if (targetPred.Unit.CanAnalVore)
-            {
-                possibleLines.Add($"<b>{actor.Unit.Name}</b> attempts to stick {LogUtilities.GPPHis(actor.Unit)} head up <b>{LogUtilities.ApostrophizeWithOrWithoutS(targetPred.Unit.Name)}</b> {PreyLocStrings.ToSyn(PreyLocation.anal)}, only to find that it refuses to open anywhere near large enough for that.");
-                if (LogUtilities.ActorHumanoid(targetPred.Unit)) possibleLines.Add($"<b>{actor.Unit.Name}</b> attempts to stick {LogUtilities.GPPHis(actor.Unit)} head up <b>{LogUtilities.ApostrophizeWithOrWithoutS(targetPred.Unit.Name)}</b> {PreyLocStrings.ToSyn(PreyLocation.anal)}, only to find that it refuses to open anywhere near large enough for that. <b>{targetPred.Unit.Name}</b> kindly asks the {LogUtilities.GetRaceDescSingl(actor.Unit)} to stop.");
-                if (LogUtilities.ActorHumanoid(targetPred.Unit) && LogUtilities.ActorHumanoid(actor.Unit)) possibleLines.Add($"<b>{actor.Unit.Name}</b> knocks <b>{targetPred.Unit.Name}</b> over, and attempts to crawl up {LogUtilities.GPPHis(targetPred.Unit)} {PreyLocStrings.ToSyn(PreyLocation.anal)}, but finds {LogUtilities.GPPHe(actor.Unit)} can't fit more than a single {LogUtilities.GetRandomStringFrom("hand", "paw")} inside.");
-            }
-            if (targetPred.Unit.CanCockVore)
-            {
-                possibleLines.Add($"<b>{actor.Unit.Name}</b> strokes <b>{LogUtilities.ApostrophizeWithOrWithoutS(targetPred.Unit.Name)}</b> {PreyLocStrings.ToCockSyn()}, getting it nice and {LogUtilities.GetRandomStringFrom("hard", "erect")}, before attempting to pry open the tip to get inside, only to find that the tip barely opens wide enough to fit a blade of grass, let alone a whole {LogUtilities.GetRaceDescSingl(actor.Unit)}.");
-                if (LogUtilities.ActorHumanoid(actor.Unit)) possibleLines.Add($"<b>{targetPred.Unit.Name}</b> is left confused as <b>{actor.Unit.Name}</b> fingers at the tip of {LogUtilities.GPPHis(targetPred.Unit)} {PreyLocStrings.ToCockSyn()}, while <b>{actor.Unit.Name}</b> can't seem to get it in {LogUtilities.GPPHis(actor.Unit)} head that, that hole isn't going to ever fit {LogUtilities.GPPHim(actor.Unit)}.");
-            }
-            if (targetPred.Unit.CanBreastVore)
-            {
-                possibleLines.Add($"<b>{actor.Unit.Name}</b> slams {LogUtilities.GPPHis(actor.Unit)} face between <b>{LogUtilities.ApostrophizeWithOrWithoutS(targetPred.Unit.Name)}</b> {LogUtilities.GetRandomStringFrom("tits", "boobs", "breasts")}, hoping to be absorbed by the cleavage. This doesn't work{LogUtilities.GetRandomStringFrom(".", "at all.", "in the slightest.", "remotely.", $". Well, it earns <b>{actor.Unit.Name}</b> a quick slap from <b>{targetPred.Unit.Name}</b>, but that's it.")}");
-                possibleLines.Add($"<b>{actor.Unit.Name}</b> puzzles over how nothing they do causes <b>{LogUtilities.ApostrophizeWithOrWithoutS(targetPred.Unit.Name)}</b> nipples to open at all, frustrated that {LogUtilities.GPPHe(actor.Unit)} simply cannot get inside.");
-            }
-            if (targetPred.Unit.CanUnbirth)
-            {
-                if (LogUtilities.ActorHumanoid(actor.Unit)) possibleLines.Add($"<b>{actor.Unit.Name}</b> sticks {LogUtilities.GPPHis(actor.Unit)} hand up <b>{LogUtilities.ApostrophizeWithOrWithoutS(targetPred.Unit.Name)}</b> {PreyLocStrings.ToSyn(PreyLocation.womb)}, getting it nice and wet, before attempting to push further in, only to find that {LogUtilities.GPPHeIsAbbr(actor.Unit)} already about as far in as {LogUtilities.GPPHe(actor.Unit)} can go, and that <b>{LogUtilities.ApostrophizeWithOrWithoutS(targetPred.Unit.Name)}</b> {PreyLocStrings.ToSyn(PreyLocation.womb)} isn't budging any further.");
-                possibleLines.Add($"<b>{actor.Unit.Name}</b> fails to make {LogUtilities.GPPHis(actor.Unit)} way into <b>{LogUtilities.ApostrophizeWithOrWithoutS(targetPred.Unit.Name)}</b> {PreyLocStrings.ToSyn(PreyLocation.womb)} like {LogUtilities.GPPHe(actor.Unit)} hoped, but at least {LogUtilities.GPPHis(actor.Unit)} efforts accidentally give the {LogUtilities.GetRaceDescSingl(targetPred.Unit)} some pleasure.");
-            }
-            if (targetPred.Unit.CanTailVore && !(targetPred.Unit.Race == Race.Youko) && !(targetPred.Unit.Race == Race.Terrorbird) && !(targetPred.Unit.Race == Race.Tatltuae))
-            {
-                possibleLines.Add($"<b>{actor.Unit.Name}</b> throws {LogUtilities.GPPHimself(actor.Unit)} at <b>{LogUtilities.ApostrophizeWithOrWithoutS(targetPred.Unit.Name)}</b> tail, trying and failing to force {LogUtilities.GPPHimself(actor.Unit)} into the {LogUtilities.ApostrophizeWithOrWithoutS(LogUtilities.GetRaceDescSingl(targetPred.Unit))} tail{LogUtilities.GetRandomStringFrom(".", ".", ".", ".", ". Idiot.")}");
-                possibleLines.Add($"<b>{actor.Unit.Name}</b> wrestles <b>{LogUtilities.ApostrophizeWithOrWithoutS(targetPred.Unit.Name)}</b> tail, trying in vain to pry open the tip to slip inside.");
-                possibleLines.Add($"<b>{targetPred.Unit.Name}</b> stops as {LogUtilities.GPPHe(targetPred.Unit)} feel something at the tip of {LogUtilities.GPPHis(targetPred.Unit)} tail. Looking behind {LogUtilities.GPPHimself(targetPred.Unit)}, {LogUtilities.GPPHe(targetPred.Unit)} spot{LogUtilities.SIfSingular(targetPred.Unit)} <b>{actor.Unit.Name}</b> messing with {LogUtilities.GPPHis(targetPred.Unit)} tail. Rolling {LogUtilities.GPPHis(targetPred.Unit)} eyes, <b>{targetPred.Unit.Name}</b> shakes the {LogUtilities.GetRaceDescSingl(actor.Unit)} off with a quick swish of {LogUtilities.GPPHis(targetPred.Unit)} tail.");
-                if (targetPred.Unit.Race == Race.Bees)
-                {
-                    possibleLines.Add($"<b>{actor.Unit.Name}</b> gets under <b>{targetPred.Unit.Name}</b>, and tries to pry {LogUtilities.GPPHis(targetPred.Unit)} stinger open, but finds the stinger, designed for stinging things and not for swallowing things whole, surprisingly, does not open.");
-                    possibleLines.Add($"<b>{actor.Unit.Name}</b> baits <b>{targetPred.Unit.Name}</b> into stinging {LogUtilities.GPPHim(targetPred.Unit)}, but finds getting inside that stinger like {LogUtilities.GPPHe(actor.Unit)} want{LogUtilities.SIfSingular(targetPred.Unit)} rather... Impossible.");
-                    possibleLines.Add($"<b>{actor.Unit.Name}</b> sneaks up behind <b>{targetPred.Unit.Name}</b>, before shoving the {LogUtilities.GetRaceDescSingl(targetPred.Unit)} hard. The {LogUtilities.GetRaceDescSingl(targetPred.Unit)} turns around and looks at <b>{actor.Unit.Name}</b> with anger. {LogUtilities.GPPHe(actor.Unit)} suddenly get{LogUtilities.SIfSingular(targetPred.Unit)} the feeling that was a bad idea...");
-                }
-            }
-            if (targetPred.Unit.CanTailVore && targetPred.Unit.Race == Race.Youko)
-            {
-                possibleLines.Add($"<b>{actor.Unit.Name}</b> charges <b>{LogUtilities.ApostrophizeWithOrWithoutS(targetPred.Unit.Name)}</b> rear, grabbing the {LogUtilities.ApostrophizeWithOrWithoutS(LogUtilities.GetRaceDescSingl(targetPred.Unit))} tails and quickly wrapping {LogUtilities.GPPHimself(actor.Unit)} up in them. There {LogUtilities.GPPHe(actor.Unit)} stay{LogUtilities.SIfSingular(actor.Unit)} for about five seconds before the {LogUtilities.ApostrophizeWithOrWithoutS(LogUtilities.GetRaceDescSingl(targetPred.Unit))} tails splay open and {LogUtilities.GPPHe(actor.Unit)} fall{LogUtilities.SIfSingular(actor.Unit)} to the ground{LogUtilities.GetRandomStringFrom(".", $". <b>{targetPred.Unit.Name}</b> looks at {LogUtilities.GPPHim(actor.Unit)} and asks \"how exactly did you think that would go?\"")}");
-                possibleLines.Add($"As <b>{targetPred.Unit.Name}</b> stands there, minding {LogUtilities.GPPHis(targetPred.Unit)} own business, <b>{actor.Unit.Name}</b> comes up behind {LogUtilities.GPPHim(actor.Unit)} tries to wrap {LogUtilities.GPPHimself(actor.Unit)} up in {LogUtilities.GPPHis(targetPred.Unit)} tails, though {LogUtilities.GPPHe(actor.Unit)} can't seem to keep hold of them long enough to do much{LogUtilities.GetRandomStringFrom(".", $". <b>{targetPred.Unit.Name}</b> watches, content to let <b>{actor.Unit.Name}</b> act like a {LogUtilities.GetRandomStringFrom("fool", "idiot")}.", $". <b>{targetPred.Unit.Name}</b> lets {LogUtilities.GPPHim(actor.Unit)} do this for a bit before {LogUtilities.GPPHe(actor.Unit)} accidentally pull{LogUtilities.SIfSingular(targetPred.Unit)} on one of the tails, and <b>{targetPred.Unit.Name}</b> pushes the {LogUtilities.GetRaceDescSingl(actor.Unit)} away.")}");
-            }
-            if (targetPred.Unit.CanTailVore && targetPred.Unit.Race == Race.Terrorbird)
-            {
-                possibleLines.Add($"<b>{actor.Unit.Name}</b> walks up to <b>{targetPred.Unit.Name}</b>, pries {LogUtilities.GPPHis(targetPred.Unit)} beak open, and tries to climb in, but <b>{targetPred.Unit.Name}</b> keeps spitting them back out. In the end, <b>{actor.Unit.Name}</b> is left soaking wet in front of a rather unhappy {LogUtilities.GetRaceDescSingl(targetPred.Unit)}.");
-                possibleLines.Add($"<b>{actor.Unit.Name}</b> watches <b>{targetPred.Unit.Name}</b> closely, and then, seeing an opportunity, jumps for the {LogUtilities.ApostrophizeWithOrWithoutS(LogUtilities.GetRaceDescSingl(targetPred.Unit))} open beak, which snaps shut just in time for <b>{targetPred.Unit.Name}</b> to slam into and fall to the ground.");
-                possibleLines.Add($"<b>{actor.Unit.Name}</b> climbs up onto <b>{LogUtilities.ApostrophizeWithOrWithoutS(targetPred.Unit.Name)}</b> back, as though to ride the {LogUtilities.GetRaceDescSingl(targetPred.Unit)}, though whatever plans {LogUtilities.GPPHe(actor.Unit)} had were thwarted as <b>{targetPred.Unit.Name}</b> bucks the {LogUtilities.GetRaceDescSingl(actor.Unit)} off {LogUtilities.GPPHis(targetPred.Unit)} back.");
-            }
-            if (targetPred.Unit.CanTailVore && targetPred.Unit.Race == Race.Tatltuae)
-            {
-                possibleLines.Add($"<b>{actor.Unit.Name}</b> watches as <b>{targetPred.Unit.Name}</b> pulls {LogUtilities.GetRandomStringFrom("something", "a small notebook", "some sort of tool", "something shiny")} out of his {LogUtilities.GetRandomStringFrom("neck feathers", "hackles")} and then puts it back in. Getting an idea, <b>{actor.Unit.Name}</b> charges the bird before jumping headfirst into his fluffy black neck. Rather than going into whatever pocket dimension is contained within, though, {LogUtilities.GPPHe(actor.Unit)} just hit{LogUtilities.SIfSingular(actor.Unit)} into the raven's neck, knocking both of them to the ground as the corvid rubs his now sore neck.");
-            }
-            if (targetPred.Unit.Race == Race.Iliijiith)
-            State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"<b>{actor.Unit.Name}</b> charges at <b>{targetPred.Unit.Name}</b> and leaps into it at full force, only to {LogUtilities.GetRandomStringFrom("phase through it and fall to the ground on the other side as if the Iliijiith didn't exist.", "slam headfirst into it and fall to the ground, now possibly with a concussion.")}");
-            else
-            State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{LogUtilities.GetRandomStringFrom(possibleLines.ToArray())}");
+            State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{actor.Unit.Name} failed to enter {targetPred.Unit.Name}.");
             actor.Movement = 0;
         }
     }

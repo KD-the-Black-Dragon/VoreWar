@@ -1,4 +1,8 @@
-﻿using System;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-30: Keep nested tag modification inside the authorized editor session (spec 02B).
+// 2026-10-30: Filter retired species in nested tag conditions while preserving old target values (spec 03B1).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -89,17 +93,52 @@ public class UnitTagMenu : MonoBehaviour
 
     public UnitTagModifierItem ModifierPrefab;
     internal List<UnitTagModifierItem> ModifierList;
+    readonly Dictionary<UnitTagModifierItem, int> preservedRaceTargets = new Dictionary<UnitTagModifierItem, int>();
 
     List<Traits> CurrentTraits;
     public TMP_Dropdown TraitDropdown;
     public TextMeshProUGUI TraitList;
 
+    void PopulateRaceTargets(UnitTagModifierItem row, int? stored = null)
+    {
+        var races = ((Race[])Enum.GetValues(typeof(Race))).Where(r => (int)r >= 0 && !SpeciesPolicy.IsRetired(r))
+            .OrderBy(r => r.ToString()).ToArray();
+        row.targetValue.options.Clear();
+        preservedRaceTargets.Remove(row);
+        if (stored.HasValue && !races.Contains((Race)stored.Value))
+        {
+            row.targetValue.options.Add(new TMP_Dropdown.OptionData("Keep existing target"));
+            preservedRaceTargets[row] = stored.Value;
+        }
+        foreach (Race race in races)
+            row.targetValue.options.Add(new TMP_Dropdown.OptionData(race.ToString()));
+        int index = stored.HasValue ? row.targetValue.options.FindIndex(option => option.text == ((Race)stored.Value).ToString()) : 0;
+        row.targetValue.value = Math.Max(0, index);
+        row.targetValue.RefreshShownValue();
+    }
+
+    bool TryRaceTarget(UnitTagModifierItem row, out int target)
+    {
+        Race race;
+        if (row.targetValue.value >= 0 && row.targetValue.value < row.targetValue.options.Count &&
+            Enum.TryParse(row.targetValue.options[row.targetValue.value].text, out race) &&
+            (int)race >= 0 && Enum.IsDefined(typeof(Race), race) && !SpeciesPolicy.IsRetired(race))
+        {
+            target = (int)race;
+            return true;
+        }
+        return preservedRaceTargets.TryGetValue(row, out target);
+    }
+
     internal void Open(int id)
     {
+        if (!State.GameManager.Menu.IsRaceEditorSessionActive)
+            return;
         gameObject.SetActive(true);
         UnitTagEditor.gameObject.SetActive(false);
         current_id = id;
         ModifierList = new List<UnitTagModifierItem>();
+        preservedRaceTargets.Clear();
         unitTag = State.UnitTagList.Where(x => x.id == current_id).FirstOrDefault();
 
 
@@ -183,11 +222,19 @@ public class UnitTagMenu : MonoBehaviour
             dupe.tagEffect.value = ob.tagEffect.value;
             dupe.tagCase.value = ob.tagCase.value;
             dupe.tagTarget.value = ob.tagTarget.value;
-            dupe.targetValue.value = ob.targetValue.value;
+            if (ob.tagTarget.value == (int)UnitTagModifierTarget.IsRace)
+            {
+                int target;
+                if (TryRaceTarget(ob, out target))
+                    PopulateRaceTargets(dupe, target);
+            }
+            else
+                dupe.targetValue.value = ob.targetValue.value;
         });
         ob.DeleteButton.onClick.AddListenerOnce(() =>
         {
             ModifierList.Remove(ob);
+            preservedRaceTargets.Remove(ob);
             Destroy(ob.gameObject);
         });
 
@@ -200,13 +247,7 @@ public class UnitTagMenu : MonoBehaviour
             {
                 case UnitTagModifierTarget.IsRace:
                     ob.targetValue.gameObject.SetActive(true);
-                    // Populate target race dropdown
-                    ob.targetValue.options.Clear();
-                    foreach (Race targetRace in ((Race[])Enum.GetValues(typeof(Race))))
-                    {
-                        ob.targetValue.options.Add(new TMP_Dropdown.OptionData(targetRace.ToString()));
-                    }
-                    ob.targetValue.RefreshShownValue();
+                    PopulateRaceTargets(ob);
                     break;
                 case UnitTagModifierTarget.HasTrait:
                     ob.targetValue.gameObject.SetActive(true);
@@ -322,17 +363,7 @@ public class UnitTagMenu : MonoBehaviour
             {
                 case UnitTagModifierTarget.IsRace:
                     loadMod.targetValue.gameObject.SetActive(true);
-                    // Populate target race dropdown
-                    loadMod.targetValue.options.Clear();
-                    foreach (Race targetRace in ((Race[])Enum.GetValues(typeof(Race))))
-                    {
-                        loadMod.targetValue.options.Add(new TMP_Dropdown.OptionData(targetRace.ToString()));
-                        if (targetRace == (Race)item.targetValue)
-                        {
-                            loadMod.targetValue.value = loadMod.targetValue.options.Count();
-                        }
-                    }
-                    loadMod.targetValue.RefreshShownValue();
+                    PopulateRaceTargets(loadMod, item.targetValue);
                     break;
                 case UnitTagModifierTarget.HasTrait:
                     loadMod.targetValue.gameObject.SetActive(true);
@@ -468,10 +499,10 @@ public class UnitTagMenu : MonoBehaviour
             switch (newMod.target)
             {
                 case UnitTagModifierTarget.IsRace:
-                    if (Enum.TryParse(mod.targetValue.options[mod.targetValue.value].text, out Race race))
-                    {
-                        newMod.targetValue = (int)race;
-                    }
+                    int target;
+                    if (!TryRaceTarget(mod, out target))
+                        continue; // Never create a default Cats condition from a missing selection.
+                    newMod.targetValue = target;
                     break;
                 case UnitTagModifierTarget.HasTrait:
                     if (State.RandomizeLists.Any(rl => rl.name == mod.targetValue.options[mod.targetValue.value].text))
@@ -607,6 +638,7 @@ public class UnitTagMenu : MonoBehaviour
             Destroy(Folder.GetChild(i).gameObject);
         }
         gameObject.SetActive(false);
+        preservedRaceTargets.Clear();
         ModifierList.Clear();
         UnitTagEditor.Open();
     }

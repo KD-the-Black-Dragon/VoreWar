@@ -1,6 +1,6 @@
 # Options and Settings Curation Checklist
 
-**Status:** Discovery and planning. This is an inventory of current setting groups for review; no options, settings, or gameplay have been changed.
+**Status:** Curation reference with staged implementation. The user confirmed the repaired 02C settings tests succeeded. [03A1](implementation/03a1-approved-species-and-empty-setup.md) adds the approved-only Species Availability page as the sixth page; its runtime review is pending. The original twelve-page inventory below remains historical curation evidence.
 
 ## Scope
 
@@ -24,7 +24,7 @@ Some controls clearly depend on retired empire-scale gameplay; others affect tac
 
 ## Content Settings pages
 
-The current page selector contains these twelve groups:
+The original page selector contained these twelve groups. 02C now exposes only Tactical Gameplay, Gender Settings, Appearance Settings, Vore Main and Post-Vore; see its exact control map for the implemented state:
 
 | Current page | Broad subject suggested by its name and controls |
 |---|---|
@@ -49,7 +49,7 @@ Replace the legacy Merc / Monster Spawning page with a simpler global setting: *
 
 - Use the same global species availability in the mercenary campaign and Pure Tactical.
 - List only species that have already been curated and added to the game.
-- Let the player disable any listed species so it will not appear in the game.
+- Let the player disable new generation of any listed species while preserving all existing individuals, including the leader, current/offered/former mercenaries, and existing contract enemies. Reappearance/rehire of a persistent individual is not new generation. Do not clear armies or invalidate saves. See [the clarifications](design-clarifications-2026-10-30.md) for current legacy behavior and this replacement policy.
 - Do not let players enable species that have not been curated and added.
 
 ## Vore Main controls marked for removal

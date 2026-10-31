@@ -1,3 +1,6 @@
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-30: Disconnect legacy event UI binding and player/AI turn triggers (spec 04A).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -195,7 +198,6 @@ public class StrategyMode : SceneBase
             TileTypes[i].sprite = TileSprites[i];
         }
 
-        State.EventList.SetUI(EventUI);
     }
 
     public void Setup()
@@ -1852,7 +1854,6 @@ public class StrategyMode : SceneBase
             {
                 RelationsManager.ResetRelationTypes();
             }
-            State.EventList.CheckStartAIEvent();
 
             foreach (var building in State.World.Constructibles)
             {
@@ -1973,8 +1974,6 @@ public class StrategyMode : SceneBase
         HandleBuildings(ActingEmpire);
         if (ActingEmpire.StrategicAI == null)
         {
-            if (State.World.Turn > 1)
-                ActingEmpire.CheckEvent();
             LastHumanEmpire = ActingEmpire;
             State.Save($"{State.SaveDirectory}Autosave.sav");
             StatusBarUI.EndTurn.interactable = true;

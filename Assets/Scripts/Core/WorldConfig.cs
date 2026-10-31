@@ -1,4 +1,7 @@
-﻿using OdinSerializer;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-30: Do not default legacy species availability to true (spec 03A1).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using OdinSerializer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -518,7 +521,7 @@ public class WorldConfig
 
         foreach (Race race in ((Race[])Enum.GetValues(typeof(Race))).Where(s => (int)s >= 0))
         {
-            Toggles[$"Merc {race}"] = true;
+            Toggles[$"Merc {race}"] = SpeciesPolicy.IsEnabled(race);
         }
         //Disable any not-implemented races
         //Toggles[$"Merc {Race.Succubi}"] = false;

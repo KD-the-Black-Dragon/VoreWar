@@ -1,13 +1,13 @@
 # Species Curation Checklist
 
-**Status:** Discovery and planning. No species implementation has changed.
+**Status:** Curation reference with staged implementation. 03B2 is user-accepted. [03B3A](implementation/03b3a-override-hydration-boundary.md) preserves retired records during loading and corrects new mapping defaults; compile/scene checks passed, interactive review pending. Stat/graphics/resource and 05 provider retirement remain. No species curated.
 
 ## Intended species categories across both modes
 
 - Disable the existing species roster at code level across both the mercenary campaign and Pure Tactical at the start of the conversion. Curate and re-enable species individually as the user selects them; remove some species from code as far as practical if the user rejects them entirely. The user will decide which species belong in each category later.
 - Approved sapient species may be the company leader, mercenaries, enemies, or later random encounters.
-- Non-sapient animal species may be enemies, later random encounters, or temporary magical summons. They cannot be company members.
-- A global species-availability page, shared by both modes, lists only curated species. Players may disable any listed species so it does not appear in-game, but cannot enable species that have not been curated and added.
+- Non-sapient animal species may be enemies, later random encounters, or temporary magical summons. They cannot be company members. The generic creature summon uses animals only; temporary sapient clones/doubles/illusions are acceptable exceptions, not permanent recruits.
+- A global species-availability page, shared by both modes, lists only curated species. Players may disable newly generated individuals of a listed species, but cannot enable species that have not been curated and added. Preserve all existing individuals, including the leader, offered recruits, former members, and existing contract enemies. Reappearance/rehire is not new generation. This supersedes the earlier blanket “never appears” wording; see [the clarifications](design-clarifications-2026-10-30.md).
 - Named unique characters from the current roster are removed from the conversion.
 - This is a reference inventory, not a demand to approve the whole roster at once. The user wants to curate selected species one at a time and validate that each meets their goals. Do not guess which species to keep, re-enable, or remove. Record each approved species as sapient or animal; some may instead be removed from code as far as practical.
 - Personal appeal is the primary selection criterion. The MVP should have a very small playable sapient cast, roughly one species for each of melee, ranged, and magic; add more over time. Start with a small animal roster and expand later.
@@ -17,7 +17,9 @@
 
 A trait-based trio of Avians, Taurus, and Mainland Elves was offered as an example and rejected by the user. It is not an approved MVP shortlist. Base the eventual roster on the user's personal favorites. The user does not want to classify the full roster up front; once a species is selected for curation, re-enable and validate it individually, organizing discussion in groups where useful.
 
-The categories below reflect the legacy numeric groupings in `Assets/Scripts/Enums/Race.cs`, not the new sapient/animal distinction. Names and IDs below are copied from that enum. The `none` sentinel is not a species and is omitted. All entries are disabled. Names in the outright-removal section below are designated for removal; other entries remain pending individual curation. The table's “Pending” value indicates that a legacy entry has not yet been mapped to a new sapient/animal disposition. Legacy group placement does not determine whether a species is sapient or an animal.
+The categories below reflect the legacy numeric groupings in `Assets/Scripts/Enums/Race.cs`, not the new sapient/animal distinction. Names and IDs below are copied from that enum. The `none` sentinel is not a species and is omitted. All entries are intended to start disabled in the conversion; the current game has not yet been changed. Names in the outright-removal section below are designated for removal; other entries remain pending individual curation. The table's “Pending” value indicates that a legacy entry has not yet been mapped to a new sapient/animal disposition. Legacy group placement does not determine whether a species is sapient or an animal.
+
+Study packet 01B has [mapped all 90 user-designated removal names](architecture/01b-species-removal-map.md) to existing enum IDs and registry classes, with candidate shared graphics dependencies. This resolves the source-name mapping only; no species has been removed or re-enabled, and candidate asset references are not an approved deletion list.
 
 ## User-designated outright removals
 

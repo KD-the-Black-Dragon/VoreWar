@@ -1,4 +1,9 @@
-﻿using System;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-30: Generic creature summoning requires an approved enabled animal; no fallback (spec 03A1).
+// 2026-10-30: Preflight clone and mapped summon destinations before spending cast resources (spec 03A2).
+// 2026-10-30: 04B2: Replace callback prose with neutral action and status notices.
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -190,7 +195,7 @@ static class SpellList
                 bool didSpellHit = curr != t.Unit.Health;
                 if (didSpellHit && State.Rand.Next(3) == 0)
                 {
-                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{t.Unit.Name} Was frozen solid!");
+                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{t.Unit.Name} was frozen.");
                     t.Unit.ApplyStatusEffect(StatusEffectType.Frozen, 1f, 2);
                 }
             },
@@ -670,7 +675,7 @@ static class SpellList
                 {
                     if (t.PredatorComponent.AlivePrey == 0)
                     {
-                        State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"<b>{t.Unit.Name}</b> is dizzy from the hex but has no prey to release.");
+                        State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{t.Unit.Name} has no contained units to release.");
                         TacticalGraphicalEffects.CreateGenericMagic(a.Position, t.Position, t, TacticalGraphicalEffects.SpellEffectIcon.Poison);
                     }
                     else
@@ -782,7 +787,7 @@ static class SpellList
                 if (t.Unit.Health <= 5 && t.Unit.CanBeConverted())
                 {
                     if (State.Rand.Next(10) == 1)
-                        State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"<b>{t.Unit.Name}</b> barely managed to shake off the net!");
+                        State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{t.Unit.Name} resisted Net.");
                     else
                     {
                         State.GameManager.TacticalMode.SwitchAlignment(t);
@@ -794,7 +799,7 @@ static class SpellList
                 }
                 else
                 {
-                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"<b>{a.Unit.Name}</b> hit <b>{t.Unit.Name}</b> in the face with the net dealing minimal damage.");
+                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{a.Unit.Name} hit {t.Unit.Name} with Net.");
                     t.Unit.Heal(-2);
                 }
             },
@@ -924,25 +929,19 @@ static class SpellList
             Name = "Summon",
             Id = "summon",
             SpellType = SpellTypes.Summon,
-            Description = "Summons a random monster at 50 % of caster’s experience (Available monsters depend on what monsters are available to hire as mercs, or set to spawn, so that monsters you aren't interested in don't spawn.)",
+            Description = "Summons a random enabled animal at 50 % of the caster’s experience. Requires an approved animal species.",
             AcceptibleTargets = new List<AbilityTargets>() { AbilityTargets.Tile },
             Range = new Range(4),
             Tier = 3,
             Resistable = false,
             OnExecuteTile = (a, loc) =>
             {
+                Race[] available = SpeciesPolicy.GetAvailable(SpeciesUse.CreatureSummon);
+                if (available.Length == 0)
+                    return;
                 if (TacticalUtilities.OpenTile(loc, null) && a.CastSpell(Summon, null))
                 {
-                    var AvailableRaces = new List<Race>();
-                    foreach (Race race in (Race[])System.Enum.GetValues(typeof(Race)))
-                    {
-                        if (race >= Race.Vagrants && race < Race.Selicia && (Config.World.GetValue($"Merc {race}") || (Config.SpawnerInfoWithoutGeneration(race)?.Enabled ?? false)))
-                            AvailableRaces.Add(race);
-                    }
-                    AvailableRaces.Remove(Race.Dragon);
-                    if (AvailableRaces.Any() == false)
-                        AvailableRaces.Add(Race.Vagrants);
-                    Race summonRace = AvailableRaces[State.Rand.Next(AvailableRaces.Count())];
+                    Race summonRace = available[State.Rand.Next(available.Length)];
                     Unit unit = new Unit(a.Unit.Side, summonRace, (int)(a.Unit.Experience * .50f), true, UnitType.Summon);
                     var actorCharm = a.Unit.GetStatusEffect(StatusEffectType.Charmed) ?? a.Unit.GetStatusEffect(StatusEffectType.Hypnotized);
                     if (actorCharm != null)
@@ -971,6 +970,8 @@ static class SpellList
             Resistable = false,
             OnExecuteTile = (a, loc) =>
             {
+                if (!SpeciesPolicy.IsAllowed(a.Unit.Race, SpeciesUse.Copy))
+                    return;
                 if (TacticalUtilities.OpenTile(loc, null) && a.CastSpell(SummonDoppelganger, null))
                 {
                     bool checkResourceful = false;
@@ -1012,12 +1013,14 @@ static class SpellList
             Resistable = false,
             OnExecuteTile = (a, loc) =>
             {
+                Race spawnRace = a.Unit.DetermineSpawnRace();
+                Race trueSpawnRace = a.Unit.HiddenUnit.DetermineSpawnRace();
+                if (spawnRace != trueSpawnRace)
+                    spawnRace = trueSpawnRace;
+                if (!SpeciesPolicy.IsAllowed(spawnRace, SpeciesUse.Spawn))
+                    return;
                 if (TacticalUtilities.OpenTile(loc, null) && a.CastSpell(SummonSpawn, null))
                 {
-                    Race spawnRace = a.Unit.DetermineSpawnRace();
-                    Race truespawnRace = a.Unit.HiddenUnit.DetermineSpawnRace();
-                    if (spawnRace != truespawnRace)
-                        spawnRace = a.Unit.HiddenUnit.DetermineSpawnRace();
                     Unit unit = new Unit(a.Unit.Side, spawnRace, (int)(a.Unit.Experience * .50f), true, UnitType.Summon);
                     unit.AddTrait(Traits.Feral);
                     var actorCharm = a.Unit.GetStatusEffect(StatusEffectType.Charmed) ?? a.Unit.GetStatusEffect(StatusEffectType.Hypnotized);
@@ -1401,10 +1404,10 @@ static class SpellList
                 {
                     a.SetPos(target_tile);
                     State.GameManager.TacticalMode.Translator.SetTranslator(a.UnitSprite.transform, a.Position, target_tile, 0, State.GameManager.TacticalMode.IsPlayerTurn);
-                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{a.Unit.Name} appears to \"blink\" to somewhere else on the battlefield.");
+                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{a.Unit.Name} teleported.");
                 }
                 else
-                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{a.Unit.Name} attempts to dimension shift to somewhere else but fails.");
+                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{a.Unit.Name}'s teleport failed.");
             },
         };
         SpellDict[SpellTypes.DimensionShift] = DimensionShift;

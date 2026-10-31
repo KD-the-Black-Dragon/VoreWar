@@ -1,4 +1,7 @@
-﻿using System;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-30: Ignore persisted player cheat flags and block cheat panel opening (spec 02B).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using System;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -32,57 +35,7 @@ public class CheatMenu : MonoBehaviour
 
     public void Open()
     {
-        GetValues();
-        StrategicBlocker.gameObject.SetActive(State.GameManager.CurrentScene != State.GameManager.StrategyMode);
-        TacticalBlocker.gameObject.SetActive(State.GameManager.CurrentScene != State.GameManager.TacticalMode);
-        FirstRaceDropdown.ClearOptions();
-        SecondRaceDropdown.ClearOptions();
-        EmpireReplaced.ClearOptions();
-        ReplacementRace.ClearOptions();
-        if (State.World?.MainEmpires != null)
-        {
-            foreach (Empire empire in State.World.MainEmpires)
-            {
-                if (empire.Side >= 700)
-                    continue;
-                FirstRaceDropdown.options.Add(new TMP_Dropdown.OptionData(empire.Name));
-                SecondRaceDropdown.options.Add(new TMP_Dropdown.OptionData(empire.Name));
-                EmpireReplaced.options.Add(new TMP_Dropdown.OptionData(empire.Name));
-            }
-
-            if (State.World.MonsterEmpires != null)
-            {
-                foreach (Empire empire in State.World.MonsterEmpires)
-                {
-                    if (empire.Side >= 700)
-                        continue;
-                    EmpireReplaced.options.Add(new TMP_Dropdown.OptionData(empire.Name));
-                }
-            }
-
-
-            if (Config.GoblinCaravans)
-            {
-                FirstRaceDropdown.options.Add(new TMP_Dropdown.OptionData("Goblins"));
-                SecondRaceDropdown.options.Add(new TMP_Dropdown.OptionData("Goblins"));
-            }
-            if (State.World.ActingEmpire != null)
-            {
-                EmpireDropdown.value = State.World.MainEmpires.IndexOf(State.World.ActingEmpire);
-                EmpireDropdown.captionText.text = State.World.ActingEmpire.Name;
-            }
-            FirstRaceDropdown.RefreshShownValue();
-            SecondRaceDropdown.RefreshShownValue();
-            EmpireReplaced.RefreshShownValue();
-            ReplacementRace.RefreshShownValue();
-
-            foreach (Race race in ((Race[])Enum.GetValues(typeof(Race))).Where(s => (int)s >= 0))
-            {
-                ReplacementRace.options.Add(new TMP_Dropdown.OptionData(race.ToString()));
-            }
-        }
-
-
+        State.GameManager.Menu.ShowRetiredToolMessage();
     }
 
     public void CloseAndSave()
@@ -178,11 +131,12 @@ public class CheatMenu : MonoBehaviour
 
     public void LoadFromStored()
     {
-        Config.CheatUnitEditorEnabled = PlayerPrefs.GetInt("UnitEditorDisplayed", 0) == 1;
-        Config.CheatExtraStrategicInfo = PlayerPrefs.GetInt("CompleteTooltips", 0) == 1;
-        Config.CheatViewHostileArmies = PlayerPrefs.GetInt("ViewHostileArmies", 0) == 1;
-        Config.CheatAddUnitButton = PlayerPrefs.GetInt("AddUnitButton", 0) == 1;
-        Config.CheatPopulation = PlayerPrefs.GetInt("PopulationCheat", 0) == 1;
+        // Old stored cheat choices must not survive retirement of their menu.
+        Config.CheatUnitEditorEnabled = false;
+        Config.CheatExtraStrategicInfo = false;
+        Config.CheatViewHostileArmies = false;
+        Config.CheatAddUnitButton = false;
+        Config.CheatPopulation = false;
     }
 
 

@@ -1,4 +1,8 @@
-﻿using OdinSerializer;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-30: Use approved sapient recruit pools and stop named-unique generation (spec 03A1).
+// 2026-10-30: Retire the uncalled named-unique factory; preserve existing stock and individuals (spec 03B1).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using OdinSerializer;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -16,8 +20,6 @@ public class MercenaryHouse
 
 
 
-    static List<Race> AvailableRaces;
-    static int TurnRefreshed;
 
     public MercenaryHouse(Vec2i position)
     {
@@ -27,50 +29,18 @@ public class MercenaryHouse
 
     static internal void UpdateStaticStock()
     {
-        UniqueMercs = new List<MercenaryContainer>();
-        Dictionary<Race, int> raceQuantities = new Dictionary<Race, int>();
-        int highestExp = 0;
-        if (State.World.Turn == 1)
-            highestExp = 4;
-        foreach (Race race in ((Race[])System.Enum.GetValues(typeof(Race))).Where(s => (int)s >= 0))
-        {
-            raceQuantities[race] = 0;
-        }
-        foreach (Unit unit in StrategicUtilities.GetAllUnits())
-        {
-            if (raceQuantities.TryGetValue(unit.Race, out int val))
-                raceQuantities[unit.Race]++;
-            else
-                raceQuantities[unit.Race] = 1;
-        }
-        foreach (Race race in ((Race[])System.Enum.GetValues(typeof(Race))).Where(s => (int)s >= 0))
-        {
-            if (race < Race.Selicia)
-                continue;
-            if (Config.World.GetValue($"Merc {race}") == false)
-                continue;
-            if (raceQuantities[race] < 1)
-            {
-                if (highestExp == 0) highestExp = State.GameManager.StrategyMode.ScaledExp;
-                UniqueMercs.Add(CreateUniqueMercenary(highestExp, race));
-            }
-        }
+        // Named unique generation is retired. Do not discard previously existing individuals.
+        if (UniqueMercs == null)
+            UniqueMercs = new List<MercenaryContainer>();
     }
 
     internal void UpdateStock()
     {
         const int minimumReplacedPerTurn = 4;
         const int maxStock = 12;
-        if (State.World.Turn != TurnRefreshed)
-        {
-            TurnRefreshed = State.World.Turn;
-            AvailableRaces = new List<Race>();
-            foreach (Race race in ((Race[])System.Enum.GetValues(typeof(Race))).Where(s => (int)s >= 0))
-            {
-                if (race < Race.Selicia && Config.World.GetValue($"Merc {race}"))
-                    AvailableRaces.Add(race);
-            }
-        }
+        Race[] available = SpeciesPolicy.GetAvailable(SpeciesUse.Mercenary);
+        if (available.Length == 0)
+            return; // Preserve already offered individuals; disabling generation is not dismissal.
         int highestExp = State.GameManager.StrategyMode.ScaledExp;
 
         if (Mercenaries.Count > maxStock - minimumReplacedPerTurn)
@@ -86,9 +56,12 @@ public class MercenaryHouse
         }
         for (int i = 0; i < 20; i++)
         {
-            if (Mercenaries.Count < maxStock && AvailableRaces.Count > 0)
+            if (Mercenaries.Count < maxStock && available.Length > 0)
             {
-                Mercenaries.Add(CreateMercenary(highestExp));
+                MercenaryContainer candidate = CreateMercenary(highestExp);
+                if (candidate == null)
+                    break;
+                Mercenaries.Add(candidate);
             }
             else
                 break;
@@ -100,7 +73,8 @@ public class MercenaryHouse
     {
         MercenaryContainer merc = new MercenaryContainer();
         Race race;
-        race = AvailableRaces[State.Rand.Next(AvailableRaces.Count())];
+        if (!SpeciesPolicy.TryRandom(SpeciesUse.Mercenary, out race))
+            return null;
 
 
         int exp = (int)(highestExp * .8f) + State.Rand.Next(10);
@@ -159,28 +133,6 @@ public class MercenaryHouse
         return merc;
     }
 
-    static internal MercenaryContainer CreateUniqueMercenary(int highestExp, Race race)
-    {
-        MercenaryContainer merc = new MercenaryContainer();
-
-        int exp = (int)(highestExp * .8f);
-        merc.Unit = new Unit((int)race, race, exp, true, UnitType.SpecialMercenary, true)
-        {
-            FixedGear = true
-        };
-
-        var power = State.RaceSettings.Get(merc.Unit.Race).PowerAdjustment;
-        if (power == 0)
-        {
-            power = RaceParameters.GetTraitData(merc.Unit).PowerAdjustment;
-        }
-        StrategicUtilities.SetAIClass(merc.Unit);
-        StrategicUtilities.SpendLevelUps(merc.Unit);
-        merc.Cost = (int)((20 + State.Rand.Next(15) + (.12 * exp)) * power);
-        return merc;
-    }
-
-
-
+    // The former named-unique factory is retired. Existing stock remains data, not a generation source.
 }
 

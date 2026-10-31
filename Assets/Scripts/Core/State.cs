@@ -1,4 +1,9 @@
-﻿using OdinSerializer;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-30: Enforce code-owned settings and retained global preferences (spec 02C).
+// 2026-10-30: Remove legacy event initialization and startup/reset event-file seeding (spec 04A).
+// 2026-10-30: Retire rejected-species name seeds and reset active lists without deleting paths (spec 03B2).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using OdinSerializer;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -26,7 +31,6 @@ public static class State
     public static Dictionary<Traits, List<int>> UnitTagAssociatedTraitDictionary;
     public static Dictionary<TaggedTrait, bool> UntaggedTraits;
 
-    internal static EventList EventList;
 
     internal static RaceSettings RaceSettings;
 
@@ -43,18 +47,29 @@ public static class State
 
     public static int RaceSlot;
     public static string RaceSaveDataName;
-    public static string[] nameTextFileNames = new string[] {"armyNames", "males","females","monsters","femaleFeralLions","maleFeralLions","femaleAabayx","maleAabayx","Cake","Collectors","Compy","CoralSlugs","DarkSwallower","Dragonfly","Catfish","Earthworms","Vagrants","femaleAlligators"
-            ,"maleAlligators","femaleAlraune","maleAlraune","femaleAnts","maleAnts","femaleAvians","maleAvians","femaleBats","maleBats","femaleBees","maleBees","femaleBunnies","maleBunnies","femaleCats","maleCats","femaleCockatrice","maleCockatrice","femaleCrux","maleCrux","femaleCrypters"
-            ,"maleCrypters","femaleDeer","maleDeer","femaleDewSprites","femaleDogs","maleDogs","femaleDragon","maleDragon","femaleDratopyr","maleDratopyr","femaleDriders","maleDriders","femaleEasternDragon","maleEasternDragon","femaleEquines","maleEquines","femaleFairies","maleFairies"
-            ,"femaleFeralBats","maleFeralBats","femaleFeralFox","maleFeralFox","femaleFeralHorses","maleFeralHorses","femaleFeralLizards","maleFeralLizards","femaleFoxes","maleFoxes","femaleFrogs","maleFrogs","femaleGazelle","maleGazelle","femaleGoblins","maleGoblins"
-            ,"femaleGryphons","maleGryphons","femaleHamsters","maleHamsters","femaleHarpies","maleHarpies","femaleHippos","maleHippos","femaleHumans","maleHumans","femaleImps","maleImps","femaleKangaroos","maleKangaroos","femaleKobolds","maleKobolds","femaleKomodos"
-            ,"maleKomodos","femaleLamia","maleLamia","femaleLizards","maleLizards","femaleMantis","maleMantis","femaleMerfolk","maleMerfolk","femaleMonitors","maleMonitors","femalePanthers","malePanthers","femalePuca","malePuca","femaleScylla","maleScylla","femaleSergal"
-            ,"maleSergal","femaleSharks","maleSharks","femaleSlimes","maleSlimes","femaleSuccubi","maleSuccubi","femaleTaurus","maleTaurus","femaleTerrorbird","maleTerrorbird","femaleTigers","maleTigers","femaleVargul","maleVargul","femaleVipers","maleVipers","femaleWolves","maleWolves"
-            ,"femaleWyvern","maleWyvern","femaleYouko","maleYouko","FeralAnts","FeralFrogs","FeralSharks","FeralWolves","Harvesters","Raptor","RockSlugs","Salamanders","Schiwardez","Serpents","SpitterSlugs","SpringSlugs","Voilin","WarriorAnts","Whisp","femaleBoomBunnies"
-            ,"maleBoomBunnies","WyvernMatron","maleFeralOrcas","femaleFeralOrcas","femaleBears","maleBears","femaleCentaur","maleCentaur","femaleGnolls","maleGnolls","femaleMainlandElves","maleMainlandElves","femaleViisels","maleViisels","FeralSlimes","femaleEevee","maleEevee","femaleEqualeon"
-            ,"maleEqualeon","femaleUmbreon","maleUmbreon","maleLupine","femaleLupine","femaleMatronsMinions","maleMatronsMinions","femaleJackals","maleJackals","femaleRwuMercenaries","maleRwuMercenaries","TwistedVines","femaleOtachi","maleOtachi","femaleRaiju","maleRaiju","femaleSmudger","maleSmudger","femaleBadgers","maleBadgers"
-            ,"WoodDryad","RiverDryad","EarthDryad","FungalDryad","maleGhosts","femaleGhosts","femaleUtahraptor","maleUtahraptor","femaleTrex","maleTrex","femaleSpaceCroach","maleSpaceCroach","femaleMice","maleMice","Terminid","femaleFeralEevee","maleFeralEevee","femaleFeralEqualeon","maleFeralEqualeon","femaleFeralUmbreon","maleFeralUmbreon","Iliijiith","maleRenamon","femaleRenamon"
-            ,"maleOoviKat","femaleOoviKat","maleDraconians","femaleDraconians","maleYordles","femaleYordles","Pudding","maleBlackWidow","femaleBlackWidow"};
+    // Only active generic/candidate name files are seeded or reset; old personal files remain untouched.
+    public static string[] nameTextFileNames = new string[]
+    {
+        "armyNames", "males", "females", "monsters", "femaleFeralLions", "maleFeralLions",
+        "CoralSlugs", "Dragonfly", "Catfish", "femaleAlligators", "maleAlligators", "femaleAnts",
+        "maleAnts", "femaleAvians", "maleAvians", "femaleBats", "maleBats", "femaleBees",
+        "maleBees", "femaleBunnies", "maleBunnies", "femaleDeer", "maleDeer", "femaleDragon",
+        "maleDragon", "femaleDratopyr", "maleDratopyr", "femaleEasternDragon", "maleEasternDragon", "femaleEquines",
+        "maleEquines", "femaleFeralBats", "maleFeralBats", "femaleFeralFox", "maleFeralFox", "femaleFeralHorses",
+        "maleFeralHorses", "femaleFeralLizards", "maleFeralLizards", "femaleFrogs", "maleFrogs", "femaleGazelle",
+        "maleGazelle", "femaleGryphons", "maleGryphons", "femaleHippos", "maleHippos", "femaleKangaroos",
+        "maleKangaroos", "femaleKobolds", "maleKobolds", "femaleKomodos", "maleKomodos", "femaleLizards",
+        "maleLizards", "femaleMantis", "maleMantis", "femaleMonitors", "maleMonitors", "femalePanthers",
+        "malePanthers", "femaleSergal", "maleSergal", "femaleSharks", "maleSharks", "femaleTerrorbird",
+        "maleTerrorbird", "femaleVargul", "maleVargul", "femaleWyvern", "maleWyvern", "FeralAnts",
+        "FeralWolves", "Harvesters", "RockSlugs", "Salamanders", "Serpents", "SpitterSlugs",
+        "SpringSlugs", "WarriorAnts", "WyvernMatron", "femaleGnolls", "maleGnolls", "FeralSlimes",
+        "maleLupine", "femaleLupine", "femaleMatronsMinions", "maleMatronsMinions", "femaleJackals", "maleJackals",
+        "TwistedVines", "femaleOtachi", "maleOtachi", "femaleRaiju", "maleRaiju", "femaleSmudger",
+        "maleSmudger", "femaleBadgers", "maleBadgers", "femaleUtahraptor", "maleUtahraptor", "femaleTrex",
+        "maleTrex", "femaleSpaceCroach", "maleSpaceCroach", "femaleMice", "maleMice", "Terminid",
+        "femaleFeralUmbreon", "maleFeralUmbreon", "maleDraconians", "femaleDraconians", "maleBlackWidow", "femaleBlackWidow",
+    };
 
 
     static State()
@@ -109,7 +124,7 @@ public static class State
 
 
 
-        string[] systemTextFileNames = new string[] { "customTraits", "events" };
+        string[] systemTextFileNames = new string[] { "customTraits" };
 
         try
         {
@@ -156,7 +171,6 @@ public static class State
         FlagLoader.FlagLoader flagLoader = new FlagLoader.FlagLoader();
         flagLoader.LoadFlags();
         NameGen = new NameGenerator();
-        EventList = new EventList();
         AssimilateList = new AssimilateList();
         CustomTraitList = new List<CustomTraitBoost>();
         ConditionalTraitList = new List<ConditionalTraitContainer>();
@@ -311,7 +325,7 @@ public static class State
 
 
 
-        string[] systemTextFileNames = new string[] { "customTraits", "events" };
+        string[] systemTextFileNames = new string[] { "customTraits" };
 
         try
         {
@@ -354,7 +368,6 @@ public static class State
         FlagLoader.FlagLoader flagLoader = new FlagLoader.FlagLoader();
         flagLoader.LoadFlags();
         NameGen = new NameGenerator();
-        EventList = new EventList();
         AssimilateList = new AssimilateList();
         CustomTraitList = new List<CustomTraitBoost>();
         ConditionalTraitList = new List<ConditionalTraitContainer>();
@@ -511,15 +524,7 @@ public static class State
         {
             foreach (string nameList in nameTextFileNames)
             {
-                if (File.Exists($"{NameFileDirectory}{nameList}.txt") == true)
-                {
-                    File.Delete($"{NameFileDirectory}{nameList}.txt");
-                    File.Copy($"{Application.streamingAssetsPath}{Path.DirectorySeparatorChar}{nameList}.txt", $"{NameFileDirectory}{nameList}.txt");
-                }
-                else
-                {
-                    File.Copy($"{Application.streamingAssetsPath}{Path.DirectorySeparatorChar}{nameList}.txt", $"{NameFileDirectory}{nameList}.txt");
-                }
+                File.Copy($"{Application.streamingAssetsPath}{Path.DirectorySeparatorChar}{nameList}.txt", $"{NameFileDirectory}{nameList}.txt", true);
             }
             NameGen = new NameGenerator();
         }
@@ -647,10 +652,8 @@ public static class State
                 return;
             }
             Config.World = World.ConfigStorage;
-            if (World.BuildingConfigStorage != null)
-            {
-                Config.BuildConfig = World.BuildingConfigStorage;
-            }
+            Config.BuildConfig = new BuildingConfig();
+            ContentSettingsData.LoadSaved(Config.World);
             GameManager.Menu.Options.LoadFromStored();
             GameManager.Menu.CheatMenu.LoadFromStored();
 
@@ -1290,6 +1293,9 @@ public static class State
                 if (Config.World.GrazeDamageMod == 0)
                     Config.World.GrazeDamageMod = .3f;
             }
+
+            // Legacy migrations must not restore retired player balance overrides.
+            ContentSettingsData.LoadSaved(Config.World);
 
             bool pureTactical = false;
             if (World.MainEmpires != null) //Is the detector for a pure tactical game.

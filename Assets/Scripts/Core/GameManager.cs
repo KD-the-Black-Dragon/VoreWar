@@ -1,4 +1,7 @@
-﻿using System.Linq;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-30: Disable the alternate in-game map editor entry (spec 02B).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using System.Linq;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -306,27 +309,7 @@ public class GameManager : MonoBehaviour
 
     public void SwitchToMapEditor()
     {
-        if (currentScene == StrategyMode)
-        {
-            CloseMenu();
-            StrategyMode.ClearGraphics();
-            MapEditor.gameObject.SetActive(true);
-            MapEditor.Initialize(true);
-            CurrentScene = MapEditor;
-        }
-        else if (currentScene == Start_Mode)
-        {
-            StrategyMode.ClearGraphics();
-            MapEditor.gameObject.SetActive(true);
-            MapEditor.Initialize(false);
-            CurrentScene = MapEditor;
-        }
-        else
-        {
-            CreateMessageBox("Can't open map editor from here...");
-        }
-
-        return;
+        Menu.ShowRetiredToolMessage();
     }
 
     public void ActivatePureTacticalMode(StrategicTileType tiletype, Village village, Army invader, Army defender, TacticalAIType attackerAI, TacticalAIType defenderAI)

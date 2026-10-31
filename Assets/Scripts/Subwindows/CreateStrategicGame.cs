@@ -1,4 +1,8 @@
-﻿using Assets.Scripts.Utility.Stored;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-30: Enforce code-owned settings and retained global preferences (spec 02C).
+// 2026-10-30: Guard empty-roster world creation before any mutation (spec 03A1).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using Assets.Scripts.Utility.Stored;
 using MapObjects;
 using OdinSerializer;
 using System;
@@ -368,10 +372,8 @@ public class CreateStrategicGame : MonoBehaviour
             byte[] bytes = File.ReadAllBytes(filename);
             var tempWorld = SerializationUtility.DeserializeValue<World>(bytes, DataFormat.Binary);
             Config.World = tempWorld.ConfigStorage;
-            if (tempWorld.BuildingConfigStorage != null)
-            {
-                Config.BuildConfig = tempWorld.BuildingConfigStorage;
-            }
+            Config.BuildConfig = new BuildingConfig();
+            ContentSettingsData.LoadSaved(Config.World);
         }
         catch
         {
@@ -533,6 +535,12 @@ public class CreateStrategicGame : MonoBehaviour
 
     public void CreateWorld()
     {
+        if (SpeciesPolicy.GetAvailable(SpeciesUse.Leader).Length == 0)
+        {
+            State.GameManager.CreateMessageBox(SpeciesPolicy.UnavailableMessage);
+            return;
+        }
+
         State.GameManager.Menu.Options.LoadFromStored();
         State.GameManager.Menu.CheatMenu.LoadFromStored();
         Config.World.VillagesPerEmpire = new int[Empires.Length];

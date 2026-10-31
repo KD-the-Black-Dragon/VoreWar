@@ -1,4 +1,7 @@
-﻿using OdinSerializer;
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-30: Preserve retired override records without hydration; use correct new mapping defaults (spec 03B3A).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using OdinSerializer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +23,9 @@ class RaceSettings
     {
         foreach (KeyValuePair<Race, RaceSettingsItem> entry in Races)
         {
+            // Preserve legacy records without rebuilding defaults for retired content.
+            if (SpeciesPolicy.IsRetired(entry.Key))
+                continue;
             if (entry.Value.ConversionRace == Race.none) entry.Value.ConversionRace = RaceParameters.GetRaceTraits(entry.Key).ConversionRace;
             if (entry.Value.LeaderRace == Race.none) entry.Value.LeaderRace = RaceParameters.GetRaceTraits(entry.Key).LeaderRace;
             if (entry.Value.SpawnRace == Race.none) entry.Value.SpawnRace = RaceParameters.GetRaceTraits(entry.Key).SpawnRace;
@@ -32,8 +38,11 @@ class RaceSettings
                 entry.Value.MorphRace = RaceParameters.GetRaceTraits(entry.Key).MorphRace;
             }
         }
-        foreach (RaceSettingsItem item in Races.Values)
+        foreach (KeyValuePair<Race, RaceSettingsItem> entry in Races)
         {
+            if (SpeciesPolicy.IsRetired(entry.Key))
+                continue;
+            RaceSettingsItem item = entry.Value;
             if (item.Stats.Strength.Roll < 1) item.Stats.Strength.Roll = 1;
             if (item.Stats.Dexterity.Roll < 1) item.Stats.Dexterity.Roll = 1;
             if (item.Stats.Agility.Roll < 1) item.Stats.Agility.Roll = 1;
@@ -442,8 +451,8 @@ class RaceSettingsItem
 
         SpawnRace = racePar.SpawnRace;
         ConversionRace = racePar.ConversionRace;
-        LeaderRace = racePar.ConversionRace;
-        MorphRace = racePar.ConversionRace;
+        LeaderRace = racePar.LeaderRace;
+        MorphRace = racePar.MorphRace;
 
         var baseStats = racePar.RaceStats;
 

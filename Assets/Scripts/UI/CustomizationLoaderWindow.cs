@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-30: Filter foreign-species previews and avoid gameplay constructors for appearance inspection (spec 03A2).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,6 +26,8 @@ public class CustomizationLoaderWindow : MonoBehaviour
 
     public void PopulateGrid()
     {
+        Unit target = EnteredFromUnitEditor ? State.GameManager.UnitEditor.UnitEditor.Unit :
+            State.GameManager.Recruit_Mode.Customizer.Unit;
         List<CustomizerData> customs;
         if (EnteredFromUnitEditor)
             customs = CustomizationDataStorer.GetCompatibleCustomizations(State.GameManager.UnitEditor.UnitEditor.Unit.Race, State.GameManager.UnitEditor.UnitEditor.Unit.Type, ShowAll.isOn);
@@ -35,9 +40,11 @@ public class CustomizationLoaderWindow : MonoBehaviour
         }
         foreach (CustomizerData customizerData in customs)
         {
+            if (customizerData.Race != target.Race && !SpeciesPolicy.IsEnabled(customizerData.Race))
+                continue;
             GameObject obj = Instantiate(UnitDisplay, ActorFolder);
             UIUnitSprite sprite = obj.GetComponentInChildren<UIUnitSprite>();
-            Unit tempUnit = new Unit(1, customizerData.Race, 0, false);
+            Unit tempUnit = new Unit(customizerData.Race);
             if (customizerData.Type == UnitType.Leader)
                 tempUnit.Type = UnitType.Leader;
             customizerData.CopyToUnit(tempUnit, true);

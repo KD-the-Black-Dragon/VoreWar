@@ -28,11 +28,42 @@ A direct request to make a change authorizes work within that request. A request
 - Avoid unrelated asset reimports, package upgrades, scene/prefab rewrites, or broad formatting changes. Unity can modify serialized assets as a side effect; inspect the resulting diff and keep only changes required by the task.
 - Do not assume this fork uses the upstream project's hosting, release process, credentials, or services. Publishing, uploading, or changing external services requires explicit authorization.
 
+## GPL-3.0 compliance for every source change
+
+Every intentional source-code change must include a GPL-3.0 compliance check before handoff. This includes new code, modifications, and any authorized retirement or relocation of source. Treat this as part of the change itself, including during private development, so notices are ready before distribution. This project workflow is deliberately ongoing; GPL section 5 concerns conveying modified source, while section 2 permits private modifications without requiring public release.
+
+Use the actual terms in `License.txt`, especially sections 4 and 5, rather than relying only on this summary. Keep this fork's covered derivative work under the applicable GPL-3.0 terms. Preserve existing copyright, license, attribution, additional-term, and warranty notices. Do not silently change an existing version grant to "only" or "or later," invent copyright ownership, or relabel separately licensed assets/dependencies as GPL-covered.
+
+For each source change:
+
+1. Add or update a prominent notice near the top of each modified source file, after preserving existing legal notices. Identify the VoreWar mercenary-company conversion, the actual modification date in `YYYY-MM-DD` form, and a short description. Retain meaningful earlier modification notices. Mark new source files as additions by this fork, without implying that they came from upstream. These per-file notices are this project's practical policy for keeping modifications distinguishable; section 5(a) itself speaks of notices on the modified work and does not mandate this exact format.
+2. Add a dated entry to root `CHANGES.md` listing the affected source paths, a concise description, and the related spec where applicable. A reviewable change batch can have one entry covering several files; an exhaustive design narrative or per-line history is unnecessary. Use real dates, preserve earlier entries, and distinguish completed changes from plans. Git history supplements this record rather than replacing the notices.
+3. Check notice placement and coverage against the actual diff. For non-commentable source/content formats such as JSON or Unity serialized assets, use a clearly associated notice/change record identifying the exact paths rather than inserting invalid syntax. Review whether the notice remains prominent in the form that will be distributed.
+4. Review any introduced/copied code, asset, or dependency for its applicable license, notices, and compatibility with the intended distribution. Do not assume that an upstream inclusion or a passing Unity build proves that this review has been done. Record a concrete unresolved issue if the evidence is insufficient.
+5. Report the check briefly at handoff: modification notices/dates, `CHANGES.md`, and preserved licensing/attribution, plus any unresolved distribution issue. Do not claim complete GPL compliance from a changelog check alone.
+
+A suitable C# modification-notice pattern, adapted to the actual change, is:
+
+```csharp
+// Modified for the VoreWar mercenary-company conversion.
+// YYYY-MM-DD: Brief description of this file's changes.
+// See CHANGES.md for the fork's change record and License.txt for GPL-3.0 terms.
+```
+
+Before any authorized source or binary distribution, review the applicable obligations again: include the license and required notices; clearly identify the modified work and its GPL terms; preserve or provide Appropriate Legal Notices where section 5(d) requires them, taking account of its exception for original interfaces that did not display them; and satisfy section 6's Corresponding Source requirements for the chosen binary-distribution method, including necessary build scripts and Installation Information when applicable. Review third-party redistribution terms separately. A source link, Git history, or `CHANGES.md` alone is not automatically sufficient for every distribution method.
+
+Documentation-only changes should be described accurately and must not be recorded as gameplay-source changes. Do not add modification headers to untouched upstream files merely to make the entire tree look newly licensed. These instructions do not authorize publishing or override the file-operation restrictions below.
+
+## Resuming the staged conversion
+
+For interrupted migration work, read `docs/implementation/resume-checkpoint.md` after checking Git status. It records the active packet, latest user confirmation, performed checks and exact next action. Update it at meaningful checkpoints; do not treat an incomplete check as passed or restart accepted packets.
+
 ## Change workflow
 
 1. Read this file, `README.md`, and any more specific `AGENTS.md` files that apply. Check `git status` before editing so existing user changes are preserved.
 2. Trace the affected behavior through the relevant C# scripts, scenes, prefabs, ScriptableObjects, and assets before choosing an implementation.
 3. Implement only the requested change. Update project documentation when behavior, setup, or contributor instructions change.
+   For every source-code change, complete the GPL-3.0 check above and update its notices and `CHANGES.md` as part of the same work.
 4. Run checks only when the user asks for testing/verification or the task explicitly includes it. Use the narrowest relevant checks documented by this Unity project, and report what ran and any limits. Do not add a test framework or new tests unless requested.
 5. For meaningful gameplay or UI changes, provide a short, concrete in-game checklist in chat. Distinguish checks the agent actually performed from playtesting that still needs the user's confirmation. For staged work, wait for feedback on the current stage before starting the next one.
 

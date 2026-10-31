@@ -1,3 +1,6 @@
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-30: 04B2: Replace retreat flavor with a functional objective notice.
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
 using System;
 using System.Collections.Generic;
@@ -137,7 +140,7 @@ public abstract class TacticalAI : ITacticalAI
             {
                 if (retreating == false)
                 {
-                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"<color=orange>{(actors[0].Unit.Side == AISide ? "Attackers" : "Defenders")} are now fleeing because they've eaten enough units that they're satisfied</color>");
+                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"<color=orange>{(actors[0].Unit.Side == AISide ? "Attackers" : "Defenders")} are retreating (consumption objective met)</color>");
                 }
                 retreating = true;
             }

@@ -1,3 +1,6 @@
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-30: Filter trait summons and legacy building reinforcements before constructing units (spec 03A2).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using LegacyAI;
 using System;
 using System.Collections;
@@ -750,7 +753,7 @@ public class TacticalMode : SceneBase
                     }
                 }
 
-                if (building is CasterTower)
+                if (building is CasterTower && SpeciesPolicy.IsAllowed(Race.Fairies, SpeciesUse.Copy))
                 {
                     CasterTower casterTower = (CasterTower)building;
                     Unit newUnit = new NPC_unit(10, false, 2, armies[0].Side, Race.Fairies, 0, false);
@@ -933,6 +936,8 @@ public class TacticalMode : SceneBase
                     while (summonCount > 0 && defenseEncampment.AvailibleDefenders > 0)
                     {
                         Empire empire = defender?.Empire ?? village.Empire;
+                        if (!SpeciesPolicy.IsAllowed(empire.Race, SpeciesUse.Enemy))
+                            break;
                         float advancedChance = 0.2f * (defenseEncampment.improveUpgrade.built ? 4f : 1);
                         float unitScale = Config.BuildConfig.DefenseEncampmentUnitScale * (defenseEncampment.levelUpgrade.built ? 1.5f : 1);
                         Unit newUnit = new NPC_unit((int)Math.Max(Mathf.Floor((empire.Leader != null ? empire.Leader.Level : 3) * unitScale),1), advancedChance >= State.Rand.NextDouble(), 2, defenders.Concat(garrison).FirstOrDefault().Unit.Side, empire.Race, 0, empire.CanVore);
@@ -1069,7 +1074,7 @@ public class TacticalMode : SceneBase
                         }
                     }
                 }
-                if (building is CasterTower)
+                if (building is CasterTower && SpeciesPolicy.IsAllowed(Race.Fairies, SpeciesUse.Copy))
                 {
                     CasterTower casterTower = (CasterTower)building;
                     Unit newUnit = new NPC_unit(10, false, 2, defenders.Concat(garrison).FirstOrDefault().Unit.Side, Race.Fairies, 0, false);
@@ -1303,7 +1308,7 @@ public class TacticalMode : SceneBase
         {
 
 
-            if (actor.Unit.HasTrait(Traits.AstralCall))
+            if (actor.Unit.HasTrait(Traits.AstralCall) && SpeciesPolicy.IsAllowed(actor.Unit.Race, SpeciesUse.Copy))
             {
                 if (actor.Unit.Side == defenderSide)
                 {
@@ -1368,6 +1373,11 @@ public class TacticalMode : SceneBase
 
     private int SummonAnts(TacticalMapGenerator mapGen, Unit AttackerLeader, Unit DefenderLeader)
     {
+        // Keep the original one-to-two weighting, filtered by explicit animal approval.
+        Race[] available = new[] { Race.WarriorAnts, Race.FeralAnts, Race.FeralAnts }
+            .Where(r => SpeciesPolicy.IsAllowed(r, SpeciesUse.CreatureSummon)).ToArray();
+        if (available.Length == 0)
+            return 0;
         int summonedUnits = 0;
         int attackerSummoners = 0;
         int defenderSummoners = 0;
@@ -1406,10 +1416,7 @@ public class TacticalMode : SceneBase
             {
                 Race race;
                 int level = (int)Mathf.Max((0.4f * attackerLevels / attackerSummoners) - 2, 1);
-                if (State.Rand.Next(3) == 0)
-                    race = Race.WarriorAnts;
-                else
-                    race = Race.FeralAnts;
+                race = available[State.Rand.Next(available.Length)];
                 Unit newUnit = new NPC_unit(level, false, 2, armies[0].Side, race, 0, attackerPred);
                 newUnit.Type = UnitType.Summon;
                 Actor_Unit unit = new Actor_Unit(mapGen.RandomActorPosition(tiles, BlockedTile, units, TacticalMapGenerator.SpawnLocation.upperMiddle, newUnit.GetBestRanged() == null), newUnit);
@@ -1429,10 +1436,7 @@ public class TacticalMode : SceneBase
             {
                 Race race;
                 int level = (int)Mathf.Max((0.4f * defenderLevels / defenderSummoners) - 2, 1);
-                if (State.Rand.Next(3) == 0)
-                    race = Race.WarriorAnts;
-                else
-                    race = Race.FeralAnts;
+                race = available[State.Rand.Next(available.Length)];
                 Unit newUnit = new NPC_unit(level, false, 2, defenderSide, race, 0, defenderPred);
                 newUnit.Type = UnitType.Summon;
                 Actor_Unit unit = new Actor_Unit(mapGen.RandomActorPosition(tiles, BlockedTile, units, TacticalMapGenerator.SpawnLocation.lowerMiddle, newUnit.GetBestRanged() == null), newUnit);

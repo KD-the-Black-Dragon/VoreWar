@@ -1,4 +1,7 @@
-﻿using OdinSerializer;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-30: Reject disallowed transformation destinations before prey-state callbacks (spec 03A2).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using OdinSerializer;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -173,6 +176,8 @@ class Prey
 
     public void ChangeRace(Race race)
     {
+        if (!SpeciesPolicy.IsAllowed(race, SpeciesUse.Transformation))
+            return;
         if (Unit.Race != Unit.HiddenRace)
         {
             Unit.ResetSharedTraits();

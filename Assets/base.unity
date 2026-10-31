@@ -4395,7 +4395,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &24594959
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6153,6 +6153,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 499522612}
     m_Modifications:
     - target: {fileID: 1522731415904372, guid: de238d9f746b63947b58c5a18189ebf9, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1522731415904372, guid: de238d9f746b63947b58c5a18189ebf9, type: 3}
       propertyPath: m_Name
       value: Surrendered Pred Escape Mult Slider
       objectReference: {fileID: 0}
@@ -6364,7 +6368,7 @@ PrefabInstance:
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
@@ -6792,7 +6796,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -8655,7 +8659,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -14884,7 +14888,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &70401226
 RectTransform:
   m_ObjectHideFlags: 0
@@ -19565,7 +19569,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -28990,6 +28994,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 901646816}
     m_Modifications:
+    - target: {fileID: 939000862, guid: 85260ce24df1dd94083f9d925a865c7e, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 939000863, guid: 85260ce24df1dd94083f9d925a865c7e, type: 3}
       propertyPath: m_Name
       value: Dick WL Chance Slider
@@ -30548,6 +30556,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 1077976952}
     m_Modifications:
     - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
       propertyPath: m_Name
       value: Weight Loss Toggle
       objectReference: {fileID: 0}
@@ -30694,7 +30706,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -32978,7 +32990,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -41884,7 +41896,7 @@ PrefabInstance:
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
@@ -48596,6 +48608,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 1077976952}
     m_Modifications:
     - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
       propertyPath: m_Name
       value: Clean Disposal
       objectReference: {fileID: 0}
@@ -48742,7 +48758,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -55179,6 +55195,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 1077976952}
     m_Modifications:
     - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
       propertyPath: m_Name
       value: Weight Gain Toggle
       objectReference: {fileID: 0}
@@ -55325,7 +55345,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -55617,7 +55637,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -56440,7 +56460,7 @@ PrefabInstance:
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
@@ -58513,6 +58533,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 801335303}
     m_Modifications:
+    - target: {fileID: 1320550614093716, guid: 89bebbadda021fa4888a74173e78312f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1320550614093716, guid: 89bebbadda021fa4888a74173e78312f, type: 3}
       propertyPath: m_Name
       value: Leader Traits
@@ -66831,6 +66855,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 1077976952}
     m_Modifications:
     - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
       propertyPath: m_Name
       value: Bird Scat
       objectReference: {fileID: 0}
@@ -66977,7 +67005,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -85895,7 +85923,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &417709633
 RectTransform:
   m_ObjectHideFlags: 0
@@ -89050,6 +89078,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 801335303}
     m_Modifications:
     - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
       propertyPath: m_Name
       value: Boosted Accuracy
       objectReference: {fileID: 0}
@@ -89545,6 +89577,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 801335303}
     m_Modifications:
+    - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
       propertyPath: m_Name
       value: Auto-Surrender Defection Chance
@@ -102718,6 +102754,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 801335303}
     m_Modifications:
     - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
       propertyPath: m_Name
       value: Allow Infighting
       objectReference: {fileID: 0}
@@ -102937,6 +102977,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 376989525}
     m_Modifications:
     - target: {fileID: 1913157303044632, guid: 21f47303e48e1fe469c779c39917362d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1913157303044632, guid: 21f47303e48e1fe469c779c39917362d, type: 3}
       propertyPath: m_Name
       value: Custom Traits Pool
       objectReference: {fileID: 0}
@@ -103058,7 +103102,7 @@ PrefabInstance:
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
@@ -103068,7 +103112,7 @@ PrefabInstance:
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
@@ -113477,7 +113521,7 @@ PrefabInstance:
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
@@ -114397,7 +114441,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -117217,7 +117261,7 @@ PrefabInstance:
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
@@ -120310,7 +120354,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &578095564
 RectTransform:
   m_ObjectHideFlags: 0
@@ -124891,7 +124935,7 @@ PrefabInstance:
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
@@ -126466,7 +126510,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -128900,7 +128944,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -131701,7 +131745,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -134972,7 +135016,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224123467637586332, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -136480,7 +136524,7 @@ PrefabInstance:
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
@@ -138033,7 +138077,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &674948495
 RectTransform:
   m_ObjectHideFlags: 0
@@ -143297,6 +143341,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 376989525}
     m_Modifications:
     - target: {fileID: 1913157303044632, guid: 21f47303e48e1fe469c779c39917362d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1913157303044632, guid: 21f47303e48e1fe469c779c39917362d, type: 3}
       propertyPath: m_Name
       value: Map Editor Button
       objectReference: {fileID: 0}
@@ -143418,7 +143466,7 @@ PrefabInstance:
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
@@ -143428,7 +143476,7 @@ PrefabInstance:
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
@@ -151440,7 +151488,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224123467637586332, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -156351,7 +156399,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1913157303044632, guid: 21f47303e48e1fe469c779c39917362d, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224955942209615954, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
@@ -156421,7 +156469,7 @@ PrefabInstance:
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
@@ -156795,7 +156843,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -160312,6 +160360,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 499522612}
     m_Modifications:
     - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
       propertyPath: m_Name
       value: Hard Vore Toggle
       objectReference: {fileID: 0}
@@ -162348,6 +162400,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 376989525}
     m_Modifications:
     - target: {fileID: 1913157303044632, guid: 21f47303e48e1fe469c779c39917362d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1913157303044632, guid: 21f47303e48e1fe469c779c39917362d, type: 3}
       propertyPath: m_Name
       value: Random Traits Pool
       objectReference: {fileID: 0}
@@ -162469,7 +162525,7 @@ PrefabInstance:
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
@@ -162479,7 +162535,7 @@ PrefabInstance:
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
@@ -166080,7 +166136,7 @@ PrefabInstance:
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
@@ -171574,7 +171630,7 @@ PrefabInstance:
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
@@ -175583,7 +175639,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -176389,6 +176445,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 1716904384}
     m_Modifications:
     - target: {fileID: 1913157303044632, guid: 21f47303e48e1fe469c779c39917362d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1913157303044632, guid: 21f47303e48e1fe469c779c39917362d, type: 3}
       propertyPath: m_Name
       value: Map Editor Button
       objectReference: {fileID: 0}
@@ -176460,7 +176520,7 @@ PrefabInstance:
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
@@ -179062,7 +179122,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &901646816
 RectTransform:
   m_ObjectHideFlags: 0
@@ -180160,6 +180220,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 1716904384}
     m_Modifications:
     - target: {fileID: 1913157303044632, guid: 21f47303e48e1fe469c779c39917362d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1913157303044632, guid: 21f47303e48e1fe469c779c39917362d, type: 3}
       propertyPath: m_Name
       value: World Settings Button
       objectReference: {fileID: 0}
@@ -180231,7 +180295,7 @@ PrefabInstance:
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
@@ -181366,7 +181430,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &913145416
 RectTransform:
   m_ObjectHideFlags: 0
@@ -182429,6 +182493,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 1077976952}
     m_Modifications:
     - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
       propertyPath: m_Name
       value: Scat Bones
       objectReference: {fileID: 0}
@@ -182580,7 +182648,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -183084,7 +183152,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -184812,7 +184880,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -186475,7 +186543,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -186782,6 +186850,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 331770786}
     m_Modifications:
+    - target: {fileID: 939000862, guid: 85260ce24df1dd94083f9d925a865c7e, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 939000863, guid: 85260ce24df1dd94083f9d925a865c7e, type: 3}
       propertyPath: m_Name
       value: Max Armies
@@ -190886,6 +190958,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 499522612}
     m_Modifications:
+    - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
       propertyPath: m_Name
       value: Disoriented Prey
@@ -205570,7 +205646,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -206836,7 +206912,7 @@ PrefabInstance:
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
@@ -210487,7 +210563,7 @@ PrefabInstance:
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
@@ -214564,6 +214640,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 801335303}
     m_Modifications:
     - target: {fileID: 1522731415904372, guid: de238d9f746b63947b58c5a18189ebf9, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1522731415904372, guid: de238d9f746b63947b58c5a18189ebf9, type: 3}
       propertyPath: m_Name
       value: Tactical Water Clumping
       objectReference: {fileID: 0}
@@ -214830,7 +214910,7 @@ PrefabInstance:
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
@@ -221412,7 +221492,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -237351,7 +237431,7 @@ PrefabInstance:
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
@@ -243110,6 +243190,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 801335303}
     m_Modifications:
     - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
       propertyPath: m_Name
       value: Race Traits
       objectReference: {fileID: 0}
@@ -246632,7 +246716,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -248738,7 +248822,7 @@ PrefabInstance:
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
@@ -256408,7 +256492,7 @@ PrefabInstance:
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
@@ -256744,7 +256828,7 @@ PrefabInstance:
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
@@ -260470,7 +260554,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -261718,6 +261802,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 801335303}
     m_Modifications:
+    - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
       propertyPath: m_Name
       value: Defections
@@ -264314,6 +264402,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 1716904384}
     m_Modifications:
     - target: {fileID: 1913157303044632, guid: 21f47303e48e1fe469c779c39917362d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1913157303044632, guid: 21f47303e48e1fe469c779c39917362d, type: 3}
       propertyPath: m_Name
       value: Bestiary Button
       objectReference: {fileID: 0}
@@ -264385,7 +264477,7 @@ PrefabInstance:
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
@@ -269083,7 +269175,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -287862,6 +287954,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 1077976952}
     m_Modifications:
     - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
       propertyPath: m_Name
       value: Scat
       objectReference: {fileID: 0}
@@ -288013,7 +288109,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -292766,6 +292862,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 801335303}
     m_Modifications:
+    - target: {fileID: 1320550614093716, guid: 89bebbadda021fa4888a74173e78312f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1320550614093716, guid: 89bebbadda021fa4888a74173e78312f, type: 3}
       propertyPath: m_Name
       value: Herm Traits
@@ -310834,7 +310934,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -315051,6 +315151,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 1716904384}
     m_Modifications:
     - target: {fileID: 1913157303044632, guid: 21f47303e48e1fe469c779c39917362d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1913157303044632, guid: 21f47303e48e1fe469c779c39917362d, type: 3}
       propertyPath: m_Name
       value: Cheat Menu Button
       objectReference: {fileID: 0}
@@ -315122,7 +315226,7 @@ PrefabInstance:
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
@@ -316212,6 +316316,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 801335303}
     m_Modifications:
+    - target: {fileID: 1320550614093716, guid: 89bebbadda021fa4888a74173e78312f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1320550614093716, guid: 89bebbadda021fa4888a74173e78312f, type: 3}
       propertyPath: m_Name
       value: Female Traits
@@ -317994,6 +318102,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 376989525}
     m_Modifications:
     - target: {fileID: 1913157303044632, guid: 21f47303e48e1fe469c779c39917362d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1913157303044632, guid: 21f47303e48e1fe469c779c39917362d, type: 3}
       propertyPath: m_Name
       value: Tutorial Button
       objectReference: {fileID: 0}
@@ -318115,7 +318227,7 @@ PrefabInstance:
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
@@ -318125,7 +318237,7 @@ PrefabInstance:
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
@@ -320356,91 +320468,35 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SettingsPanels:
-  - {fileID: 688019743}
   - {fileID: 1820698785}
-  - {fileID: 716650689}
-  - {fileID: 806433022}
   - {fileID: 1277277714}
   - {fileID: 426437537}
-  - {fileID: 402141452}
   - {fileID: 1438320094}
-  - {fileID: 352977800}
-  - {fileID: 1522245816}
   - {fileID: 1391225976}
-  - {fileID: 1859552280}
   FemaleFraction: {fileID: 1525541078}
   HermFraction: {fileID: 573222328}
   HermNameFraction: {fileID: 1908071396}
   ClothedFraction: {fileID: 785092071}
-  WeightGain: {fileID: 1292339692}
-  WeightLoss: {fileID: 147877280}
-  WeightLossFractionBreasts: {fileID: 2071348941}
-  WeightLossFractionBody: {fileID: 1869126405}
-  WeightLossFractionDick: {fileID: 140925664}
-  GrowthCap: {fileID: 1513995869}
-  GrowthMod: {fileID: 921526691}
-  GrowthDecayOffset: {fileID: 507133295}
-  GrowthDecayIncreaseRate: {fileID: 1703547162}
   FurryHandsAndFeet: {fileID: 848864218}
   FurryFluff: {fileID: 1110098543}
   FurryFraction: {fileID: 741408869}
   FriendlyRegurgitation: {fileID: 233947648}
-  FogDistance: {fileID: 177954454}
   HairMatchesFur: {fileID: 463186972}
   MaleHairForFemales: {fileID: 1421965789}
   FemaleHairForMales: {fileID: 1578395544}
   HermsOnlyUseFemaleHair: {fileID: 649376349}
   HideBreasts: {fileID: 1972273043}
   HideCocks: {fileID: 1830567076}
-  RaceTraitsEnabled: {fileID: 1252198715}
-  NoAIRetreat: {fileID: 1764062564}
-  AICanHireSpecialMercs: {fileID: 1177995292}
-  AICanCheatSpecialMercs: {fileID: 1398117330}
-  MultiRaceVillages: {fileID: 57444836}
   RagsForSlaves: {fileID: 36260560}
   VisibleCorpses: {fileID: 1728097075}
-  EdibleCorpses: {fileID: 1726700025}
-  RaceSizeLimitsWeightGain: {fileID: 1880189265}
-  RaceSpecificVoreGraphicsDisabled: {fileID: 549375265}
-  GoblinCaravans: {fileID: 67960565}
-  FogOfWar: {fileID: 893696548}
   LeadersUseCustomizations: {fileID: 781304764}
   HermsCanUB: {fileID: 1955337139}
   Unbirth: {fileID: 1699856498}
   CockVore: {fileID: 646475173}
-  BreastVore: {fileID: 656888968}
   AnalVore: {fileID: 1183252556}
   TailVore: {fileID: 577005153}
-  BladderVore: {fileID: 754038438}
-  AltVoreOralGain: {fileID: 2145308027}
-  MultiRaceFlip: {fileID: 1242634386}
-  AdventurersDisabled: {fileID: 2114724213}
-  MercenariesDisabled: {fileID: 1235771299}
-  TroopScatter: {fileID: 854433089}
-  AlwaysRandomizeConverted: {fileID: 1524173646}
-  SpecialMercsCanConvert: {fileID: 1077318397}
   CanUseStomachRubOnEnemies: {fileID: 102359187}
   LeadersRerandomizeOnDeath: {fileID: 36206444}
-  DayNightEnabled: {fileID: 158303118}
-  DayNightCosmetic: {fileID: 757382567}
-  DayNightSchedule: {fileID: 1326292999}
-  DayNightRandom: {fileID: 1374162161}
-  NightMonsters: {fileID: 912299540}
-  NightMoveMonsters: {fileID: 1784294730}
-  NightRounds: {fileID: 487207703}
-  BaseNightChance: {fileID: 1341527176}
-  NightChanceIncrease: {fileID: 239713250}
-  DefualtTacticalSightRange: {fileID: 1716098350}
-  NightStrategicSightReduction: {fileID: 351122062}
-  RevealTurn: {fileID: 2018508211}
-  DayNightMonsterMovemnt: {fileID: 0}
-  CombatComplicationsEnabled: {fileID: 781998191}
-  StatCrit: {fileID: 623379187}
-  StatGraze: {fileID: 450287863}
-  BaseCritChance: {fileID: 1933880229}
-  CritDamageMod: {fileID: 864322583}
-  BaseGrazeChance: {fileID: 830601718}
-  GrazeDamageMod: {fileID: 1865939972}
   AllowHugeBreasts: {fileID: 1522103123}
   AllowHugeDicks: {fileID: 1866807718}
   AllowTopless: {fileID: 1766638033}
@@ -320448,45 +320504,19 @@ MonoBehaviour:
   HermBreastSizeModifier: {fileID: 1375574103}
   CockSizeModifier: {fileID: 240110989}
   DefaultStartingWeight: {fileID: 1412613924}
-  AutoSurrenderChance: {fileID: 1761995971}
-  AutoSurrenderDefectChance: {fileID: 616185040}
-  OverallMonsterCapModifier: {fileID: 1840167080}
-  OverallMonsterSpawnRateModifier: {fileID: 1438536270}
-  Diplomacy: {fileID: 554869516}
   CockVoreHidesClothes: {fileID: 1870168312}
-  KuroTenkoEnabled: {fileID: 87866254}
-  OverhealEXP: {fileID: 223212389}
-  TransferAllowed: {fileID: 988977748}
-  CumGestation: {fileID: 1616186847}
-  NoScatForDeadTransfers: {fileID: 1260973974}
   LewdDialog: {fileID: 1904059939}
-  HardVoreDialog: {fileID: 804720834}
   FemalesLike: {fileID: 1943900338}
   MalesLike: {fileID: 191768573}
-  FairyBVType: {fileID: 1238431040}
-  FeedingType: {fileID: 298593923}
-  FourthWallBreakType: {fileID: 1392764945}
-  UBConversion: {fileID: 1943584428}
-  GoddessMercy: {fileID: 385362845}
-  SucklingPermission: {fileID: 962737353}
   WinterStuff: {fileID: 753645372}
-  DiplomacyScale: {fileID: 1170718036}
-  MaxSpellLevelDrop: {fileID: 367717048}
-  MaxEquipmentLevelDrop: {fileID: 2096857786}
-  TacticalWaterValue: {fileID: 1989631291}
-  TacticalTerrainFrequency: {fileID: 1090316346}
   OralWeight: {fileID: 285058624}
   AnalWeight: {fileID: 1200720789}
-  BreastWeight: {fileID: 735085829}
   CockWeight: {fileID: 1297482125}
   UnbirthWeight: {fileID: 1829940451}
   TailWeight: {fileID: 1808842099}
-  BladderWeight: {fileID: 547105777}
   FurryGenitals: {fileID: 1499292700}
   LamiaUseTailAsSecondBelly: {fileID: 1909699424}
   HideViperSlit: {fileID: 1567235775}
-  FlatExperience: {fileID: 1057482391}
-  MonstersDropSpells: {fileID: 1381830676}
   AnimatedBellies: {fileID: 190871664}
   DigestionSkulls: {fileID: 1850843178}
   BellyRubHands: {fileID: 612716400}
@@ -320494,97 +320524,16 @@ MonoBehaviour:
   ShowUnitSides: {fileID: 266546773}
   BurpFraction: {fileID: 385150883}
   BurpOnDigest: {fileID: 185299223}
-  FartFraction: {fileID: 674948497}
-  WeightGainFraction: {fileID: 578095566}
-  FartOnAbsorb: {fileID: 1792704643}
   Bones: {fileID: 1653951734}
-  CleanDisposal: {fileID: 228225885}
-  Scat: {fileID: 1460094685}
-  ScatV2: {fileID: 1634190043}
-  BirdScat: {fileID: 331291549}
-  ScatBones: {fileID: 920346904}
   ClothingDiscards: {fileID: 930263821}
   ErectionsFromVore: {fileID: 1235097676}
   ErectionsFromCockVore: {fileID: 1719885973}
-  AutoSurrender: {fileID: 1725633519}
-  EatSurrenderedAllies: {fileID: 1765087147}
-  BoostedAccuracy: {fileID: 433267493}
-  DisorientedPrey: {fileID: 957755762}
   ExtraHairColors: {fileID: 628893112}
   LizardsHaveNoBreasts: {fileID: 1125854218}
-  AllowInfighting: {fileID: 500985551}
-  SurrenderedCanConvert: {fileID: 434188391}
-  LockedAIRelations: {fileID: 937686628}
-  Defections: {fileID: 1336352107}
   Cumstains: {fileID: 884551023}
   CondomsForCV: {fileID: 1262146702}
-  MonstersCanReform: {fileID: 2015875831}
   TooltipText: {fileID: 504747422}
   PageSelector: {fileID: 5537626153803511361}
-  AllMercs: {fileID: 1658623700}
-  MercenaryToggleFolder: {fileID: 989498051}
-  TogglePrefab: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
-    type: 3}
-  MonsterSpawnerFolder: {fileID: 1498791141}
-  MonsterSpawnerPrefab: {fileID: 793185541971709009, guid: 3247eac15cbfec64f8d82d0856cd61bd,
-    type: 3}
-  ArmyMP: {fileID: 1794804451}
-  ScoutMP: {fileID: 1830919382}
-  ScoutMax: {fileID: 1635318951}
-  ArmyCreationMPMod: {fileID: 1050907281}
-  ArmyCreationMPCurve: {fileID: 1271644442}
-  CustomEventFrequency: {fileID: 600554831}
-  MonsterConquest: {fileID: 2144333868}
-  VoreRate: {fileID: 2130014495}
-  EscapeRate: {fileID: 2144044925}
-  RandomEventRate: {fileID: 1765713681}
-  RandomAIEventRate: {fileID: 478361900}
-  EventsRepeat: {fileID: 2125519888}
-  MercSortMethod: {fileID: 1710195080}
-  MercSortDirection: {fileID: 1043706866}
-  MonsterConquestTurns: {fileID: 1423329119}
-  LeaderTraits: {fileID: 288819545}
-  MaleTraits: {fileID: 1819493723}
-  FemaleTraits: {fileID: 1599151775}
-  HermTraits: {fileID: 1481282733}
-  SpawnTraits: {fileID: 1686667196}
-  MaxArmies: {fileID: 939000862}
-  StatBoostsAffectMaxHP: {fileID: 2021297459}
-  OverfeedingDamage: {fileID: 123860790}
-  PotionSystemEnabled: {fileID: 208530011}
-  DigestionSpeedMult: {fileID: 1073760087}
-  AbsorbSpeedMult: {fileID: 1780442903}
-  BellyRubEffMult: {fileID: 1820426994}
-  BellyRubsPerTurn: {fileID: 549604152}
-  DigestionRamp: {fileID: 1790241371}
-  DigestionRampTurn: {fileID: 271518371}
-  DigestionRampCap: {fileID: 1992919352}
-  DigestionRampLoss: {fileID: 202995342}
-  AbsorbRamp: {fileID: 1671421717}
-  AbsorbResourceMod: {fileID: 565439092}
-  AbsorbLoss: {fileID: 639539580}
-  AbsorbBoostDeadOnly: {fileID: 48525758}
-  AbsorbResourceModBoost: {fileID: 882786177}
-  DigestionCap: {fileID: 1992919352}
-  DigestionFlatDmg: {fileID: 664543559}
-  DigestionGraceTurns: {fileID: 1214084563}
-  DigestionDamageDivision: {fileID: 1948655783}
-  AbsorbRateDivision: {fileID: 923297057}
-  SurrenderedPredEscapeMult: {fileID: 33179335}
-  SurrenderedPredAutoRegur: {fileID: 2057479351}
-  TacticalMovementSoftCap: {fileID: 1582728229}
-  TacticalMovementHardCap: {fileID: 1849221532}
-  SizeAccuracyMod: {fileID: 704132810}
-  SizeAccuracyLowerBound: {fileID: 341319346}
-  SizeAccuracyInterval: {fileID: 1315243191}
-  SizeAccuracyInverse: {fileID: 950705041}
-  SizeAccuracyCap: {fileID: 1831149279}
-  SizeDamageMod: {fileID: 1240121290}
-  SizeDamageLowerBound: {fileID: 1300780221}
-  SizeDamageInterval: {fileID: 903512380}
-  SizeDamageInverse: {fileID: 519975991}
-  SizeDamageCap: {fileID: 941797734}
-  buildingSettings: {fileID: 1859552281}
 --- !u!114 &1620494163
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -323633,6 +323582,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 1077976952}
     m_Modifications:
     - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
       propertyPath: m_Name
       value: Scat V2
       objectReference: {fileID: 0}
@@ -323784,7 +323737,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -324464,6 +324417,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 331770786}
     m_Modifications:
+    - target: {fileID: 939000862, guid: 85260ce24df1dd94083f9d925a865c7e, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 939000863, guid: 85260ce24df1dd94083f9d925a865c7e, type: 3}
       propertyPath: m_Name
       value: Scout Max
@@ -328753,7 +328710,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -330028,7 +329985,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1518062312798294, guid: b1eb41b4645bf4c4e9e7c8eb8802e45e, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224495515021784526, guid: b1eb41b4645bf4c4e9e7c8eb8802e45e,
         type: 3}
@@ -331782,7 +331739,7 @@ PrefabInstance:
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
@@ -333846,6 +333803,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 801335303}
     m_Modifications:
+    - target: {fileID: 1320550614093716, guid: 89bebbadda021fa4888a74173e78312f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1320550614093716, guid: 89bebbadda021fa4888a74173e78312f, type: 3}
       propertyPath: m_Name
       value: Spawn Traits
@@ -337470,6 +337431,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 136641324}
     m_Modifications:
+    - target: {fileID: 1559661190647601076, guid: 8349d4fbc603bab4cb6cc656dd6d7de1,
+        type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1559661190647601079, guid: 8349d4fbc603bab4cb6cc656dd6d7de1,
         type: 3}
       propertyPath: m_Name
@@ -338369,7 +338335,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -341733,6 +341699,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 801335303}
     m_Modifications:
     - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
       propertyPath: m_Name
       value: Auto-Surrender
       objectReference: {fileID: 0}
@@ -341819,7 +341789,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -342200,6 +342170,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 499522612}
     m_Modifications:
+    - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
       propertyPath: m_Name
       value: Edible Corpses
@@ -342861,7 +342835,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -343285,7 +343259,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1732272876
 RectTransform:
   m_ObjectHideFlags: 0
@@ -344421,7 +344395,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1746464487
 RectTransform:
   m_ObjectHideFlags: 0
@@ -346942,6 +346916,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 801335303}
     m_Modifications:
     - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
       propertyPath: m_Name
       value: AI Can't Flee
       objectReference: {fileID: 0}
@@ -347160,6 +347138,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 801335303}
     m_Modifications:
+    - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
       propertyPath: m_Name
       value: Eat Surrendered Units
@@ -349641,7 +349623,7 @@ PrefabInstance:
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
@@ -351186,7 +351168,7 @@ PrefabInstance:
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
@@ -351553,6 +351535,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1077976952}
     m_Modifications:
+    - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
       propertyPath: m_Name
       value: Farts
@@ -352516,7 +352502,7 @@ PrefabInstance:
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
@@ -356806,7 +356792,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1320550614093716, guid: 89bebbadda021fa4888a74173e78312f, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224955229548529492, guid: 89bebbadda021fa4888a74173e78312f,
         type: 3}
@@ -357545,7 +357531,7 @@ PrefabInstance:
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
@@ -360567,7 +360553,7 @@ PrefabInstance:
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
@@ -364776,7 +364762,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -367363,7 +367349,7 @@ PrefabInstance:
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
@@ -368460,6 +368446,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 24594959}
     m_Modifications:
+    - target: {fileID: 939000862, guid: 85260ce24df1dd94083f9d925a865c7e, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 939000863, guid: 85260ce24df1dd94083f9d925a865c7e, type: 3}
       propertyPath: m_Name
       value: Body WL Chance Slider
@@ -369155,6 +369145,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 376989525}
     m_Modifications:
     - target: {fileID: 1913157303044632, guid: 21f47303e48e1fe469c779c39917362d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1913157303044632, guid: 21f47303e48e1fe469c779c39917362d, type: 3}
       propertyPath: m_Name
       value: Assimilable Traits
       objectReference: {fileID: 0}
@@ -369276,7 +369270,7 @@ PrefabInstance:
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
@@ -369286,7 +369280,7 @@ PrefabInstance:
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
@@ -371024,6 +371018,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1077976952}
     m_Modifications:
+    - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
       propertyPath: m_Name
       value: Race Size Limits Weight Gain
@@ -374647,6 +374645,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 376989525}
     m_Modifications:
     - target: {fileID: 1913157303044632, guid: 21f47303e48e1fe469c779c39917362d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1913157303044632, guid: 21f47303e48e1fe469c779c39917362d, type: 3}
       propertyPath: m_Name
       value: Conditional Traits Pool
       objectReference: {fileID: 0}
@@ -374768,7 +374770,7 @@ PrefabInstance:
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
@@ -374778,7 +374780,7 @@ PrefabInstance:
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114089113565751388, guid: 21f47303e48e1fe469c779c39917362d,
         type: 3}
@@ -375750,7 +375752,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -379740,7 +379742,7 @@ PrefabInstance:
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
@@ -383103,7 +383105,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -390275,6 +390277,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 801335303}
     m_Modifications:
     - target: {fileID: 1522731415904372, guid: de238d9f746b63947b58c5a18189ebf9, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1522731415904372, guid: de238d9f746b63947b58c5a18189ebf9, type: 3}
       propertyPath: m_Name
       value: Tactical Water Amount
       objectReference: {fileID: 0}
@@ -390541,7 +390547,7 @@ PrefabInstance:
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
@@ -391923,7 +391929,7 @@ PrefabInstance:
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
@@ -404290,6 +404296,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 499522612}
     m_Modifications:
     - target: {fileID: 1522731415904372, guid: de238d9f746b63947b58c5a18189ebf9, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1522731415904372, guid: de238d9f746b63947b58c5a18189ebf9, type: 3}
       propertyPath: m_Name
       value: Surrendered Pred Auto Regur Slider
       objectReference: {fileID: 0}
@@ -404501,7 +404511,7 @@ PrefabInstance:
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114011399668146732, guid: de238d9f746b63947b58c5a18189ebf9,
         type: 3}
@@ -406409,6 +406419,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1746464487}
     m_Modifications:
+    - target: {fileID: 939000862, guid: 85260ce24df1dd94083f9d925a865c7e, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 939000863, guid: 85260ce24df1dd94083f9d925a865c7e, type: 3}
       propertyPath: m_Name
       value: Breast WL Chance Slider
@@ -410122,7 +410136,7 @@ PrefabInstance:
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114879801960761558, guid: 85fd49726cb8b6b4e84b5a705fe74ce2,
         type: 3}
@@ -419593,7 +419607,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 2
+        m_CallState: 0
     m_TypeName: UnityEngine.UI.Dropdown+DropdownEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!224 &2144333869
@@ -419843,6 +419857,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1077976952}
     m_Modifications:
+    - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1203441227673672, guid: 85fd49726cb8b6b4e84b5a705fe74ce2, type: 3}
       propertyPath: m_Name
       value: Alt Vore Weight Gain Toggle
@@ -435893,29 +435911,15 @@ MonoBehaviour:
   m_Value: 0
   m_Options:
     m_Options:
-    - m_Text: Strategic Gameplay
-      m_Image: {fileID: 0}
     - m_Text: Tactical Gameplay
-      m_Image: {fileID: 0}
-    - m_Text: Tactical Misc
-      m_Image: {fileID: 0}
-    - m_Text: Merc / Monster Spawning
       m_Image: {fileID: 0}
     - m_Text: Gender Settings
       m_Image: {fileID: 0}
     - m_Text: Appearance Settings
       m_Image: {fileID: 0}
-    - m_Text: Fog of War settings
-      m_Image: {fileID: 0}
     - m_Text: Vore Main
       m_Image: {fileID: 0}
-    - m_Text: Vore Advanced
-      m_Image: {fileID: 0}
-    - m_Text: Vore Misc
-      m_Image: {fileID: 0}
     - m_Text: Post-Vore
-      m_Image: {fileID: 0}
-    - m_Text: Building Settings
       m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:

@@ -1,6 +1,6 @@
 # Screen and Tool Curation Checklist
 
-**Status:** Discovery and planning. This records screen decisions only; no menus, screens, or code have been changed.
+**Status:** Curation reference with staged implementation. Packet 02B now blocks/hides the retired tool entries and gates Race Editor; see [its implementation/review record](implementation/02b-tool-retirement-and-race-editor-gate.md). The old component files/assets remain for later dependency retirement. New campaign screens and the help rewrite are still planned work.
 
 ## Confirmed screen decisions
 

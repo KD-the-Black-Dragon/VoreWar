@@ -1,4 +1,7 @@
-﻿using TMPro;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-30: Make the retired panel inert and clear callbacks without strategic regeneration (spec 04A).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,23 +14,36 @@ public class EventScreen : MonoBehaviour
     public Button SecondChoice;
     public Button ThirdChoice;
 
-    private void Update()
+    // Preserve the serialized layout for later presentation reuse, without legacy execution.
+    private void OnEnable()
     {
-        if (gameObject.activeSelf == false)
+        ClearLegacyState();
+        gameObject.SetActive(false);
+    }
+
+    public void OnDisable()
+    {
+        ClearLegacyState();
+    }
+
+    private void ClearLegacyState()
+    {
+        if (MainText != null)
+            MainText.text = "";
+        if (RaceText != null)
+            RaceText.text = "";
+        DisableChoice(FirstChoice);
+        DisableChoice(SecondChoice);
+        DisableChoice(ThirdChoice);
+    }
+
+    private static void DisableChoice(Button button)
+    {
+        if (button == null)
             return;
-
-        if (Input.GetKeyDown(KeyCode.Alpha1) && FirstChoice.interactable)
-            FirstChoice.onClick.Invoke();
-        else if (Input.GetKeyDown(KeyCode.Alpha2) && SecondChoice.interactable)
-            SecondChoice.onClick.Invoke();
-        else if (Input.GetKeyDown(KeyCode.Alpha3) && ThirdChoice.interactable)
-            ThirdChoice.onClick.Invoke();
+        button.interactable = false;
+        button.onClick.RemoveAllListeners();
+        for (int i = 0; i < button.onClick.GetPersistentEventCount(); i++)
+            button.onClick.SetPersistentListenerState(i, UnityEngine.Events.UnityEventCallState.Off);
     }
-
-    public void OnDisable() //So that gold updates properly after this window is closed
-    {
-        if (State.GameManager != null)
-            MiscUtilities.DelayedInvoke(State.GameManager.StrategyMode.Regenerate, .1f);
-    }
-
 }

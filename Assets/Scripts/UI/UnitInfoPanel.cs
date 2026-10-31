@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-30: Remove the hidden Unit Editor click route while retaining ordinary inspection (spec 02B).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -102,14 +105,6 @@ public class UnitInfoPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
             State.GameManager.HoveringTooltip.UpdateInformation(words, Unit, Actor);
             if (Input.GetMouseButtonDown(0))
             {
-                if (words[2] == "UnitEditor")
-                {
-                    if (Actor == null)
-                        State.GameManager.UnitEditor.Open(Unit);
-                    else
-                        State.GameManager.UnitEditor.Open(Actor);
-                    return;
-                }
                 if (nameInstances <= 1)
                     DisplayInfoFor(HoveringName);
                 else

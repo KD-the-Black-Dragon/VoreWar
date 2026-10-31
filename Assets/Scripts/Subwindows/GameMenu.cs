@@ -1,8 +1,53 @@
-﻿using UnityEngine;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-30: Gate Race Editor sessions and nested tags; retire obsolete menu routes (spec 02B).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using System;
+using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class GameMenu : MonoBehaviour
 {
+    // Convenience gate only; the project owner accepts source discoverability.
+    private const string RaceEditorPassword = "214214214";
+    private bool raceEditorUnlocked;
+    private InputBox raceEditorPrompt;
+
+    internal bool HasRaceEditorAccess => raceEditorUnlocked;
+    internal bool IsRaceEditorSessionActive => raceEditorUnlocked && RaceEditor != null && RaceEditor.gameObject.activeInHierarchy;
+
+    internal void EndRaceEditorSession()
+    {
+        raceEditorUnlocked = false;
+        if (UnitTagEditor != null)
+        {
+            if (UnitTagEditor.UnitTagMenu != null)
+                UnitTagEditor.UnitTagMenu.gameObject.SetActive(false);
+            UnitTagEditor.gameObject.SetActive(false);
+        }
+    }
+
+    internal void ShowRetiredToolMessage()
+    {
+        State.GameManager.CreateMessageBox("This tool is retired in this conversion.");
+    }
+
+    internal bool HandleRaceEditorInput()
+    {
+        if (!IsRaceEditorSessionActive)
+            return false;
+        if (Input.GetButtonDown("Menu"))
+        {
+            if (UnitTagEditor.UnitTagMenu.gameObject.activeSelf)
+                UnitTagEditor.UnitTagMenu.DiscardClose();
+            else if (UnitTagEditor.gameObject.activeSelf)
+                UnitTagEditor.Close();
+            else
+                RaceEditor.CloseWithoutSave();
+        }
+        return true;
+    }
+
     public Options Options;
     public GameObject UIPanel;
     public WorldSettings WorldSettingsUI;
@@ -29,18 +74,9 @@ public class GameMenu : MonoBehaviour
 
     public void UpdateButtons()
     {
-        if (State.GameManager.CurrentScene == State.GameManager.MapEditor)
-        {
-            OpenMapEditorButton.interactable = false;
-            WorldSettingsButton.interactable = false;
-            EmpireSettingsButton.interactable = false;
-        }
-        else
-        {
-            OpenMapEditorButton.interactable = true;
-            WorldSettingsButton.interactable = true;
-            EmpireSettingsButton.interactable = true;
-        }
+        OpenMapEditorButton.gameObject.SetActive(false);
+        WorldSettingsButton.gameObject.SetActive(false);
+        EmpireSettingsButton.gameObject.SetActive(false);
         SaveLoadButton.interactable = State.TutorialMode == false;
     }
 
@@ -57,14 +93,28 @@ public class GameMenu : MonoBehaviour
 
     public void OpenCheats()
     {
-        CheatMenu.gameObject.SetActive(true);
-        CheatMenu.Open();
+        ShowRetiredToolMessage();
     }
 
     public void OpenRaceEditor()
     {
-        RaceEditor.gameObject.SetActive(true);
-        RaceEditor.ShowPanel();
+        if (IsRaceEditorSessionActive || raceEditorPrompt != null)
+            return;
+        raceEditorPrompt = State.GameManager.CreateInputBox();
+        raceEditorPrompt.SetData((string value) =>
+        {
+            raceEditorPrompt = null;
+            if (!string.Equals(value, RaceEditorPassword, StringComparison.Ordinal))
+            {
+                State.GameManager.CreateMessageBox("Incorrect developer password.");
+                return;
+            }
+            raceEditorUnlocked = true;
+            RaceEditor.gameObject.SetActive(true);
+            RaceEditor.ShowPanel();
+        }, "Unlock", "Cancel", "Enter the developer password to open Race Editor.", 64);
+        raceEditorPrompt.InputField.contentType = TMP_InputField.ContentType.Password;
+        raceEditorPrompt.InputField.text = "";
     }
 
     public void OpenOptions()
@@ -75,24 +125,22 @@ public class GameMenu : MonoBehaviour
 
     public void OpenRandomizerTraits()
     {
-        RandomizerTraitEditor.gameObject.SetActive(true);
-        RandomizerTraitEditor.Open();
+        ShowRetiredToolMessage();
     }
 
     public void OpenCustomTraits()
     {
-        CustomTraitEditor.gameObject.SetActive(true);
-        CustomTraitEditor.Open();
+        ShowRetiredToolMessage();
     }
 
     public void OpenCondTraits()
     {
-        CondTraitEditor.gameObject.SetActive(true);
-        CondTraitEditor.Open();
+        ShowRetiredToolMessage();
     }
     public void OpenUnitTags()
     {
-        UnitTagEditor.gameObject.SetActive(true);
+        if (!IsRaceEditorSessionActive)
+            return;
         UnitTagEditor.Open();
     }
     public void LoadHelp()
@@ -103,14 +151,7 @@ public class GameMenu : MonoBehaviour
 
     public void OpenEmpireTraits()
     {
-        if (State.World.MainEmpires == null)
-        {
-            State.GameManager.CreateMessageBox("No world is currently loaded, you're in a pure tactical game");
-            return;
-        }
-
-        EmpireSettingsUI.gameObject.SetActive(true);
-        EmpireSettingsUI.Open();
+        ShowRetiredToolMessage();
     }
 
     public void CloseHelp()
@@ -120,35 +161,26 @@ public class GameMenu : MonoBehaviour
 
     public void ShowGameSettings()
     {
-        if (State.World.MainEmpires == null)
-        {
-            State.GameManager.CreateMessageBox("No world is currently loaded, you're in a pure tactical game");
-            return;
-        }
-
-        WorldSettingsUI.gameObject.SetActive(true);
-        WorldSettingsUI.Open();
+        ShowRetiredToolMessage();
     }
 
     public void UpdateDisplay()
     {
+        if (HandleRaceEditorInput())
+            return;
         Options.RefreshText();
         if (Input.GetButtonDown("Menu"))
         {
             if (HelpScreen.activeSelf)
                 CloseHelp();
             else if (State.GameManager.VariableEditor.gameObject.activeSelf)
-                State.GameManager.VariableEditor.SaveAndClose();
+                State.GameManager.VariableEditor.Close();
             else if (SaveLoadScreen.gameObject.activeSelf)
                 SaveLoadScreen.gameObject.SetActive(false);
             else if (Options.gameObject.activeSelf)
                 Options.CloseAndSave();
             else if (ContentSettings.gameObject.activeSelf)
                 ContentSettings.Exit();
-            else if (CheatMenu.gameObject.activeSelf)
-                CheatMenu.CloseAndSave();
-            else if (WorldSettingsUI.gameObject.activeSelf)
-                WorldSettingsUI.ExitAndSave();
             else
                 CloseMenu();
         }

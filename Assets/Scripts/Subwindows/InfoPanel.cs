@@ -1,3 +1,6 @@
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-30: Remove the retired Unit Editor hyperlink from unit inspection (spec 02B).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Linq;
 using System.Text;
@@ -876,8 +879,6 @@ public class InfoPanel
                     }
                 }
             }
-            if (Config.CheatUnitEditorEnabled)
-                sb.AppendLine("<color=#AB5200ff>UnitEditor</color>");
             if (actor != null)
             {
                 if (actor.Unit.EquippedPotions != null)

@@ -1,4 +1,7 @@
-﻿using System;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-30: Restrict setup, previews and bulk generation to approved species; handle empty pools (spec 03A1).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -36,73 +39,102 @@ public class CreateTacticalGame : MonoBehaviour
     Race batchingAttackerRace;
     Race batchingDefenderRace;
 
-    Race[] AllRandomRaces;
+    bool refreshingSpeciesChoices;
 
     public void Start()
     {
-        //foreach (Race race in (Race[])Enum.GetValues(typeof(Race)))
-        //{
-        //    Attacker.Race.options.Add(new Dropdown.OptionData(race.ToString()));
-        //    Defender.Race.options.Add(new Dropdown.OptionData(race.ToString()));
-        //}
-        foreach (Race race in ((Race[])Enum.GetValues(typeof(Race))).Where(s => (int)s >= 0).OrderBy((s) => s.ToString()))
-        {
-            Attacker.Race.options.Add(new Dropdown.OptionData(race.ToString()));
-            Defender.Race.options.Add(new Dropdown.OptionData(race.ToString()));
-        }
-
+        RefreshSpeciesChoices();
     }
 
     internal void Open()
     {
-        AttackerRaceChanged();
-        DefenderRaceChanged();
+        RefreshSpeciesChoices();
     }
 
     public void AttackerRaceChanged()
     {
-        if (AttackerUnit == null)
-        {
-            AttackerUnit = new Actor_Unit(new Unit(Race.Cats));
-        }
-
-        Race race;
-
-        if (Enum.TryParse(Attacker.Race.captionText.text, out race))
-        {
-
-        }
-        else
-        {
-            race = GetRandomRace();
-        }
-        AttackerUnit.Unit.Race = race;
-        AttackerUnit.Unit.TotalRandomizeAppearance();
-        AttackerSprite.UpdateSprites(AttackerUnit);
-        AttackerSprite.Name.text = race.ToString();
-
+        if (!refreshingSpeciesChoices)
+            UpdateSpeciesPreview(Attacker.Race, ref AttackerUnit, AttackerSprite);
     }
 
     public void DefenderRaceChanged()
     {
-        if (DefenderUnit == null)
-        {
-            DefenderUnit = new Actor_Unit(new Unit(Race.Cats));
-        }
+        if (!refreshingSpeciesChoices)
+            UpdateSpeciesPreview(Defender.Race, ref DefenderUnit, DefenderSprite);
+    }
 
-        if (Enum.TryParse(Defender.Race.captionText.text, out Race race))
+    void RefreshSpeciesChoices()
+    {
+        refreshingSpeciesChoices = true;
+        Race[] available = SpeciesPolicy.GetAvailable(SpeciesUse.Skirmish);
+        foreach (Dropdown dropdown in new[] { Attacker.Race, Defender.Race })
         {
-
+            string previous = dropdown.options.Count > dropdown.value ? dropdown.options[dropdown.value].text : "Random";
+            dropdown.ClearOptions();
+            var labels = available.Length == 0 ? new List<string> { "No approved species" } :
+                new List<string> { "Random" };
+            labels.AddRange(available.Select(r => r.ToString()));
+            dropdown.AddOptions(labels);
+            dropdown.value = Math.Max(0, labels.IndexOf(previous));
+            dropdown.interactable = available.Length > 0;
+            dropdown.RefreshShownValue();
         }
+        Text allSpeciesLabel = AllRaces.GetComponentInChildren<Text>();
+        if (allSpeciesLabel != null)
+            allSpeciesLabel.text = "Include animals";
+        refreshingSpeciesChoices = false;
+        AttackerRaceChanged();
+        DefenderRaceChanged();
+        TooltipText.text = available.Length == 0 ? SpeciesPolicy.UnavailableMessage : "";
+    }
+
+    bool IsSelectionAvailable(Dropdown dropdown)
+    {
+        if (dropdown.value < 0 || dropdown.value >= dropdown.options.Count)
+            return false;
+        string choice = dropdown.options[dropdown.value].text;
+        Race race;
+        return choice == "Random" ? SpeciesPolicy.GetAvailable(SpeciesUse.Skirmish).Length > 0 :
+            Enum.TryParse(choice, out race) && SpeciesPolicy.IsAllowed(race, SpeciesUse.Skirmish);
+    }
+
+    bool TrySelectedRace(Dropdown dropdown, out Race race)
+    {
+        race = Race.none;
+        if (!IsSelectionAvailable(dropdown))
+            return false;
+        string choice = dropdown.options[dropdown.value].text;
+        return choice == "Random" ? SpeciesPolicy.TryRandom(SpeciesUse.Skirmish, out race) : Enum.TryParse(choice, out race);
+    }
+
+    void UpdateSpeciesPreview(Dropdown dropdown, ref Actor_Unit actor, UIUnitSprite sprite)
+    {
+        Race race;
+        if (!TrySelectedRace(dropdown, out race))
+        {
+            actor = null;
+            sprite.gameObject.SetActive(false);
+            return;
+        }
+        sprite.gameObject.SetActive(true);
+        if (actor == null || actor.Unit.Race != race)
+            actor = new Actor_Unit(new Unit(race));
+        actor.Unit.TotalRandomizeAppearance();
+        sprite.UpdateSprites(actor);
+        sprite.Name.text = race.ToString();
+    }
+
+    bool CanCreateBattle()
+    {
+        bool allowed = SpeciesPolicy.GetAvailable(SpeciesUse.Skirmish).Length > 0;
+        if (batching)
+            allowed &= SpeciesPolicy.IsAllowed(batchingAttackerRace, SpeciesUse.Skirmish) &&
+                SpeciesPolicy.IsAllowed(batchingDefenderRace, SpeciesUse.Skirmish);
         else
-        {
-            race = GetRandomRace();
-        }
-
-        DefenderUnit.Unit.Race = race;
-        DefenderUnit.Unit.TotalRandomizeAppearance();
-        DefenderSprite.UpdateSprites(DefenderUnit);
-        DefenderSprite.Name.text = race.ToString();
+            allowed &= IsSelectionAvailable(Attacker.Race) && IsSelectionAvailable(Defender.Race);
+        if (!allowed)
+            State.GameManager.CreateMessageBox(SpeciesPolicy.UnavailableMessage);
+        return allowed;
     }
 
     public void UpdateAIBoxes()
@@ -169,35 +201,33 @@ public class CreateTacticalGame : MonoBehaviour
 
     public void SuperBulk()
     {
-        batching = true;
+        if (!CanCreateBattle())
+            return;
         StartCoroutine(CompleteBatch());
     }
 
     public void SuperBulkSingleRace()
     {
-        batching = true;
+        if (!CanCreateBattle())
+            return;
         StartCoroutine(SingleRaceBatch());
     }
 
     internal IEnumerator SingleRaceBatch()
     {
+        if (!CanCreateBattle())
+            yield break;
         float time = Time.realtimeSinceStartup;
         List<Race> participants = new List<Race>();
         batching = true;
-        foreach (Race race in ((Race[])Enum.GetValues(typeof(Race))).Where(s => (int)s >= 0))
+        participants.AddRange(SpeciesPolicy.GetAvailable(SpeciesUse.Skirmish)
+            .Where(r => AllRaces.isOn || SpeciesPolicy.GetKind(r) == SpeciesKind.Sapient));
+
+
+        if (!TrySelectedRace(Attacker.Race, out batchingAttackerRace))
         {
-            if (AllRaces.isOn == false && race == Race.Succubi)
-                break;
-            if (race == Race.Selicia)
-                break;
-            participants.Add(race);
-
-        }
-
-
-        if (Enum.TryParse(Attacker.Race.options[Attacker.Race.value].text, out Race thisRace))
-        {
-            batchingAttackerRace = thisRace;
+            batching = false;
+            yield break;
         }
 
 
@@ -245,23 +275,25 @@ public class CreateTacticalGame : MonoBehaviour
 
     internal IEnumerator CompleteBatch()
     {
+        if (!CanCreateBattle())
+            yield break;
         float time = Time.realtimeSinceStartup;
         List<Race> participants = new List<Race>();
 
-        foreach (Race race in ((Race[])Enum.GetValues(typeof(Race))).Where(s => (int)s >= 0))
-        {
-            if (AllRaces.isOn == false && race == Race.Succubi)
-                break;
-            if (race == Race.Selicia)
-                break;
-            participants.Add(race);
+        participants.AddRange(SpeciesPolicy.GetAvailable(SpeciesUse.Skirmish)
+            .Where(r => AllRaces.isOn || SpeciesPolicy.GetKind(r) == SpeciesKind.Sapient));
 
-        }
-
-        if (Enum.TryParse(Attacker.Race.options[Attacker.Race.value].text, out Race thisRace))
+        if (!TrySelectedRace(Attacker.Race, out batchingAttackerRace))
         {
-            batchingAttackerRace = thisRace;
+            batching = false;
+            yield break;
         }
+        if (participants.Count < 2)
+        {
+            State.GameManager.CreateMessageBox("At least two enabled species are needed for all-pairs battles.");
+            yield break;
+        }
+        batching = true;
         int[,] grid = new int[participants.Count, participants.Count];
         int remaining = 5;
         for (int i = 0; i < participants.Count; i++)
@@ -315,24 +347,25 @@ public class CreateTacticalGame : MonoBehaviour
 
     public void CreateTacticalBulk()
     {
+        if (!CanCreateBattle())
+            return;
         StartCoroutine(SingleBatch());
     }
 
     internal IEnumerator SingleBatch()
     {
+        if (!CanCreateBattle())
+            yield break;
         float time = Time.realtimeSinceStartup;
         batching = true;
         int remaining = 5;
         State.GameManager.TacticalMode.Wins = new Vector2Int();
 
-        if (Enum.TryParse(Attacker.Race.options[Attacker.Race.value].text, out Race attackerRace))
+        if (!TrySelectedRace(Attacker.Race, out batchingAttackerRace) ||
+            !TrySelectedRace(Defender.Race, out batchingDefenderRace))
         {
-            batchingAttackerRace = attackerRace;
-        }
-
-        if (Enum.TryParse(Attacker.Race.options[Defender.Race.value].text, out Race defenderRace))
-        {
-            batchingDefenderRace = defenderRace;
+            batching = false;
+            yield break;
         }
 
         for (int i = 0; i < Bulk.value; i++)
@@ -368,6 +401,8 @@ public class CreateTacticalGame : MonoBehaviour
 
     public void CreateTactical()
     {
+        if (!CanCreateBattle())
+            return;
         int fightersA;
         int fightersB;
         int levelA;
@@ -569,14 +604,9 @@ public class CreateTacticalGame : MonoBehaviour
 
     Race GetRandomRace()
     {
-        if (AllRandomRaces == null)
-            AllRandomRaces = ((Race[])Enum.GetValues(typeof(Race))).Where(s => (int)s >= 0).ToArray();
-        for (int i = 0; i < 4; i++)
-        {
-            Race race = AllRandomRaces[State.Rand.Next(AllRandomRaces.Length)];
-        }
-        return (Race)State.Rand.Next(Config.NumberOfRaces);
-
+        Race race;
+        SpeciesPolicy.TryRandom(SpeciesUse.Skirmish, out race);
+        return race;
     }
 
     public void ChangeToolTip(int type)
