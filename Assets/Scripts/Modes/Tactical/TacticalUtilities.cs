@@ -1,23 +1,22 @@
 ﻿// Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: 04B2: Replace callback prose with neutral action and status notices.
+// 2026-10-31: Retire the obsolete post-battle village conquest helper (spec 05A3B2).
 // Upstream additional narrative contributions were credited to Tatltuae; credit retained after reset.
+// 2026-10-31: Retire traveling-unit routing and monster army reformation helpers (spec 05A3B3).
+// 2026-10-31: Retire unused Resurrection targeting, picker, revive and respawn placement helpers (spec 05A3B9).
+// 2026-10-31: Retire obsolete reanimation targeting, picker, runtime and private picker context (spec 05A3B12).
 // See CHANGES.md for the fork's change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 
 static class TacticalUtilities
 {
-    static Army[] armies;
-    static Village village;
-    static List<Actor_Unit> garrison;
     static Dictionary<Traits, List<Actor_Unit>> linkedUnits;
     static TacticalTileType[,] tiles;
     static bool[,] blockedTiles;
     static bool[,] blockedClimberTiles;
-    static HirePanel UnitPickerUI;
 
     static internal TacticalMessageLog Log => State.GameManager.TacticalMode.Log;
 
@@ -25,232 +24,21 @@ static class TacticalUtilities
 
     static internal void ResetData()
     {
-        armies = null;
-        village = null;
         Units = null;
         tiles = null;
-        garrison = null;
         blockedTiles = null;
         blockedClimberTiles = null;
     }
 
-    static internal void ResetData(Army[] larmies, Village lvillage, List<Actor_Unit> lunits, List<Actor_Unit> lgarrison, TacticalTileType[,] ltiles, bool[,] lblockedTiles, bool[,] lblockedClimberTiles, Dictionary<Traits, List<Actor_Unit>> llinkedUnits)
+    static internal void ResetData(List<Actor_Unit> lunits, TacticalTileType[,] ltiles, bool[,] lblockedTiles, bool[,] lblockedClimberTiles, Dictionary<Traits, List<Actor_Unit>> llinkedUnits)
     {
-        armies = larmies;
-        village = lvillage;
         Units = lunits;
         tiles = ltiles;
-        garrison = lgarrison;
         blockedTiles = lblockedTiles;
         blockedClimberTiles = lblockedClimberTiles;
         linkedUnits = llinkedUnits;
-        UnitPickerUI = State.GameManager.TacticalMode.UnitPickerUI;
     }
 
-    static internal void ProcessTravelingUnits(List<Unit> travelingUnits)
-    {
-        if (State.World.Villages == null)
-        {
-            return;
-        }
-        if (travelingUnits[0].Side < 60)
-        {
-            if (Config.TroopScatter)
-            {
-                foreach (var unit in travelingUnits.ToList())
-                {
-                    var villageList = State.World.Villages.Where(s => travelingUnits[0].Side == s.Side && s != village).ToList();
-                    Village friendlyVillage;
-                    if (villageList.Count() == 0)
-                        continue;
-                    if (villageList.Count() == 1)
-                        friendlyVillage = villageList[0];
-                    else
-                        friendlyVillage = villageList[State.Rand.Next(villageList.Count())];
-                    var loc = StrategyPathfinder.GetArmyPath(null, armies[0], friendlyVillage.Position, 3, false, 999);
-                    int turns = 9999;
-                    int flightTurns = 9999;
-                    Vec2i destination = null;
-                    bool flyersExist = unit.HasTrait(Traits.Pathfinder) || unit.HasTrait(Traits.Cartography);
-                    if (loc != null && loc.Count > 0)
-                    {
-                        destination = new Vec2i(loc.Last().X, loc.Last().Y);
-                        turns = StrategyPathfinder.TurnsToReach(null, armies[0], destination, Config.ArmyMP, false);
-                        if (flyersExist)
-                            flightTurns = StrategyPathfinder.TurnsToReach(null, armies[0], destination, Config.ArmyMP, true);
-                    }
-                    if (turns < 999)
-                    {
-                        if (flyersExist)
-                            StrategicUtilities.CreateInvisibleTravelingArmy(unit, StrategicUtilities.GetVillageAt(destination), flightTurns);
-                        else
-                            StrategicUtilities.CreateInvisibleTravelingArmy(unit, StrategicUtilities.GetVillageAt(destination), turns);
-                    }
-                    travelingUnits.Remove(unit);
-                }
-            }
-            else
-            {
-                var loc = StrategyPathfinder.GetPathToClosestObject(null, armies[0], State.World.Villages.Where(s => travelingUnits[0].Side == s.Side && s != village).Select(s => s.Position).ToArray(), 3, 999, false);
-                int turns = 9999;
-                int flightTurns = 9999;
-                Vec2i destination = null;
-                bool flyersExist = travelingUnits.Where(s => s.HasTrait(Traits.Pathfinder) || s.HasTrait(Traits.Cartography)).Count() > 0;
-                if (loc != null && loc.Count > 0)
-                {
-                    destination = new Vec2i(loc.Last().X, loc.Last().Y);
-                    turns = StrategyPathfinder.TurnsToReach(null, armies[0], destination, Config.ArmyMP, false);
-                    if (flyersExist)
-                        flightTurns = StrategyPathfinder.TurnsToReach(null, armies[0], destination, Config.ArmyMP, true);
-                }
-                if (turns < 999)
-                {
-                    if (flyersExist)
-                        StrategicUtilities.CreateInvisibleTravelingArmy(travelingUnits.Where(s => s.HasTrait(Traits.Pathfinder) || s.HasTrait(Traits.Cartography)).ToList(), StrategicUtilities.GetVillageAt(destination), flightTurns);
-                    StrategicUtilities.CreateInvisibleTravelingArmy(travelingUnits.Where(s => s.HasTrait(Traits.Pathfinder) == false || s.HasTrait(Traits.Cartography) == false).ToList(), StrategicUtilities.GetVillageAt(destination), turns);
-                }
-            }
-
-
-        }
-        else if (travelingUnits[0].Side > 500)
-        {
-            //Bandits and rebels that flee simply vanish
-        }
-        else
-        {
-            GenerateFleeingArmy(travelingUnits);
-        }
-
-    }
-
-
-
-    static void GenerateFleeingArmy(List<Unit> fleeingUnits)
-    {
-        if (fleeingUnits.Any() == false)
-            return;
-        if (Config.MonstersCanReform == false)
-            return;
-        for (int x = -1; x < 2; x++)
-        {
-            for (int y = -1; y < 2; y++)
-            {
-                if (x == 0 && y == 0)
-                    continue;
-                Vec2i loc = new Vec2i(armies[0].Position.x + x, armies[0].Position.y + y);
-                if (loc.x < 0 || loc.y < 0 || loc.x >= Config.StrategicWorldSizeX || loc.y >= Config.StrategicWorldSizeY)
-                    continue;
-                if (StrategicUtilities.IsTileClear(loc))
-                {
-                    MonsterEmpire monsterEmp = (MonsterEmpire)State.World.GetEmpireOfSide(fleeingUnits[0].Side);
-                    if (monsterEmp == null)
-                        return;
-                    var army = new Army(monsterEmp, loc, fleeingUnits[0].Side);
-                    army.RemainingMP = 0;
-                    monsterEmp.Armies.Add(army);
-                    army.Units.AddRange(fleeingUnits);
-                    return;
-                }
-            }
-        }
-    }
-
-    static internal void GenerateAnotherArmy(List<Unit> leftoverUnits)
-    {
-        if (leftoverUnits.Any() == false)
-            return;
-        if (Config.MonstersCanReform == false)
-            return;
-        for (int x = -1; x < 2; x++)
-        {
-            for (int y = -1; y < 2; y++)
-            {
-                if (x == 0 && y == 0)
-                    continue;
-                Vec2i loc = new Vec2i(armies[0].Position.x + x, armies[0].Position.y + y);
-                if (loc.x < 0 || loc.y < 0 || loc.x >= Config.StrategicWorldSizeX || loc.y >= Config.StrategicWorldSizeY)
-                    continue;
-                if (StrategicUtilities.IsTileClear(loc))
-                {
-                    MonsterEmpire monsterEmp = (MonsterEmpire)State.World.GetEmpireOfSide(leftoverUnits[0].Side);
-                    if (monsterEmp == null)
-                        return;
-                    var army = new Army(monsterEmp, loc, leftoverUnits[0].Side);
-                    army.RemainingMP = 0;
-                    monsterEmp.Armies.Add(army);
-                    army.Units.AddRange(leftoverUnits);
-                    return;
-                }
-            }
-        }
-    }
-
-    static internal void CleanVillage(int remainingAttackers)
-    {
-        bool MonsterAttacker = armies[0].Side >= 100;
-        SpawnerInfo spawner = Config.SpawnerInfo((Race)armies[0]?.Side);
-        Config.MonsterConquestType spawnerType;
-        if (spawner != null)
-            spawnerType = spawner.GetConquestType();
-        else
-            spawnerType = Config.MonsterConquest;
-        //clean up missing garrison units
-        if (garrison != null)
-        {
-            foreach (Actor_Unit garrison in garrison)
-            {
-                if (garrison.Unit.IsDead || garrison.Fled || garrison.Unit.Side == armies[0].Side)
-                {
-                    village.VillagePopulation.RemoveHireable(garrison.Unit);
-                }
-            }
-        }
-        if (village.Side != armies[0].Side && remainingAttackers > 0 && (MonsterAttacker == false || spawnerType != Config.MonsterConquestType.DevourAndDisperse))
-        {
-            village.ChangeOwner(armies[0].Side);
-        }
-        else if (remainingAttackers > 0 && MonsterAttacker && spawnerType != Config.MonsterConquestType.DevourAndDisperse)
-        {
-            if (State.World.GetEmpireOfRace(village.Race)?.IsAlly(armies[0].Empire) ?? false)
-                village.ChangeOwner(armies[0].Side);
-        }
-
-        if (MonsterAttacker && remainingAttackers > 0 && village.Empire.IsEnemy(armies[0].Empire))
-        {
-            if (spawnerType == Config.MonsterConquestType.DevourAndDisperse)
-            {
-                armies[0].RemainingMP = 1;
-                State.GameManager.StrategyMode.Devour(armies[0], Mathf.Min(2 * armies[0].Units.Count, village.Population - 2));
-                armies[0].Units = new List<Unit>();
-            }
-            else if (spawnerType == Config.MonsterConquestType.DevourAndHold)
-            {
-                if (village.GetTotalPop() > village.Maxpop / 2)
-                {
-                    armies[0].RemainingMP = 1;
-                    State.GameManager.StrategyMode.Devour(armies[0], village.GetTotalPop() - village.Maxpop / 2);
-                }
-            }
-            else //if (Config.MonsterConquest == Config.MonsterConquestType.CompleteDevourAndHold || Config.MonsterConquest == Config.MonsterConquestType.CompleteDevourAndMoveOn)
-            {
-                if (village.GetTotalPop() > 0)
-                {
-                    armies[0].RemainingMP = 1;
-                    if (Config.MonsterConquestTurns > 1)
-                    {
-                        armies[0].MonsterTurnsRemaining = Config.MonsterConquestTurns;
-                    }
-                    else
-                        State.GameManager.StrategyMode.Devour(armies[0], village.GetTotalPop() / Config.MonsterConquestTurns);
-                }
-
-            }
-
-
-        }
-
-    }
     internal static bool IsUnitControlledByPlayer(Unit unit)
     {
         if (GetMindControlSide(unit) != -1)  // Charmed units may fight for the player, but they are always AI controlled
@@ -1071,169 +859,6 @@ static class TacticalUtilities
     }
 
 
-    static internal Actor_Unit FindUnitToResurrect(Actor_Unit caster)
-    {
-        Actor_Unit actor = Units.Where(s => s.Unit.Side == caster.Unit.Side && s.Unit.IsDead && s.Unit.Type != UnitType.Summon && s.Unit.Level > 0).OrderByDescending(s => s.Unit.Experience).FirstOrDefault();
-        return actor;
-    }
-
-    static internal Actor_Unit FindUnitToReanimate(Actor_Unit caster)
-    {
-        Actor_Unit actor = Units.Where(s => s.Unit.IsDead && s.Unit.Level > 0).OrderByDescending(s => s.Unit.Experience).FirstOrDefault();
-        return actor;
-    }
-
-
-    internal static void CreateResurrectionPanel(Vec2i loc, int side)
-    {
-        int children = UnitPickerUI.ActorFolder.transform.childCount;
-        for (int i = children - 1; i >= 0; i--)
-        {
-            UnityEngine.Object.Destroy(UnitPickerUI.ActorFolder.transform.GetChild(i).gameObject);
-        }
-        Actor_Unit[] list = Units.Where(s => s.Unit.Side == side && s.Unit.IsDead && s.Unit.Type != UnitType.Summon && s.Unit.Level > 0).OrderByDescending(s => s.Unit.Experience).ToArray();
-        foreach (Actor_Unit actorUnit in list)
-        {
-            Unit unit = actorUnit.Unit;
-            GameObject obj = GameObject.Instantiate(UnitPickerUI.HiringUnitPanel, UnitPickerUI.ActorFolder);
-            UIUnitSprite sprite = obj.GetComponentInChildren<UIUnitSprite>();
-            Actor_Unit actor = new Actor_Unit(new Vec2i(0, 0), unit);
-            //Text text = obj.transform.GetChild(3).GetComponent<Text>();
-            Text GenderText = obj.transform.GetChild(2).GetChild(0).GetChild(0).GetChild(0).GetComponent<Text>();
-            Text EXPText = obj.transform.GetChild(2).GetChild(0).GetChild(0).GetChild(1).GetComponent<Text>();
-            GameObject EquipRow = obj.transform.GetChild(2).GetChild(0).GetChild(0).GetChild(2).gameObject;
-            GameObject StatRow1 = obj.transform.GetChild(2).GetChild(0).GetChild(0).GetChild(3).gameObject;
-            GameObject StatRow2 = obj.transform.GetChild(2).GetChild(0).GetChild(0).GetChild(4).gameObject;
-            GameObject StatRow3 = obj.transform.GetChild(2).GetChild(0).GetChild(0).GetChild(5).gameObject;
-            GameObject StatRow4 = obj.transform.GetChild(2).GetChild(0).GetChild(0).GetChild(6).gameObject;
-            Text TraitList = obj.transform.GetChild(2).GetChild(0).GetChild(1).GetChild(0).GetChild(0).gameObject.GetComponent<Text>();
-
-            string gender;
-            if (actor.Unit.GetGender() != Gender.None)
-            {
-                if (actor.Unit.GetGender() == Gender.Hermaphrodite)
-                    gender = "Herm";
-                else
-                    gender = actor.Unit.GetGender().ToString();
-                GenderText.text = $"{gender}";
-            }
-            EXPText.text = $"Level {unit.Level} ({(int)unit.Experience} EXP)";
-            if (actor.Unit.HasTrait(Traits.Resourceful))
-            {
-                EquipRow.transform.GetChild(2).gameObject.SetActive(true);
-                EquipRow.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = unit.GetItem(0)?.Name;
-                EquipRow.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = unit.GetItem(1)?.Name;
-                EquipRow.transform.GetChild(2).GetChild(0).GetComponent<Text>().text = unit.GetItem(2)?.Name;
-            }
-            else
-            {
-                EquipRow.transform.GetChild(2).gameObject.SetActive(false);
-                EquipRow.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = unit.GetItem(0)?.Name;
-                EquipRow.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = unit.GetItem(1)?.Name;
-            }
-            StatRow1.transform.GetChild(0).GetChild(1).GetComponent<Text>().text = unit.GetStatBase(Stat.Strength).ToString();
-            StatRow1.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = unit.GetStatBase(Stat.Dexterity).ToString();
-            StatRow2.transform.GetChild(0).GetChild(1).GetComponent<Text>().text = unit.GetStatBase(Stat.Mind).ToString();
-            StatRow2.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = unit.GetStatBase(Stat.Will).ToString();
-            StatRow3.transform.GetChild(0).GetChild(1).GetComponent<Text>().text = unit.GetStatBase(Stat.Endurance).ToString();
-            StatRow3.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = unit.GetStatBase(Stat.Agility).ToString();
-            if (actor.PredatorComponent != null)
-            {
-                StatRow4.transform.GetChild(0).GetChild(1).GetComponent<Text>().text = unit.GetStatBase(Stat.Voracity).ToString();
-                StatRow4.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = unit.GetStatBase(Stat.Stomach).ToString();
-            }
-            else
-                StatRow4.SetActive(false);
-            TraitList.text = RaceEditorPanel.TraitListToText(unit.GetTraits, true).Replace(", ", "\n");
-            //text.text += $"STR: {unit.GetStatBase(Stat.Strength)} DEX: { unit.GetStatBase(Stat.Dexterity)}\n" +
-            //    $"MND: {unit.GetStatBase(Stat.Mind)} WLL: { unit.GetStatBase(Stat.Will)} \n" +
-            //    $"END: {unit.GetStatBase(Stat.Endurance)} AGI: {unit.GetStatBase(Stat.Agility)}\n";
-            //if (actor.PredatorComponent != null)
-            //    text.text += $"VOR: {unit.GetStatBase(Stat.Voracity)} STM: { unit.GetStatBase(Stat.Stomach)}";
-            actor.UpdateBestWeapons();
-            sprite.UpdateSprites(actor);
-            sprite.Name.text = unit.Name;
-            Button button = obj.GetComponentInChildren<Button>();
-            button.GetComponentInChildren<Text>().text = "Resurrect";
-            button.onClick.AddListener(() => Resurrect(loc, actorUnit));
-            button.onClick.AddListener(() => UnitPickerUI.gameObject.SetActive(false));
-        }
-        UnitPickerUI.ActorFolder.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 300 * (1 + (children) / 3));
-        UnitPickerUI.gameObject.SetActive(true);
-    }
-
-    internal static void CreateReanimationPanel(Vec2i loc, Unit unit)
-    {
-        int children = UnitPickerUI.ActorFolder.transform.childCount;
-        for (int i = children - 1; i >= 0; i--)
-        {
-            UnityEngine.Object.Destroy(UnitPickerUI.ActorFolder.transform.GetChild(i).gameObject);
-        }
-        Actor_Unit[] list = Units.Where(s => s.Unit.IsDead && s.Unit.Level > 0).OrderByDescending(s => s.Unit.Experience).ToArray();
-        foreach (Actor_Unit actor in list)
-        {
-            GameObject obj = UnityEngine.Object.Instantiate(UnitPickerUI.HiringUnitPanel, UnitPickerUI.ActorFolder);
-            UIUnitSprite sprite = obj.GetComponentInChildren<UIUnitSprite>();
-            Text GenderText = obj.transform.GetChild(2).GetChild(0).GetChild(0).GetChild(0).GetComponent<Text>();
-            Text EXPText = obj.transform.GetChild(2).GetChild(0).GetChild(0).GetChild(1).GetComponent<Text>();
-            GameObject EquipRow = obj.transform.GetChild(2).GetChild(0).GetChild(0).GetChild(2).gameObject;
-            GameObject StatRow1 = obj.transform.GetChild(2).GetChild(0).GetChild(0).GetChild(3).gameObject;
-            GameObject StatRow2 = obj.transform.GetChild(2).GetChild(0).GetChild(0).GetChild(4).gameObject;
-            GameObject StatRow3 = obj.transform.GetChild(2).GetChild(0).GetChild(0).GetChild(5).gameObject;
-            GameObject StatRow4 = obj.transform.GetChild(2).GetChild(0).GetChild(0).GetChild(6).gameObject;
-            Text TraitList = obj.transform.GetChild(2).GetChild(0).GetChild(1).GetChild(0).GetChild(0).gameObject.GetComponent<Text>();
-            Text HireButton = obj.transform.GetChild(2).GetChild(1).GetChild(0).gameObject.GetComponent<Text>();
-
-            string gender;
-                if (actor.Unit.GetGender() == Gender.Hermaphrodite)
-                    gender = "Herm";
-
-                else
-                    gender = actor.Unit.GetGender().ToString();
-                GenderText.text = $"{gender}";
-            TraitList.text = RaceEditorPanel.TraitListToText(actor.Unit.GetTraits, true).Replace(", ","\n");
-            EXPText.text = $"Level {actor.Unit.Level} ({(int)actor.Unit.Experience} EXP)";
-            if (actor.Unit.HasTrait(Traits.Resourceful))
-            {
-                EquipRow.transform.GetChild(2).gameObject.SetActive(true);
-                EquipRow.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = actor.Unit.GetItem(0)?.Name;
-                EquipRow.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = actor.Unit.GetItem(1)?.Name;
-                EquipRow.transform.GetChild(2).GetChild(0).GetComponent<Text>().text = actor.Unit.GetItem(2)?.Name;
-            }
-            else
-            {
-                EquipRow.transform.GetChild(2).gameObject.SetActive(false);
-                EquipRow.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = actor.Unit.GetItem(0)?.Name;
-                EquipRow.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = actor.Unit.GetItem(1)?.Name;
-            }
-            StatRow1.transform.GetChild(0).GetChild(1).GetComponent<Text>().text = actor.Unit.GetStatBase(Stat.Strength).ToString();
-            StatRow1.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = actor.Unit.GetStatBase(Stat.Dexterity).ToString();
-            StatRow2.transform.GetChild(0).GetChild(1).GetComponent<Text>().text = actor.Unit.GetStatBase(Stat.Mind).ToString();
-            StatRow2.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = actor.Unit.GetStatBase(Stat.Will).ToString();
-            StatRow3.transform.GetChild(0).GetChild(1).GetComponent<Text>().text = actor.Unit.GetStatBase(Stat.Endurance).ToString();
-            StatRow3.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = actor.Unit.GetStatBase(Stat.Agility).ToString();
-            if (actor.PredatorComponent != null)
-            {
-                StatRow4.transform.GetChild(0).GetChild(1).GetComponent<Text>().text = actor.Unit.GetStatBase(Stat.Voracity).ToString();
-                StatRow4.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = actor.Unit.GetStatBase(Stat.Stomach).ToString();
-            }
-            else
-                StatRow4.SetActive(false);
-            actor.UpdateBestWeapons();
-            sprite.UpdateSprites(actor);
-            sprite.Name.text = actor.Unit.Name;
-            Button button = obj.GetComponentInChildren<Button>();
-            button.GetComponentInChildren<Text>().text = "Reanimate";
-            button.onClick.AddListener(() => {
-                State.GameManager.SoundManager.PlaySpellCast(SpellList.Summon, actor);
-                Reanimate(loc, actor, unit);
-            });
-            button.onClick.AddListener(() => UnitPickerUI.gameObject.SetActive(false));
-        }
-        UnitPickerUI.ActorFolder.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 300 * (1 + (list.Length / 3)));
-        UnitPickerUI.gameObject.SetActive(true);
-    }
-
     static internal List<Vec2i> TilesWithinRange(Vec2i location, int range)
     {
         List<Vec2i> tile_positions = new List<Vec2i>();
@@ -1253,69 +878,6 @@ static class TacticalUtilities
             outer_matrix_cursor++;
         }
         return tile_positions;
-    }
-
- static internal Vec2i GetRandomTileForActor(Actor_Unit actor)
- {
-     Vec2i[] tile_positions = TilesWithinRange(actor.Position, 6).Where(tile => OpenTile(tile, actor)).ToArray();
-     if (tile_positions.Length == 0) { return null; }
-     return tile_positions[UnityEngine.Random.Range(0, tile_positions.Length - 1)];
- }
-
-    internal static void Resurrect(Vec2i loc, Actor_Unit target)
-    {
-        var pred = FindPredator(target);
-        if (pred != null)
-            pred.PredatorComponent.FreeUnit(target, true);
-        target.Position.x = loc.x;
-        target.Position.y = loc.y;
-        target.Unit.Health = target.Unit.MaxHealth * 3 / 4;
-        target.Visible = true;
-        target.Targetable = true;
-        target.SelfPrey = null;
-        target.Surrendered = false;
-        UpdateActorLocations();
-        if (target.UnitSprite != null)
-        {
-            target.UnitSprite.transform.rotation = Quaternion.Euler(0, 0, 0);
-            target.UnitSprite.LevelText.gameObject.SetActive(true);
-            target.UnitSprite.FlexibleSquare.gameObject.SetActive(true);
-            target.UnitSprite.HealthBar.gameObject.SetActive(true);
-        }
-    }
-
-    internal static void Reanimate(Vec2i loc, Actor_Unit target, Unit caster)
-    {
-        var pred = FindPredator(target);
-        if (pred != null)
-            pred.PredatorComponent.FreeUnit(target, true);
-        target.Position.x = loc.x;
-        target.Position.y = loc.y;
-        target.Unit.Health = target.Unit.MaxHealth * 3 / 4;
-        target.Visible = true;
-        target.Targetable = true;
-        target.SelfPrey = null;
-        target.Surrendered = false;
-        target.sidesAttackedThisBattle = new List<int>();
-        target.Unit.Type = UnitType.Summon;
-        State.GameManager.TacticalMode.HandleReanimationSideEffects(caster, target);
-        if (!target.Unit.HasTrait(Traits.Untamable))
-            target.Unit.FixedSide = caster.FixedSide;
-
-        var actorCharm = caster.GetStatusEffect(StatusEffectType.Charmed) ?? caster.GetStatusEffect(StatusEffectType.Hypnotized);
-        if (actorCharm != null)
-        {
-            target.Unit.ApplyStatusEffect(StatusEffectType.Charmed, actorCharm.Strength, actorCharm.Duration);
-        }
-        UpdateActorLocations();
-        if (target.UnitSprite != null)
-        {
-            target.UnitSprite.transform.rotation = Quaternion.Euler(0, 0, 0);
-            target.UnitSprite.LevelText.gameObject.SetActive(true);
-            target.UnitSprite.FlexibleSquare.gameObject.SetActive(true);
-            target.UnitSprite.HealthBar.gameObject.SetActive(true);
-        }
-        State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"<b>{caster.Name}</b> brought back <b>{target.Unit.Name}</b> as a summon.");
     }
 
     static internal bool MeetsQualifier(List<AbilityTargets> targets, Actor_Unit actor, Actor_Unit target)

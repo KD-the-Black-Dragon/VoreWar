@@ -1,6 +1,6 @@
 # Total Conversion Roadmap
 
-**Status:** Roadmap approved 2026-10-29; resumed 2026-10-30. The user accepted 03B2. [03B3A](implementation/03b3a-override-hydration-boundary.md) isolates retired override records during loading and corrects new leader/morph defaults; compilation/scene/scope checks passed, interactive load/persistence review pending. Stat/graphics/resource retirement and 05 providers remain. No species approved. Exact recovery state is linked from AGENTS.md.
+**Status:** Roadmap approved 2026-10-29; resumed 2026-10-30. The user accepted 03B2. [03B3A](implementation/03b3a-override-hydration-boundary.md) isolates retired override records during loading and corrects new leader/morph defaults; compilation/scene/scope checks passed, interactive load/persistence review accepted. Subsequent 03B3B review advances 05A1 before prototype removal. Stat/graphics/resource retirement and 05 providers remain. No species approved. Exact recovery state is linked from AGENTS.md.
 
 ## Direction and authority
 
@@ -100,4 +100,4 @@ Authoring the original roadmap changed documentation only. Spec 00 performed the
 
 ## Recommended next stage
 
-Review [03B3A's editor-load and mapping-persistence check](implementation/03b3a-override-hydration-boundary.md). After feedback, refine **03B3B stat-definition/read-boundary retirement** with direct RaceSettings.Get and RaceParameters callers; retained getters and eager prototypes are not retired by the new Sanitize guards. Review the two remaining owners whose built-in mappings point at retired species without selecting substitute species. Keep graphics/shared-clothing work separate, numeric identity stable and supported existing disabled individuals intact; coordinate actual 4X callers with 05. No prototype removal, playable fallback, sample species or bundle rebuild has occurred in 03B3A. Recovery state is in [the interruption checkpoint](implementation/resume-checkpoint.md).
+05A3B15 is user-accepted. [05A3B16 metamorphosis-family retirement](implementation/05a3b16-metamorphosis-family-retirement.md) retires revival/conversion/grant/escape effects while retaining trait identities. Verification and user review are recorded in its report. Next review possession/SpiritPossession and containment allegiance callbacks, including Friendosoma results; do not invent replacement fate outcomes. Preserve approved temporary disguises/summons. Other provider/catalog/species boundaries remain. Actual battle tests await approved species. See [checkpoint](implementation/resume-checkpoint.md).

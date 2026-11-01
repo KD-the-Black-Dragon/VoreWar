@@ -1,3 +1,7 @@
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-31: Retire obsolete Resurrection AI action and planning calls (spec 05A3B9).
+// 2026-10-31: Remove retired Reanimate/Bind AI action calls (spec 05A3B12).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System.Collections.Generic;
 
 public class StandardTacticalAI : TacticalAI
@@ -52,10 +56,7 @@ public class StandardTacticalAI : TacticalAI
         if (didAction || foundPath)
             return;
 
-        TryResurrect(actor);
-        TryReanimate(actor);
 
-        RunBind(actor);
 
         if (State.Rand.Next(3) == 0 || actor.Unit.HasWeapon == false)
             RunPotions(actor);

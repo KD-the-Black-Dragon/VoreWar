@@ -1,5 +1,6 @@
 // Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Disconnect legacy event UI binding and player/AI turn triggers (spec 04A).
+// 2026-10-31: Retire empire turn/AI/economy scheduler and strategic input/regeneration entry bodies (spec 05A2).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Collections.Generic;
@@ -28,7 +29,6 @@ public class StrategyMode : SceneBase
         }
     }
 
-    bool subWindowUp = false;
 
     Empire ActingEmpire
     {
@@ -62,7 +62,6 @@ public class StrategyMode : SceneBase
     }
 
     Army _selectedArmy;
-    float m_timer;
 
     private int _scaledExp;
 
@@ -103,7 +102,6 @@ public class StrategyMode : SceneBase
 
     bool runningQueued = true;
 
-    bool buildingRangeOn = false;
 
     bool mouseMovementMode = false;
     PathNodeManager arrowManager;
@@ -202,40 +200,7 @@ public class StrategyMode : SceneBase
 
     public void Setup()
     {
-        ActingEmpire = null;
-        OnlyAIPlayers = true;
-        State.GameManager.CenterCameraOnTile((int)(Config.StrategicWorldSizeX * .5f), (int)(Config.StrategicWorldSizeY * .5f));
-        State.GameManager.CameraController.SetZoom(Config.TacticalSizeX * .5f);
-        foreach (var village in State.World.Villages)
-        {
-            village.UpdateNetBoosts();
-        }
-        foreach (Empire emp in State.World.MainEmpires)
-        {
-            if (State.World.Villages.Where(s => s.Side == emp.Side).Any() == false)
-            {
-                emp.KnockedOut = true;
-                continue;
-            }
-            if (emp.StrategicAI == null)
-            {
-                OnlyAIPlayers = false;
-            }
-            emp.Regenerate();
-            emp.constructionResources.SetResources(10, 10, 10, 10, 10, 10);
-        }
-        State.World.PopulateMonsterTurnOrders();
-        State.World.RefreshTurnOrder();
-        for (int i = 0; i < State.World.EmpireOrder.Count; i++)
-        {
-            if (State.World.EmpireOrder[i].KnockedOut == false || (State.World.EmpireOrder[i].Side == 701 && State.World.EmpireOrder[i].Armies.Any()))
-            {
-                ActingEmpire = State.World.EmpireOrder[i];
-                break;
-            }
-        }
-        GenericSetup();
-        StatusBarUI.RecreateWorld.gameObject.SetActive(true);
+        // Legacy strategic execution is retired; retain the callback signature for existing bindings.
     }
 
     /// <summary>
@@ -266,7 +231,6 @@ public class StrategyMode : SceneBase
         if (State.World != null)
             ActingEmpire = null;
         _selectedArmy = null;
-        subWindowUp = false;
         arrowManager?.ClearNodes();
         mouseMovementMode = false;
         ClearArmies();
@@ -362,7 +326,6 @@ public class StrategyMode : SceneBase
             }
         }
 
-        subWindowUp = true;
         ExchangeBlockerPanels.SetActive(false);
         pickingExchangeLocation = false;
         ExchangerUI.gameObject.SetActive(true);
@@ -1151,47 +1114,7 @@ public class StrategyMode : SceneBase
 
     public void Regenerate(bool initialLoad = false)
     {
-        if (LastHumanEmpire == null)
-        {
-            LastHumanEmpire = State.World.MainEmpires.Where(s => s.StrategicAI == null).FirstOrDefault();
-        }
-        if (!initialLoad)
-        {
-            foreach (Empire empire in State.World.AllActiveEmpires)
-            {
-                empire.ArmyCleanup();
-            }
-        }
-        StatusBarUI.Build.onClick.AddListenerOnce(() => BuildMenu.Open(ActingEmpire));
-        ActingEmpire.CalcIncome(State.World.Villages);
-        if (ActingEmpire.StrategicAI == null || OnlyAIPlayers || Config.CheatExtraStrategicInfo || State.World.MainEmpires.Where(s => s.IsAlly(ActingEmpire) && s.StrategicAI == null).Any())
-        {
-            StatusBarUI.Side.text = ActingEmpire.Name;
-            StatusBarUI.Gold.text = "Gold:" + ActingEmpire.Gold;
-            StatusBarUI.Income.text = "Income:" + ActingEmpire.Income;
-        }
-        else
-        {
-            StatusBarUI.Side.text = ActingEmpire.Name;
-            StatusBarUI.Gold.text = "Gold: hidden";
-            StatusBarUI.Income.text = "Income: hidden";
-        }
-
-        if (SelectedArmy == null || SelectedArmy.Units.Count == 0)
-            ArmyBarUp = false;
-        if (SelectedArmy != null)
-            SelectedArmy.RefreshMovementMode();
-        RegenArmyBar(SelectedArmy);
-        RedrawArmies();
-        RedrawVillages();
-
-        if (NewReports)
-        {
-            ShowTurnReport();
-            NewReports = false;
-        }
-        if (ActingEmpire.StrategicAI == null)
-            ActingEmpire.CheckAutoLevel();
+        // Legacy strategic execution is retired; retain the callback signature for existing bindings.
     }
 
     void RegenArmyBar(Army army)
@@ -1311,155 +1234,11 @@ public class StrategyMode : SceneBase
             StrategicUtilities.StartBattle(army);
     }
 
-    void AI(float dt)
-    {
-        if (State.GameManager.queuedTactical)
-            return;
-        if (m_timer > 0)
-        {
-            m_timer -= dt;
-        }
-        else
-        {
-            //do AI processing
-            if (ActingEmpire.StrategicAI.RunAI() == false)
-            {
-                EndTurn();
-            }
-            m_timer = Config.StrategicAIMoveDelay;
-        }
-    }
+
 
     public void ButtonCallback(int ID)
     {
-        if (ActingEmpire.StrategicAI == null && State.GameManager.StrategicControlsLocked == false)
-        {
-            if (!subWindowUp)
-            {
-                switch (ID)
-                {
-                    case 10:
-                        if (runningQueued || QueuedPath != null)
-                            return;
-                        EndTurn();
-                        break;
-                    case 11:
-                        ArmyInfoSetup();
-                        break;
-                    case 12:
-                        SetupDevour();
-                        subWindowUp = true;
-                        DevourUI.gameObject.SetActive(true);
-                        break;
-                    case 15:
-                        SetupTrain();
-                        subWindowUp = true;
-                        TrainUI.gameObject.SetActive(true);
-                        break;
-                    case 20:
-                        PromptArmyPick();
-                        break;
-                }
-            }
-            else
-            {
-                switch (ID)
-                {
-                    case 13:
-                        int numToEat = 0;
-                        if (int.TryParse(DevourUI.NumberToDevour.text, out numToEat) == false)
-                        {
-                            State.GameManager.CreateMessageBox("Please enter a number for the amount of units to devour, or cancel");
-                            return;
-                        }
-
-                        Devour(SelectedArmy, numToEat);
-                        subWindowUp = false;
-                        DevourUI.gameObject.SetActive(false);
-                        break;
-                    case 14:
-                        DevourUI.gameObject.SetActive(false);
-                        subWindowUp = false;
-                        break;
-                    case 16:
-                        TrainSelectedArmy();
-                        subWindowUp = false;
-                        TrainUI.gameObject.SetActive(false);
-                        break;
-                    case 17:
-                        TrainUI.gameObject.SetActive(false);
-                        subWindowUp = false;
-                        break;
-                    case 18:
-                        ReportUI.gameObject.SetActive(false);
-                        subWindowUp = false;
-                        break;
-                    case 21:
-                        ExchangerUI.gameObject.SetActive(false);
-                        int leftStartingMp = ExchangerUI.LeftArmy.RemainingMP;
-                        int rightStartingMp = ExchangerUI.RightArmy.RemainingMP;
-                        if (ExchangerUI.LeftReceived)
-                        {
-                            UndoMoves.Clear();
-                            int costToEnter = StrategicTileInfo.WalkCost(ExchangerUI.LeftArmy.Position.x, ExchangerUI.LeftArmy.Position.y);
-                            if (rightStartingMp - costToEnter < leftStartingMp)
-                                ExchangerUI.LeftArmy.RemainingMP = Math.Max(0, rightStartingMp - costToEnter);
-                        }
-
-                        if (ExchangerUI.RightReceived)
-                        {
-                            UndoMoves.Clear();
-                            int costToEnter = StrategicTileInfo.WalkCost(ExchangerUI.RightArmy.Position.x, ExchangerUI.RightArmy.Position.y);
-                            if (leftStartingMp - costToEnter < rightStartingMp)
-                                ExchangerUI.RightArmy.RemainingMP = Math.Max(0, leftStartingMp - costToEnter);
-                        }
-
-                        if (ExchangerUI.LeftArmy.Units.Count == 0)
-                        {
-                            ExchangerUI.LeftArmy.ItemStock.TransferAllItems(ExchangerUI.RightArmy.ItemStock);
-                        }
-                        else if (ExchangerUI.RightArmy.Units.Count == 0)
-                        {
-                            ExchangerUI.RightArmy.ItemStock.TransferAllItems(ExchangerUI.LeftArmy.ItemStock);
-                        }
-                        if (ExchangerUI.RightArmy.Units.All(u => u.HasTrait(Traits.Infiltrator)))
-                        {
-                            Village village = StrategicUtilities.GetVillageAt(ExchangerUI.RightArmy.Position);
-                            var infilitrators = new List<Unit>();
-
-                            ExchangerUI.RightArmy.Units.ForEach(unit =>
-                            {
-                                infilitrators.Add(unit);
-                            });
-                            if (village != null && village.Empire.IsEnemy(ExchangerUI.LeftArmy.Empire))
-                            {
-                                infilitrators.ForEach(inf =>
-                                {
-                                    StrategicUtilities.TryInfiltrate(ExchangerUI.RightArmy, inf, village);
-                                });
-                                ExchangerUI.RightArmy.Empire.Armies.Remove(ExchangerUI.RightArmy);
-                                ExchangerUI.RightArmy.Empire.ArmiesCreated--;
-                            }
-                            else
-                            {
-                                MercenaryHouse mercHouse = StrategicUtilities.GetMercenaryHouseAt(ExchangerUI.RightArmy.Position);
-                                if (mercHouse != null)
-                                {
-                                    infilitrators.ForEach(inf =>
-                                    {
-                                        StrategicUtilities.TryInfiltrate(ExchangerUI.RightArmy, inf, null, mercHouse);
-                                    });
-                                    ExchangerUI.RightArmy.Empire.Armies.Remove(ExchangerUI.RightArmy);
-                                    ExchangerUI.RightArmy.Empire.ArmiesCreated--;
-                                }
-                            }
-                        }
-                        Regenerate();
-                        subWindowUp = false;
-                        break;
-                }
-            }
-        }
+        // Legacy strategic execution is retired; retain the callback signature for existing bindings.
     }
 
     void SetupDevour()
@@ -1524,7 +1303,6 @@ public class StrategyMode : SceneBase
         if (SelectedArmy.RemainingMP == 0)
         {
             DevourUI.gameObject.SetActive(false);
-            subWindowUp = false;
         }
     }
 
@@ -1828,174 +1606,11 @@ public class StrategyMode : SceneBase
         }
     }
 
-    void EndTurn()
-    {
-        UndoMoves.Clear();
-        ActingEmpire.Reports.Clear();
-        ActingEmpire.OwnedTiles.Clear();
-        if (State.World.EmpireOrder == null || State.World.EmpireOrder.Count != State.World.AllActiveEmpires.Count)
-            State.World.RefreshTurnOrder();
-        int startingIndex = State.World.EmpireOrder.IndexOf(ActingEmpire);
-        SelectedArmy = null;
-        StatusBarUI.EndTurn.interactable = false;
-        StatusBarUI.ShowTurnReport.gameObject.SetActive(false);
-        StatusBarUI.EmpireStatus.interactable = OnlyAIPlayers;
-        foreach (Village vil in State.World.Villages.Where(s => s.Side == ActingEmpire.Side))
-        {
-            ClaimWithinXTilesOf(vil.Position, 3);
-        }
-        if (startingIndex + 1 >= State.World.EmpireOrder.Count)
-        {
-            ScaledExp = StrategicUtilities.Get80thExperiencePercentile();
-            StatusBarUI.RecreateWorld.gameObject.SetActive(false);
-            State.World.Turn++;
-            ProcessGrowth();
-            if (Config.Diplomacy == false)
-            {
-                RelationsManager.ResetRelationTypes();
-            }
 
-            foreach (var building in State.World.Constructibles)
-            {
-                if (building.Owner != null)
-                {
-                    if (building.Owner.KnockedOut)
-                    {
-                        building.Owner = null;
-                    }
-                }
-            }
-
-            RelationsManager.TurnElapsed();
-            ActingEmpire = State.World.EmpireOrder[0];
-            if (State.World.MonsterEmpires.Count() < World.MonsterCount)
-                State.World.RefreshMonstersKeepingArmies();
-            foreach (ClaimableBuilding claimable in State.World.Claimables)
-            {
-                claimable.TurnChanged();
-            }
-            if (OnlyAIPlayers)
-                State.Save($"{State.SaveDirectory}Autosave.sav");
-        }
-        else
-        {
-            foreach (var army in ActingEmpire.Armies)
-            {
-                foreach (var unit in army.Units)
-                {
-                    if (unit.AllConditionalTraits != null)
-                    {
-                        foreach (var item in unit.AllConditionalTraits.Keys.Where(t => t.trigger == TraitConditionTrigger.OnStrategicTurnEnd || t.trigger == TraitConditionTrigger.All).ToList())
-                        {
-                            if (ConditionalTraitConditionChecker.StrategicTraitConditionActive(unit, item))
-                            {
-                                unit.ActivateConditionalTrait(item.id);
-                            }
-                            else
-                            {
-                                unit.DeactivateConditionalTrait(item.id);
-                            }
-                        }
-                    }
-                }
-            }
-            ActingEmpire = State.World.EmpireOrder[startingIndex + 1];
-        }
-
-        float NightRoll = (float)State.Rand.NextDouble();
-        if (Config.DayNightEnabled)
-        {
-            if (Config.DayNightSchedule && State.World.Turn % Config.World.NightRounds == 0)
-            {
-                State.World.IsNight = true;
-            }
-            else if (Config.DayNightRandom && NightRoll < NightChance)
-            {
-                State.World.IsNight = true;
-                NightChance = Config.BaseNightChance;
-            }
-            else
-            {
-                State.World.IsNight = false;
-                NightChance += Config.NightChanceIncrease;
-            }
-        }
-        else
-        {
-            State.World.IsNight = false;
-            NightChance = Config.BaseNightChance;
-        }
-        if (ActingEmpire is MonsterEmpire)
-        {
-            if (ActingEmpire.Race == Race.Goblins)
-            {
-
-            }
-            else if (Config.SpawnerInfo(ActingEmpire.Race).Enabled == false)
-            {
-                EndTurn();
-                return;
-            }
-        }
-
-        VictoryCheck();
-
-        if (ActingEmpire.KnockedOut && (ActingEmpire.Side < 700 || (ActingEmpire.Armies.Count == 0 && ActingEmpire.VillageCount == 0)))
-        {
-            EndTurn();
-            return;
-        }
-
-        CheckIfLastHumanPlayerEliminated();
-        BeginTurn();
-    }
 
     internal void BeginTurn()
     {
-#if UNITY_EDITOR
-        var units = StrategicUtilities.GetAllUnits();
-        int duplicates = 0;
-        for (int i = 0; i < units.Count; i++)
-        {
-            for (int j = 0; j < units.Count; j++)
-            {
-                if (i == j)
-                    continue;
-                if (units[i] == units[j])
-                    duplicates++;
-            }
-        }
-        if (duplicates > 0)
-        {
-            Debug.LogWarning($"{duplicates / 2} duplicated units found!");
-        }
-#endif
-        ProcessIncome(ActingEmpire);
-        HandleBuildings(ActingEmpire);
-        if (ActingEmpire.StrategicAI == null)
-        {
-            LastHumanEmpire = ActingEmpire;
-            State.Save($"{State.SaveDirectory}Autosave.sav");
-            StatusBarUI.EndTurn.interactable = true;
-            StatusBarUI.ShowTurnReport.gameObject.SetActive(ActingEmpire.Reports.Count > 0);
-            StatusBarUI.EmpireStatus.interactable = true;
-            EnemyTurnText.SetActive(false);
-            ShowTurnReport();
-        }
-        else
-        {
-            if (ActingEmpire.StrategicAI.TurnAI()) //If a unit was purchased
-                RedrawArmies();
-            if (ActingEmpire.Armies.Count > 0)
-                m_timer = .3f;
-            else
-                m_timer = .01f;
-            StatusBarUI.EmpireStatus.interactable = ActingEmpire.IsAlly(LastHumanEmpire) || OnlyAIPlayers;
-            EnemyTurnText.SetActive(true);
-        }
-        StatusBarUI.Build.onClick.AddListenerOnce(() => BuildMenu.Open(ActingEmpire));
-        runningQueued = true;
-        Regenerate();
+        // Legacy strategic execution is retired; retain the callback signature for existing bindings.
     }
 
     internal void CheckForRevivedPlayerFromMapEditor()
@@ -2007,135 +1622,11 @@ public class StrategyMode : SceneBase
         }
     }
 
-    void CheckIfLastHumanPlayerEliminated()
-    {
-        if (ActingEmpire.KnockedOut == false && StrategicUtilities.GetAllArmies().Where(s => s.Empire.IsAlly(ActingEmpire)).Any() == false && State.World.Villages.Where(s => s.Empire.IsAlly(ActingEmpire)).Count() == 0 && ActingEmpire is MonsterEmpire == false)
-        {
-            ActingEmpire.KnockedOut = true;
-            if (ActingEmpire.Buildings.Any())
-            {
-                foreach (var item in ActingEmpire.Buildings.ToList())
-                {
-                    item.Owner = null;
-                    ActingEmpire.Buildings.Remove(item);
-                }
-            }
-            if (ActingEmpire.StrategicAI == null)
-            {
-                OnlyAIPlayers = true;
-                foreach (Empire emp in State.World.MainEmpires)
-                {
-                    if (emp.StrategicAI == null && emp.KnockedOut == false)
-                    {
-                        OnlyAIPlayers = false;
-                    }
-                }
-                if (OnlyAIPlayers && State.GameManager.CurrentScene == State.GameManager.StrategyMode)
-                {
-                    var box = GameManager.Instantiate(State.GameManager.DialogBoxPrefab).GetComponent<DialogBox>();
-                    box.SetData(State.GameManager.ActivateEndSceneLose,
-                        "End Game",
-                        "Continue Watching",
-                        "The last human player is eradicated, do you want to continue watching or end the game now and show stats?",
-                        EndTurn);
-                    return;
-                }
-            }
-        }
-    }
 
-    void VictoryCheck()
-    {
-        Dictionary<Empire, bool> survivors = new Dictionary<Empire, bool>();
 
-        switch (Config.VictoryCondition)
-        {
-            case Config.VictoryType.AllCapitals:
-                foreach (Village village in State.World.Villages.Where(s => s.Capital))
-                {
-                    if (village.GetTotalPop() < 1)
-                        continue;
-                    survivors[village.Empire] = true;
-                }
-                break;
-            case Config.VictoryType.AllCities:
-                foreach (Village village in State.World.Villages)
-                {
-                    if (village.GetTotalPop() < 1)
-                        continue;
-                    survivors[village.Empire] = true;
-                }
-                break;
-            case Config.VictoryType.CompleteElimination:
-                foreach (Village village in State.World.Villages)
-                {
-                    if (village.GetTotalPop() < 1)
-                        continue;
-                    survivors[village.Empire] = true;
-                }
-                foreach (Army army in StrategicUtilities.GetAllArmies(true))
-                {
-                    survivors[army.Empire] = true;
-                }
-                break;
-            case Config.VictoryType.NeverEnd:
-                return;
-        }
-        int side = 0;
-        foreach (Empire emp in survivors.Keys)
-        {
-            side = emp.Side;
-            foreach (Empire emp2 in survivors.Keys)
-            {
-                if (emp == emp2)
-                    continue;
-                if (emp.IsAlly(emp2) == false)
-                    return;
-            }
-        }
 
-        State.GameManager.ActivateEndSceneWin(side);
-    }
 
-    void ProcessIncome(Empire empire)
-    {
-        empire.CalcIncome(State.World.Villages, true);
-        empire.AddGold(empire.Income);
-        if (empire.Side >= 50)
-        {
-            if (empire.Gold < 0)
-                empire.AddGold(-empire.Gold);
-        }
-        else if (empire.Gold < 0)
-        {
-            int income = empire.Income;
 
-            if (income < 0)
-            {
-                Unit[] dismissOrder = empire.GetAllUnits().Where(s => s.Health > 0).OrderBy(s => s.Experience).ToArray();
-                for (int k = 0; k < dismissOrder.Length; k++)
-                {
-                    if (dismissOrder[k].Type == UnitType.Leader)
-                        continue;
-                    if (income >= 0)
-                        break;
-                    foreach (Army army in empire.Armies)
-                    {
-                        if (army.Units.Contains(dismissOrder[k]))
-                        {
-                            StrategicUtilities.ProcessTravelingUnit(dismissOrder[k], army);
-                            army.Units.Remove(dismissOrder[k]);
-                            break;
-                        }
-                    }
-                    dismissOrder[k].Health = 0;
-                    income += (int)Math.Round(Config.World.ArmyUpkeep * RaceParameters.GetTraitData(dismissOrder[k]).Upkeep);
-                }
-            }
-
-            Regenerate();
-        }
-    }
     
     void HandleBuildings(Empire empire)
     {
@@ -2146,24 +1637,7 @@ public class StrategyMode : SceneBase
         }
     }
 
-    void ProcessGrowth()
-    {
-        for (int i = 0; i < State.World.Villages.Length; i++)
-        {
-            State.World.Villages[i].NewTurn();
-        }
 
-        for (int i = 0; i < State.World.AllActiveEmpires.Count; i++)
-        {
-            State.World.AllActiveEmpires[i].CalcIncome(State.World.Villages);
-            State.World.AllActiveEmpires[i].Regenerate();
-        }
-        for (int i = 0; i < State.World.MercenaryHouses.Length; i++)
-        {
-            State.World.MercenaryHouses[i].UpdateStock();
-        }
-        MercenaryHouse.UpdateStaticStock();
-    }
 
     void ProcessClick(int x, int y)
     {
@@ -2470,267 +1944,7 @@ public class StrategyMode : SceneBase
 
     public override void ReceiveInput()
     {
-        if (State.GameManager.ActiveInput)
-            return;
-        if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl) || Input.GetKey(KeyCode.LeftCommand) || Input.GetKey(KeyCode.RightCommand)) && Input.GetKey(KeyCode.F))
-        {
-            var box = Instantiate(State.GameManager.InputBoxPrefab).GetComponentInChildren<InputBox>();
-            box.SetData(SearchForVillage, "Search", "Cancel", "Search For Village", 20);
-            box.ActivateTypeMethod(ReturnTextVillageCount);
-        }
-
-        if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKeyDown(KeyCode.Z))
-        {
-            if (UndoButton.gameObject.activeSelf)
-                UndoButton.onClick.Invoke();
-        }
-
-        UndoButton.gameObject.SetActive(UndoMoves.Any());
-
-        if (State.GameManager.TacticalMode.ActorFolder.childCount > 0)
-        {
-            int children = State.GameManager.TacticalMode.ActorFolder.childCount;
-            for (int i = children - 1; i >= 0; i--)
-            {
-                Destroy(State.GameManager.TacticalMode.ActorFolder.GetChild(i).gameObject);
-            }
-        }
-
-        if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
-        {
-            foreach (Village village in State.World.Villages)
-            {
-                var obj = Instantiate(SpriteCategories[1]).GetComponent<SpriteRenderer>();
-                obj.transform.SetPositionAndRotation(new Vector3(village.Position.x, village.Position.y), new Quaternion());
-                obj.sprite = Banners[2];
-                obj.sortingOrder = 30000;
-                if (village.Side == ActingEmpire.Side)
-                    obj.color = new Color(0, 1, 0, .75f);
-                else if (village.Empire.IsEnemy(ActingEmpire))
-                    obj.color = new Color(1, 0, 0, .75f);
-                else if (village.Empire.IsNeutral(ActingEmpire))
-                    obj.color = new Color(0, 0, 0, .75f);
-                else
-                    obj.color = new Color(0, 0, 1, .75f);
-                ShownIFF.Add(obj.gameObject);
-            }
-            foreach (Army army in StrategicUtilities.GetAllArmies())
-            {
-                var obj = Instantiate(SpriteCategories[1]).GetComponent<SpriteRenderer>();
-                obj.transform.SetPositionAndRotation(new Vector3(army.Position.x, army.Position.y), new Quaternion());
-                obj.sprite = Banners[2];
-                obj.sortingOrder = 30000;
-                if (army.Side == ActingEmpire.Side)
-                    obj.color = new Color(0, 1, 0, .75f);
-                else if (army.Empire.IsEnemy(ActingEmpire))
-                    obj.color = new Color(1, 0, 0, .75f);
-                else if (army.Empire.IsNeutral(ActingEmpire))
-                    obj.color = new Color(0, 0, 0, .75f);
-                else
-                    obj.color = new Color(0, 0, 1, .75f);
-                ShownIFF.Add(obj.gameObject);
-            }
-        }
-        if (Input.GetKeyUp(KeyCode.LeftShift) || Input.GetKeyUp(KeyCode.RightShift))
-        {
-            foreach (var obj in ShownIFF.ToList())
-            {
-                Destroy(obj);
-            }
-        }
-
-        if (remainingNotificationTime > 0)
-            remainingNotificationTime -= Time.deltaTime;
-        if (remainingNotificationTime <= 0)
-            NotificationWindow.SetActive(false);
-
-        if (Input.GetButtonDown("ChangeBannerSize"))
-        {
-            Config.BannerScale += .1f;
-            if (Config.BannerScale > 1.02f)
-                Config.BannerScale = .6f;
-            PlayerPrefs.SetFloat("BannerScale", (Config.BannerScale - .5f) * 10);
-        }
-
-        if (State.GameManager.CameraTransitioning || State.GameManager.StrategicControlsLocked)
-            return;
-
-        if (Input.GetButtonDown("Pause"))
-        {
-            Paused = !Paused;
-            PausedText.SetActive(Paused);
-        }
-
-        if (EventSystem.current.IsPointerOverGameObject() == false) //Makes sure mouse isn't over a UI element
-        {
-            Vector2 currentMousePos = State.GameManager.Camera.ScreenToWorldPoint(Input.mousePosition);
-
-            int x = (int)(currentMousePos.x + 0.5f);
-            int y = (int)(currentMousePos.y + 0.5f);
-            if (x >= 0 && x < Config.StrategicWorldSizeX && y >= 0 && y < Config.StrategicWorldSizeY)
-            {
-                if (BuildMode)
-                {
-                    TilemapLayers[14].ClearAllTiles();
-                    TilemapLayers[14].SetTile(new Vector3Int(x, y, 0), BuildIndicator[2]);
-                    Vec2i position = new Vec2i(x, y);
-                    if (Input.GetMouseButtonDown(0) && StrategicUtilities.IsSpaceOpenForBuild(position) && StrategicTileInfo.CanWalkInto(State.World.Tiles[position.x, position.y]) && TilemapLayers[13].GetTile(new Vector3Int(x, y, 0)) == BuildIndicator[0])
-                    {
-                        BuildMode = false;
-                        TilemapLayers[14].ClearAllTiles();
-                        TilemapLayers[13].ClearAllTiles();
-                        ConstructibleBuilding newBuilding;
-                        switch (SelectedConstruction)
-                        {
-                            case ConstructibleType.WorkCamp:
-                                newBuilding = new WorkCamp(position);
-                                newBuilding.Owner = ActingEmpire;
-                                newBuilding.ConstructBuilding();
-                                break;
-                            case ConstructibleType.LumberSite:
-                                newBuilding = new LumberSite(position);
-                                newBuilding.Owner = ActingEmpire;
-                                newBuilding.ConstructBuilding();
-                                break;
-                            case ConstructibleType.Quarry:
-                                newBuilding = new Quarry(position);
-                                newBuilding.Owner = ActingEmpire;
-                                newBuilding.ConstructBuilding();
-                                break;
-                            case ConstructibleType.CasterTower:
-                                newBuilding = new CasterTower(position);
-                                newBuilding.Owner = ActingEmpire;
-                                newBuilding.ConstructBuilding();
-                                break;
-                            case ConstructibleType.BarrierTower:
-                                newBuilding = new BarrierTower(position);
-                                newBuilding.Owner = ActingEmpire;
-                                newBuilding.ConstructBuilding();
-                                break;
-                            case ConstructibleType.DefEncampment:
-                                newBuilding = new DefenseEncampment(position);
-                                newBuilding.Owner = ActingEmpire;
-                                newBuilding.ConstructBuilding();
-                                break;
-                            case ConstructibleType.Academy:
-                                newBuilding = new Academy(position);
-                                newBuilding.Owner = ActingEmpire;
-                                newBuilding.ConstructBuilding();
-                                break;
-                            case ConstructibleType.DarkMagicTower:
-                                newBuilding = new BlackMagicTower(position);
-                                newBuilding.Owner = ActingEmpire;
-                                newBuilding.ConstructBuilding();
-                                break;
-                            case ConstructibleType.TemporalTower:
-                                newBuilding = new TemporalTower(position);
-                                newBuilding.Owner = ActingEmpire;
-                                newBuilding.ConstructBuilding();
-                                break;
-                            case ConstructibleType.Laboratory:
-                                newBuilding = new Laboratory(position);
-                                newBuilding.Owner = ActingEmpire;
-                                newBuilding.ConstructBuilding();
-                                break;
-                            case ConstructibleType.Teleporter:
-                                newBuilding = new Teleporter(position);
-                                newBuilding.Owner = ActingEmpire;
-                                newBuilding.ConstructBuilding();
-                                break;
-                            case ConstructibleType.TownHall:
-                                newBuilding = new TownHall(position);
-                                newBuilding.Owner = ActingEmpire;
-                                newBuilding.ConstructBuilding();
-                                break;
-                        }
-                    }
-                    if (Input.GetMouseButtonDown(1))
-                    {
-                        TilemapLayers[14].ClearAllTiles();
-                        TilemapLayers[13].ClearAllTiles();
-                        BuildMode = false;
-                    }
-                }
-                else
-                {
-                    UpdateTooltips(x, y);
-                    if (Input.GetMouseButtonDown(0) && ActingEmpire.StrategicAI == null && subWindowUp == false && QueuedPath == null)
-                        ProcessClick(x, y);
-                    else if (Input.GetMouseButtonDown(0) && OnlyAIPlayers)
-                        ProcessClickWithoutEmpire(x, y);
-                    else if (Input.GetMouseButtonDown(0) && LastHumanEmpire.IsAlly(ActingEmpire))
-                        ProcessClickBetweenTurns(x, y);
-                    if (Input.GetMouseButtonDown(1) && ActingEmpire.StrategicAI == null && subWindowUp == false && QueuedPath == null && SelectedArmy != null && SelectedArmy.RemainingMP > 0)
-                        SetSelectedArmyPathTo(x, y);
-                    if (mouseMovementMode)
-                        CheckPath(new Vec2i(x, y));
-                }
-            }
-            else
-            {
-                arrowManager.ClearNodes();
-                currentPathDestination = null;
-            }
-        }
-        if (Input.GetButtonDown("Menu"))
-        {
-            State.GameManager.OpenMenu();
-        }
-
-        if (!buildingRangeOn && !BuildMode)
-        {
-            TilemapLayers[14].ClearAllTiles();
-        }
-        buildingRangeOn = false;
-        if (Paused)
-            return;
-
-        Translator.UpdateLocation();
-
-        if (ActingEmpire.StrategicAI != null)
-        {
-            AI(Time.deltaTime);
-        }
-        else
-        {
-            if (subWindowUp)
-                return;
-
-            RunQueuedMovement();
-
-            if (Input.GetButtonDown("Next Unit"))
-            {
-                NextArmy();
-            }
-
-            if (Input.GetButtonDown("Cancel"))
-            {
-                SelectedArmy = null;
-                ExchangeBlockerPanels.SetActive(false);
-                pickingExchangeLocation = false;
-            }
-
-            if (Input.GetButtonDown("Movement Mode") && SelectedArmy != null)
-            {
-                if (SelectedArmy.RemainingMP > 0)
-                    mouseMovementMode = true;
-                else
-                    SelectedArmy.Destination = null;
-            }
-
-            if (Input.GetButtonDown("Quicksave"))
-            {
-                State.Save($"{State.SaveDirectory}Quicksave.sav");
-            }
-            else if (Input.GetButtonDown("Quickload"))
-            {
-                State.GameManager.AskQuickLoad();
-            }
-            if (Translator.IsActive == false)
-                UpdateArmyLocationsAndSprites();
-            if (Input.GetButtonDown("Submit"))
-                ButtonCallback(10);
-        }
+        // Legacy strategic execution is retired; retain the callback signature for existing bindings.
     }
 
     private void RunQueuedMovement()
@@ -2915,7 +2129,6 @@ public class StrategyMode : SceneBase
                     case ConstructibleType.Academy:
                     case ConstructibleType.DarkMagicTower:
                     case ConstructibleType.TemporalTower:
-                        buildingRangeOn = true;
                         foreach (var tile in StrategicUtilities.GetTilesInRange(constructible.Position, Config.BuildConfig.BuildingPassiveRange))
                         {
                             TilemapLayers[14].SetTile(new Vector3Int(tile.x, tile.y, 0), BuildIndicator[1]);
@@ -3028,7 +2241,6 @@ public class StrategyMode : SceneBase
     {
         if (ActingEmpire.Reports.Count > 0)
         {
-            subWindowUp = true;
             ReportUI.Generate(ActingEmpire.Reports);
         }
     }
@@ -3036,7 +2248,6 @@ public class StrategyMode : SceneBase
     public void CleanUpLingeringWindows()
     {
         //Done separately because I want to make sure it triggers only when desired.
-        subWindowUp = false;
         DevourUI.gameObject.SetActive(false);
         TrainUI.gameObject.SetActive(false);
         ReportUI.gameObject.SetActive(false);

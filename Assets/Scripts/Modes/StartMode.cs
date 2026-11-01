@@ -1,6 +1,7 @@
 // Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Retire startup authoring/tutorial/map routes and route trait warning through the gate (spec 02B).
 // 2026-10-30: Guard the empty approved roster before entering old campaign setup (spec 03A1).
+// 2026-10-31: Retire legacy world load/preview and empire campaign entry routes (spec 05A1).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using UnityEngine;
 using UnityEngine.UI;
@@ -36,15 +37,7 @@ public class StartMode : SceneBase
     public CreateStrategicGame CreateStrategicGame;
     public void CreateStrategic()
     {
-        if (SpeciesPolicy.GetAvailable(SpeciesUse.Leader).Length == 0)
-        {
-            State.GameManager.CreateMessageBox(SpeciesPolicy.UnavailableMessage);
-            return;
-        }
-
-        UI.SetActive(false);
-        CreateStrategicGame.gameObject.SetActive(true);
-        CreateStrategicGame.ClearState();
+        State.GameManager.CreateMessageBox(State.CampaignUnavailableMessage);
     }
 
     public CreateTacticalGame CreateTacticalGame;

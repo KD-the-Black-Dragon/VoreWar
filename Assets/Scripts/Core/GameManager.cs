@@ -1,5 +1,8 @@
 // Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Disable the alternate in-game map editor entry (spec 02B).
+// 2026-10-31: Retire legacy world load/preview and empire campaign entry routes (spec 05A1).
+// 2026-10-31: Block strategic-mode activation while preserving Pure Tactical return to menu (spec 05A2).
+// 2026-10-31: Retire campaign battle and loaded-world tactical transitions (spec 05A3A).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System.Linq;
 using UnityEngine;
@@ -88,11 +91,7 @@ public class GameManager : MonoBehaviour
     float cameraTransitionTime;
     float cameraCurrentTransitionTime;
 
-    StrategicTileType queuedTiletype;
-    Village queuedVillage;
-    Army queuedInvader;
-    Army queuedDefender;
-    internal bool queuedTactical;
+    internal bool queuedTactical = false; // Retained read compatibility; campaign queuing is retired.
 
     float remainingCameraTime;
 
@@ -105,7 +104,7 @@ public class GameManager : MonoBehaviour
         SkipNoStats
     }
 
-    internal PreviewSkip CurrentPreviewSkip;
+    internal PreviewSkip CurrentPreviewSkip = PreviewSkip.Watch;
 
 
     void Start()
@@ -266,7 +265,6 @@ public class GameManager : MonoBehaviour
         if (cameraCurrentTransitionTime > cameraTransitionTime)
         {
             CameraTransitioning = false;
-            ActivateTacticalMode(queuedTiletype, queuedVillage, queuedInvader, queuedDefender);
         }
 
     }
@@ -296,15 +294,7 @@ public class GameManager : MonoBehaviour
             SwitchToMainMenu();
             return;
         }
-        bool needsCameraRefresh = currentScene == Start_Mode || currentScene == TacticalMode;
-        StrategyMode.gameObject.SetActive(true);
-        CurrentScene.CleanUp();
-        CurrentScene = StrategyMode;
-        StrategyMode.UndoMoves.Clear();
-        StrategyMode.Regenerate(initialLoad);
-        if (needsCameraRefresh)
-            CameraController.LoadStrategicCamera();
-        queuedTactical = false;
+        CreateMessageBox(State.CampaignUnavailableMessage);
     }
 
     public void SwitchToMapEditor()
@@ -326,90 +316,24 @@ public class GameManager : MonoBehaviour
 
     public void ActivateTacticalWithDelay(StrategicTileType tiletype, Village village, Army invader, Army defender)
     {
-        if (Config.BattleReport && State.GameManager.StrategyMode.IsPlayerTurn == false)
-        {
-            BattleReportPanel.Activate(village, invader, defender);
-            StrategicControlsLocked = true;
-            queuedTactical = true;
-            queuedTiletype = tiletype;
-            queuedVillage = village;
-            queuedInvader = invader;
-            queuedDefender = defender;
-        }
-        else if (Config.ScrollToBattleLocation)
-        {
-            SlideCameraToTile(invader.Position.x, invader.Position.y);
-            queuedTactical = true;
-            StrategicControlsLocked = true;
-            queuedTiletype = tiletype;
-            queuedVillage = village;
-            queuedInvader = invader;
-            queuedDefender = defender;
-        }
-        else
-            ActivateTacticalMode(tiletype, village, invader, defender);
-
+        CreateMessageBox(State.CampaignUnavailableMessage);
     }
 
 
     public void ActivateQueuedTacticalMode(PreviewSkip skipType)
     {
-        CurrentPreviewSkip = skipType;
-        TacticalBattleOverride battleOverride = (skipType == PreviewSkip.Watch) ? TacticalBattleOverride.ForceWatch : TacticalBattleOverride.ForceSkip;
-        ActivateTacticalMode(queuedTiletype, queuedVillage, queuedInvader, queuedDefender, battleOverride);
-        BattleReportPanel.gameObject.SetActive(false);
-
+        CreateMessageBox(State.CampaignUnavailableMessage);
     }
 
 
     public void ActivateTacticalMode(StrategicTileType tiletype, Village village, Army invader, Army defender, TacticalBattleOverride tacticalBattleOverride = TacticalBattleOverride.Ignore)
     {
-        CameraController.SaveStrategicCamera();
-        StrategyMode.gameObject.SetActive(false);
-        int defenderSide = defender?.Side ?? village.Side;
-        CurrentScene = TacticalMode;
-
-        //If a human is either the army or the garrison, it gets to control both.
-        Empire defenderEmpire = State.World.GetEmpireOfSide(defenderSide);
-        TacticalAIType defenderType = defenderEmpire?.TacticalAIType ?? TacticalAIType.Full;
-        if (village != null && State.World.GetEmpireOfSide(village.Side)?.TacticalAIType == TacticalAIType.None)
-            defenderType = TacticalAIType.None;
-
-        Empire attackerEmpire = State.World.GetEmpireOfSide(invader.Side);
-        if (State.World.Relations != null)
-        {
-            if (village != null)
-                RelationsManager.VillageAttacked(invader.Empire, village.Empire);
-            else
-                RelationsManager.ArmyAttacked(invader.Empire, defender.Empire);
-            if (village != null && defender != null && defender.Side != village.Side)
-            {
-                RelationsManager.ArmyAttacked(invader.Empire, defender.Empire);
-            }
-
-        }
-        TacticalMode.attackerBuildingsInRange = StrategicUtilities.GetActiveEmpireBuildingsWithinXTiles(invader.Position, attackerEmpire, Config.BuildConfig.BuildingPassiveRange);
-        if (defender != null)
-            TacticalMode.defenderBuildingsInRange = StrategicUtilities.GetActiveEmpireBuildingsWithinXTiles(defender.Position, defenderEmpire, Config.BuildConfig.BuildingPassiveRange);
-        else
-            TacticalMode.defenderBuildingsInRange = StrategicUtilities.GetActiveEmpireBuildingsWithinXTiles(village.Position, defenderEmpire, Config.BuildConfig.BuildingPassiveRange);
-
-        TacticalMode.ClearNames();
-        TacticalMode.Begin(tiletype, village, invader, defender, attackerEmpire?.TacticalAIType ?? TacticalAIType.Full, defenderType, tacticalBattleOverride);
-        StrategicControlsLocked = false;
-        if (currentScene == TacticalMode)
-        {
-            CenterCameraOnTile((int)(Config.TacticalSizeX * .5f), (int)(Config.TacticalSizeY * .5f));
-            CameraController.SetZoom(Config.TacticalSizeX * .5f);
-        }
+        CreateMessageBox(State.CampaignUnavailableMessage);
     }
 
     public void SwitchToTacticalOnLoadedGame()
     {
-        StrategyMode.gameObject.SetActive(false);
-        CurrentScene = TacticalMode;
-        PureTactical = State.World.MainEmpires == null;
-        CameraController.LoadTacticalCamera();
+        CreateMessageBox(State.LegacyLoadUnavailableMessage);
     }
 
     public void ActivateRecruitMode(Village village, Empire empire, Recruit_Mode.ActivatingEmpire activatingEmpire = Recruit_Mode.ActivatingEmpire.Self)
@@ -458,15 +382,11 @@ public class GameManager : MonoBehaviour
 
     public void AskQuickLoad()
     {
-        if (FindObjectOfType<DialogBox>() != null)
-            return;
-        DialogBox box = GameObject.Instantiate(DialogBoxPrefab).GetComponent<DialogBox>();
-        box.SetData(DoQuickLoad, "Load Game", "Cancel", "Are you sure you want to quickload?");
+        CreateMessageBox(State.LegacyLoadUnavailableMessage);
     }
 
     void DoQuickLoad()
     {
-        StatScreen.gameObject.SetActive(false);
         State.Load($"{State.SaveDirectory}Quicksave.sav");
     }
 

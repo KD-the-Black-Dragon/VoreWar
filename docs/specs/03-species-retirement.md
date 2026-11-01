@@ -1,6 +1,6 @@
 # 03 — Disable the legacy roster and retire rejected species
 
-**Status:** In progress, 2026-10-30. The user accepted 03A/04, 03B preflight, 03B1 and 03B2. [03B3A](../implementation/03b3a-override-hydration-boundary.md) prepares override loading for definition retirement and corrects new mapping defaults; compile/scene checks passed, interactive review pending. Stat definitions, graphics/resources and 05 provider retirement remain. Spec 03 is not complete; no species approved.
+**Status:** In progress, 2026-10-30. The user accepted 03A/04, 03B preflight, 03B1 and 03B2. [03B3A](../implementation/03b3a-override-hydration-boundary.md) prepares override loading for definition retirement and corrects new mapping defaults; compile/scene checks passed, interactive review accepted. 03B3B review advances 05A1 before prototype removal. Stat definitions, graphics/resources and 05 provider retirement remain. Spec 03 is not complete; no species approved.
 
 **Phase:** Phase 2 — retire unwanted systems
 

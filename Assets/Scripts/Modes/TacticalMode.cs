@@ -1,5 +1,12 @@
 // Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Filter trait summons and legacy building reinforcements before constructing units (spec 03A2).
+// 2026-10-31: Reject direct legacy campaign battle setup before tactical state changes (spec 05A3A).
+// 2026-10-31: Retire campaign reincarnation/village-copy returns and post-battle soldier replacement (spec 05A3B1).
+// 2026-10-31: Retire campaign statistics, territory claims and village conquest from battle results (spec 05A3B2).
+// 2026-10-31: Retire campaign retreat destinations and post-battle traveling armies (spec 05A3B3).
+// 2026-10-31: Retire empire bounty payouts and army/village loot transfers from battle results (spec 05A3B4).
+// 2026-10-31: Retire remaining post-battle survival-trait resurrection branches (spec 05A3B5).
+// 2026-10-31: Retire unused casualty-to-summon roster/allegiance mutation helper (spec 05A3B12).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using LegacyAI;
 using System;
@@ -140,7 +147,6 @@ public class TacticalMode : SceneBase
 
     internal bool TacticalLogUpdated;
 
-    internal ChoiceOption FledReturn;
     bool waitingForDialog;
 
     public bool PseudoTurn = false;
@@ -404,6 +410,11 @@ public class TacticalMode : SceneBase
 
     public void Begin(StrategicTileType tiletype, Village village, Army invader, Army defender, TacticalAIType AIinvader, TacticalAIType AIdefender, TacticalBattleOverride tacticalBattleOverride = TacticalBattleOverride.Ignore)
     {
+        if (!State.GameManager.PureTactical)
+        {
+            State.GameManager.CreateMessageBox(State.CampaignUnavailableMessage);
+            return;
+        }
         BattleReviewText.gameObject.SetActive(false);
         CheatAttackerControl = false;
         CheatDefenderControl = false;
@@ -1637,7 +1648,6 @@ Turns: {currentTurn}
             FrontColorTilemap.color = State.World.GetEmpireOfSide(village.Side)?.UnityColor ?? Color.white;
         }
 
-        FledReturn = ChoiceOption.Default;
         waitingForDialog = false;
 
 
@@ -1726,7 +1736,7 @@ Turns: {currentTurn}
             StatusUI.DefenderText.fontStyle = FontStyle.Bold;
         }
 
-        TacticalUtilities.ResetData(armies, village, units, garrison, tiles, BlockedTile, BlockedClimberTile, linkedUnits);
+        TacticalUtilities.ResetData(units, tiles, BlockedTile, BlockedClimberTile, linkedUnits);
     }
 
     void RebuildDecorations()
@@ -4759,36 +4769,6 @@ Turns: {currentTurn}
                 return false;
             }
 
-            if (remainingAttackers > 0 && AIAttacker == false)
-            {
-                if (FledReturn == ChoiceOption.Default)
-                {
-                    int fledAttackers = units.Where(s => s.Unit.Side == armies[0].Side && s.Fled).Count();
-                    if (fledAttackers > 0)
-                    {
-                        var box = State.GameManager.CreateDialogBox();
-                        waitingForDialog = true;
-                        box.SetData(() => { FledReturn = ChoiceOption.Yes; waitingForDialog = false; VictoryCheck(); }, "Return to army", "Flee to a town", "You've won the battle, should your units that retreated rejoin your forces, or keep retreating to a town?", () => { FledReturn = ChoiceOption.No; waitingForDialog = false; VictoryCheck(); });
-                        return false;
-                    }
-                }
-            }
-
-            if (remainingDefenders > 0 && AIDefender == false)
-            {
-                if (FledReturn == ChoiceOption.Default)
-                {
-                    int fledDefenders = units.Where(s => s.Unit.Side == defenderSide && s.Fled).Count();
-                    if (fledDefenders > 0)
-                    {
-                        var box = State.GameManager.CreateDialogBox();
-                        waitingForDialog = true;
-                        box.SetData(() => { FledReturn = ChoiceOption.Yes; waitingForDialog = false; VictoryCheck(); }, "Return to army", "Flee to a town", "You've won the battle, should your units that retreated rejoin your forces, or keep retreating to a town?", () => { FledReturn = ChoiceOption.No; waitingForDialog = false; VictoryCheck(); });
-                        return false;
-                    }
-                }
-            }
-
             if (Config.StopAtEndOfBattle && reviewingBattle == false && turboMode == false)
             {
                 reviewingBattle = true;
@@ -4805,7 +4785,6 @@ Turns: {currentTurn}
                 return false;
             }
             HandlePostBattleTraits();
-            ProcessReplaceable(remainingAttackers);
 
             foreach (Actor_Unit actor in units)
             {
@@ -4878,151 +4857,21 @@ Turns: {currentTurn}
                 actor.Unit.SetSizeToDefault();
                 actor.Unit.TempBoosts.ResetAll();
                 actor.Unit.EnemiesKilledThisBattle = 0;
-                if (actor.Unit.IsDead && actor.Unit.Type != UnitType.Summon &&
-                    (actor.Unit.HasTrait(Traits.Eternal) || (actor.Unit.HasTrait(Traits.LuckySurvival) && State.Rand.Next(5) != 0) ||
-                    (actor.Unit.HasTrait(Traits.Reformer) && actor.KilledByDigestion) ||
-                    (actor.Unit.HasTrait(Traits.Revenant) && actor.KilledByDigestion == false) ||
-                    (actor.Unit.HasTrait(Traits.DeathCheater) && actor.Unit.TimesKilled <= 9 && (State.Rand.Next(10) >= (actor.Unit.TimesKilled - 1))) ||
-                    (actor.Unit.HasTrait(Traits.DeathCheater) && actor.Unit.TimesKilled >= 10 && (State.Rand.Next(10) == 0))
-                    ))
-                {
-                    actor.Surrendered = false;
-                    actor.Unit.Health = actor.Unit.MaxHealth;
-                    if (actor.Unit.Side == defenderSide)
-                    {
-                        if (garrison.Contains(actor) && remainingDefenders > 0)
-                        {
-                            actor.Unit.Health = actor.Unit.MaxHealth;
-                        }
-                        else
-                        {
-                            retreatedDefenders.Add(actor.Unit);
-                            armies[1]?.Units.Remove(actor.Unit);
-                            village?.GetRecruitables().Remove(actor.Unit);
-                        }
-
-                    }
-                    else
-                    {
-                        retreatedAttackers.Add(actor.Unit);
-                        armies[0].Units.Remove(actor.Unit);
-                    }
-                    actor.PredatorComponent?.PurgePrey();
-                    units.Remove(actor);
-                }
-                else if (actor.Unit.IsDead && actor.Unit.Type != UnitType.Summon && (actor.Unit.HasTrait(Traits.CloseCall)) && actor.KilledByDigestion == false)
-                {
-                    actor.Surrendered = false;
-                    actor.Unit.Health = 1;
-                    if (actor.Unit.Side == defenderSide)
-                    {
-                        if (garrison.Contains(actor) && remainingDefenders > 0)
-                        {
-                            actor.Unit.Health = 1;
-                        }
-                        else
-                        {
-                            retreatedDefenders.Add(actor.Unit);
-                            armies[1]?.Units.Remove(actor.Unit);
-                            village?.GetRecruitables().Remove(actor.Unit);
-                        }
-
-                    }
-                    else
-                    {
-                        retreatedAttackers.Add(actor.Unit);
-                        armies[0].Units.Remove(actor.Unit);
-                    }
-                    actor.PredatorComponent?.PurgePrey();
-                    units.Remove(actor);
-                }
-                else if ((actor.Unit.HasTrait(Traits.Transmigration) || actor.Unit.HasTrait(Traits.InfiniteTransmigration)) && actor.KilledByDigestion && actor.Unit.IsDead
-                    && actor.Unit.Type != UnitType.Summon && actor.Unit.Type != UnitType.Leader && actor.Unit.Type != UnitType.SpecialMercenary)
-                {
-                    if (State.World.MainEmpires != null)
-                    {
-                        Race race = actor.Unit.KilledBy.Race;
-                        if (State.World.Reincarnators == null)
-                            State.World.Reincarnators = new List<Reincarnator>();
-                        if (!State.World.Reincarnators.Any(rc => rc.PastLife == actor.Unit))
-                        {
-                            actor.Unit.RemoveTrait(Traits.Transmigration);
-                            State.World.Reincarnators.Add(new Reincarnator(actor.Unit, race, true));
-                            State.World.GetEmpireOfSide(actor.Unit.Side)?.Reports.Add(new StrategicReport($"{actor.Unit.Name} will reincarnate as a {InfoPanel.RaceSingular(actor.Unit.KilledBy)}.", new Vec2(0, 0)));
-
-                        }
-                    }
-                }
-                else if ((actor.Unit.HasTrait(Traits.Reincarnation) || actor.Unit.HasTrait(Traits.InfiniteReincarnation)) && actor.Unit.IsDead 
-                    && actor.Unit.Type != UnitType.Summon && actor.Unit.Type != UnitType.Leader && actor.Unit.Type != UnitType.SpecialMercenary)
-                {
-                    if (State.World.MainEmpires != null)
-                    {
-                        List<Race> activeRaces = StrategicUtilities.GetAllUnits(false).ConvertAll(u => u.Race).Distinct()
-                            .ToList();
-                        if (activeRaces.Any())
-                        {
-                            Race race = activeRaces[State.Rand.Next(activeRaces.Count)];
-                            if (State.World.Reincarnators == null)
-                                State.World.Reincarnators = new List<Reincarnator>();
-                            if (!State.World.Reincarnators.Any(rc => rc.PastLife == actor.Unit))
-                            {
-                                actor.Unit.RemoveTrait(Traits.Reincarnation);
-                                State.World.Reincarnators.Add(new Reincarnator(actor.Unit, race));
-                                State.World.GetEmpireOfSide(actor.Unit.Side)?.Reports.Add(new StrategicReport($"{actor.Unit.Name} will reincarnate as a random race.", new Vec2(0, 0)));
-                        }
-                        }
-                    } 
-                }
-                else if (actor.Fled)
-                    units.Remove(actor);
-                else if (actor.Unit.IsDead && actor.Unit.SavedCopy != null && ((!State.World.Reincarnators?.Any(rc => rc.PastLife == actor.Unit)) ?? true))
-                {
-                    var emp = State.World.GetEmpireOfSide(actor.Unit.Side);
-                    var vill = actor.Unit.SavedVillage;
-                    if (actor.Unit.Side == defenderSide)
-                    {
-                        armies[1]?.Units.Remove(actor.Unit);
-                        village?.GetRecruitables().Remove(actor.Unit);
-                    }
-                    else
-                    {
-                        armies[0].Units.Remove(actor.Unit);
-                    }
-                    armies[1]?.Units.Remove(actor.Unit);
-                    units.Remove(actor);
-                    if (vill != null && vill.Empire.IsAlly(emp))
-                    {
-                        actor.Unit.SavedVillage.AddPopulation(1);
-                        actor.Unit.SavedVillage.GetRecruitables().Add(actor.Unit.SavedCopy);
-                        actor.Unit.SavedCopy.SavedCopy = null;
-                        actor.Unit.SavedCopy.SavedVillage = null;
-                        emp.Reports.Add(new StrategicReport($"{actor.Unit.Name}'s soul has returned the imprinted copy in the village of {vill.Name}", vill.Position));
-                        if (State.GameManager.StrategyMode.IsPlayerTurn)
-                        {
-                            State.GameManager.StrategyMode.NewReports = true;
-                        }
-                    }
-                }
             }
             EatSurrenderedAllies();
             SelectedUnit = null;
             if (remainingAttackers > 0)
             {
-                State.World.Stats?.BattleResolution(armies[0].Side, defenderSide);
-                if ((FledReturn == ChoiceOption.Yes || FledReturn == ChoiceOption.Default) && retreatedAttackers != null) //Default is to catch eternal units when no units fled
+                if (retreatedAttackers != null)
                 {
                     if (armies[0] != null) armies[0].Units.AddRange(retreatedAttackers);
                     retreatedAttackers.Clear();
                 }
 
-                StrategicUtilities.TryClaim(armies[0].Position, armies[0].Empire);
             }
             else
             {
-                State.World.Stats?.BattleResolution(defenderSide, armies[0].Side);
-                State.World.Stats?.LostArmy(armies[0].Side);
-                if (FledReturn == ChoiceOption.Yes || FledReturn == ChoiceOption.Default && retreatedDefenders != null)//Default is to catch eternal units when no units fled)
+                if (retreatedDefenders != null)
                 {
                     if (armies[1] != null) armies[1].Units.AddRange(retreatedDefenders);
                     else if (village != null) village.GetRecruitables().AddRange(retreatedDefenders);
@@ -5050,33 +4899,17 @@ Turns: {currentTurn}
                 return false;
             }
             ProcessConsumedCorpses();
-            if (village != null)
-            {
-                TacticalUtilities.CleanVillage(remainingAttackers);
-            }
             bool skipStats = false;
             if (AIAttacker && AIDefender && Config.SkipAIOnlyStats)
                 skipStats = true;
-            string attackerReceives = "";
-            string defenderReceives = "";
             if (remainingAttackers > 0)
             {
-                if (armies[1]?.BountyGoods != null)
-                {
-                    attackerReceives = armies[1].BountyGoods.ApplyToArmyOrVillage(armies[0]);
-                }
                 Wins.x++;
             }
             else
             {
-                if (armies[0]?.BountyGoods != null)
-                {
-                    defenderReceives = armies[0].BountyGoods.ApplyToArmyOrVillage(armies[1], village);
-                }
                 Wins.y++;
             }
-
-            LootItems(remainingDefenders, ref attackerReceives, ref defenderReceives);
 
             if (skipStats == false && (turboMode == false || Config.ShowStatsForSkippedBattles || manualSkip || (Config.BattleReport && State.GameManager.CurrentPreviewSkip == GameManager.PreviewSkip.SkipWithStats)))
             {
@@ -5096,8 +4929,8 @@ Turns: {currentTurn}
                 double endingAttackerPower = StrategicUtilities.UnitValue(armies[0].Units.Where(s => s.IsDead == false).ToList());
                 double endingDefenderPower = StrategicUtilities.UnitValue(defenders.Where(s => s.IsDead == false).ToList());
                 State.GameManager.StatScreen.VictoryType.text = TacticalStats.OverallSummary(StartingAttackerPower, endingAttackerPower, StartingDefenderPower, endingDefenderPower, remainingAttackers > 0);
-                State.GameManager.StatScreen.AttackerText.text = TacticalStats.AttackerSummary(remainingAttackers) + attackerReceives;
-                State.GameManager.StatScreen.DefenderText.text = TacticalStats.DefenderSummary(remainingDefenders - remainingGarrison, remainingGarrison) + defenderReceives;
+                State.GameManager.StatScreen.AttackerText.text = TacticalStats.AttackerSummary(remainingAttackers);
+                State.GameManager.StatScreen.DefenderText.text = TacticalStats.DefenderSummary(remainingDefenders - remainingGarrison, remainingGarrison);
                 State.GameManager.StatScreen.Open(AIAttacker && AIDefender);
 
             }
@@ -5107,132 +4940,6 @@ Turns: {currentTurn}
             return true;
         }
         return false;
-    }
-
-    private void ProcessReplaceable(int remainingAttackers)
-    {
-        if (remainingAttackers > 0)
-        {
-            foreach (Actor_Unit actor in units.Where(s => s.Unit.Side != defenderSide))
-            {
-                if (actor.Unit.HasTrait(Traits.Replaceable) && actor.Unit.IsDead)
-                {
-                    actor.Unit.SetExp(actor.Unit.Experience * .5f);
-                    if (actor.Unit.Experience < armies[0].Empire.StartingXP)
-                        actor.Unit.SetExp(armies[0].Empire.StartingXP);
-                    RunReplace(actor);
-                }
-            }
-        }
-        else
-        {
-            foreach (Actor_Unit actor in units.Where(s => s.Unit.Side == defenderSide))
-            {
-                if (actor.Unit.HasTrait(Traits.Replaceable) && actor.Unit.IsDead)
-                {
-                    actor.Unit.SetExp(actor.Unit.Experience * .5f);
-                    var defEmp = State.World.GetEmpireOfSide(defenderSide);
-                    var startingExp = defEmp?.StartingXP ?? 0;
-                    if (actor.Unit.Experience < startingExp)
-                        actor.Unit.SetExp(startingExp);
-                    RunReplace(actor);
-                }
-            }
-        }
-        void RunReplace(Actor_Unit actor)
-        {
-            for (int i = 0; i < 20; i++)
-            {
-                if (actor.Unit.Experience < actor.Unit.GetExperienceRequiredForLevel(actor.Unit.Level - 1))
-                    actor.Unit.LevelDown();
-                else
-                    break;
-            }
-            var raceData = Races.GetRace(actor.Unit);
-            actor.Unit.RandomizeNameAndGender(actor.Unit.Race, raceData);
-            raceData.RandomCustom(actor.Unit);
-            actor.Unit.DigestedUnits = 0;
-            actor.Unit.KilledUnits = 0;
-            actor.Unit.Health = actor.Unit.MaxHealth;
-            actor.PredatorComponent?.PurgePrey();
-        }
-    }
-
-    private void LootItems(int remainingDefenders, ref string attackerReceives, ref string defenderReceives)
-    {
-        bool attackerFoundSpell = false;
-        bool defenderFoundSpell = false;
-        List<Item> items = new List<Item>();
-        foreach (Actor_Unit actor in units)
-        {
-
-            if (actor.Unit.IsDead && actor.Unit.Type != UnitType.Leader)
-            {
-                foreach (Item item in actor.Unit.Items)
-                {
-                    if (item is SpellBook)
-                    {
-                        if (remainingDefenders > 0)
-                        {
-                            if (armies[1] != null)
-                            {
-                                armies[1].ItemStock.AddItem(State.World.ItemRepository.GetItemType(item));
-                                items.Add(item);
-                                defenderFoundSpell = true;
-                            }
-                            else
-                            {
-                                village.ItemStock.AddItem(State.World.ItemRepository.GetItemType(item));
-                                items.Add(item);
-                                defenderFoundSpell = true;
-                            }
-                        }
-                        else
-                        {
-                            armies[0].ItemStock.AddItem(State.World.ItemRepository.GetItemType(item));
-                            items.Add(item);
-                            attackerFoundSpell = true;
-                        }
-
-
-                    }
-                }
-
-            }
-
-        }
-        if (remainingDefenders > 0)
-        {
-            if (armies[1] != null)
-            {
-                if (armies[0].ItemStock.TransferAllItems(armies[1].ItemStock, ref items))
-                    defenderFoundSpell = true;
-            }
-            else
-            {
-                if (armies[0].ItemStock.TransferAllItems(village.ItemStock, ref items))
-                    defenderFoundSpell = true;
-            }
-        }
-        else
-        {
-            if (armies[1] != null)
-            {
-                if (armies[1].ItemStock.TransferAllItems(armies[0].ItemStock, ref items))
-                    attackerFoundSpell = true;
-            }
-            if (village?.ItemStock.TransferAllItems(armies[0].ItemStock, ref items) ?? false)
-                attackerFoundSpell = true;
-        }
-        string itemString = "";
-        if (items.Count > 0)
-        {
-            itemString = string.Join(", ", items.Distinct().Select(s => s.Name));
-        }
-        if (defenderFoundSpell)
-            defenderReceives += $"<color=yellow>Received Items</color>\n{itemString}";
-        if (attackerFoundSpell)
-            attackerReceives += $"<color=yellow>Received Items</color>\n{itemString}";
     }
 
     private void CalculateRemaining(ref int remainingAttackers, ref int remainingDefenders)
@@ -5416,24 +5123,12 @@ Turns: {currentTurn}
 
             actors.Clear();
         }
-        if (actors.Any())
-        {
-            TacticalUtilities.ProcessTravelingUnits(actors.Select(s => s.Unit).ToList());            
-        }
     }
 
     void ProcessFledUnits()
     {
         retreatedAttackers.RemoveAll(s => s.IsDead);
         retreatedDefenders.RemoveAll(s => s.IsDead);
-        if (retreatedAttackers.Any())
-        {
-            TacticalUtilities.ProcessTravelingUnits(retreatedAttackers);
-        }
-        if (retreatedDefenders.Any())
-        {
-            TacticalUtilities.ProcessTravelingUnits(retreatedDefenders);
-        }
     }
 
     void ProcessConsumedCorpses()
@@ -5691,18 +5386,6 @@ Turns: {currentTurn}
         FogOfWar.ClearAllTiles();
         RightClickMenu.CloseAll();
         TacticalUtilities.ResetData();
-    }
-
-    internal void HandleReanimationSideEffects(Unit caster, Actor_Unit target)
-    {
-        armies[0].Units.Remove(target.Unit);
-        State.GameManager.TacticalMode.extraAttackers.Remove(target);
-        garrison.Remove(target);
-        armies[1]?.Units.Remove(target.Unit);
-        State.GameManager.TacticalMode.extraDefenders.Remove(target);
-        village?.GetRecruitables().Remove(target.Unit);
-        target.Unit.Side = caster.Side;
-        State.GameManager.TacticalMode.UpdateActorColor(target);
     }
 
     internal int ExposeRemainingUnits(bool attackers)

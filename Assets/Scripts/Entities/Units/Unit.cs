@@ -1,5 +1,6 @@
 // Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Validate new shape destinations before mutation; leave original-form restoration unrestricted (spec 03A2).
+// 2026-10-31: Exclude retired Resurrection from all assembled usable spell sources (spec 05A3B6).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
 using OdinSerializer.Utilities;
@@ -3240,6 +3241,7 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
 
             }
         }
+        UseableSpells.RemoveAll(spell => spell.IsRetired);
     }
 
     public void ApplyStatusEffect(StatusEffectType type, float strength, int duration, Unit applicator = null, StatusEffect expireEffect = null)

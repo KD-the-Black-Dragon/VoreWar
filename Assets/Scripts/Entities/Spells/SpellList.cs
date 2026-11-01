@@ -2,6 +2,10 @@
 // 2026-10-30: Generic creature summoning requires an approved enabled animal; no fallback (spec 03A1).
 // 2026-10-30: Preflight clone and mapped summon destinations before spending cast resources (spec 03A2).
 // 2026-10-30: 04B2: Replace callback prose with neutral action and status notices.
+// 2026-10-31: Retire Resurrection execution and reject retired spells before casting effects (spec 05A3B6).
+// 2026-10-31: Retire Reanimate execution and include it in spell availability/casting retirement (spec 05A3B10).
+// 2026-10-31: Retire Bind/Resummon callbacks and spell availability (spec 05A3B11).
+// 2026-10-31: Retire Capture Net, Charm, Hypnotic Gas and Whispers casting callbacks/availability (spec 05A3B14).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Collections.Generic;
@@ -774,35 +778,11 @@ static class SpellList
             Name = "Capture Net",
             Id = "captureNet",
             SpellType = SpellTypes.CaptureNet,
-            Description = "Attempts to capture the target with a net converting them to the user's side. Target must be at 5 health to capture otherwise will deal chip damage. (Doesn't work on summons or leaders)",
+            Description = "Retired in the mercenary-company conversion.",
             AcceptibleTargets = new List<AbilityTargets>() { AbilityTargets.Enemy },
             Range = new Range(5),
             Tier = -1,
             Resistable = false,
-            OnExecute = (a, t) =>
-            {
-                a.CastSpell(CaptureNet, t);
-                TacticalGraphicalEffects.CreateCaptureNet(a.Position, t.Position, t);
-                State.GameManager.SoundManager.PlaySwing(a);
-                if (t.Unit.Health <= 5 && t.Unit.CanBeConverted())
-                {
-                    if (State.Rand.Next(10) == 1)
-                        State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{t.Unit.Name} resisted Net.");
-                    else
-                    {
-                        State.GameManager.TacticalMode.SwitchAlignment(t);
-                        t.Surrendered = true;
-                        t.Movement = 0;
-                        t.AIAvoidEat = 2;
-                        State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"<b>{a.Unit.Name}</b> captured <b>{t.Unit.Name}</b>!");
-                    }
-                }
-                else
-                {
-                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{a.Unit.Name} hit {t.Unit.Name} with Net.");
-                    t.Unit.Heal(-2);
-                }
-            },
         };
         SpellDict[SpellTypes.CaptureNet] = CaptureNet;
 
@@ -908,7 +888,7 @@ static class SpellList
             Name = "Charm",
             Id = "charm",
             SpellType = SpellTypes.Charm,
-            Description = "Has a chance to temporarily make an enemy fight for the caster.",
+            Description = "Retired in the mercenary-company conversion.",
             AcceptibleTargets = new List<AbilityTargets>() { AbilityTargets.Enemy },
             Range = new Range(6),
             Duration = (a, t) => 2 + a.Unit.GetStat(Stat.Mind) / 10,
@@ -916,11 +896,6 @@ static class SpellList
             Type = StatusEffectType.Charmed,
             Tier = 3,
             Resistable = true,
-            OnExecute = (a, t) =>
-            {
-                a.CastStatusSpell(Charm, t);
-                TacticalGraphicalEffects.CreateHeartProjectile(a.Position, t.Position, t);
-            },
         };
         SpellDict[SpellTypes.Charm] = Charm;
 
@@ -1043,31 +1018,11 @@ static class SpellList
             Name = "Reanimate",
             Id = "Reanimate",
             SpellType = SpellTypes.Reanimate,
-            Description = "Brings back any unit that died this battle as a summon under the caster's control",
+            Description = "Retired in the mercenary-company conversion.",
             AcceptibleTargets = new List<AbilityTargets>() { AbilityTargets.Tile },
             Range = new Range(4),
             Tier = 3,
             Resistable = false,
-            OnExecuteTile = (a, loc) =>
-            {
-                var target = TacticalUtilities.FindUnitToReanimate(a);
-                if (target != null)
-                {
-                    if (TacticalUtilities.OpenTile(loc, null) && a.CastSpell(Reanimate, null))
-                    {
-                        if (State.GameManager.TacticalMode.IsPlayerInControl && State.GameManager.CurrentScene == State.GameManager.TacticalMode)
-                        {
-                            TacticalUtilities.CreateReanimationPanel(loc, a.Unit);
-                        }
-                        else
-                        {
-                            State.GameManager.SoundManager.PlaySpellCast(Summon, a);
-                            TacticalUtilities.Reanimate(loc, target, a.Unit);
-                        }
-                    }
-                }
-
-            },
         };
         SpellDict[SpellTypes.Reanimate] = Reanimate;
 
@@ -1133,30 +1088,11 @@ static class SpellList
             Name = "Resurrection",
             Id = "resurrection",
             SpellType = SpellTypes.Resurrection,
-            Description = "Resurrects the highest exp unit that died during this battle",
+            Description = "Retired in the mercenary-company conversion.",
             AcceptibleTargets = new List<AbilityTargets>() { AbilityTargets.Tile },
             Range = new Range(4),
             Tier = 4,
             Resistable = false,
-            OnExecuteTile = (a, loc) =>
-            {
-                var target = TacticalUtilities.FindUnitToResurrect(a);
-                if (target != null)
-                {
-                    if (TacticalUtilities.OpenTile(loc, null) && a.CastSpell(Resurrection, null))
-                    {
-                        if (State.GameManager.TacticalMode.IsPlayerInControl && State.GameManager.CurrentScene == State.GameManager.TacticalMode)
-                        {
-                            TacticalUtilities.CreateResurrectionPanel(loc, a.Unit.Side);
-                        }
-                        else
-                        {
-                            TacticalUtilities.Resurrect(loc, target);
-                        }
-                    }
-                }
-
-            },
         };
         SpellDict[SpellTypes.Resurrection] = Resurrection;
 
@@ -1326,7 +1262,7 @@ static class SpellList
             Name = "Hypnotic Gas",
             Id = "hypno-fart",
             SpellType = SpellTypes.HypnoGas,
-            Description = "Applies Hypnotized in a 4x4 area near the caster. Hypnotized units become noncombatants that serve the caster's side.",
+            Description = "Retired in the mercenary-company conversion.",
             AcceptibleTargets = new List<AbilityTargets>() { AbilityTargets.Tile, AbilityTargets.Enemy },
             Range = new Range(1),
             Duration = (a, t) => 5,
@@ -1336,37 +1272,6 @@ static class SpellList
             Tier = 0,
             Resistable = true,
             ResistanceMult = 0.5f,
-            OnExecute = (a, t) =>
-            {
-                a.CastStatusSpell(HypnoGas, t, null, Stat.Voracity);
-                if (Config.FartOnAbsorb)
-                {
-                    a.SetPredMode(PreyLocation.anal);
-                    State.GameManager.SoundManager.PlayFart(a);
-                }
-                else if (Config.BurpFraction > 0)
-                {
-                    a.SetPredMode(PreyLocation.stomach);
-                    State.GameManager.SoundManager.PlayBurp(a);
-                }
-                TacticalGraphicalEffects.CreateGasCloud(t.Position);
-            },
-            OnExecuteTile = (a, loc) =>
-            {
-                a.CastStatusSpell(HypnoGas, null, loc, Stat.Voracity);
-                if (Config.FartOnAbsorb)
-                {
-                    a.SetPredMode(PreyLocation.anal);
-                    State.GameManager.SoundManager.PlayFart(a);
-                }
-                else if (Config.BurpFraction > 0)
-                {
-                    a.SetPredMode(PreyLocation.stomach);
-                    State.GameManager.SoundManager.PlayBurp(a);
-                }
-                TacticalGraphicalEffects.CreateGasCloud(loc);
-            }
-
         };
         SpellDict[SpellTypes.HypnoGas] = HypnoGas;
 
@@ -1375,13 +1280,11 @@ static class SpellList
             Name = "Bind/Resummon",
             Id = "Bind",
             SpellType = SpellTypes.Bind,
-            Description = "Allows to either take control of any summon, or re-summon the most recently bound one by targeting an empty space.",
+            Description = "Retired in the mercenary-company conversion.",
             AcceptibleTargets = new List<AbilityTargets>() { AbilityTargets.Enemy, AbilityTargets.Ally, AbilityTargets.Tile },
             Range = new Range(4),
             Tier = 2,
             Resistable = false,
-            OnExecute = (a, t) => a.CastBind(t),
-            OnExecuteTile = (a, l) => a.SummonBound(l),
         };
         SpellDict[SpellTypes.Bind] = Bind;
 
@@ -1469,7 +1372,7 @@ static class SpellList
             Name = "Whispers",
             Id = "whispers-spell",
             SpellType = SpellTypes.Whispers,
-            Description = "Applies Charm, Prey's Curse, and Temptation for 3 rounds",
+            Description = "Retired in the mercenary-company conversion.",
             AcceptibleTargets = new List<AbilityTargets>() { AbilityTargets.Enemy },
             Range = new Range(1),
             Duration = (a, t) => 3,
@@ -1477,11 +1380,6 @@ static class SpellList
             Type = StatusEffectType.Charmed,
             Tier = 3,
             Resistable = true,
-            OnExecute = (a, t) =>
-            {
-                a.CastStatusSpell(Whispers, t);
-            },
-
         };
         SpellDict[SpellTypes.Whispers] = Whispers;
 
@@ -1793,10 +1691,16 @@ public class Spell
     internal float ResistanceMult = 1;
     internal Action<Actor_Unit, Actor_Unit> OnExecute;
     internal bool IsFree = false;
+
+    internal bool IsRetired => SpellType == SpellTypes.Resurrection || SpellType == SpellTypes.Reanimate ||
+        SpellType == SpellTypes.Bind || SpellType == SpellTypes.CaptureNet || SpellType == SpellTypes.Charm ||
+        SpellType == SpellTypes.HypnoGas || SpellType == SpellTypes.Whispers;
     
 
     internal bool TryCast(Actor_Unit actor, Vec2i location)
     {
+        if (IsRetired)
+            return false;
         if ((actor.Unit.Mana >= ManaCost || IsFree) && actor.Movement > 0)
         {
             int startMana = actor.Unit.Mana;
@@ -1812,6 +1716,8 @@ public class Spell
     }
     internal bool TryCast(Actor_Unit actor, Actor_Unit target)
     {
+        if (IsRetired)
+            return false;
         if ((actor.Unit.Mana >= ManaCost || IsFree) && actor.Movement > 0)
         {
             int startMana = actor.Unit.Mana;

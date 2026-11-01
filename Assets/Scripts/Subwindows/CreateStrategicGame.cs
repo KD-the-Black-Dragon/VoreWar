@@ -1,6 +1,7 @@
 // Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Enforce code-owned settings and retained global preferences (spec 02C).
 // 2026-10-30: Guard empty-roster world creation before any mutation (spec 03A1).
+// 2026-10-31: Retire legacy world load/preview and empire campaign entry routes (spec 05A1).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using Assets.Scripts.Utility.Stored;
 using MapObjects;
@@ -355,8 +356,7 @@ public class CreateStrategicGame : MonoBehaviour
 
     public void PickSaveForContentSettingsDialog()
     {
-        var ui = Instantiate(State.GameManager.LoadPicker).GetComponent<FileLoaderUI>();
-        new SimpleFileLoader(State.SaveDirectory, "sav", ui, false, SimpleFileLoader.LoaderType.PickSaveForContentSettings);
+        State.GameManager.CreateMessageBox(State.LegacyLoadUnavailableMessage);
     }
 
     public void PickMapDialog()
@@ -367,18 +367,7 @@ public class CreateStrategicGame : MonoBehaviour
 
     internal void PickSaveForContentData(string filename)
     {
-        try
-        {
-            byte[] bytes = File.ReadAllBytes(filename);
-            var tempWorld = SerializationUtility.DeserializeValue<World>(bytes, DataFormat.Binary);
-            Config.World = tempWorld.ConfigStorage;
-            Config.BuildConfig = new BuildingConfig();
-            ContentSettingsData.LoadSaved(Config.World);
-        }
-        catch
-        {
-            State.GameManager.CreateMessageBox("Couldn't read the content settings correctly");
-        }
+        State.GameManager.CreateMessageBox(State.LegacyLoadUnavailableMessage);
     }
 
     internal void PickMap(string filename)
@@ -535,160 +524,7 @@ public class CreateStrategicGame : MonoBehaviour
 
     public void CreateWorld()
     {
-        if (SpeciesPolicy.GetAvailable(SpeciesUse.Leader).Length == 0)
-        {
-            State.GameManager.CreateMessageBox(SpeciesPolicy.UnavailableMessage);
-            return;
-        }
-
-        State.GameManager.Menu.Options.LoadFromStored();
-        State.GameManager.Menu.CheatMenu.LoadFromStored();
-        Config.World.VillagesPerEmpire = new int[Empires.Length];
-        try
-        {
-            for (int i = 0; i < Empires.Length; i++)
-            {
-                Config.VillagesPerEmpire[i] = Convert.ToInt32(Empires[i].VillageCount.text);
-            }
-            Config.World.SoftLevelCap = Convert.ToInt32(SoftLevelCap.text);
-            Config.World.HardLevelCap = Convert.ToInt32(HardLevelCap.text);
-        }
-        catch
-        {
-            State.GameManager.CreateMessageBox("There's a blank textbox, if you want it to be 0 it should say 0");
-            return;
-        }
-        try
-        {
-            string errorText = "";
-            if (AutoScaleTactical.isOn == false)
-                errorText = TestTacticalSize();
-            if (errorText != "")
-            {
-                State.GameManager.CreateMessageBox(errorText);
-                return;
-            }
-            if (map == null && StrategicAutoSize.value == 0)
-            {
-                errorText = TestStrategicSize();
-                if (errorText != "")
-                {
-                    State.GameManager.CreateMessageBox(errorText);
-                    return;
-                }
-            }
-            else if (map == null && StrategicAutoSize.value > 0)
-            {
-                errorText = SetStrategicSizeAutomatically();
-                if (errorText != "")
-                {
-                    State.GameManager.CreateMessageBox(errorText);
-                    return;
-                }
-            }
-            Config.World.ExperiencePerLevel = Convert.ToInt32(BaseExpRequired.text);
-            Config.World.AdditionalExperiencePerLevel = Convert.ToInt32(ExpIncreaseRate.text);
-            Config.StartingGold = Convert.ToInt32(StartingGold.text);
-            if (Config.ExperiencePerLevel < 1)
-            {
-                State.GameManager.CreateMessageBox("Levels should require at least 1 exp");
-                return;
-            }
-            if (Config.AdditionalExperiencePerLevel < 0)
-            {
-                State.GameManager.CreateMessageBox("Additonal Levels should be at least 0 (new levels shouldn't be cheaper)");
-                return;
-            }
-        }
-        catch
-        {
-            State.GameManager.CreateMessageBox("At least one of the textboxes is blank, and needs to be filled in");
-            return;
-        }
-
-        Config.World.ItemSlots = Config.NewItemSlots;
-
-        StrategicCreationArgs args = new StrategicCreationArgs(Empires.Length);
-        Config.CenteredEmpire = new bool[Config.NumberOfRaces];
-        for (int i = 0; i < Empires.Length; i++)
-        {
-            if (Empires[i].AIPlayer.isOn)
-            {
-                args.empireArgs[i].strategicAI = (StrategyAIType)Empires[i].StrategicAI.value + 1;
-                args.empireArgs[i].tacticalAI = (TacticalAIType)Empires[i].TacticalAI.value + 1;
-                Config.CenteredEmpire[i] = ((StrategyAIType)Empires[i].StrategicAI.value + 1) == StrategyAIType.Passive;
-            }
-            else
-            {
-                args.empireArgs[i].strategicAI = 0;
-                args.empireArgs[i].tacticalAI = 0;
-                Config.CenteredEmpire[i] = false;
-            }
-            args.CanVore[i] = Empires[i].CanVore.isOn;
-            args.empireArgs[i].team = Convert.ToInt32(Empires[i].Team.text);
-            args.Team[i] = args.empireArgs[i].team;
-            args.empireArgs[i].color = ColorFromIndex(Empires[i].PrimaryColor.value);
-            args.empireArgs[i].secColor = GetDarkerColor(ColorFromIndex(Empires[i].SecondaryColor.value));
-            args.TurnOrder[i] = Convert.ToInt32(Empires[i].TurnOrder.text);
-            args.empireArgs[i].maxArmySize = (int)Empires[i].MaxArmySize.value;
-            args.empireArgs[i].maxGarrisonSize = (int)Empires[i].MaxGarrisonSize.value;
-            args.empireArgs[i].side = i;
-            //args.empireArgs[i].bannerType = (i % 2 == 1) ? 1 : 3;
-
-        }
-        args.MercCamps = Convert.ToInt32(MercenaryHouses.text);
-        args.AncientTeleporters = Convert.ToInt32(AncientTeleporters.text);
-        args.GoldMines = Convert.ToInt32(GoldMines.text);
-        args.crazyBuildings = CrazyBuildings.isOn;
-
-        args.MapGen.UsingNewGenerator = MapGenType.value == 1;
-        args.MapGen.ExcessBridges = MapGenExcessBridges.isOn;
-        args.MapGen.Poles = MapGenPoles.isOn;
-        args.MapGen.Temperature = MapGenTemperature.value;
-        args.MapGen.WaterPct = MapGenWaterPct.value;
-        args.MapGen.Hilliness = MapGenHills.value;
-        args.MapGen.Swampiness = MapGenSwamps.value;
-        args.MapGen.ForestPct = MapGenForests.value;
-        args.MapGen.AbandonedVillages = Convert.ToInt32(AbandonedVillages.text);
-
-        Config.World.StartingPopulation = Convert.ToInt32(StartingVillagePopulation.text);
-        Config.World.LeaderLossExpPct = LeaderLossExpPct.value;
-        Config.World.LeaderLossLevels = Convert.ToInt32(LeaderLossLevels.text);
-        Config.World.GoldMineIncome = Convert.ToInt32(GoldMineIncome.text);
-        Config.World.StrategicWorldSizeX = Convert.ToInt32(StrategicX.text);
-        Config.World.StrategicWorldSizeY = Convert.ToInt32(StrategicY.text);
-        Config.World.TacticalSizeX = Convert.ToInt32(TacticalX.text);
-        Config.World.TacticalSizeY = Convert.ToInt32(TacticalY.text);
-        Config.World.FactionLeaders = FactionLeaders.isOn;
-        Config.World.VictoryCondition = (Config.VictoryType)VictoryCondition.value;
-        Config.World.VillageIncomePercent = Convert.ToInt32(VillageIncomeRate.text);
-        Config.World.VillagersPerFarm = Convert.ToInt32(VillagersPerFarm.text);
-        Config.World.VillagerDevourEXP = Convert.ToInt32(VillagerDevourEXP.text);
-        Config.World.ArmyUpkeep = Convert.ToInt32(ArmyUpkeep.text);
-        Config.World.CapMaxGarrisonIncrease = CapitalGarrisonCapped.isOn;
-        Config.World.Toggles["FirstTurnArmiesIdle"] = FirstTurnArmiesIdle.isOn;
-        Config.World.Toggles["LeaderSpawnFreeze"] = LeaderSpawnFreeze.isOn;
-        Config.World.Toggles["LeadersAutoGainLeadership"] = LeadersAutoGainLeadership.isOn;
-
-
-        Config.PutTeamsTogether = SpawnTeamsTogether.isOn;
-
-        try
-        {
-            
-
-        }
-        catch (Exception e)
-        {
-            State.GameManager.CreateMessageBox("At least one of the textboxes is blank, and needs to be filled in \n *Could possibly be a maximum race issue.*  \n*Check Config.cs NumberOfRaces and make sure it's value is correct.*\n" + e);
-            return;
-        }
-
-        State.World = new World(args, map);
-        Config.World.AutoScaleTactical = AutoScaleTactical.isOn;
-
-        State.GameManager.SwitchToStrategyMode();
-        gameObject.SetActive(false);
+        State.GameManager.CreateMessageBox(State.CampaignUnavailableMessage);
     }
 
     public void AutoScaleChanged()

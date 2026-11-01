@@ -1,6 +1,6 @@
 # Species Curation Checklist
 
-**Status:** Curation reference with staged implementation. 03B2 is user-accepted. [03B3A](implementation/03b3a-override-hydration-boundary.md) preserves retired records during loading and corrects new mapping defaults; compile/scene checks passed, interactive review pending. Stat/graphics/resource and 05 provider retirement remain. No species curated.
+**Status:** Curation reference with staged implementation. 03B2 is user-accepted. [03B3A](implementation/03b3a-override-hydration-boundary.md) preserves retired records during loading and corrects new mapping defaults; compile/scene checks passed, interactive review accepted. 03B3B review advances 05A1 before prototype removal. Stat/graphics/resource and 05 provider retirement remain. No species curated.
 
 ## Intended species categories across both modes
 

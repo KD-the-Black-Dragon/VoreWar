@@ -176,3 +176,130 @@ No gameplay-source conversion changes preceded packet 02A. That packet now recor
 - Verification: fresh Unity 2018.3.12f1 compilation and subsequent explicit scene opening passed without C# errors/import exceptions/scene errors, exit 0 (`Logs/packet-03b3a-compile.log`, `Logs/packet-03b3a-scene.log`, ignored). Source correspondence shows only the intended guards/loop/default assignments and dated notice; schema and four reference-file snapshots match. No Play-mode test, personal preset inspection/migration, new player build or tests/framework.
 - Scope/GPL check: reviewed License.txt sections 4/5, added a dated conversion notice and this exact-path record, retained original licensing/attribution and added no third-party source/dependency/asset. Scene bytes/license content preserved; known Unity orphan metadata restored byte-for-byte. Only the intended single source differs beyond accepted 03B1/03B2. No files/slots/characters deleted or moved. Distribution/inherited-content compliance remains a separate review.
 - Updated roadmap/spec/campaign/species status and recovery notes. Stat prototypes, graphics definitions, direct legacy getters and 4X providers remain for later retirement; no playable fallback, constructor-wide exception, species curation or new campaign mechanic was introduced. Interactive editor-load/mapping persistence checks remain pending.
+
+## 2026-10-31 — 03B3B stat read-boundary review (documentation only)
+
+- Recorded user acceptance of 03B3A. Added `docs/implementation/03b3b-stat-read-boundary-review.md` with current direct override-read candidates and retained combat/metadata/legacy-save dispositions; updated roadmap and recovery checkpoint.
+- Advanced the narrow 05A1 application/save entry boundary ahead of stat prototype removal. Existing fallback and direct dereference paths make immediate removal unsafe without those callers being closed. No replacement species, new stats, save import or campaign mechanic selected.
+- Documentation only: game source/assets, licensing/attribution and source notices unchanged. No Unity build/import/Play test, personal-data access, dependency, new tests/framework, file deletion or move. No complete generation/retirement or distribution-compliance claim.
+
+## 2026-10-31 — 05A1 legacy world entry/loading retirement
+
+- Modified `Assets/Scripts/Core/State.cs`, `Assets/Scripts/Core/GameManager.cs`, `Assets/Scripts/Modes/StartMode.cs`, `Assets/Scripts/Subwindows/CreateStrategicGame.cs`, and `Assets/Scripts/Subwindows/SaveLoad.cs`: retire old world load/preview/migration, quickload transition, empire creation and secondary saved-world settings import. Preserve files, Pure Tactical setup, save writing and snapshot/settings schemas. Legacy-format save resume is temporarily unavailable, including tactical saves.
+- Added `docs/implementation/05a1-legacy-world-entry-retirement.md`; source comparison verified 89 unaffected bodies and no remaining World deserializer in Assets/Scripts. Final fresh Unity compilation passed; explicit scene check recorded in the report. No personal data read/deleted, tests/framework or player build.
+- GPL check: actual License.txt sections 4/5 reviewed; all five sources carry dated modification notices and exact-path coverage here, retaining earlier attribution/license notices. No new dependencies/assets/external code or license change. Full redistribution review remains separate. No files deleted/moved.
+
+## 2026-10-31 — 05A2 strategic scheduler retirement
+
+- Modified `Assets/Scripts/Modes/StrategyMode.cs`: retire strategic setup/regeneration/input/button/turn entry bodies and private AI, turn, economy/growth and victory scheduler methods; remove scheduler-only timer/window-state remnants. Keep callbacks, shared helpers, source file and scene bindings.
+- Modified `Assets/Scripts/Core/GameManager.cs`: block strategic activation while preserving the PureTactical exit-to-menu branch verbatim. No new company mechanics, curation, tactical AI or snapshot changes.
+- Added `docs/implementation/05a2-strategic-scheduler-retirement.md`, recorded 05A1 acceptance and updated roadmap/spec/checkpoint. Source comparisons preserve unaffected bodies except obsolete window-state writes. Final compile/scene results recorded in the report; no new tests/framework, player build or agent battle test.
+- GPL change check: License.txt sections 4/5 reviewed; both changed sources carry dated notices and exact-path coverage here. Prior notices/licensing/attribution preserved, no third-party code/dependencies/assets introduced, no files deleted/moved. Physical provider/stat/resource retirement and full distribution review remain separate.
+
+## 2026-10-31 — 05A3A campaign world/battle entry retirement
+
+- Modified `Assets/Scripts/Core/World.cs`: retire unused strategic-creation constructor while retaining tactical World(false), fields and other helpers.
+- Modified `Assets/Scripts/Core/GameManager.cs`: retire campaign delayed/queued/direct battle activation and loaded-world transition; remove obsolete queue payload/automatic camera-end battle dispatch, retain default read-compatibility state. Pure Tactical activation and return unchanged.
+- Modified `Assets/Scripts/Modes/TacticalMode.cs`: guard direct Begin before mutations unless PureTactical; retain all subsequent battle setup/combat/AI/results code and standalone village skirmish support.
+- Added `docs/implementation/05a3a-campaign-battle-entry-retirement.md`, recorded 05A2 acceptance and updated staged notes. Source correspondence checks retained World/TacticalMode code and 22 unaffected GameManager methods. Final compile/scene evidence recorded in report; no agent Play-mode test, new tests/framework or player build. Battle playtesting awaits approved species.
+- GPL check: actual License.txt sections 4/5 read; all three sources carry dated modification notices/exact paths here. Earlier notices/attribution and license terms retained. No new assets/dependencies/external source, file deletion/move or personal-data change. Complete resource/provider retirement and release compliance are not claimed.
+
+## 2026-10-31 — 05A3B1 post-battle replacement retirement
+
+- Modified `Assets/Scripts/Modes/TacticalMode.cs`: retire ProcessReplaceable call/method and consecutive Transmigration/Reincarnation/SavedCopy result branches, implementing approved retirement of those replacement outcomes. Preserve IDs/schemas and all other battle calculation/cleanup/summary code.
+- Added `docs/implementation/05a3b1-post-battle-replacement-retirement.md`; recorded 05A3A acceptance and updated staged notes. Whole-file correspondence accounts for exactly the intended removals. Fresh compilation passed; scene outcome recorded in report. No new tests/framework, player build, agent battle test or personal-data access.
+- GPL check: License.txt sections 4/5 reviewed; dated source notice and exact-path entry present, prior notices/attribution/license retained. No new dependencies/assets/external code, file deletion/move or schema change. Other revival/provider/result work remains; no leader revival or new company fate/health system implemented. Distribution compliance is not certified by this change check.
+
+## 2026-10-31 — 05A3B2 battle-result territory retirement
+
+- `Assets/Scripts/Modes/TacticalMode.cs`: remove empire battle/lost-army statistics writes, territorial claim and village-conquest callback from battle finalization.
+- `Assets/Scripts/Modes/Tactical/TacticalUtilities.cs`: retire the now-uncalled CleanVillage helper, including village ownership, population devastation and monster conquest/movement effects.
+- Related spec: 05. Standalone village battlefield/garrison setup, result summaries, tactical Wins counters, participant cleanup, relocation and bounty/loot remain unchanged. This is not the new company result system.
+- Dated fork notices added; existing license/attribution retained. No external code/dependency/asset additions or file deletions/moves.
+
+## 2026-10-31 — 05A3B3 post-battle relocation retirement
+
+- `Assets/Scripts/Modes/TacticalMode.cs`: retire the return-to-army/flee-to-town prompts and FledReturn choice state, keeping the existing default winning-force rejoin behavior. Remove three post-battle traveling-unit dispatches; preserve retreat-list pruning, participant assignment, village battlefield support, rewards and summaries. Narrow the tactical utility context call to retained inputs.
+- `Assets/Scripts/Modes/Tactical/TacticalUtilities.cs`: retire ProcessTravelingUnits, GenerateFleeingArmy and uncalled GenerateAnotherArmy. Remove the army/village/garrison fields and context arguments used solely by retired helpers.
+- Related spec: 05. No new company retreat, Downed, casualty or campaign travel rules. Dated fork notices and prior attribution preserved; no external additions, file deletions or moves.
+
+## 2026-10-31 — 05A3B4 battle reward retirement
+
+- `Assets/Scripts/Modes/TacticalMode.cs`: remove old empire bounty payouts, the LootItems call/helper and reward-text suffixes from battle finalization. The retired helper collected casualty spell books and transferred army/village item stocks.
+- Preserve tactical win counters, standard battle summaries, participant accounting, combat, item definitions and stored inventory/bounty schemas. Future company contract gold and loot rules are not implemented here. Related spec: 05.
+- Dated modification notice added; upstream licensing/attribution preserved. No external source/dependency/asset additions or files deleted/moved.
+
+## 2026-10-31 — 05A3B5 post-battle survival-trait revival retirement
+
+- `Assets/Scripts/Modes/TacticalMode.cs`: remove the remaining two post-battle resurrection branches for Eternal, LuckySurvival, Reformer, Revenant, DeathCheater and CloseCall, including their health restoration and revived-unit collection moves.
+- Preserve normal size/temporary-boost cleanup, combat resolution, surviving-unit accounting and summaries. Trait IDs, definitions and other runtime references remain pending separate retirement; this is not new Downed/leader-revival behavior. Related spec: 05 and recorded design clarification 1.
+- Dated fork notice added; existing license/attribution preserved. No external source/dependency/asset additions or file deletions/moves.
+
+## 2026-10-31 — 05A3B6 Resurrection spell retirement
+
+- `Assets/Scripts/Entities/Spells/SpellList.cs`: preserve Resurrection ID/metadata as retired, remove its revive callback, and reject retired spells in both TryCast overloads before actor/resource/effect access. The retirement predicate currently names only Resurrection.
+- `Assets/Scripts/Entities/Units/Unit.cs`: filter retired spells after assembling all personal, consumable, racial, configured and book-granted spell sources. Stored grants and equipment are preserved.
+- Related spec: 05. Reanimate, summons, other on-death/digestion revival and conversion remain separate review. No new leader revival, Downed or health-pool rule. Dated source notices and existing legal/attribution notices retained; no external additions or file deletions/moves.
+
+## 2026-10-31 — 05A3B7 Respawns and CloseCall runtime retirement
+
+- `Assets/Scripts/Entities/Units/Actor_Unit.cs`: remove Respawner/RespawnerIII status grants, weapon/spell death respawn blocks and the obsolete Respawns exclusion from ordinary automatic surrender. Remove CloseCall's corpse suppression/false fled notice; use ordinary casualty presentation.
+- `Assets/Scripts/Entities/Units/PredatorComponent.cs`: remove the digestion-death Respawns block, including restoration, release and early return; continue the ordinary completed-digestion path.
+- `Assets/Scripts/Entities/Items/ItemRepository.cs`: remove Goddess Pendant's recurring respawn grant and corresponding description sentence; preserve its battle-start Bolstered effect and stored item identity.
+- Related spec: 05. Status/trait/item IDs and Unit status helpers remain; no new Downed/HP/leader-revival system or temporary summon change. Dated conversion notices and prior attribution retained. No external additions, file deletions or moves.
+
+## 2026-10-31 — 05A3B8 digestion conversion/rebirth retirement
+
+- `Assets/Scripts/Entities/Units/PredatorComponent.cs`: retire four digestion/absorption conversion or rebirth branches driven by KuroTenko/PredConverter, DigestionConversion, DigestionRebirth and PredRebirther. These restored prey HP, changed allegiance/species and released characters instead of completing ordinary digestion/absorption.
+- Keep the ordinary absorption log, XP, healing/mana, callbacks, trait effects and prey cleanup. Remove the uncalled, comment-only HandleShapeshifterRebirth helper tied to those branches. Stored IDs/traits/settings and temporary disguise/summon behavior remain unchanged. Related spec: 05 and design clarifications 1/11/12.
+- Dated notice added; prior licensing/attribution preserved. No external additions or file deletions/moves.
+
+## 2026-10-31 — 05A3B9 unused Resurrection helper retirement
+
+- `Assets/Scripts/Modes/Tactical/TacticalUtilities.cs`: retire FindUnitToResurrect, CreateResurrectionPanel, Resurrect and uncalled GetRandomTileForActor; preserve the separate reanimation picker/runtime.
+- `Assets/Scripts/AI/TacticalAI.cs`: remove TryResurrect/CheckResurrect and the Resurrection action-planning branch.
+- `Assets/Scripts/AI/StandardTacticalAI.cs`, `Assets/Scripts/AI/NonCombatantTacticalAI.cs`, `Assets/Scripts/AI/HedonistTacticalAI.cs`: remove obsolete TryResurrect calls; NonCombatant also loses its Resurrection planning branch. Remaining AI order and reanimation/spell behavior unchanged.
+- Related spec: 05, following 05A3B6/B7. Stored spell/item/trait IDs remain. Dated conversion notices and existing attribution preserved; no external additions or file deletions/moves.
+
+## 2026-10-31 — 05A3B10 Reanimate spell retirement
+
+- `Assets/Scripts/Entities/Spells/SpellList.cs`: retire Reanimate's casualty-restoration callback, label its preserved metadata retired, and include it in the existing IsRetired predicate used by usable-spell filtering and both cast guards.
+- `Assets/Scripts/Entities/Units/Actor_Unit.cs`: remove the Reanimator trait's automatic single-use Reanimate grant. Stored grants, spell/item/trait identifiers and unrelated summon behavior remain.
+- Related spec: 05 and design clarifications 1/10/12. Bind's separate casualty re-summoning path, reanimation helpers and AI remain pending their own cleanup. Dated notices and existing licensing/attribution preserved; no external additions or files deleted/moved.
+
+## 2026-10-31 — 05A3B11 Bind/Resummon retirement
+
+- `Assets/Scripts/Entities/Spells/SpellList.cs`: remove Bind's actor/tile callbacks, mark its retained metadata retired and include Bind in IsRetired for existing usable-list/cast guards.
+- `Assets/Scripts/Entities/Units/Actor_Unit.cs`: remove Binder's single-use grant and CastBind/SummonBound routines, retiring summon theft, persistent BoundUnit capture, unbound permanent-character conversion and casualty/later-battle re-summoning.
+- Related spec: 05 and design clarifications 1/10/12. Stored BoundUnit and spell/trait/item IDs remain, as do independent temporary summons/clones/disguises. Obsolete AI and shared reanimation helpers remain the next bounded cleanup. Dated notices and prior attribution/license preserved; no external additions, file deletions or moves.
+
+## 2026-10-31 — 05A3B12 obsolete reanimation/Bind helper retirement
+
+- `Assets/Scripts/Modes/Tactical/TacticalUtilities.cs`: remove FindUnitToReanimate/CreateReanimationPanel/Reanimate, their private picker context and now-unused UnityEngine.UI import.
+- `Assets/Scripts/Modes/TacticalMode.cs`: remove unused HandleReanimationSideEffects, preserving the serialized UnitPickerUI field and scene.
+- `Assets/Scripts/AI/TacticalAI.cs`: remove TryReanimate/CheckReanimate/RunBind/CheckBind and their action-planning branches.
+- `Assets/Scripts/AI/StandardTacticalAI.cs`, `Assets/Scripts/AI/HedonistTacticalAI.cs`: remove obsolete reanimation/Bind action calls. Remaining AI priorities and ordinary summon creation remain unchanged.
+- Related spec: 05, following 05A3B10/B11. Stored identities/trait/item metadata retained. Dated notices and prior license/attribution preserved; no external additions or files deleted/moved.
+
+## 2026-10-31 — 05A3B13 damage/surrender defection retirement
+
+- `Assets/Scripts/Entities/Units/Actor_Unit.cs`: remove TurnCoat's damage-triggered allegiance switch and automatic surrender's defection branch, including its AI eating-avoidance and conversion notices. Remove associated Goddess Mercy full-health restoration for both defecting and loyal surrender outcomes.
+- Preserve existing damage/barrier processing, Cowardly surrender, automatic-surrender trigger/1 HP/zero movement and configured prey release. New Downed/temporary HP/survivor baseline work is not implemented. Related spec: 05 and design clarifications 8/12.
+- Trait/settings IDs retained; dated notice and prior attribution/license preserved. No external additions or file deletions/moves.
+
+## 2026-10-31 — 05A3B14 allegiance-changing spell retirement
+
+- `Assets/Scripts/Entities/Spells/SpellList.cs`: retire CaptureNet, Charm, HypnoGas and Whispers execution callbacks, mark preserved metadata retired and add all four to IsRetired for existing usable-spell filtering/cast rejection.
+- `Assets/Scripts/Entities/Units/Actor_Unit.cs`: remove automatic Charmer/HypnoticGas grants; reject retired direct CastStatusSpell calls before mana/side effects, covering Whispers' trait callback bypass.
+- Related spec: 05 and design clarification 12. Stored spell/item/trait IDs and status definitions remain; ordinary summons/disguises and other spells unchanged. This does not finish all trait/containment allegiance paths. Dated notices, existing license/attribution preserved; no external additions or files deleted/moved.
+
+## 2026-11-01 — 05A3B15 support-trait allegiance retirement
+
+- `Assets/Scripts/Entities/Units/Actor_Unit.cs`: retire SeductiveTouch's enemy-support permission exception and its 38-line conversion/distraction branch, including allegiance/fixed-side changes and linked paralysis outcome. Preserve the underlying support action and other permission sources.
+- Related spec: 05 and design clarification 12. Trait IDs/metadata remain; possession/metamorphosis/containment callbacks remain separate review. Dated source notice and existing license/attribution preserved; no external additions or files deleted/moved.
+
+## 2026-11-01 — 05A3B16 metamorphosis-family retirement
+
+- `Assets/Scripts/Races/Traits.cs`: retain Metamorphosis, MetamorphicConversion and ForcedMetamorphosis class/registry identities with retired descriptions and inert inherited callbacks. Retire full-health revival, XP/species/side mutation, forced grants, no-escape interfaces and the forced trait's incoming escape boost.
+- ForcedMetamorphosis now derives from non-boosting VoreTrait so no null stat-booster delegate is invoked. Existing callbacks continue ordinary digestion. Other traits/disguises/summons remain unchanged. Related spec: 05 and design clarifications 1/11/12.
+- Dated conversion notice added; upstream comments/attribution/license preserved. No external additions or file deletions/moves.

@@ -1,3 +1,6 @@
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-31: Retire Goddess Pendant respawn grant; retain its battle-start effect (spec 05A3B7).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
 using System;
 using System.Collections.Generic;
@@ -182,10 +185,9 @@ public class ItemRepository
             {
                 [EquipmentActivator.OnTacticalTurnStart] = (x,y,z) => EquipmentFunctions.UseEquipmentWarpStone(((Actor_Unit)x).Unit)
             }),
-            new Equipment(name:"Goddess Pendant", description:"At start of battle, grant all allies in army 10 stacks of Bolstered. Every five turns, grants one respawn to unit.", cost:75, tier:4, itemCD:5, triggersCD: new bool[] {false,true}, type: EquipmentType.RechargeTactical, func: new Dictionary<EquipmentActivator, Func <object, object, object, bool>>
+            new Equipment(name:"Goddess Pendant", description:"At start of battle, grant all allies in army 10 stacks of Bolstered.", cost:75, tier:4, itemCD:5, triggersCD: new bool[] {false,true}, type: EquipmentType.RechargeTactical, func: new Dictionary<EquipmentActivator, Func <object, object, object, bool>>
             {
                 [EquipmentActivator.OnTacticalBattleStart] = (x,y,z) => EquipmentFunctions.UseEquipmentGoddessPendantStart((Army)y),
-                [EquipmentActivator.OnTacticalTurnStart] = (x,y,z) => {((Actor_Unit)x).Unit.AddRespawns(1); return true; }
             }),
 
             new Potion(name:"Health Potion", description:"Heals 10 HP when used", cost:5, tier:1, negative:false ,func: (x,y) => ((Actor_Unit)x).Unit.Heal(10)),

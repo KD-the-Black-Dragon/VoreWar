@@ -1,6 +1,6 @@
 # Mercenary Company Campaign Revamp
 
-**Status:** Agreed design and staged migration. The user accepted 03B2. 03B3A prepares old override loading for definition retirement and corrects new leader/morph defaults, with compilation/scene checks passed and interactive review pending. Stat/graphics/resources, legacy providers, species curation and the company campaign remain later work. See roadmap/checkpoint for current state.
+**Status:** Agreed design and staged migration. The user accepted 03B2. 03B3A prepares old override loading for definition retirement and corrects new leader/morph defaults, with compilation/scene checks passed and interactive review accepted. 03B3B review advances 05A1 before prototype removal. Stat/graphics/resources, legacy providers, species curation and the company campaign remain later work. See roadmap/checkpoint for current state.
 
 **Delivery plan:** See [the phased conversion roadmap](conversion-roadmap.md) and its separate specifications for the editor baseline, comprehensive architecture study, feature/content retirement, new campaign implementation, and later expansion. This document remains the design record.
 

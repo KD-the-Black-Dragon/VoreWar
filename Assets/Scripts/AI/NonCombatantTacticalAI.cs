@@ -1,3 +1,6 @@
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-31: Retire obsolete Resurrection AI action and planning calls (spec 05A3B9).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System.Collections.Generic;
 using System.Linq;
 
@@ -54,7 +57,6 @@ public class NonCombatantTacticalAI : RaceServantTacticalAI
             RunForceFeed(actor);
         }
 
-        TryResurrect(actor);
 
         RunSpells(actor);
         if (path != null)
@@ -146,9 +148,6 @@ public class NonCombatantTacticalAI : RaceServantTacticalAI
     {
         int apRequired = -1;
       
-        apRequired = CheckResurrect(actor, position, ap);
-        if (apRequired > 0)
-            return ap - apRequired;
 
     
         apRequired = CheckSpells(actor, position, ap);

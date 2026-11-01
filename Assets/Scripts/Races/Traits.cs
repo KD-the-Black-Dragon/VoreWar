@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-01: Retire metamorphosis-family revival, conversion, grants and escape restrictions (spec 05A3B16).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using System;
 using System.Collections.Generic;
 
 abstract class Trait
@@ -629,56 +632,24 @@ internal class Parasite : VoreTraitBooster
     }
 }
 
-internal class Metamorphosis : VoreTrait, INoAutoEscape
+internal class Metamorphosis : VoreTrait
 {
     public Metamorphosis()
     {
-        Description = "Unit is revived and changes race upon being digested";
+        Description = "Retired in the mercenary-company conversion.";
     }
 
     public override bool IsPredTrait => false;
-
-    public override int ProcessingPriority => 50;
-
-    public bool CanEscape(Prey preyUnit, Actor_Unit predUnit)
-    {
-        return false;
-    }
-
-    public override bool OnFinishDigestion(Prey preyUnit, Actor_Unit predUnit, PreyLocation location)
-    {
-        Race conversionRace = preyUnit.Unit.HiddenUnit.DetermineSpawnRace();
-        preyUnit.Unit.Health = preyUnit.Unit.MaxHealth;
-        preyUnit.Unit.GiveExp(predUnit.Unit.Experience / 2);
-        if (preyUnit.Unit.Race != conversionRace)
-        {
-            preyUnit.ChangeRace(conversionRace);
-        }
-        preyUnit.Unit.RemoveTrait(Traits.Metamorphosis);//no metamorphosis loops
-        State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{preyUnit.Unit.Name} changed form within {predUnit.Unit.Name}'s body.");
-        predUnit.PredatorComponent.UpdateFullness();
-        return false;
-    }
 }
 
 internal class MetamorphicConversion : Metamorphosis
 {
     public MetamorphicConversion()
     {
-        Description = "Unit is revived, changes side and race upon being digested";
+        Description = "Retired in the mercenary-company conversion.";
     }
 
     public override bool IsPredTrait => false;
-
-    public override int ProcessingPriority => 49;
-
-    public override bool OnFinishDigestion(Prey preyUnit, Actor_Unit predUnit, PreyLocation location)
-    {
-        preyUnit.ChangeSide(predUnit.Unit.FixedSide);
-        base.OnFinishDigestion(preyUnit, predUnit, location);
-        preyUnit.Unit.RemoveTrait(Traits.MetamorphicConversion);
-        return false;
-    }
 }
 
 internal class Possession : VoreTraitBooster, INoAutoEscape
@@ -898,33 +869,16 @@ internal class SpiritPossession : Possession
         return true;
     }
 }
-internal class ForcedMetamorphosis : VoreTraitBooster, INoAutoEscape
+internal class ForcedMetamorphosis : VoreTrait
 {
     public ForcedMetamorphosis()
     {
-        Description = "Pred will gain the Metamorphosis trait upon digesting this unit.";
-        Boost = (s) => s.Incoming.ChanceToEscape *= 0;
+        Description = "Retired in the mercenary-company conversion.";
     }
-
-    public override int ProcessingPriority => 10;
 
     public override bool IsPredTrait => false;
-
-    public bool CanEscape(Prey preyUnit, Actor_Unit predUnit)
-    {
-        return false;
-    }
-
-    public override bool OnDigestionKill(Prey preyUnit, Actor_Unit predUnit, PreyLocation location)
-    {
-        //TODO: Make this a status effect instead
-        if((predUnit.Unit.FixedSide == preyUnit.Unit.FixedSide) && (predUnit.Unit.FixedSide == predUnit.Unit.Side))
-            predUnit.Unit.AddPermanentTrait(Traits.Metamorphosis);
-        else predUnit.Unit.AddPermanentTrait(Traits.MetamorphicConversion);
-        predUnit.Unit.SpawnRace = preyUnit.Unit.HiddenUnit.DetermineSpawnRace();
-        return true;
-    }
 }
+
 internal class ViralDigestion : VoreTrait
 {
     public ViralDigestion()

@@ -1,6 +1,12 @@
 // Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Reject disallowed disguise templates before appearance, trait or side changes (spec 03A2).
 // 2026-10-30: 04B2: Replace callback prose with neutral action and status notices.
+// 2026-10-31: Retire Respawns grants/death triggers and CloseCall casualty presentation (spec 05A3B7).
+// 2026-10-31: Retire the Reanimator trait's automatic Reanimate spell grant (spec 05A3B10).
+// 2026-10-31: Retire Binder grant and summon capture/persistent resummoning routines (spec 05A3B11).
+// 2026-10-31: Retire damage/surrender defection and Goddess Mercy full-health recovery (spec 05A3B13).
+// 2026-10-31: Retire charm/hypnosis trait grants and reject retired direct status-spell casts (spec 05A3B14).
+// 2026-11-01: Retire SeductiveTouch support-action conversion/distraction runtime (spec 05A3B15).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
 using System;
@@ -312,10 +318,6 @@ public class Actor_Unit
 
     public int CurrentMaxMovement()
     {
-        if (Unit.HasTrait(Traits.Respawner) && (State.GameManager.TacticalMode.currentTurn == 1) && State.GameManager.TacticalMode.attackersTurnCheck == true)
-            Unit.ApplyStatusEffect(StatusEffectType.Respawns, 1, 1);
-        if (Unit.HasTrait(Traits.RespawnerIII) && (State.GameManager.TacticalMode.currentTurn == 1) && State.GameManager.TacticalMode.attackersTurnCheck == true)
-            Unit.ApplyStatusEffect(StatusEffectType.Respawns, 3, 3);
         if (Unit.Race == Race.Seville && !State.GameManager.TacticalMode.turboMode && TacticalUtilities.IsUnitControlledByPlayer(Unit) && (State.GameManager.TacticalMode.currentTurn == 1) && State.GameManager.TacticalMode.attackersTurnCheck == true && State.Rand.Next(20) == 1)
             MiscUtilities.DelayedInvoke(() => State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{Unit.Name} prepared for battle."), .2f); //Delayed to let the game fully load before executing
         int sizePenalty = (int)(PredatorComponent?.Fullness ?? 0);
@@ -423,26 +425,6 @@ public class Actor_Unit
         if (Unit.HasTrait(Traits.Petrifier) && State.World?.ItemRepository != null) //protection for the create strat screen
         {
             Unit.SingleUseSpells.Add(SpellList.Petrify.SpellType);
-            Unit.UpdateSpells();
-        }
-        if (Unit.HasTrait(Traits.Charmer) && State.World?.ItemRepository != null) //protection for the create strat screen
-        {
-            Unit.SingleUseSpells.Add(SpellList.Charm.SpellType);
-            Unit.UpdateSpells();
-        }
-        if (Unit.HasTrait(Traits.HypnoticGas) && State.World?.ItemRepository != null) //protection for the create strat screen
-        {
-            Unit.SingleUseSpells.Add(SpellList.HypnoGas.SpellType);
-            Unit.UpdateSpells();
-        }
-        if (Unit.HasTrait(Traits.Reanimator) && State.World?.ItemRepository != null) //protection for the create strat screen
-        {
-            Unit.SingleUseSpells.Add(SpellList.Reanimate.SpellType);
-            Unit.UpdateSpells();
-        }
-        if (Unit.HasTrait(Traits.Binder) && State.World?.ItemRepository != null) //protection for the create strat screen
-        {
-            Unit.SingleUseSpells.Add(SpellList.Bind.SpellType);
             Unit.UpdateSpells();
         }
         // Multi-use section
@@ -2185,21 +2167,6 @@ public class Actor_Unit
             else
                 State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{target.Unit.Name} counterattacked {Unit.Name} for {target.WeaponDamageAgainstTarget(this, false)} damage.");
         }
-        if (target.Unit.GetStatusEffect(StatusEffectType.Respawns) != null)
-        {
-            var spawnLoc = TacticalUtilities.GetRandomTileForActor(target);
-            if (spawnLoc == null)
-                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{target.Unit.Name} was unable to respawn!");
-            else
-                TacticalUtilities.Resurrect((spawnLoc),target);
-                TacticalGraphicalEffects.CreateGenericMagic(spawnLoc, spawnLoc, target, TacticalGraphicalEffects.SpellEffectIcon.Resurrect);
-                target.Unit.Health = target.Unit.MaxHealth;
-                target.Unit.RemoveRespawns();
-                if (target.Unit.Race != Race.RwuMercenaries)
-                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{target.Unit.Name} has respawned!");
-                else
-                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"Reinforcements have arrived!");
-        }
     }
 
     private void KillUnit(Actor_Unit target, Spell spell)
@@ -2233,21 +2200,6 @@ public class Actor_Unit
         if (Unit.HasTrait(Traits.TasteForBlood))
             GiveRandomBoost();
         Unit.GiveScaledExp(4 * target.Unit.ExpMultiplier, Unit.Level - target.Unit.Level);
-        if (target.Unit.GetStatusEffect(StatusEffectType.Respawns) != null)
-        {
-            var spawnLoc = TacticalUtilities.GetRandomTileForActor(target);
-            if (spawnLoc == null)
-                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{target.Unit.Name} was unable to respawn!");
-            else
-                TacticalUtilities.Resurrect((spawnLoc),target);
-                TacticalGraphicalEffects.CreateGenericMagic(spawnLoc, spawnLoc, target, TacticalGraphicalEffects.SpellEffectIcon.Resurrect);
-                target.Unit.Health = target.Unit.MaxHealth;
-                target.Unit.RemoveRespawns();
-                if (target.Unit.Race != Race.RwuMercenaries)
-                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{target.Unit.Name} has respawned!");
-                else
-                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"Reinforcements have arrived!");
-        }
     }
 
     /// <summary>
@@ -2640,7 +2592,7 @@ public class Actor_Unit
             return false;
         if (target.ReceivedRub)
             return false;
-        if ((target.Unit.GetApparentSide() != Unit.GetApparentSide() && target.Unit.GetApparentSide() != Unit.FixedSide) && !(Unit.HasTrait(Traits.SeductiveTouch) || Config.CanUseStomachRubOnEnemies || TacticalUtilities.GetMindControlSide(Unit) != -1))
+        if ((target.Unit.GetApparentSide() != Unit.GetApparentSide() && target.Unit.GetApparentSide() != Unit.FixedSide) && !(Config.CanUseStomachRubOnEnemies || TacticalUtilities.GetMindControlSide(Unit) != -1))
             return false;
         target.RubCount++;
         target.BeingRubbed = true;
@@ -2708,44 +2660,6 @@ public class Actor_Unit
             Movement -= thirdMovement;
         else
             Movement = 0;
-
-        if (Unit.HasTrait(Traits.SeductiveTouch) && (target.Unit.FixedSide != Unit.FixedSide) && target.TurnsSinceLastDamage > 1)
-        {
-            bool seduce = false;
-            bool distract = false;
-            if (!target.Unit.HasTrait(Traits.Untamable))
-                for (int i = 0; i < (Unit.HasTrait(Traits.PleasurableTouch) ? 2 : 1); i++)
-                {
-                    float r = (float)State.Rand.NextDouble();
-                    if (r < GetPureStatClashChance(Unit.GetStat(Stat.Dexterity), target.Unit.GetStat(Stat.Will), .1f))
-                    {
-                        if (target.TurnsSinceLastParalysis <= 0 || target.Paralyzed)
-                        {
-                            seduce = true;
-                        }
-                        else
-                        {
-                            distract = true;
-                        }
-
-                    }
-                }
-            if (seduce)
-            {
-                target.UnitSprite.DisplaySeduce();
-                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{target.Unit.Name}'s allegiance was updated after support from {Unit.Name}.");
-                if (target.Unit.Side != Unit.Side)
-                    State.GameManager.TacticalMode.SwitchAlignment(target);
-                target.Unit.FixedSide = Unit.FixedSide;
-                target.Unit.hiddenFixedSide = true;
-            }
-            else if (distract)
-            {
-                target.UnitSprite.DisplayDistract();
-                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{target.Unit.Name} was distracted by {Unit.Name}.");
-                target.Paralyzed = true;
-            }
-        }
 
         return true;
     }
@@ -3288,11 +3202,6 @@ public class Actor_Unit
                 }
                 State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{Unit.Name} surrendered.");
             }
-            if (Unit.HasTrait(Traits.TurnCoat))
-            {
-                State.GameManager.TacticalMode.SwitchAlignment(this);
-                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{Unit.Name} switched sides when they were hit");
-            }
         }
         if (Unit.HasTrait(Traits.MutualBiology) && damageType != DamageTypes.Mutual)
         {
@@ -3329,35 +3238,11 @@ public class Actor_Unit
                 }
             }
         }
-        if ((canKill == false && Unit.IsDead) || (Config.AutoSurrender && Unit.IsDead && State.Rand.NextDouble() < Config.AutoSurrenderChance && Surrendered == false && Unit.HasTrait(Traits.Fearless) == false && !KilledByDigestion && Unit.GetStatusEffect(StatusEffectType.Respawns) == null))
+        if ((canKill == false && Unit.IsDead) || (Config.AutoSurrender && Unit.IsDead && State.Rand.NextDouble() < Config.AutoSurrenderChance && Surrendered == false && Unit.HasTrait(Traits.Fearless) == false && !KilledByDigestion))
         {
             Unit.Health = 1;
             Surrendered = true;
             Movement = 0;
-            if (Config.AutoSurrender && Config.SurrenderedCanConvert && Unit.CanBeConverted())
-            {
-                if (State.Rand.NextDouble() <= Config.AutoSurrenderDefectChance)
-                {
-                    State.GameManager.TacticalMode.SwitchAlignment(this);
-                    AIAvoidEat = 2;
-                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{Unit.Name} switched sides when they surrendered");
-                    if ((Config.GoddessMercy == GoddessMercy.Both) || (Config.GoddessMercy == GoddessMercy.DefectorOnly))
-                    {
-                        Unit.Health = Unit.MaxHealth;
-                        State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{Unit.Name} recovered full HP after surrendering.");
-                    }
-                }
-                else if ((Config.GoddessMercy == GoddessMercy.Both) || (Config.GoddessMercy == GoddessMercy.LoyalOnly))
-                {
-                    Unit.Health = Unit.MaxHealth;
-                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{Unit.Name} recovered full HP after surrendering.");
-                }
-            }
-            else if ((Config.GoddessMercy == GoddessMercy.Both) || (Config.GoddessMercy == GoddessMercy.LoyalOnly))
-            {
-                Unit.Health = Unit.MaxHealth;
-                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{Unit.Name} recovered full HP after surrendering.");
-            }
             if (State.Rand.NextDouble() <= Config.SurrenderedPredAutoRegur)
             {
                 PredatorComponent?.FreeAnyAlivePrey();
@@ -3379,7 +3264,7 @@ public class Actor_Unit
             State.GameManager.TacticalMode.DirtyPack = true;
             Targetable = false;
             Surrendered = true;
-            if (Config.VisibleCorpses && Unit.Race != Race.Erin && Unit.Race != Race.Iliijiith && !Unit.HasTrait(Traits.CloseCall))
+            if (Config.VisibleCorpses && Unit.Race != Race.Erin && Unit.Race != Race.Iliijiith)
             {
                 float angle = 40 + State.Rand.Next(280);
                 UnitSprite.transform.rotation = Quaternion.Euler(0, 0, angle);
@@ -3388,8 +3273,6 @@ public class Actor_Unit
             else
             {
                 Visible = false;
-                if (Unit.HasTrait(Traits.CloseCall))
-                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{Unit.Name} fled.");
             }
 
             PredatorComponent?.FreeAnyAlivePrey();
@@ -3716,6 +3599,8 @@ public class Actor_Unit
 
     internal bool CastStatusSpell(StatusSpell spell, Actor_Unit target, Vec2i targetArea = null, Stat stat = Stat.Mind)
     {
+        if (spell.IsRetired)
+            return false;
         if (Unit.SpendMana(spell.ManaCost) == false && spell.IsFree != true)
             return false;
         OnSpellCast(spell, target);
@@ -3765,183 +3650,6 @@ public class Actor_Unit
             Movement = 0;
 
         return hit;
-    }
-
-    internal bool CastBind(Actor_Unit t)
-    {
-        var spell = SpellList.Bind;
-        if (t.Unit.Type != UnitType.Summon)
-            return false;
-        var binder = TacticalUtilities.Units.Where(a => a.Unit.BoundUnit?.Unit == t.Unit).FirstOrDefault();
-        if (binder?.Unit.FixedSide == Unit.FixedSide) return false;
-        if (Unit.SpendMana(spell.ManaCost) == false && spell.IsFree != true) return false;
-
-
-        if (binder != null)
-        {
-            if (binder.Unit.GetStat(Stat.Mind) > Unit.GetStat(Stat.Mind))
-            {
-                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{Unit.Name} failed to take control of {t.Unit.Name} from {binder.Unit.Name}.");
-            }
-            else if (binder.Unit.GetStat(Stat.Mind) < Unit.GetStat(Stat.Mind))
-            {
-                State.GameManager.SoundManager.PlaySpellCast(spell, this);
-                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{Unit.Name} took control of {t.Unit.Name} from {binder.Unit.Name}.");
-                binder.Unit.BoundUnit = null;
-                Unit.BoundUnit = t;
-
-                if (t.Unit.Side != Unit.Side) State.GameManager.TacticalMode.SwitchAlignment(t);
-                if (!t.Unit.HasTrait(Traits.Untamable))
-                    t.Unit.FixedSide = Unit.FixedSide;
-                t.Movement = t.CurrentMaxMovement();
-                var actorCharm = Unit.GetStatusEffect(StatusEffectType.Charmed) ?? Unit.GetStatusEffect(StatusEffectType.Hypnotized);
-                if (actorCharm != null)
-                {
-                    t.Unit.ApplyStatusEffect(StatusEffectType.Charmed, actorCharm.Strength, actorCharm.Duration);
-                }
-            }
-            else
-            {
-                int outcome = State.Rand.Next(4);
-                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{Unit.Name} and {binder.Unit.Name} tied in a binding contest for {t.Unit.Name}.");
-                if (outcome == 3)
-                {
-                    State.GameManager.SoundManager.PlayMisc("unbound", this);
-                    var obj = UnityEngine.Object.Instantiate(State.GameManager.TacticalEffectPrefabList.ShunGokuSatsu);
-                    obj.transform.SetPositionAndRotation(new Vector3(t.Position.x, t.Position.y), new Quaternion());
-                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{t.Unit.Name} became unbound.");
-                    t.Unit.Type = UnitType.Adventurer;
-                    binder.Unit.BoundUnit = null;
-                    t.Unit.Name += " The Unbound";
-                    t.Unit.AddPermanentTrait(Traits.PeakCondition);
-                    int unusedSide = 703;
-                    while (State.World.AllActiveEmpires?.Any(emp => emp.Side == unusedSide) ?? false)
-                    {
-                        unusedSide++;
-                    }
-                    t.Unit.FixedSide = unusedSide;
-                    State.GameManager.TacticalMode.SwitchAlignment(t);
-                    t.Unit.AddPermanentTrait(Traits.Untamable);
-                    t.Unit.AddPermanentTrait(Traits.Large);
-                    t.Unit.GiveRawExp((int)(binder.Unit.Experience * 0.50 + Unit.Experience * 0.50));
-                    StrategicUtilities.SpendLevelUps(t.Unit);
-                    t.Unit.Health = t.Unit.MaxHealth;
-                    t.Unit.RestoreMana(t.Unit.MaxMana);
-                    if (binder.sidesAttackedThisBattle == null) binder.sidesAttackedThisBattle = new List<int>();
-                    binder.sidesAttackedThisBattle.Add(unusedSide);
-                    if (this.sidesAttackedThisBattle == null) this.sidesAttackedThisBattle = new List<int>();
-                    this.sidesAttackedThisBattle.Add(unusedSide);
-                }
-                else if (outcome == 2)
-                {
-                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{Unit.Name} bound {t.Unit.Name}.");
-                    State.GameManager.SoundManager.PlaySpellCast(spell, this);
-                    binder.Unit.BoundUnit = null;
-                    Unit.BoundUnit = t;
-
-                    if (t.Unit.Side != Unit.Side) State.GameManager.TacticalMode.SwitchAlignment(t);
-                    if (!t.Unit.HasTrait(Traits.Untamable))
-                        t.Unit.FixedSide = Unit.FixedSide;
-                    t.Movement = t.CurrentMaxMovement();
-                    var actorCharm = Unit.GetStatusEffect(StatusEffectType.Charmed) ?? Unit.GetStatusEffect(StatusEffectType.Hypnotized);
-                    if (actorCharm != null)
-                    {
-                        t.Unit.ApplyStatusEffect(StatusEffectType.Charmed, actorCharm.Strength, actorCharm.Duration);
-                    }
-                }
-                else if (outcome == 1)
-                {
-                    State.GameManager.SoundManager.PlaySpellCast(spell, this);
-                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{Unit.Name}'s binding had no effect on {t.Unit.Name}.");
-                }
-                else if (outcome == 0)
-                {
-                    State.GameManager.SoundManager.PlayMisc("unbound", this);
-                    var obj = UnityEngine.Object.Instantiate(State.GameManager.TacticalEffectPrefabList.ShunGokuSatsu);
-                    obj.transform.SetPositionAndRotation(new Vector3(t.Position.x, t.Position.y), new Quaternion());
-                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{t.Unit.Name} was banished.");
-                    t.Unit.Type = UnitType.Adventurer;
-                    t.Surrendered = true;
-                    t.Damage(9999999, true, true);
-                    t.Visible = false;
-                    t.Unit.Name += " The Banished";
-                }
-
-            }
-        }
-        else
-        {
-            State.GameManager.SoundManager.PlaySpellCast(spell, this);
-
-            Unit.BoundUnit = t;
-
-            if (t.Unit.Side != Unit.Side) State.GameManager.TacticalMode.SwitchAlignment(t);
-            if (!t.Unit.HasTrait(Traits.Untamable))
-                t.Unit.FixedSide = Unit.FixedSide;
-            t.Movement = t.CurrentMaxMovement();
-            var actorCharm = Unit.GetStatusEffect(StatusEffectType.Charmed) ?? Unit.GetStatusEffect(StatusEffectType.Hypnotized);
-            if (actorCharm != null)
-            {
-                t.Unit.ApplyStatusEffect(StatusEffectType.Charmed, actorCharm.Strength, actorCharm.Duration);
-            }
-            State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{Unit.Name} bound {t.Unit.Name}.");
-        }
-
-        if (Unit.TraitBoosts.SpellAttacks > 1)
-        {
-            int movementFraction = 1 + MaxMovement() / Unit.TraitBoosts.SpellAttacks;
-            if (Movement > movementFraction)
-                Movement -= movementFraction;
-            else
-                Movement = 0;
-        }
-        else
-            Movement = 0;
-
-        return true;
-    }
-
-    internal bool SummonBound(Vec2i l)
-    {
-        var spell = SpellList.Bind;
-        if (Unit.BoundUnit == null)
-            return false;
-
-        if (TacticalUtilities.Units.Contains(Unit.BoundUnit) && !Unit.BoundUnit.Unit.IsDead)
-            return false;
-        if (Unit.SpendMana(spell.ManaCost) == false && spell.IsFree != true) return false;
-
-        State.GameManager.SoundManager.PlaySpellCast(SpellList.Summon, this);
-
-        if (TacticalUtilities.Units.Contains(Unit.BoundUnit))
-        {
-            TacticalUtilities.Reanimate(l, Unit.BoundUnit, Unit);
-            Unit.BoundUnit.Unit.Health = Unit.BoundUnit.Unit.MaxHealth;
-        }
-        else
-        {
-            StrategicUtilities.SpendLevelUps(Unit.BoundUnit.Unit);
-            var target = State.GameManager.TacticalMode.AddUnitToBattle(Unit.BoundUnit.Unit, l);
-            target.Visible = true;
-            target.Targetable = true;
-            target.SelfPrey = null;
-            target.Surrendered = false;
-            target.Unit.Health = target.Unit.MaxHealth;
-            State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"<b>{Unit.Name}</b> re-summoned <b>{Unit.BoundUnit.Unit.Name}</b>.");
-        }
-
-        if (Unit.TraitBoosts.SpellAttacks > 1)
-        {
-            int movementFraction = 1 + MaxMovement() / Unit.TraitBoosts.SpellAttacks;
-            if (Movement > movementFraction)
-                Movement -= movementFraction;
-            else
-                Movement = 0;
-        }
-        else
-            Movement = 0;
-
-        return true;
     }
 
     internal void ShareTrait(Traits trait,Traits maxTrait = Traits.Infiltrator)

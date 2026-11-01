@@ -2,6 +2,8 @@
 // 2026-10-30: Guard spawn creation and respect a rejected shape change before sharing traits (spec 03A2).
 // 2026-10-30: Replace callback prose and presentation-only choice switches; preserve containment effects (spec 04B2).
 // Upstream additional narrative contributions were credited to Tatltuae; credit retained after reset.
+// 2026-10-31: Retire Respawns resurrection after completed digestion (spec 05A3B7).
+// 2026-10-31: Retire digestion/absorption allegiance conversion and species rebirth branches (spec 05A3B8).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
 using System;
@@ -1705,21 +1707,6 @@ public class PredatorComponent
                 if (!callback.OnFinishDigestion(preyUnit, actor, location))
                     return 0;
             }
-            if (preyUnit.Unit.CanBeConverted() &&
-             (Location(preyUnit) == PreyLocation.womb || Config.KuroTenkoConvertsAllTypes) &&
-             (Config.KuroTenkoEnabled && (Config.UBConversion == UBConversion.Both || Config.UBConversion == UBConversion.ConversionOnly) || unit.HasTrait(Traits.PredConverter)) &&
-             !unit.HasTrait(Traits.PredRebirther) &&
-             !unit.HasTrait(Traits.PredGusher) && !(preyUnit.Unit.AtypicalBiology() && !unit.AtypicalBiology()) && !(!preyUnit.Unit.AtypicalBiology() && unit.AtypicalBiology() && State.Rand.Next(2) == 0))
-            {
-                preyUnit.Unit.Health = preyUnit.Unit.MaxHealth / 2;
-                preyUnit.Actor.Movement = 0;
-                preyUnit.ChangeSide(unit.Side);
-                TacticalUtilities.Log.RegisterBirth(unit, preyUnit.Unit, 1f, Location(preyUnit), 2);
-                FreeUnit(preyUnit.Actor);
-                if (!State.GameManager.TacticalMode.turboMode)
-                    actor.SetBirthMode();
-                return 0;
-            }
             State.GameManager.TacticalMode.TacticalStats.RegisterDigestion(unit.Side);
             if (!State.GameManager.TacticalMode.turboMode)
                 actor.SetDigestionMode();
@@ -1727,35 +1714,6 @@ public class PredatorComponent
                 GameObject.Instantiate(State.GameManager.TacticalMode.SkullPrefab, new Vector3(actor.Position.x + UnityEngine.Random.Range(-0.2F, 0.2F), actor.Position.y + 0.1F + UnityEngine.Random.Range(-0.1F, 0.1F)), new Quaternion());
             Actor_Unit existingPredator = actor;
             freshKill = true;
-            if (unit.HasTrait(Traits.DigestionConversion) && State.Rand.Next(2) == 0 && preyUnit.Unit.CanBeConverted() && !(preyUnit.Unit.AtypicalBiology() && !unit.AtypicalBiology()))
-            {
-                preyUnit.Unit.Health = preyUnit.Unit.MaxHealth / 2;
-                preyUnit.Actor.Movement = 0;
-
-                preyUnit.ChangeSide(unit.Side);
-                State.GameManager.TacticalMode.TacticalStats.RegisterRegurgitation(unit.Side);
-                TacticalUtilities.Log.RegisterBirth(unit, preyUnit.Unit, 0.5f, Location(preyUnit), 4);
-                FreeUnit(preyUnit.Actor);
-                return 0;
-            }
-            if (unit.HasTrait(Traits.DigestionRebirth) && State.Rand.Next(2) == 0 && preyUnit.Unit.CanBeConverted() && (Config.SpecialMercsCanConvert || unit.DetermineConversionRace() < Race.Selicia) && !(preyUnit.Unit.AtypicalBiology() && !unit.AtypicalBiology()))
-            {
-                //HandleShapeshifterRebirth(preyUnit);
-                Race conversionRace = unit.DetermineConversionRace();
-                if(unit.HasTrait(Traits.DigestionRebirth) && !unit.HasSharedTrait(Traits.DigestionRebirth))
-                    conversionRace = unit.HiddenUnit.DetermineConversionRace();
-                // use source race IF changeling already had this ability before transforming
-                preyUnit.Unit.Health = preyUnit.Unit.MaxHealth / 2;
-                preyUnit.ChangeSide(unit.Side);
-                if ((!preyUnit.Unit.AtypicalBiology() && !unit.AtypicalBiology()) || (preyUnit.Unit.AtypicalBiology() && unit.AtypicalBiology())) // Only if the both units have AcellularBody or neither can they change the prey's race
-                    preyUnit.ChangeRace(conversionRace);
-                if (!preyUnit.Unit.AtypicalBiology() && unit.AtypicalBiology())
-                    TacticalUtilities.Log.RegisterBirth(unit, preyUnit.Unit, 0.5f, Location(preyUnit), 4);
-                else
-                    TacticalUtilities.Log.RegisterBirth(unit, preyUnit.Unit, 0.5f, Location(preyUnit), 3);
-                FreeUnit(preyUnit.Actor);
-                return 0;
-            }
             TacticalUtilities.Log.RegisterDigest(unit, preyUnit.Unit, Location(preyUnit));
             preyUnit.Actor.KilledByDigestion = true;
             if (preyUnit.Unit.HasTrait(Traits.CursedMark))
@@ -1803,23 +1761,6 @@ public class PredatorComponent
                 {
                     unit.RandomStatIncrease(1);
                 }
-            }
-            if (preyUnit.Unit.GetStatusEffect(StatusEffectType.Respawns) != null)
-            {
-                var spawnLoc = TacticalUtilities.GetRandomTileForActor(preyUnit.Actor);
-                if (spawnLoc == null)
-                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{preyUnit.Unit.Name} was unable to respawn!");
-                else
-                    TacticalUtilities.Resurrect((spawnLoc),preyUnit.Actor);
-                    TacticalGraphicalEffects.CreateGenericMagic(spawnLoc, spawnLoc, preyUnit.Actor, TacticalGraphicalEffects.SpellEffectIcon.Resurrect);
-                    preyUnit.Unit.Health = preyUnit.Unit.MaxHealth;
-                    preyUnit.Unit.RemoveRespawns();
-                    FreeUnit(preyUnit.Actor);
-                    if (preyUnit.Unit.Race != Race.RwuMercenaries)
-                        State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{preyUnit.Unit.Name} has respawned!");
-                    else
-                        State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"Reinforcements have arrived!");
-                return 0;
             }
         }
 
@@ -1950,37 +1891,7 @@ public class PredatorComponent
                     if (!callback.OnFinishAbsorption(preyUnit, actor, location))
                         return 0;
                 }
-                if (preyUnit.Unit.CanBeConverted() &&
-                 (Location(preyUnit) == PreyLocation.womb || Config.KuroTenkoConvertsAllTypes) &&
-                 ((Config.KuroTenkoEnabled && (Config.UBConversion == UBConversion.Both || Config.UBConversion == UBConversion.RebirthOnly)) || unit.HasTrait(Traits.PredRebirther)) &&
-                 (Config.SpecialMercsCanConvert || unit.DetermineConversionRace() < Race.Selicia) &&
-                 !unit.HasTrait(Traits.PredGusher) && !(preyUnit.Unit.AtypicalBiology() && !unit.AtypicalBiology()) && !(!preyUnit.Unit.AtypicalBiology() && unit.AtypicalBiology() && State.Rand.Next(2) == 0))
-                {
-                    Race conversionRace = unit.DetermineConversionRace();
-                    if(unit.HasTrait(Traits.PredRebirther) && !unit.HasSharedTrait(Traits.PredRebirther))
-                        conversionRace = unit.HiddenUnit.DetermineConversionRace();
-                    // use source race IF changeling already had this ability before transforming
-                    preyUnit.Unit.Health = preyUnit.Unit.MaxHealth / 2;
-                    preyUnit.ChangeSide(unit.Side);
-                    if (preyUnit.Unit.Race != conversionRace && ((!preyUnit.Unit.AtypicalBiology() && !unit.AtypicalBiology()) || (preyUnit.Unit.AtypicalBiology() && unit.AtypicalBiology()))) // Only if the both units have AcellularBody or neither can they change the prey's race
-                    {
-                        //HandleShapeshifterRebirth(preyUnit);
-                        preyUnit.ChangeRace(conversionRace);
-                    }
-                    if (!preyUnit.Unit.AtypicalBiology() && unit.AtypicalBiology())
-                        TacticalUtilities.Log.RegisterBirth(unit, preyUnit.Unit, 1f, Location(preyUnit), 2);
-                    else
-                        TacticalUtilities.Log.RegisterBirth(unit, preyUnit.Unit, 1f, Location(preyUnit), 1);
-                    FreeUnit(preyUnit.Actor);
-                    if (!State.GameManager.TacticalMode.turboMode)
-                        actor.SetBirthMode();
-                    RemovePrey(preyUnit);
-                    return 0;
-                }
-                else
-                {
-                    TacticalUtilities.Log.RegisterAbsorb(unit, preyUnit.Unit, Location(preyUnit));
-                }
+                TacticalUtilities.Log.RegisterAbsorb(unit, preyUnit.Unit, Location(preyUnit));
                 unit.GiveScaledExp(8 * preyUnit.Unit.ExpMultiplier, unit.Level - preyUnit.Unit.Level, true);
                 AbsorptionEffect(preyUnit, Location(preyUnit));
                 if (!State.GameManager.TacticalMode.turboMode)
@@ -2058,17 +1969,6 @@ public class PredatorComponent
             }
         }
         return totalHeal;
-    }
-
-    private void HandleShapeshifterRebirth(Prey preyUnit)
-    {
-        //if (preyUnit.Unit.HasTrait(Traits.Shapeshifter) || preyUnit.Unit.HasTrait(Traits.Skinwalker)) // preserve the unit as it is and rebirth a copy of it instead
-        //{
-        //    Unit clone = preyUnit.Unit.Clone();
-        //    preyUnit.Unit.ShifterShapes.Add(clone);
-        //    clone.ShifterShapes = preyUnit.Unit.ShifterShapes;
-        //    preyUnit.Unit = clone;
-        //}
     }
 
     //public List<Actor_Unit> Birth()

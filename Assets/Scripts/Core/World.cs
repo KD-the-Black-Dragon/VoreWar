@@ -1,4 +1,7 @@
-﻿using MapObjects;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-10-31: Retire unused empire-campaign construction; retain standalone tactical context (spec 05A3A).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using MapObjects;
 using OdinSerializer;
 using System.Collections.Generic;
 using System.Linq;
@@ -88,82 +91,8 @@ public class World
         Constructibles = new ConstructibleBuilding[0];
     }
 
-    internal World(StrategicCreationArgs args, Map map)
-    {
-        State.World = this;
-        StrategyPathfinder.Initialized = false;
-        ConfigStorage = Config.World;
-        BuildingConfigStorage = Config.BuildConfig;
+    // The uncalled empire-campaign world constructor is retired.
 
-        if (map == null)
-        {
-            WorldGenerator worldGen = new WorldGenerator();
-            int empireCount = Config.VillagesPerEmpire.Where(s => s > 0).Count();
-            worldGen.GenerateWorld(ref Tiles, ref Villages, args.Team, args.MapGen);
-            Claimables = new ClaimableBuilding[0];
-            Constructibles = new ConstructibleBuilding[0];
-            worldGen.PlaceMercenaryHouses(args.MercCamps);
-            worldGen.PlaceAncientTeleporters(args.AncientTeleporters);
-            worldGen.PlaceGoldMines(args.GoldMines);
-            Doodads = new StrategicDoodadType[Config.StrategicWorldSizeX, Config.StrategicWorldSizeY];
-            WorldGenerator.ClearVillagePaths(args.MapGen);
-        }
-        else
-        {
-            Tiles = map.Tiles;
-            Doodads = map.Doodads;
-            MapVillagePopulator pop = new MapVillagePopulator(Tiles);
-            pop.PopulateVillages(map, ref Villages);
-            pop.PopulateMercenaryHouses(map, ref MercenaryHouses);
-            pop.PopulateAncientTeleporters(map, ref AncientTeleporters);
-            pop.PopulateClaimables(map, ref Claimables);
-            pop.PopulateConstructibles(map, ref Constructibles);
-        }
-
-
-        MainEmpires = new List<Empire>();
-        for (int i = 0; i < Config.NumberOfRaces; i++)
-        {
-            MainEmpires.Add(new Empire(args.empireArgs[i]));
-        }
-        for (int i = 0; i < MainEmpires.Count; i++)
-        {
-            MainEmpires[i].CalcIncome(Villages);
-            MainEmpires[i].CanVore = args.CanVore[i];
-            MainEmpires[i].TurnOrder = args.TurnOrder[i];
-        }
-        MainEmpires.Add(new Empire(new Empire.ConstructionArgs(700, UnityEngine.Color.red, new UnityEngine.Color(.6f, 0, 0), 5, StrategyAIType.Basic, TacticalAIType.Full, 700, 16, 16)));
-        MainEmpires.Last().Name = "Rebels";
-        MainEmpires.Last().ReplacedRace = Race.Tigers;
-        MainEmpires.Add(new Empire(new Empire.ConstructionArgs(701, UnityEngine.Color.red, new UnityEngine.Color(.6f, 0, 0), 5, StrategyAIType.Basic, TacticalAIType.Full, 701, 16, 16)));
-        MainEmpires.Last().Name = "Bandits";
-        /*         MainEmpires.Add(new Empire(new Empire.ConstructionArgs(702, UnityEngine.Color.red, new UnityEngine.Color(.6f, 0, 0), 5, StrategyAIType.Basic, TacticalAIType.Full, 702, 16, 16)));
-                MainEmpires.Last().Name = "Outcasts";
-                MainEmpires.Last().ReplacedRace = Race.Tigers; */
-        UpdateBanditLimits();
-        crazyBuildings = args.crazyBuildings;
-        VillageBuildingList.SetBuildings(crazyBuildings);
-
-
-        ItemRepository = new ItemRepository();
-        Stats = new StrategicStats();
-        InitializeMonsters();
-
-        //Added to get Bandits and Rebels to generate correctly
-        RefreshEmpires();
-        RefreshTurnOrder();
-
-        State.GameManager.StrategyMode.Setup();
-        State.GameManager.StrategyMode.RedrawTiles();
-        State.GameManager.StrategyMode.RedrawVillages();
-        RelationsManager.ResetRelations();
-        State.GameManager.StrategyMode.BeginTurn();
-        State.GameManager.StrategyMode.RebuildSpawners();
-        MercenaryHouse.UpdateStaticStock();
-        RenameBunnyTownsAsPreyTowns();
-
-
-    }
 
     internal void UpdateBanditLimits()
     {
