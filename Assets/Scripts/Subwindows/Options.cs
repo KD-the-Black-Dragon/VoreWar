@@ -1,5 +1,7 @@
 // Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Describe active-list reset/reload and preservation of inactive name files (spec 03B2).
+// 2026-11-02: Place the active company leader-revival preference in the normal Options screen (spec 14 feedback).
+// 2026-11-02: Use a centered categorized blue Options presentation while preserving preference storage and callbacks (spec 15A).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 ﻿using System;
 using UnityEngine;
@@ -54,9 +56,59 @@ public class Options : MonoBehaviour
     public Text TooltipText;
 
 
+    OptionsView presentation;
+    Toggle companyRevival;
+    bool updatingCompanyOption;
+    CompanyCampaignView CompanyView
+    { get { return State.GameManager.Start_Mode.GetComponent<CompanyCampaignView>(); } }
+    bool HasCompanyOptions
+    { get { return State.GameManager.CompanyBattle != null || (CompanyView != null && CompanyView.HasCampaignOptions); } }
+    bool CompanyRevivalEnabled
+    { get { return State.GameManager.CompanyBattle != null ? State.GameManager.CompanyBattle.RevivalEnabled : CompanyView.LeaderRevivalEnabled; } }
     public void Open()
     {
         GetValues();
+        if (companyRevival == null && HasCompanyOptions)
+        {
+            companyRevival = Instantiate(PromptEndTurn.gameObject, transform, false).GetComponent<Toggle>();
+            companyRevival.onValueChanged = new Toggle.ToggleEvent();
+            companyRevival.name = "Company leader revival"; companyRevival.group = null;
+            foreach (var text in companyRevival.GetComponentsInChildren<Text>(true)) text.text = "Company: leader revival";
+            foreach (var tooltip in companyRevival.GetComponentsInChildren<DisplayTooltip>(true)) tooltip.value = 0;
+        }
+        if (companyRevival != null)
+        {
+            companyRevival.gameObject.SetActive(HasCompanyOptions);
+            companyRevival.onValueChanged = new Toggle.ToggleEvent();
+            if (HasCompanyOptions)
+            {
+                companyRevival.isOn = CompanyRevivalEnabled;
+                companyRevival.onValueChanged.AddListener(ChangeCompanyRevival);
+            }
+        }
+        if (presentation == null) presentation = new OptionsView(this);
+        presentation.Show(companyRevival, HasCompanyOptions);
+    }
+    void Update() { if (presentation != null) presentation.Refresh(); }
+    void ChangeCompanyRevival(bool enabled)
+    {
+        if (updatingCompanyOption) return;
+        updatingCompanyOption = true;
+        try
+        {
+            if (!HasCompanyOptions) throw new InvalidOperationException("No active company options are available.");
+            if (State.GameManager.CompanyBattle != null)
+            {
+                if (State.GameManager.CompanyBattle.RevivalEnabled != enabled) State.GameManager.CompanyBattle.ToggleRevival();
+            }
+            else CompanyView.SetLeaderRevival(enabled);
+        }
+        catch (Exception ex) { State.GameManager.CreateMessageBox("Could not change leader revival: " + ex.Message); }
+        finally
+        {
+            if (HasCompanyOptions) companyRevival.isOn = CompanyRevivalEnabled;
+            updatingCompanyOption = false;
+        }
     }
 
     public void CloseAndSave()
@@ -157,6 +209,7 @@ public class Options : MonoBehaviour
 
     public void RefreshText()
     {
+        if (presentation != null) { presentation.Refresh(); return; }
         StrategicDelaySlider.GetComponentInChildren<Text>().text = $"{StrategicDelaySlider.name}: {Math.Round(StrategicDelaySlider.value, 3)} sec";
         TacticalPlayerMovementDelaySlider.GetComponentInChildren<Text>().text = $"{TacticalPlayerMovementDelaySlider.name}: {Math.Round(TacticalPlayerMovementDelaySlider.value, 3)} sec";
         TacticalAIMovementDelaySlider.GetComponentInChildren<Text>().text = $"{TacticalAIMovementDelaySlider.name}: {Math.Round(TacticalAIMovementDelaySlider.value, 3)} sec";

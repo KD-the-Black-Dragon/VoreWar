@@ -1,4 +1,9 @@
-﻿using System;
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-01: Complete approved ability retirement and close legacy reactivation paths (spec 05A3B17).
+// 2026-11-01: Explain downed status and retained fear/retreat traits without the retired surrender reset (spec 10).
+// 2026-11-02: Use the preferred vore terminology in the downed-unit tooltip (Options feedback).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -366,7 +371,7 @@ public class HoveringTooltip : MonoBehaviour
         switch (words[2])
         {
             case "surrendered":
-                return "This unit has surrendered, all units have a 100% chance to eat it, and it only costs 2 AP to eat it.";
+                return "This unit is downed and cannot act for the rest of the battle. Vore succeeds with a 100% chance and costs 2 AP, subject to capacity.";
 
             case "Imprinted":
                 return $"This unit is imprinted in the village of {unit.SavedVillage.Name}, at level {unit.SavedCopy?.Level ?? 0} with {Math.Round(unit.SavedCopy?.Experience ?? 0)} exp.  " +
@@ -418,6 +423,8 @@ public class HoveringTooltip : MonoBehaviour
 
     public static string GetTraitData(Traits trait)
     {
+        if (TraitsMethods.IsRetired(trait))
+            return "Retired in the mercenary-company conversion.";
         if (trait >= (Traits)6000)
         {
             var cond = State.ConditionalTraitList.Where(ct => trait == (Traits)ct.id).FirstOrDefault();
@@ -566,7 +573,7 @@ public class HoveringTooltip : MonoBehaviour
             case Traits.HeavyPounce:
                 return "Pounce does extra melee damage based on the weight of prey, but defense is also lowered for one turn after pouncing based on the weight of prey (requires the pounce trait to be useable)";
             case Traits.Cruel:
-                return "Unit can attempt to eat non-surrendered allied units at normal odds";
+                return "Unit can attempt to eat standing allied units at normal odds";
             case Traits.MetabolicSurge:
                 return "Unit gains a burst of power after digesting a victim";
             case Traits.EnthrallingDepths:
@@ -574,7 +581,7 @@ public class HoveringTooltip : MonoBehaviour
             case Traits.FearsomeAppetite:
                 return "Consuming a victim frightens nearby allies of the prey, temporarily reducing their stats";
             case Traits.FriendlyStomach:
-                return "Can vore friendly units, friendly units that are vored take no digestion damage \nThey do not try to escape, but can be regurgitated or are freed at the end of battle\nHas 100% chance to eat allies, and only costs 2 AP, like eating surrendered units.  May cause battles to not automatically end if used with TheGreatEscape";
+                return "Can vore friendly units, friendly units that are vored take no digestion damage \nThey do not try to escape, but can be regurgitated or are freed at the end of battle\nHas 100% chance to eat allies, and only costs 2 AP, like consuming downed units.  May cause battles to not automatically end if used with TheGreatEscape";
             case Traits.TailStrike:
                 return "An attack that does less damage, but attacks the tile and the 2 tiles adjacent to it that are within reach";
             case Traits.HealingBelly:
@@ -618,7 +625,7 @@ public class HoveringTooltip : MonoBehaviour
             case Traits.AntPheromones:
                 return "Unit will summon some friendly ants, depending on how many units have this trait.";
             case Traits.Fearless:
-                return "Unit can not flee nor surrender (also applies to auto-surrender).  If something does happen to make the unit surrender, it will automatically recover on the next turn.";
+                return "This unit refuses to flee. It can still become downed from injury or fear and cannot recover command ability during battle.";
             case Traits.Inedible:
                 return "Unit can not be vored by other units.  (It makes their effective size so big that no one has the capacity to eat them)\n(Cheat Trait)";
             case Traits.AllOutFirstStrike:
@@ -750,7 +757,7 @@ public class HoveringTooltip : MonoBehaviour
             case Traits.Timid:
                 return "Unit is shaken if the turn ends and there are more enemies than allies are nearby. (This unit counts as it's own ally)";
             case Traits.Cowardly:
-                return "Unit has a chance based on it's missing health to surrender.";
+                return "Unit has a chance based on missing health to become downed for the rest of the battle.";
             case Traits.TurnCoat:
                 return "Unit has a chance based on it's missing health to change sides.";
             case Traits.MagicSynthesis:
@@ -812,7 +819,7 @@ public class HoveringTooltip : MonoBehaviour
             case Traits.SlowStart:
                 return "For the first 5 turns of battle, unit's MP is reduced by 50%.";
             case Traits.CurseOfImmolation:
-                return "At start of turn, Unit deals it's level in fire damage to itself and all units around it or it's predator, if this unit has been consumed. This damage can not kill. Effect does not activate if unit has surrendered.";
+                return "At start of turn, Unit deals it's level in fire damage to itself and all units around it or it's predator, if this unit has been consumed. This damage can not kill. Effect does not activate if the unit is downed.";
             case Traits.CurseOfSacrifice:
                 return "When a unit within 3 spaces is consumed, this unit has a 10% chance to trade places with them and be consumed instead.";          
             case Traits.CurseOfEquivalency:

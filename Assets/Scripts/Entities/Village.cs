@@ -1,3 +1,6 @@
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-01: Separate stored species reads from intentional override creation (spec 03B3C).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
 using System;
 using System.Collections.Generic;
@@ -1445,11 +1448,7 @@ public class Village
             }
         }
 
-        var power = State.RaceSettings.Get(merc.Unit.Race).PowerAdjustment;
-        if (power == 0)
-        {
-            power = RaceParameters.GetTraitData(merc.Unit).PowerAdjustment;
-        }
+        var power = State.RaceSettings.GetPowerAdjustment(merc.Unit.Race);
         StrategicUtilities.SetAIClass(merc.Unit);
         StrategicUtilities.SpendLevelUps(merc.Unit);
         merc.Cost = (int)((25 + extraCost + State.Rand.Next(15) + (.04 * exp)) * UnityEngine.Random.Range(0.8f, 1.2f) * power);
@@ -1517,11 +1516,7 @@ public class Village
             }
         }
 
-        var power = State.RaceSettings.Get(merc.Unit.Race).PowerAdjustment;
-        if (power == 0)
-        {
-            power = RaceParameters.GetTraitData(merc.Unit).PowerAdjustment;
-        }
+        var power = State.RaceSettings.GetPowerAdjustment(merc.Unit.Race);
         StrategicUtilities.SetAIClass(merc.Unit);
         StrategicUtilities.SpendLevelUps(merc.Unit);
         merc.Cost = (int)((25 + extraCost + State.Rand.Next(15) + (.12 * exp)) * UnityEngine.Random.Range(0.8f, 1.2f) * power);

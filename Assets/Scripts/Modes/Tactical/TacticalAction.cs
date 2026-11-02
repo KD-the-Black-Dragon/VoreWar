@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-01: Remove the voluntary surrender action from both tactical modes (spec 10).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -289,7 +292,6 @@ static class TacticalActionList
 
         //UntargetedActions.Add(new UntargetedTacticalAction("Shapeshift", () => State.GameManager.TacticalMode.ButtonCallback(16), (a) => a.Unit.ShifterShapes != null && a.Unit.ShifterShapes.Count > 1));
         UntargetedActions.Add(new UntargetedTacticalAction("Flee", () => State.GameManager.TacticalMode.ButtonCallback(10), (a) => true));
-        UntargetedActions.Add(new UntargetedTacticalAction("Surrender", () => State.GameManager.TacticalMode.ButtonCallback(9), (a) => true, new Color(.9f, .65f, .65f)));
         UntargetedActions.Add(new UntargetedTacticalAction("Reveal", () => State.GameManager.TacticalMode.ButtonCallback(15), (a) => a.Unit.hiddenFixedSide && TacticalUtilities.PlayerCanSeeTrueSide(a.Unit)));
         UntargetedActions.Add(new UntargetedTacticalAction("Defect", () => State.GameManager.TacticalMode.ButtonCallback(14), (a) => a.allowedToDefect));
     }

@@ -1,6 +1,6 @@
 # 13 — New road events and ambushes
 
-**Status:** Proposed specification. Planning only; execution has not started.
+**Status:** User-accepted on 2026-11-02 with a30% reduction in new slug encounter budgets (0.80 to0.56); further testing explicitly waived for that tuning. Earlier compile/scene/regression checks predate the constant-only adjustment. See [implementation](../implementation/13-road-events-and-xp.md) and historical [source preparation](../implementation/13-road-events-preparation.md).
 
 **Phase:** Phase 6 — later campaign expansion
 
@@ -27,7 +27,9 @@ Study 01B established that EventList/CustomEventList and EventScreen form the ac
 
 ## Decisions, constraints, and risks
 
-- Random events are a desired feature; first-version timing, exact content, rates, and reward rules remain open.
+- The user approved a forced wild Spitter Slug encounter scaled to full company strength with extra leader weighting, plus the practice-duel event described in the implementation report. Provisional travel triggers/cooldown and no random-combat gold/reputation are approved. Future payment-to-avoid bandits and further content remain later design.
+- The user approved two healthy non-leader mercenaries (active/reserve), exact half-level XP each on a shared50% success, otherwise half current HP lost with no injuries; declining has no material effect.
+- Per-level XP display requested alongside this work preserves surplus and existing saves; cumulative storage is retained internally.
 - Additional points of interest and later species releases can have their own specs after the core experience is reviewed.
 - The user owns the replacement vore/digestion narrative; this spec does not implicitly delegate that writing.
 
@@ -37,9 +39,9 @@ An approved new event catalog/framework and integrated road events/ambushes.
 
 ## Execution record
 
-- Source trace and exact change locations: pending.
-- Implementation batches and user review: pending.
-- Checks actually performed and remaining checks: none for this spec yet.
+- Source trace and exact changes: [preparation](../implementation/13-road-events-preparation.md) and [implementation](../implementation/13-road-events-and-xp.md). Ten sources, including one new event source and its meta.
+- Connected implementation user-accepted with lighter slug encounters; no additional review requested. Help rewrite remains deferred.
+- Performed: Unity compilation/read-only scene audit and existing32managed regression checks; no new warnings or asset/scene changes. No new tests/framework/player build or live event/XP UI pass.
 
 Before execution, refine this spec with the architecture study, list its small change batches, and resolve decisions needed for the next batch. Follow the review and file-operation rules in [the roadmap](../conversion-roadmap.md). Design intent comes from [the campaign plan](../mercenary-company-campaign-plan.md) and the three curation checklists.
 

@@ -1,5 +1,7 @@
 // Modified for the VoreWar mercenary-company conversion.
 // 2026-10-31: Retire Goddess Pendant respawn grant; retain its battle-start effect (spec 05A3B7).
+// 2026-11-01: Exclude retired ability books from random generation (spec 05A3B17).
+// 2026-11-01: Provisional weak ranged attack for curated SpitterSlugs (spec 07).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
 using System;
@@ -266,7 +268,7 @@ public class ItemRepository
             new Weapon(name:"Fairy Spark", description:"Magical Attack", cost:4, graphic:0, damage:5, range:5, omniWeapon: true, magicWeapon: true),
             new Weapon(name:"Ant Mandibles", description:"Mandibles", cost:4, graphic:0, damage:3, range:1),
             new Weapon(name:"Gryphon Claws", description:"Gryphon Claws", cost:4, graphic:0, damage:6, range:1),
-            new Weapon(name:"Slug Slime", description:"Slug Slime", cost:4, graphic:0, damage:4, range:5, omniWeapon: true),
+            new Weapon(name:"Slug Slime", description:"Slug Slime", cost:2, graphic:0, damage:2, range:5, omniWeapon: true),
             new Weapon(name:"Slug Headbash", description:"Headbash", cost:4, graphic:0, damage:3, range:1),
             new Weapon(name:"Slug Body Slam", description:"Body Slam", cost:4, graphic:0, damage:5, range:1),
             new Weapon(name:"Slug Stinger", description:"Venomous Stinger", cost:4, graphic:0, damage:4, range:1),
@@ -407,7 +409,11 @@ public class ItemRepository
         if (maxTier == 3) max = (int)ItemType.Summon;
         if (maxTier >= 4) max = (int)ItemType.Resurrection;
 
-        return State.Rand.Next(min, max + 1);
+        var available = Enumerable.Range(min, max - min + 1)
+            .Where(i => GetItem(i) is SpellBook book && !SpellList.SpellDict[book.ContainedSpell].IsRetired).ToArray();
+        if (available.Length == 0)
+            throw new InvalidOperationException("No active spell books exist in the requested tier range.");
+        return available[State.Rand.Next(available.Length)];
     }
     public int GetRandomEquipmentType(int minTier = 1, int maxTier = 4, bool ignoreLimit = false)
     {

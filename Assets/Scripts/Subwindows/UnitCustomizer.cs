@@ -1,3 +1,6 @@
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-01: Disconnect rejected graphics instances and their typed rendering hooks (spec 03B4).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using UnityEngine.UI;
 using UnityEngine;
@@ -211,8 +214,8 @@ public class UnitCustomizer
         buttons[(int)ButtonTypes.ClothingExtraType5].gameObject.SetActive(RaceData.ExtraMainClothing5Count > 1);
         buttons[(int)ButtonTypes.HatType].gameObject.SetActive(RaceData.ClothingHatTypesCount > 1);
         buttons[(int)ButtonTypes.ClothingAccessoryType].gameObject.SetActive(RaceData.ClothingAccessoryTypesCount > 1 || (unit.EarnedMask && Unit.Race <= Race.Goblins && Unit.Race != Race.Lizards));
-        buttons[(int)ButtonTypes.ClothingColor2].gameObject.SetActive(RaceData == Races.SlimeQueen || RaceData == Races.Panthers || RaceData == Races.Imps || RaceData == Races.Goblins); //The additional clothing colors are slime queen only for the moment
-        buttons[(int)ButtonTypes.ClothingColor3].gameObject.SetActive(RaceData == Races.SlimeQueen || RaceData == Races.Panthers);
+        buttons[(int)ButtonTypes.ClothingColor2].gameObject.SetActive(RaceData == Races.Panthers);
+        buttons[(int)ButtonTypes.ClothingColor3].gameObject.SetActive(RaceData == Races.Panthers);
         buttons[(int)ButtonTypes.MouthType].gameObject.SetActive(RaceData.MouthTypes > 1);
 
         buttons[(int)ButtonTypes.ExtraColor1].gameObject.SetActive(RaceData.ExtraColors1 > 0);

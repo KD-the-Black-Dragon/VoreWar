@@ -2,6 +2,8 @@
 // 2026-10-30: Delegate preference/default loading to ContentSettingsData; retain menu bindings (spec 02A).
 // 2026-10-30: Retire settings widgets and apply only retained preferences (spec 02C).
 // 2026-10-30: Add the approved-species availability page without legacy spawning controls (spec 03A1).
+// 2026-11-01: Display singular spaced species labels while preserving numeric preference keys (09–10 feedback).
+// 2026-11-02: Present retained content pages in a compact blue scroll column and retire nine controls (spec 15B).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Collections.Generic;
@@ -76,6 +78,8 @@ public class ContentSettings : MonoBehaviour
 
     List<ToggleObject> Toggles;
     GameObject speciesPanel;
+    ContentSettingsView presentation;
+    internal IEnumerable<KeyValuePair<Race, Toggle>> SpeciesChoices { get { return speciesToggles; } }
     readonly Dictionary<Race, Toggle> speciesToggles = new Dictionary<Race, Toggle>();
 
 
@@ -105,9 +109,6 @@ public class ContentSettings : MonoBehaviour
             new ToggleObject(HermsOnlyUseFemaleHair, "HermsOnlyUseFemaleHair"),
             new ToggleObject(HideBreasts, "HideBreasts"),
             new ToggleObject(HideCocks, "HideCocks"),
-            new ToggleObject(RagsForSlaves, "RagsForSlaves"),
-            new ToggleObject(VisibleCorpses, "VisibleCorpses"),
-            new ToggleObject(LeadersUseCustomizations, "LeadersUseCustomizations"),
             new ToggleObject(HermsCanUB, "HermsCanUB"),
             new ToggleObject(Unbirth, "Unbirth"),
             new ToggleObject(CockVore, "CockVore"),
@@ -118,7 +119,6 @@ public class ContentSettings : MonoBehaviour
             new ToggleObject(AllowHugeDicks, "AllowHugeDicks"),
             new ToggleObject(AllowTopless, "AllowTopless"),
             new ToggleObject(FurryGenitals, "FurryGenitals"),
-            new ToggleObject(LamiaUseTailAsSecondBelly, "LamiaUseTailAsSecondBelly"),
             new ToggleObject(AnimatedBellies, "AnimatedBellies"),
             new ToggleObject(DigestionSkulls, "DigestionSkulls"),
             new ToggleObject(BellyRubHands, "BellyRubHands"),
@@ -131,8 +131,6 @@ public class ContentSettings : MonoBehaviour
             new ToggleObject(ClothingDiscards, "ClothingDiscards"),
             new ToggleObject(ExtraHairColors, "ExtraRandomHairColors"),
             new ToggleObject(LizardsHaveNoBreasts, "LizardsHaveNoBreasts"),
-            new ToggleObject(LewdDialog, "LewdDialog"),
-            new ToggleObject(LeadersRerandomizeOnDeath, "LeadersRerandomizeOnDeath"),
             new ToggleObject(HideViperSlit, "HideViperSlit"),
             new ToggleObject(Cumstains, "Cumstains"),
             new ToggleObject(BurpOnDigest, "BurpOnDigest"),
@@ -207,7 +205,7 @@ public class ContentSettings : MonoBehaviour
             foreach (DisplayTooltip tooltip in toggle.GetComponentsInChildren<DisplayTooltip>(true))
                 tooltip.enabled = false;
             Text label = toggle.GetComponentInChildren<Text>();
-            label.text = race + " (" + SpeciesPolicy.GetKind(race) + ")";
+            label.text = SpeciesPolicy.DisplayName(race) + " (" + SpeciesPolicy.GetKind(race) + ")";
             label.fontSize = 22;
             LayoutElement element = toggle.GetComponent<LayoutElement>();
             if (element == null)
@@ -236,6 +234,12 @@ public class ContentSettings : MonoBehaviour
     public void ActivatePage()
     {
         int selected = Mathf.Clamp(PageSelector.value, 0, SettingsPanels.Length - 1);
+        if (presentation != null)
+        {
+            presentation.ShowPage(selected);
+            ChangeToolTip(0);
+            return;
+        }
         for (int i = 0; i < SettingsPanels.Length; i++)
             SettingsPanels[i].SetActive(i == selected);
     }
@@ -297,9 +301,16 @@ public class ContentSettings : MonoBehaviour
         PageSelector.RefreshShownValue();
         foreach (var species in speciesToggles)
             species.Value.isOn = SpeciesPolicy.IsEnabled(species.Key);
+        if (presentation == null)
+            presentation = new ContentSettingsView(this);
         ActivatePage();
         VoreTypesChanged();
         ChangeToolTip(0);
+    }
+
+    void Update()
+    {
+        if (presentation != null) presentation.Refresh();
     }
 
     void SetValues()
@@ -342,9 +353,6 @@ public class ContentSettings : MonoBehaviour
         Config.World.HermBreastSizeModifier = (int)HermBreastSizeModifier.value;
         Config.World.CockSizeModifier = (int)CockSizeModifier.value;
         Config.World.DefaultStartingWeight = (int)DefaultStartingWeight.value;
-        Config.World.FemalesLike = (Orientation)FemalesLike.value;
-        Config.World.MalesLike = (Orientation)MalesLike.value;
-        Config.World.WinterStuff = (Config.SeasonalType)WinterStuff.value;
         Config.World.OralWeight = (int)OralWeight.value;
         Config.World.AnalWeight = (int)AnalWeight.value;
         Config.World.CockWeight = (int)CockWeight.value;

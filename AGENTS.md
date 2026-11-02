@@ -20,6 +20,12 @@ The user is not a programming specialist. Explain decisions and results in clear
 
 A direct request to make a change authorizes work within that request. A request to plan, review, or discuss does not authorize implementation. Keep work to the requested scope; do not introduce unrelated cleanup, refactors, features, or changes to upstream behavior. For larger work, state the scope and split it into reviewable steps. Ask when a gameplay or product requirement is genuinely ambiguous; do not invent mechanics.
 
+## Player-facing terminology
+
+Use **vore** as the general term in labels, help, tooltips and messages. Do not substitute **consumption** for it. This is the user's explicit terminology preference (2026-11-02); more specific mechanical terms such as digestion remain appropriate.
+
+Use **herm** / **herms** in player-facing text; do not expand these to **hermaphrodite** / **hermaphrodites**. Preserve existing wording during UI/layout changes unless the user asks for a wording change. Outright spelling mistakes may be corrected freely; bring ambiguous wording or terminology changes to the user for judgment. This is the user's explicit direction (2026-11-02).
+
 ## Preserve the game and the fork
 
 - Preserve existing behavior unless the user requests a change.
@@ -83,3 +89,12 @@ Before any copy or move, verify that the operation is intentional and that the d
 - Consider likely regressions in gameplay, save data, scenes/prefabs, input, and supported platform behavior.
 - Do not claim a build, automated test, or manual playtest passed unless it was actually performed. State important limitations plainly.
 - Before handing off, review the diff for scope, accidental Unity serialization changes, and preservation of unrelated user work.
+
+## Review cadence
+
+Group related, approved low-risk ability retirements into a consolidated stage. Complete the source review, compile and scene checks before requesting one combined manual test; do not request a new test after each one-to-three-ability packet. Split only where a genuine design decision or material risk requires it.
+
+
+### Larger milestones and manual testing (user direction, 2026-11-01)
+
+The user accepted 03B8 and explicitly requested larger groups and fewer repetitive tests. Group the remaining low-risk cleanup into one closure milestone. Internal source batches/checks may remain separate for diagnosis, but do not stop after each batch to request the same menu-opening test. Request manual testing when a milestone adds a meaningful player workflow, a material behavior/serialization risk needs human observation, or a failure needs focused diagnosis. Documentation-only, engine-equivalent and repeated low-risk retirements do not need fresh manual checks by default. Preserve necessary compile/source/GPL checks and report actual limits; batching is not permission to skip verification or claim untested battles passed.

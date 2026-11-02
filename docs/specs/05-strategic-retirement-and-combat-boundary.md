@@ -1,6 +1,6 @@
 # 05 — Retire the 4X loop and preserve tactical combat
 
-**Status:** In progress, 2026-10-31. [05A1](../implementation/05a1-legacy-world-entry-retirement.md) closes legacy creation/load/preview/import entry points; compilation/scene checks passed, interactive review pending. Scheduler, provider and combat/result isolation remain.
+**Status:** Functional retirement milestone complete, 2026-11-01, with final agent checks passed as recorded in the [closure report](../implementation/phase-2-cleanup-closure.md). Earlier packet records remain historical. Combat/log scenarios await approved species; distribution/shared-asset review remains a release gate.
 
 **Phase:** Phase 2 — retire unwanted systems
 
@@ -85,3 +85,18 @@ Before execution, refine this spec with the architecture study, list its small c
 05A3B14 manual check accepted. [05A3B15](../implementation/05a3b15-support-trait-allegiance-retirement.md) retires SeductiveTouch support-action conversion/distraction and its permission exception. Underlying support remains. Possession/metamorphosis/containment allegiance callbacks require separate packets.
 
 05A3B15 manual check accepted. [05A3B16](../implementation/05a3b16-metamorphosis-family-retirement.md) retires the three metamorphosis-family callbacks/escape restrictions while retaining class/registry IDs. Possession/containment callbacks remain separate review.
+
+05A3B16 accepted. User requested consolidation. [05A3B17](../implementation/05a3b17-consolidated-ability-retirement.md) completes the approved ability-retirement pass with shared activation guards, possession/containment/status/legacy revival closure and Leadership removal. One combined manual check follows agent verification; return to provider/species boundary review afterward. New Downed/HP/company systems remain separate.
+
+05A3B17 combined manual check accepted. [05A4](../implementation/05a4-campaign-combat-provider-retirement.md) retires empire-trait, strategic-building combat/results and campaign race-defection providers as one grouped stage. Scenery/village skirmish and ordinary summons remain; shared battle/AI/map/save compatibility providers still require residual review.
+
+05A4 manual check accepted. [05A5](../implementation/05a5-world-army-lifecycle-retirement.md) retires unused world/monster construction and Army daily village/recovery/training/feeding pipelines as one group. The report inventories retained battle/map/save providers; compatibility fields and tactical helpers remain. Final provider/species boundary review is still required.
+
+05A5 manual check accepted. [05A6](../implementation/05a6-battle-side-diplomacy-isolation.md) retains standalone battle side/hostility/visibility semantics without empire diplomacy, removes campaign-only retreat/skip/color providers and shared Unit strategic XP cheats/trait injection. Residual map/save/context/species boundaries remain before phase-2 completion.
+
+05A6 manual check accepted. [05A7](../implementation/05a7-residual-boundary-and-metadata-review.md) consolidates residual active/retired/shared provider dispositions and removes dummy Unit creation from metadata reads. Return to spec 03 stat/override closure; this does not mark phase 2 complete, remove reusable map code or restore legacy save loading.
+
+
+## Consolidated cleanup milestone closure (2026-11-01)
+
+See [phase-2 cleanup closure](../implementation/phase-2-cleanup-closure.md) for current accepted work, exact retained services and deferred combat/release gates. Earlier packet status lines are historical. No further per-packet menu tests are required; final milestone verification status is in that report. New campaign/character mechanics remain subsequent specs.

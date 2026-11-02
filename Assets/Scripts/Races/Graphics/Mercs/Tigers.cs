@@ -1,29 +1,3 @@
-﻿using UnityEngine;
-
-class Tigers : DefaultRaceData
-{
-    public Tigers()
-    {
-        BasicMeleeWeaponTypes = 2;
-        FurCapable = true;
-        BodyAccent5 = new SpriteExtraInfo(6, BodyAccentSprite5, null, (s) => ColorPaletteMap.GetPalette(ColorPaletteMap.SwapType.Fur, s.Unit.AccessoryColor));
-        BaseBody = true;
-
-        AllowedMainClothingTypes.Insert(0, RaceSpecificClothing.TigerSpecial);
-    }
-
-    internal override void RandomCustom(Unit unit)
-    {
-        base.RandomCustom(unit);
-        if (unit.ClothingType != 0)
-            unit.ClothingType = 1;
-    }
-
-    protected override Sprite AccessorySprite(Actor_Unit actor) => State.GameManager.SpriteDictionary.Bodies[14];
-    protected override Sprite SecondaryAccessorySprite(Actor_Unit actor) => State.GameManager.SpriteDictionary.BodyParts[4];
-    protected override Sprite BodyAccentSprite5(Actor_Unit actor)
-    {
-        int thinOffset = actor.Unit.BodySize < 2 ? 8 : 0;
-        return (Config.FurryHandsAndFeet || actor.Unit.Furry) ? State.GameManager.SpriteDictionary.FurryHandsAndFeet[6 + thinOffset + (actor.IsAttacking ? 1 : 0)] : null;
-    }
-}
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-01: Retire the disconnected Tigers graphics class payload; retain this path and notices (spec 03B8).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.

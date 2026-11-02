@@ -5,6 +5,7 @@
 // 2026-10-31: Retire traveling-unit routing and monster army reformation helpers (spec 05A3B3).
 // 2026-10-31: Retire unused Resurrection targeting, picker, revive and respawn placement helpers (spec 05A3B9).
 // 2026-10-31: Retire obsolete reanimation targeting, picker, runtime and private picker context (spec 05A3B12).
+// 2026-11-01: Use retained skirmish control/hostility/visibility rules without empire diplomacy (spec 05A6).
 // See CHANGES.md for the fork's change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Collections.Generic;
@@ -52,20 +53,7 @@ static class TacticalUtilities
         if (State.GameManager.TacticalMode.CheatDefenderControl && unit.Side == defenderSide)
             return true;
 
-        if (State.GameManager.PureTactical)
-        {
-            return !aiAttacker && attackerSide == unit.FixedSide || !aiDefender && defenderSide == unit.FixedSide;
-        }
-        else
-        {
-            if (State.World.GetEmpireOfSide(unit.FixedSide) != null && State.World.GetEmpireOfSide(unit.FixedSide)?.StrategicAI == null)
-            {
-                return true;
-            }
-            bool prefSideHuman = !aiDefender && defenderSide == GetPreferredSide(unit, defenderSide, attackerSide) || !aiAttacker && attackerSide == GetPreferredSide(unit, attackerSide, defenderSide);
-            bool currentSideHuman = !aiDefender && defenderSide == unit.Side || !aiAttacker && attackerSide == unit.Side;
-            return prefSideHuman && currentSideHuman && !PlayerCanSeeTrueSide(unit); // "sleeping" infiltrators follow your orders while it doesn't go against their agenda.
-        }
+        return !aiAttacker && attackerSide == unit.FixedSide || !aiDefender && defenderSide == unit.FixedSide;
     }
 
     static internal bool AppropriateVoreTarget(Actor_Unit pred, Actor_Unit prey)
@@ -81,63 +69,9 @@ static class TacticalUtilities
         return true;
     }
 
-    static public int GetPreferredSide(Unit actor, int sideA, int sideB) // If equally aligned with both, should default to A
+    static public int GetPreferredSide(Unit actor, int sideA, int sideB) // Retain side parameters for existing callers; skirmish loyalty uses the fixed side.
     {
-        int effectiveActorSide = GetMindControlSide(actor) != -1 ? GetMindControlSide(actor) : actor.FixedSide;
-        if (State.GameManager.PureTactical)
-        {
-            return effectiveActorSide;
-        }
-
-        int aISideHostility = 0;
-        int enemySideHostility = 0;
-        if (effectiveActorSide != sideA)
-        {
-            if (effectiveActorSide != sideB)
-            {
-                switch (RelationsManager.GetRelation(effectiveActorSide, sideB).Type)
-                {
-                    case RelationState.Allied:
-                        {
-                            enemySideHostility = 1;
-                            break;
-                        }
-                    case RelationState.Neutral:
-                        {
-                            enemySideHostility = 2;
-                            break;
-                        }
-                    case RelationState.Enemies:
-                        {
-                            enemySideHostility = 3;
-                            break;
-                        }
-                }
-            }
-            switch (RelationsManager.GetRelation(effectiveActorSide, sideA).Type)
-            {
-                case RelationState.Allied:
-                    {
-                        aISideHostility = 1;
-                        break;
-                    }
-                case RelationState.Neutral:
-                    {
-                        aISideHostility = 2;
-                        break;
-                    }
-                case RelationState.Enemies:
-                    {
-                        aISideHostility = 3;
-                        break;
-                    }
-            }
-            return enemySideHostility >= aISideHostility ? sideA : sideB;
-        }
-        else
-        {
-            return sideA;
-        }
+        return GetMindControlSide(actor) != -1 ? GetMindControlSide(actor) : actor.FixedSide;
     }
 
     static public bool TreatAsHostile(Actor_Unit actor, Actor_Unit target)
@@ -145,120 +79,11 @@ static class TacticalUtilities
         if (actor == target) return false;
         if (actor.Unit.Side == actor.Unit.FixedSide && !(target.sidesAttackedThisBattle?.Contains(actor.Unit.FixedSide) ?? false) && target.Unit.Side == actor.Unit.Side && GetMindControlSide(actor.Unit) == -1)
             return false;
-        int friendlySide = actor.Unit.Side;
-        int defenderSide = State.GameManager.TacticalMode.GetDefenderSide();
-        int opponentSide = friendlySide == defenderSide ? State.GameManager.TacticalMode.GetAttackerSide() : defenderSide;
         int effectiveTargetSide = target.Unit.GetApparentSide(actor.Unit);
         int effectiveActorSide = GetMindControlSide(actor.Unit) != -1 ? GetMindControlSide(actor.Unit) : actor.Unit.FixedSide;
         if (GetMindControlSide(target.Unit) == effectiveActorSide)
             return false;
-        if (State.GameManager.PureTactical)
-        {
-            return effectiveTargetSide != effectiveActorSide;
-        }
-        if (effectiveActorSide == effectiveTargetSide)
-            return false;
-        int aISideHostility = 0;
-        int enemySideHostility = 0;
-        int preferredSide;
-        int unpreferredSide;
-        if (effectiveActorSide != friendlySide)
-        {
-            if (effectiveActorSide != opponentSide)
-            {
-                switch (RelationsManager.GetRelation(effectiveActorSide, opponentSide).Type)
-                {
-                    case RelationState.Allied:
-                        {
-                            enemySideHostility = 1;
-                            break;
-                        }
-                    case RelationState.Neutral:
-                        {
-                            enemySideHostility = 2;
-                            break;
-                        }
-                    case RelationState.Enemies:
-                        {
-                            enemySideHostility = 3;
-                            break;
-                        }
-                }
-            }
-            switch (RelationsManager.GetRelation(effectiveActorSide, friendlySide).Type)
-            {
-                case RelationState.Allied:
-                    {
-                        aISideHostility = 1;
-                        break;
-                    }
-                case RelationState.Neutral:
-                    {
-                        aISideHostility = 2;
-                        break;
-                    }
-                case RelationState.Enemies:
-                    {
-                        aISideHostility = 3;
-                        break;
-                    }
-            }
-            preferredSide = enemySideHostility >= aISideHostility ? friendlySide : opponentSide;
-            unpreferredSide = preferredSide == friendlySide ? opponentSide : friendlySide;
-        }
-        else
-        {
-            preferredSide = friendlySide;
-            unpreferredSide = opponentSide;
-        }
-
-        int targetSideHostilityP = 0;
-        int targetSideHostilityUP = 0;
-        if (preferredSide != effectiveTargetSide)
-        {
-            switch (RelationsManager.GetRelation(preferredSide, effectiveTargetSide).Type)
-            {
-                case RelationState.Allied:
-                    {
-                        targetSideHostilityP = 1;
-                        break;
-                    }
-                case RelationState.Neutral:
-                    {
-                        targetSideHostilityP = 2;
-                        break;
-                    }
-                case RelationState.Enemies:
-                    {
-                        targetSideHostilityP = 3;
-                        break;
-                    }
-            }
-
-        }
-        if (unpreferredSide != effectiveTargetSide)
-        {
-            switch (RelationsManager.GetRelation(unpreferredSide, effectiveTargetSide).Type)
-            {
-                case RelationState.Allied:
-                    {
-                        targetSideHostilityUP = 1;
-                        break;
-                    }
-                case RelationState.Neutral:
-                    {
-                        targetSideHostilityUP = 2;
-                        break;
-                    }
-                case RelationState.Enemies:
-                    {
-                        targetSideHostilityUP = 3;
-                        break;
-                    }
-            }
-
-        }
-        return targetSideHostilityP >= targetSideHostilityUP || (target.sidesAttackedThisBattle?.Contains(preferredSide) ?? false) || (target.sidesAttackedThisBattle?.Contains(actor.Unit.FixedSide) ?? false);
+        return effectiveTargetSide != effectiveActorSide;
     }
 
     static public bool SneakAttackCheck(Unit attacker, Unit target)
@@ -968,59 +793,21 @@ static class TacticalUtilities
 
     static public bool IsUnitControlledBySide(Unit unit, int side)
     {
-        if (GetMindControlSide(unit) != -1)  // Charmed units may fight for a specific side, but for targeting purposes we'll consider them driven by separate forces
+        if (GetMindControlSide(unit) != -1)
             return false;
-        if (side == unit.FixedSide)
-            return true;
-        else if (State.GameManager.PureTactical)
-            return false;
-        if (unit.IsInfiltratingSide(side))
-            return true;                    // hidden and compliant
-        return false;
+        return side == unit.FixedSide;
     }
 
     static public bool PlayerCanSeeTrueSide(Unit unit)
     {
         if (!unit.hiddenFixedSide || unit.FixedSide == unit.Side) return true;
-
-        if (State.World.MainEmpires == null)
-            return unit.FixedSide == (!State.GameManager.TacticalMode.AIAttacker ?
-                State.GameManager.TacticalMode.GetAttackerSide() : (!State.GameManager.TacticalMode.AIDefender ? State.GameManager.TacticalMode.GetDefenderSide() : unit.FixedSide));
-
-        if (StrategicUtilities.GetAllHumanSides().Count > 1) return false;
-        if (StrategicUtilities.GetAllHumanSides().Count < 1) return true;
-
-
-
-        if (State.GameManager.StrategyMode.LastHumanEmpire?.Side == unit.FixedSide)
-            return true;
-
-        if (RelationsManager.GetRelation(unit.FixedSide, State.GameManager.StrategyMode.LastHumanEmpire.Side).Type == RelationState.Allied)
-         {
-            return true;
-         }
-        
-        return false;
+        return unit.FixedSide == (!State.GameManager.TacticalMode.AIAttacker ?
+            State.GameManager.TacticalMode.GetAttackerSide() : (!State.GameManager.TacticalMode.AIDefender ? State.GameManager.TacticalMode.GetDefenderSide() : unit.FixedSide));
     }
 
     static public bool UnitCanSeeTrueSideOfTarget(Unit viewer, Unit target)
     {
-        if (!target.hiddenFixedSide || target.FixedSide == target.Side) return true;
-
-        if (State.World.MainEmpires == null) return false;
-
-        if (target.FixedSide == viewer.FixedSide)
-            return true;
-
-        if (RelationsManager.GetRelation(target.FixedSide, viewer.FixedSide).Type == RelationState.Allied)
-        {
-            return true;
-        }
-        // I was thinking about also giving units the insight of whatever side they're pretending to be on, but I think it' a good idea to "accidentally" kill "friendly" infiltrators
-        // on the opposing side anyway, if you can get away with it. And you can, since by the current logic only obvious and direct betrayal uncovers someone's guise.
-        // Well, and AOE, but that's due to cheese protection.
-
-        return false;
+        return !target.hiddenFixedSide || target.FixedSide == target.Side;
     }
 
     internal static void ForceFeed(Actor_Unit actor, Actor_Unit targetPred, bool DisablecontrolBypass = true)

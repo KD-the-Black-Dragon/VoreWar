@@ -1,3 +1,6 @@
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-01: Retire strategic daily recovery, village effects, civilian feeding and paid training (spec 05A5).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
 using System;
 using System.Collections.Generic;
@@ -177,46 +180,7 @@ public class Army
 
     public void Refresh()
     {
-        foreach (Unit unit in Units)
-        {
-            unit.HealPercentage(HealRate);
-            unit.RestoreManaPct(.6f);
-            if (Config.WeightGain && Config.WeightLoss && unit.Predator)
-            {
-                if (unit.BodySize > 0 && State.Rand.NextDouble() < Config.WeightLossFractionBody)
-                    unit.BodySize--;
-                if (unit.DefaultBreastSize > 0 && State.Rand.NextDouble() < Config.WeightLossFractionBreasts)
-                    unit.SetDefaultBreastSize(unit.DefaultBreastSize - 1);
-                if (unit.DickSize > 0 && State.Rand.NextDouble() < Config.WeightLossFractionDick)
-                    unit.DickSize--;
-
-            }
-            if (unit.HasTrait(Traits.Growth) && unit.BaseScale > 1 && !unit.HasTrait(Traits.PermanentGrowth))
-            {
-                float extremum = -(Config.GrowthDecayOffset - Config.GrowthDecayIncreaseRate - 1 / 2 * Config.GrowthDecayIncreaseRate);
-                if (unit.BaseScale > extremum)
-                    unit.BaseScale -= extremum - (extremum * ((1 - Config.GrowthDecayOffset) - Config.GrowthDecayIncreaseRate * (extremum - 1)));     // force the decay function to be monotonous
-                else
-                    unit.BaseScale = Math.Max(1, unit.BaseScale * ((1 - Config.GrowthDecayOffset) - Config.GrowthDecayIncreaseRate * (unit.BaseScale - 1)));  // default decayIncreaseRate = 0.04f
-            }
-            EquipmentFunctions.TickCoolDown(unit, EquipmentType.RechargeStrategy);
-            EquipmentFunctions.CheckEquipment(unit, EquipmentActivator.OnStrategicTurnStart, new object[] { unit, this, null });
-
-        }
-        RefreshMovementMode();
-
-        if (empire.StrategicAI != null)
-        {
-            SortSpells();
-        }
-
-        RemainingMP = GetMaxMovement();
-        DevourThisTurn = false;
-        GetTileHealRate();
-        ProcessInVillageOnTurn();
-        SCooldown = 0;
-        teleportStoneCoolDown = teleportStoneCoolDown >= 0 ? teleportStoneCoolDown - 1 : 0;
-        teleportCoolDown = teleportCoolDown >= 0 ? teleportCoolDown - 1 : 0;
+        // Retired campaign lifecycle; company recovery/training are separate systems.
     }
 
     public int GetMaxMovement()
@@ -717,85 +681,19 @@ public class Army
         return TileAction.OneMP;
     }
 
-    internal void UpdateInVillage()
-    {
-        InVillageIndex = -1;
-        for (int i = 0; i < State.World.Villages.Length; i++)
-        {
-            if (position.Matches(State.World.Villages[i].Position))
-            {
-                InVillageIndex = i;
-                State.World.Villages[i].ItemStock.TransferAllItems(ItemStock);
-            }
-        }
-    }
-
     internal void GetTileHealRate()
     {
-        UpdateInVillage();
-
-        HealRate = 0.02f;
-        if (InVillageIndex > -1)
-        {
-            HealRate = State.World.Villages[InVillageIndex].Healrate();
-        }
-        HealRate *= 1 + 0.25f * AcademyResearch.GetValueFromEmpire(Empire, AcademyResearchType.ArmyHealRate);
+        InVillageIndex = -1; // No strategic village recovery or inventory provider.
     }
 
-    internal void ProcessInVillageOnTurn()
-    {
-        UpdateInVillage();
-        if (InVillageIndex > -1)
-        {
-            var village = State.World.Villages[InVillageIndex];
-
-            var minExp = village.GetStartingXp();
-            foreach (Unit unit in Units)
-            {
-                if (unit.Experience < minExp)
-                {
-                    unit.SetExp(minExp);
-                }
-            }
-
-            foreach (Unit unit in Units)
-            {
-                unit.AddTraits(village.GetTraitsToAdd());
-            }
-        }
-    }
     public int GetDevourmentCapacity(int minimumHealAmount)
     {
-        int cap = 0;
-
-        for (int i = 0; i < Units.Count; i++)
-        {
-            if (Units[i].Predator == false)
-                continue;
-            cap += (10 - minimumHealAmount + Units[i].MaxHealth - Units[i].Health) / 10;
-        }
-        return cap;
+        return 0;
     }
 
     public void DevourHeal(int numprey)
     {
-        int remainingPrey = numprey;
-        Unit target;
-        if (numprey > 0)
-        {
-            RemainingMP = 0;
-            DevourThisTurn = true;
-            State.GameManager.StrategyMode.UndoMoves.Clear();
-        }
-        while (remainingPrey > 0)
-        {
-            target = Units.Where(s => s.Predator).OrderByDescending(l => l.MaxHealth - l.Health).ThenBy(l => State.Rand.Next()).FirstOrDefault();
-            if (target == null)
-                break;
-            target.Feed();
-            remainingPrey--;
-        }
-
+        // Retired campaign lifecycle; company recovery/training are separate systems.
     }
 
 
@@ -819,97 +717,7 @@ public class Army
 
     internal void Train(int level)
     {
-        int xpGain = TrainingGetExpValue(level);
-        xpGain += (int)Math.Round(xpGain * 0.25f * AcademyResearch.GetValueFromEmpire(empire, AcademyResearchType.TrainingEXP));
-        int cost = TrainingGetCost(level);
-
-        if (empire.Gold >= cost)
-        {
-            foreach (Unit unit in Units)
-            {
-                unit.GiveExp(xpGain);
-            }
-            empire.SpendGold(cost);
-            State.World.Stats.SpentGoldOnArmyTraining(cost, Side);
-        }
-
-    }
-
-    internal void SortSpells()
-    {
-        var spellbookTypes = ItemStock.GetAllSpellBooks();
-        if (spellbookTypes.Count > 0)
-        {
-            int casters = Units.Where(s => s.AIClass == AIClass.MagicMelee || s.AIClass == AIClass.MagicRanged && s.FixedGear == false).Count();
-            {
-                int shortfall = (Units.Count / 2) - casters;
-                if (shortfall > 0)
-                {
-                    var possibleUnits = Units.Where(s => s.AIClass != AIClass.MagicMelee && s.AIClass != AIClass.MagicRanged || s.FixedGear == false).ToList();
-                    int possibleCount = Math.Min(Math.Min(shortfall, spellbookTypes.Count), possibleUnits.Count);
-                    for (int i = 0; i < possibleCount; i++)
-                    {
-                        if (possibleUnits[i].GetBestRanged() != null)
-                            possibleUnits[i].AIClass = AIClass.MagicRanged;
-                        else
-                            possibleUnits[i].AIClass = AIClass.MagicMelee;
-                    }
-                }
-            }
-        }
-
-        if (spellbookTypes.Count == 0)
-            return;
-        List<SpellBook> books = new List<SpellBook>();
-        foreach (var bookType in spellbookTypes)
-        {
-            books.Add((SpellBook)State.World.ItemRepository.GetItem(bookType));
-        }
-        books.OrderByDescending(s => s.Tier);
-
-        var magicUsers = Units.Where(s => s.FixedGear == false && s.AIClass == AIClass.MagicMelee || s.AIClass == AIClass.MagicRanged).OrderByDescending(s => s.GetStatBase(Stat.Mind));
-
-
-
-        foreach (Unit unit in magicUsers)
-        {
-            if (books.Count == 0)
-                break;
-            if (unit.Items[1] == null)
-            {
-                if (ItemStock.TakeItem(State.World.ItemRepository.GetItemType(books[0])))
-                {
-                    unit.SetItem(books[0], 1);
-                    books.RemoveAt(0);
-                }
-            }
-            else if (unit.Items[1] is SpellBook == false)
-            {
-                if (ItemStock.TakeItem(State.World.ItemRepository.GetItemType(books[0])))
-                {
-                    ItemStock.AddItem(State.World.ItemRepository.GetItemType(unit.Items[1]));
-                    unit.SetItem(books[0], 1);
-                    books.RemoveAt(0);
-                }
-            }
-            else
-            {
-                if (unit.Items[1] is SpellBook book)
-                {
-                    if (books[0].Tier > book.Tier)
-                    {
-                        if (ItemStock.TakeItem(State.World.ItemRepository.GetItemType(books[0])))
-                        {
-                            ItemStock.AddItem(State.World.ItemRepository.GetItemType(book));
-                            unit.SetItem(books[0], 1);
-                            books.RemoveAt(0);
-                        }
-
-                    }
-                }
-            }
-        }
-
+        // Retired campaign lifecycle; company recovery/training are separate systems.
     }
 
     internal void RecalculateSizeValue()

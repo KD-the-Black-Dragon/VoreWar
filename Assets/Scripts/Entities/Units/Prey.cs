@@ -1,5 +1,6 @@
 // Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Reject disallowed transformation destinations before prey-state callbacks (spec 03A2).
+// 2026-11-01: Complete approved ability retirement and close legacy reactivation paths (spec 05A3B17).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
 using System.Collections.Generic;
@@ -208,18 +209,7 @@ class Prey
 
     public void ChangeSide(int side)
     {
-        if (Unit.Side != side)
-            State.GameManager.TacticalMode.SwitchAlignment(Actor);
-        if (Predator.Unit.HasTrait(Traits.Corruption) || Unit.HasTrait(Traits.Corruption))
-        {
-            Unit.hiddenFixedSide = true;
-            Actor.sidesAttackedThisBattle = new List<int>();
-            Unit.RemoveTrait(Traits.Corruption);
-            Unit.AddPermanentTrait(Traits.Corruption);
-        }
-        if (!Unit.HasTrait(Traits.Corruption))
-            Unit.FixedSide = Predator.Unit.FixedSide;
-        Actor.Surrendered = false;
+        // Retired: containment cannot change allegiance.
     }
 
     public void PredWeightGain()

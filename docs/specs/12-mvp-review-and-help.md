@@ -1,6 +1,6 @@
 # 12 — Integrated campaign review, help, and first release candidate
 
-**Status:** Proposed specification. Planning only; execution has not started.
+**Status:** Combined player review accepted on 2026-11-02 with no material issues reported. Player-facing help rewrite is deferred; payday countdown added as feedback. Unexercised specialist and release gates remain open. See the [integration report](../implementation/12-integrated-review-and-help.md).
 
 **Phase:** Phase 5 — integration and player review
 
@@ -22,7 +22,7 @@ Study [01C](../architecture/01c-combat-equipment-and-results.md) and [the subseq
 
 ### Preparation from study 01D
 
-The [persistence/identity report](../architecture/01d-campaign-persistence-and-identity.md) and [risk register](../architecture/01d-removal-sequence-and-risks.md) add planned checks for unsupported legacy saves, failed prospective loads, corruption/backup recovery, half-finished daily transitions, battle/AI checkpoints, nested prey references, repeated result/summary/revival loads, item bonus reapplication, discovery retention, and disabled-species existing identities. Keep exact supported save boundaries and any accepted fallback visible to the player. These checks remain unperformed until implementation and its authorized verification stage.
+The [persistence/identity report](../architecture/01d-campaign-persistence-and-identity.md) and [risk register](../architecture/01d-removal-sequence-and-risks.md) add planned checks for unsupported legacy saves, failed prospective loads, corruption/backup recovery, half-finished daily transitions, battle/AI checkpoints, nested prey references, repeated result/summary/revival loads, item bonus reapplication, discovery retention, and disabled-species existing identities. Keep exact supported save boundaries and any accepted fallback visible to the player. Performed versus pending coverage is now recorded in the integration report; no live combat pass is inferred from source/data checks.
 
 ## Completion and review criteria
 
@@ -43,9 +43,9 @@ Reviewed campaign proof of concept, updated help, validation record, and an expl
 
 ## Execution record
 
-- Source trace and exact change locations: pending.
-- Implementation batches and user review: pending.
-- Checks actually performed and remaining checks: none for this spec yet.
+- One grouped implementation corrects confirmed save/retry/help/expiry/summon/resource issues and centralizes resume validation. Exact source trace, provisional values and the single player review are in the [integration report](../implementation/12-integrated-review-and-help.md).
+- Managed production-code integration checks and Unity compilation/read-only scene checks are performed as recorded there. The current Win64 player build and headless startup check passed separately. Live battle/visual gameplay is not inferred from those checks.
+- [Release readiness](../release-readiness.md) records known limits and inherited provenance/distribution gates; no release/publication is authorized or performed.
 
-Before execution, refine this spec with the architecture study, list its small change batches, and resolve decisions needed for the next batch. Follow the review and file-operation rules in [the roadmap](../conversion-roadmap.md). Design intent comes from [the campaign plan](../mercenary-company-campaign-plan.md) and the three curation checklists.
+Retain milestone-sized review. The implementation follows the architecture studies and accepted decisions; unresolved graphical player/combat/provenance checks remain explicit rather than marked complete. Follow the review and file-operation rules in [the roadmap](../conversion-roadmap.md). Design intent comes from [the campaign plan](../mercenary-company-campaign-plan.md) and the three curation checklists.
 

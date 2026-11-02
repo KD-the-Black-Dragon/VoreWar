@@ -1,20 +1,3 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-
-class Whisp : BlankSlate
-{
-    public Whisp()
-    {
-        CanBeGender = new List<Gender>() { Gender.None };
-
-        SkinColors = ColorPaletteMap.GetPaletteCount(ColorPaletteMap.SwapType.MermenSkin);
-        Body = new SpriteExtraInfo(1, BodySprite, null, (s) => ColorPaletteMap.GetPalette(ColorPaletteMap.SwapType.MermenSkin, s.Unit.SkinColor)); // Body
-    }
-    protected override Sprite BodySprite(Actor_Unit actor) // Body
-    {
-
-        return SpriteDictionary.Whisp[0];
-
-    }
-
-}
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-01: Retire the disconnected Whisp graphics class payload; retain this path and notices (spec 03B8).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.

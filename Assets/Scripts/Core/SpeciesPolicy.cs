@@ -2,10 +2,13 @@
 // 2026-10-30: Approved species, explicit roles and global generation preferences (spec 03A1).
 // 2026-10-30: Make new copies, spawns and forms explicit policy uses; preserve restoration separately (spec 03A2).
 // 2026-10-30: Expose permanent retirement separately from approval and player preferences (spec 03B1).
+// 2026-11-01: Curate user-selected Avians, Lizards, Gnolls and animal SpitterSlugs (specs 07–08).
+// 2026-11-01: Add singular spaced display names and label parsing without changing saved species IDs (09–10 feedback).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 internal enum SpeciesKind { Sapient, Animal }
@@ -13,10 +16,16 @@ internal enum SpeciesUse { Leader, Mercenary, Enemy, Skirmish, CreatureSummon, C
 
 internal static class SpeciesPolicy
 {
-    internal const string UnavailableMessage = "No approved species are available yet. Species will be added individually during curation.";
+    internal const string UnavailableMessage = "No enabled species are available for this role. Check species availability in content settings.";
 
-    // Intentionally empty. Approval and classification are developer decisions, not save/preset data.
-    private static readonly Dictionary<Race, SpeciesKind> CuratedSpecies = new Dictionary<Race, SpeciesKind>();
+    // Approved by the user; specialties never restrict a sapient species to one role.
+    private static readonly Dictionary<Race, SpeciesKind> CuratedSpecies = new Dictionary<Race, SpeciesKind>
+    {
+        { Race.Avians, SpeciesKind.Sapient },
+        { Race.Lizards, SpeciesKind.Sapient },
+        { Race.Gnolls, SpeciesKind.Sapient },
+        { Race.SpitterSlugs, SpeciesKind.Animal }
+    };
     private static readonly HashSet<Race> RetiredSpecies = new HashSet<Race>
     {
         Race.Aabayx,
@@ -111,6 +120,64 @@ internal static class SpeciesPolicy
         Race.Zoey,
     };
     private static readonly Dictionary<Race, bool> PlayerChoices = new Dictionary<Race, bool>();
+
+    // Presentation only: enum values, preference keys, saved identities and eligibility remain unchanged.
+    static readonly Dictionary<Race, string> IndividualNames = new Dictionary<Race, string>
+    {
+        { Race.none, "None" },
+        { Race.Bunnies, "Bunny" },
+        { Race.Lizards, "Lizard" },
+        { Race.Kangaroos, "Kangaroo" },
+        { Race.Equines, "Equine" },
+        { Race.Bees, "Bee" },
+        { Race.Bats, "Bat" },
+        { Race.Panthers, "Panther" },
+        { Race.Avians, "Avian" },
+        { Race.Ants, "Ant" },
+        { Race.Frogs, "Frog" },
+        { Race.Sharks, "Shark" },
+        { Race.Mice, "Mouse" },
+        { Race.MatronsMinions, "Matron's Minion" },
+        { Race.Gnolls, "Gnoll" },
+        { Race.Jackals, "Jackal" },
+        { Race.Draconians, "Draconian" },
+        { Race.Alligators, "Alligator" },
+        { Race.Kobolds, "Kobold" },
+        { Race.Hippos, "Hippo" },
+        { Race.Komodos, "Komodo" },
+        { Race.Badgers, "Badger" },
+        { Race.Serpents, "Serpent" },
+        { Race.FeralWolves, "Feral Wolf" },
+        { Race.Harvesters, "Harvester" },
+        { Race.FeralBats, "Feral Bat" },
+        { Race.TwistedVines, "Twisted Vine" },
+        { Race.FeralAnts, "Feral Ant" },
+        { Race.Gryphons, "Gryphon" },
+        { Race.SpitterSlugs, "Spitter Slug" },
+        { Race.SpringSlugs, "Spring Slug" },
+        { Race.RockSlugs, "Rock Slug" },
+        { Race.CoralSlugs, "Coral Slug" },
+        { Race.Salamanders, "Salamander" },
+        { Race.WarriorAnts, "Warrior Ant" },
+        { Race.FeralLizards, "Feral Lizard" },
+        { Race.Monitors, "Monitor" },
+        { Race.FeralLions, "Feral Lion" },
+        { Race.FeralHorses, "Feral Horse" },
+        { Race.Trex, "T. rex" },
+        { Race.SpaceCroach, "Space Roach" },
+    };
+    internal static string DisplayName(Race race)
+    {
+        string label;
+        return IndividualNames.TryGetValue(race, out label) ? label : Regex.Replace(race.ToString(), "(?<=[a-z])(?=[A-Z])", " ");
+    }
+    internal static bool TryParseName(string label, out Race race)
+    {
+        if (Enum.TryParse(label, out race) && Enum.IsDefined(typeof(Race), race)) return true;
+        foreach (Race candidate in Enum.GetValues(typeof(Race)))
+            if (string.Equals(DisplayName(candidate), label, StringComparison.Ordinal)) { race = candidate; return true; }
+        race = Race.none; return false;
+    }
 
     internal static bool IsRetired(Race race)
     {

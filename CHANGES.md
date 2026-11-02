@@ -8,6 +8,188 @@ The covered derivative work continues under the applicable GNU GPL version 3 ter
 
 Record completed source changes by actual date, affected paths, and a short description, with a related spec where useful. Modified source files also receive dated notices under the workflow in [AGENTS.md](AGENTS.md). Mark additions as this fork's additions. Preserve previous entries and do not describe planned removals or features as implemented.
 
+## 2026-11-02 — Portrait alignment and magnification feedback
+
+- Modified `Assets/Scripts/Subwindows/SingleBattleSetupView.cs`: reduce preview magnification1.4to1.0 and recenter its anchor104to94, preserving the enlarged card and original sprite assets/filtering. This reduces enlargement of existing pixels; it does not increase source-art resolution.
+- Modified `Assets/Scripts/Subwindows/CompanyManagementUI.cs`: move shared company/recruitment/detail portraits18reference pixels upward, keeping their enlarged scale and horizontal clearance.
+- Source-only adjustment; no new compile/test/Play-mode run. Dated notices and exact paths recorded after reviewing License.txt sections4–5; prior notices/licensing/attribution preserved, no external additions. Existing provenance/distribution gates remain open.
+
+## 2026-11-02 — Larger paper-doll previews
+
+- Modified `Assets/Scripts/Subwindows/SingleBattleSetupView.cs`: enlarge preview cards into the heading space, increase doll scale0.75to1.4, and compensate for the renderer's30pixel upward offset. Keep names below the artwork.
+- Modified `Assets/Scripts/Subwindows/CompanyManagementUI.cs`: increase shared company/recruitment doll scale0.4to0.9 and center dolls within rows using the renderer offset; give recruitment descriptions extra left clearance and larger detail portraits (1.6scale). No appearance generation, statistics or gameplay changes.
+- Source diff reviewed; no compile/Play-mode test performed for these presentation changes. Focused visual confirmation remains pending. Actual License.txt sections4–5 reviewed; dated notices/exact paths recorded, existing notices/licensing/attribution preserved. No external additions; inherited distribution/provenance reviews remain open.
+
+## 2026-11-02 — Spec 15D: Single Battle setup layout
+
+- Modified `Assets/Scripts/Subwindows/CreateTacticalGame.cs` to host the new runtime presentation and refresh existing display/dependency handlers, with inactive-child access for two retained label updates. Added `Assets/Scripts/Subwindows/SingleBattleSetupView.cs` and `Assets/Scripts/Subwindows/SingleBattleSetupView.cs.meta`: centered blue layout, top core controls, Attackers/Defenders columns with both original species previews, independent scrolling, two subtle dividers, bottom AI-watch choice and all conditional bulk actions.
+- Retained all29inputs,6original action buttons, percentage readouts, species restrictions, values/ranges/options and callbacks. Battle construction, validation, batching, gameplay and global preference semantics remain. No fields removed, no new artwork/dependencies or serialized scene/prefab changes. See [15D implementation and focused review](docs/implementation/15d-single-battle-setup.md).
+- Unity2018.3.12f1 compile/read-only scene passed, return0, no new normalized compiler warnings; inspected references/72terrain sprites retained. Scoped review confirms all fields accounted for, unchanged public declarations/generation and no other Assets/Packages/ProjectSettings changes or missing paths. Actual graphical field/preview/dropdown/battle entry review remains pending. No new tests/framework, bulk jobs, agent Play-mode check or player build.
+- GPL source-change review: actual License.txt sections4–5 reviewed, dated notices on both C#sources and exact associated meta path above; new source identified as this fork's addition, prior notices/licensing/attribution preserved. No external code/assets/dependencies or distribution. Existing provenance/distribution gates remain open; no deletion/move/commit/publication.
+
+## 2026-11-02 — Main-menu sizing and supplied Vore Warband logo
+
+- Modified `Assets/Scripts/Modes/StartMode.cs`: larger main/corner buttons and32-point labels,16-point row gaps, Credits/Help separation, and the user-supplied logo replacing old title text through a noninteractive aspect-preserving Image. Preserved button wording/order/actions and existing load/save/settings behavior. See [15C feedback record](docs/implementation/15c-main-menu-redesign.md).
+- Added `Assets/Resources/UI/VoreWarbandLogo.png` by byte-for-byte copy of the attached user-provided2172×724RGBA artwork, plus `Assets/Resources/UI/VoreWarbandLogo.png.meta` and `Assets/Resources/UI.meta` for single-sprite UI import. The PNG itself is unmodified (SHA256 a8fbea4f27b0e83912bab56aa34dcc4497e74607ad0d4b8433adde68ae91e3f9). This entry associates the new non-commentable asset/import metadata with this dated fork addition.
+- Unity2018.3.12f1 compile/import/read-only scene passed, return0, with no new compiler warnings and retained inspected references/72terrain sprites. Scoped review confirms only StartMode plus the three intended asset/metadata additions; no other asset or scene changes. Actual logo appearance/spacing awaits one focused review; no new tests/framework, Play-mode pass or player build.
+- GPL source-change review: actual License.txt sections4–5 reviewed; dated source notice and exact paths recorded here; earlier notices/licensing/attribution retained. No external code/dependency additions. Supplied artwork has no embedded author/license metadata: record its origin and obtain applicable redistribution/attribution evidence before release; do not assume a GPL grant for it. Existing distribution/provenance gates remain open. No publication or file deletion/move.
+
+## 2026-11-02 — Spec 15C: main menu presentation
+
+- Modified `Assets/Scripts/Modes/StartMode.cs`: shared blue styling, smaller captions, elevated central New Campaign / Single Battle / Load Saved Game / Options order, retired visible presets/startup listeners and displayed Version: 1.0. Preserved title and peripheral Credits/Help/Exit/developer transforms, selected race-edit slot and existing setup/options callbacks. Uses Expand on the existing reference canvas.
+- Modified `Assets/Scripts/Subwindows/CompanyCampaignView.cs` to expose the existing checkpoint browser, and connected the main-menu load route to it in StartMode instead of the retired legacy save screen. No new save format or load policy. Modified `Assets/Scripts/Core/State.cs` to clear routine race-loading success text and match two guidance messages to the renamed/current buttons; actual race loading and internal version identifiers remain.
+- See [15C implementation and focused review](docs/implementation/15c-main-menu-redesign.md). No new assets/dependencies, scene/prefab rewrite or broad Help change. Content Settings accepted; current main-menu visual/interaction review remains pending.
+- Final Unity2018.3.12f1 compile/read-only scene passed, return0, without new normalized compiler warnings; inspected references/72terrain sprites retained. Source/notice/wiring audit confirms exactly three intended source changes and no other asset/package/ProjectSettings changes or missing paths. No new tests/framework, Play-mode/visual loading test, personal campaign load or player build.
+- GPL source-change review: actual License.txt sections 4–5 reviewed; dated notices on all three source files with exact paths here, earlier notices/licensing/attribution retained. No external additions or distribution. Inherited provenance/distribution-method gates remain open.
+
+## 2026-11-02 — Clarify the global-default button
+
+- Modified `Assets/Scripts/Subwindows/ContentSettingsView.cs`: renamed “Apply to all games” to the exact user-requested “Apply now and as global default”. Existing ExitAndSave callback and other behavior unchanged. Source diff reviewed; no new compile/tests or Play-mode check for this label-only edit.
+- GPL source-change review: reviewed actual License.txt sections 4–5; updated dated modification notice and recorded the exact source path here. Prior licensing/attribution/notices preserved; no external additions or distribution. Existing provenance/distribution gates remain open.
+
+## 2026-11-02 — Content Settings apply-button labels
+
+- Modified `Assets/Scripts/Subwindows/ContentSettingsView.cs`: “Apply and close” is now “Apply to this game” (existing `ContentSettings.Exit` callback); “Save and close” is now “Apply to all games” (existing `ContentSettings.ExitAndSave` callback). Traced both through SetValues and ContentSettingsData.SavePreferences: both apply the current settings, while only ExitAndSave persists global preferences. Other saved game files are not rewritten. No callback, setting/storage, layout or normal Options label changes.
+- Source mapping/diff reviewed; no new compile, tests, Play-mode run or manual test round for two labels. GPL review: actual License.txt sections 4–5 reviewed; dated notice and exact source path recorded, prior notices/licensing/attribution retained, no third-party additions or distribution. Existing provenance/distribution gates remain open.
+
+## 2026-11-02 — Content Settings terminology correction
+
+- Modified `Assets/Scripts/Subwindows/ContentSettingsView.cs` to restore the preferred herm/herms wording in five labels expanded during the redesign. Modified `Assets/Scripts/Utility/Texts/DefaultTooltips.cs` to use Herm in the corresponding tooltip and correct diegesting → digesting, vales → values, occuring → occurring, and effect → affect in “affect starting Exp”. No gameplay, settings, layout or identifier changes.
+- Recorded the user's direction in `AGENTS.md`: preserve terminology and existing wording; freely correct outright typos, and ask about ambiguous wording. Broad Help rewriting remains deferred. Source diff reviewed; no compile/test/playtest run for these text-only edits and no new manual testing round requested.
+- GPL source-change review: actual License.txt sections 4–5 reviewed; both source files have dated conversion notices, paths recorded here, existing notices/attribution/licensing retained. No external code/assets/dependencies or distribution; inherited provenance/distribution review remains open.
+
+## 2026-11-02 — Spec 15B: Content Settings redesign and visible checkmarks
+
+- Modified `Assets/Scripts/Subwindows/ContentSettings.cs` and added `Assets/Scripts/Subwindows/ContentSettingsView.cs` with `Assets/Scripts/Subwindows/ContentSettingsView.cs.meta`: centered blue scroll pages, smaller text, retained top page dropdown without subcategories, 50 original controls plus curated species choices, and existing load/apply/save paths. Retired the nine user-listed controls; retained settings and generation restrictions remain.
+- Modified `Assets/Scripts/Core/ContentSettingsData.cs` so those nine retired preferences use their existing code defaults, without loading/writing old overrides or deleting preference keys. No new defaults, species approvals or unrelated balance changes.
+- Modified `Assets/Scripts/UI/UITheme.cs` and `Assets/Scripts/Subwindows/OptionsView.cs`, and added `Assets/Scripts/UI/SettingsCheckmark.cs` with `Assets/Scripts/UI/SettingsCheckmark.cs.meta`: shared bright vector checkmarks for both menus/dropdown items and unchanged corrected slider geometry. No external assets/dependencies. See [implementation and focused review](docs/implementation/15b-content-settings-redesign.md).
+- Final Unity 2018.3.12f1 compile/read-only scene passed, with no new compiler warnings and retained inspected references/72 terrain sprites. Scoped review accounts for all retained controls and unchanged existing defaults; no unrelated asset/package/ProjectSettings changes. Actual graphical behavior and preference persistence await one focused player review. No new tests/framework or player build.
+- GPL source-change review: actual License.txt sections 4–5 reviewed, dated notices on all six C# sources and exact associated meta paths above, additions identified as this fork's work, prior notices/licensing/attribution preserved. Inherited provenance/distribution-method gates remain open. No deletion/move or publication.
+
+## 2026-11-02 — Options feedback: aligned sliders, larger hover text and vore terminology
+
+- Modified `Assets/Scripts/Subwindows/OptionsView.cs` to remove inherited2xslider track/fill scaling and align background/fill/handle on the same8px-inset rail. Normalize their transforms and initialize the fill/handle from the existing normalized value; preserve numeric min/max/current values, direction and callbacks. Hover text rises from15to19points. Labels now read AI vore actions and Vore volume.
+- Modified `Assets/Scripts/Utility/Texts/HelpText.cs`, `Assets/Scripts/Utility/Texts/HoveringTooltip.cs` and `Assets/Scripts/AI/TacticalAI.cs` to restore vore in player-facing help, the downed-unit tooltip and the retreat log. This is terminology correction, not the deferred Help rewrite or a change to tactical mechanics. Recorded the explicit player-facing terminology preference in AGENTS.md (documentation).
+- User finds the remaining Options presentation mostly okay; beautification is deferred. Final Unity2018.3.12f1 compile/read-only scene passed with retained references/72terrain sprites. Source/geometry/preference-scope review performed; actual slider endpoints/fill alignment and hover readability need one focused visual check. No new tests, data regression rerun or current player build.
+- GPL source-change review: actual License.txt4–5 reviewed, dated notices on all4sources and exact paths here; prior notices/licensing/attribution/warranty terms retained. No external source/assets/dependencies introduced. Inherited provenance/distribution-method gates remain open. No path deletion/move, scene/prefab/package changes, commit or publication.
+
+## 2026-11-02 — Spec15A: categorized blue Options menu
+
+- Modified `Assets/Scripts/Subwindows/Options.cs` to host a centered single-column presentation while preserving normal preference storage, save/close and maintenance behavior, including the active company's revival setting.
+- Added `Assets/Scripts/Subwindows/OptionsView.cs` and `Assets/Scripts/Subwindows/OptionsView.cs.meta` for a scrollable categorized layout reusing32retained controls: Move Delays, Audio, Graphics, Controls, context-specific Campaign, and approved Maintenance. Four requested controls are retired from the visible page; historical references/values remain, without an unrelated balance/config reset.
+- Added `Assets/Scripts/UI/UITheme.cs` and `Assets/Scripts/UI/UITheme.cs.meta` for the reusable restrained blue palette, smaller typography and aligned control styling. No other screens, scene/prefab/art/packages or dependencies changed. See [implementation and focused review](docs/implementation/15a-options-redesign.md).
+- Actual final Unity2018.3.12f1 compile/read-only scene and existing32managed checks passed; no new test cases/framework. New graphical Options/dropdown/persistence/return workflows await one player review. No current player rebuild or maintenance operation performed.
+- GPL source-change review: actual License.txt4–5 reviewed; dated notices on all3sources, new sources identified as this fork's additions and exact associated meta paths above. Earlier notices/license/attribution/warranty terms preserved; no external copied code/assets/dependencies. Inherited provenance/distribution-method review remains open. No path deletion/move, commit or publication. Help prose remains deferred.
+
+## 2026-11-02 — Spec14 feedback: centered draggable region and normal Options
+
+- Modified `Assets/Scripts/Subwindows/CompanyCampaignView.cs` for a bounded centered campaign frame, top Contracts/Records buttons, lower active-contract strip and removal of the right column. Added a clipped348-control map pool and normal Options handoff/return. Retained terrain/fog/adjacency and existing campaign actions.
+- Added `Assets/Scripts/UI/CompanyMapScroll.cs` and `Assets/Scripts/UI/CompanyMapScroll.cs.meta` for left/middle dragging and drag-release click suppression, without spending actions or altering the campaign.
+- Modified `Assets/Scripts/Subwindows/Options.cs` and `Assets/Scripts/Subwindows/CompanyMissionsUI.cs` to integrate the active company's leader-revival preference into normal Options and retire its separate campaign page. Global preferences remain separate; setup/creator cannot target a stale hidden company.
+- Modified `Assets/Scripts/Core/CompanyCampaign.cs` to generate80x60new maps with exactly6towns, per the user's size/density clarification. Modified `Assets/Scripts/Core/CompanyCampaignSave.cs` to resume validated supported map sizes; existing maps keep their saved geometry and towns.
+- [Feedback implementation and focused review](docs/implementation/14b-centered-map-and-options.md). Final Unity2018.3.12f1 compile/read-only scene and existing32managed checks passed; actual generated80x60/6town save/resume values inspected. New runtime layout/drag/Options behavior awaits player review. No new test cases/framework or current player rebuild.
+- GPL source-change review: actual License.txt4–5 reviewed, dated notices on6affected sources, new source identified as this fork's addition and meta associated above. Earlier notices/licensing/attribution/warranty preserved; no external code/assets/dependencies introduced. Inherited provenance/distribution-method gates remain. No file deletion/move, scene/prefab/art/package changes, commit or publication. Help prose remains deferred.
+
+## 2026-11-02 — Spec14: user-defined campaign interface
+
+- Modified `Assets/Scripts/Subwindows/CompanyCampaignView.cs`, `Assets/Scripts/Subwindows/CompanyManagementUI.cs`, `Assets/Scripts/Subwindows/CompanyMissionsUI.cs` and `Assets/Scripts/Subwindows/CompanyRecoveryUI.cs` for persistent centered Company/Map/Town navigation, a larger retained-art map, grouped bottom company/calendar/finance status, town service column and direct roster level-up actions. Removed redundant general Return/World map buttons while preserving task-specific decisions/deployment and creator contexts. Reused retained terrain/settlement references; no assets or scenes changed.
+- Modified `Assets/Scripts/Core/CompanyCampaign.cs` to require the full daily action budget before starting rest, in addition to UI eligibility. End turn remains distinct and does not set the resting flag. Rest1day/custom duration remain; queued Resume/Cancel display only when relevant. No save-schema change.
+- Related [spec14](docs/specs/14-campaign-interface.md) and [implementation/player review](docs/implementation/14-campaign-interface.md). Actual final Unity2018.3.12f1 compile/read-only scene check passed; inspected references/72terrain retained. Existing32managed regression checks passed; no new tests/framework. Initial local-variable compile error corrected before successful checks. Runtime layout/navigation/full-budget-rest behavior awaits one combined player review; no current player rebuild.
+- GPL source-change review: actual License.txt sections4–5 reviewed, dated notices on all5modified sources and exact paths here, earlier notices/license/attribution/warranty terms preserved. No external source/assets/dependencies added. Inherited provenance/distribution-method gates remain open. No file deletion/move, commit/push or publication. Help prose rewrite remains deferred.
+
+## 2026-11-02 — Spec13 accepted with lighter slug encounters
+
+- Modified `Assets/Scripts/Core/CompanyRoadEvents.cs`: random-encounter power fraction reduced from0.80 to0.56, a30% reduction. For equivalent company/slug power, an encounter that previously rounded to7slugs now rounds to5. Company scaling, leader weighting, slug stats, contract generation, event frequency/cooldown and duel outcomes are unchanged. Already generated/saved forces retain their recorded roster; this tuning applies to new generation.
+- User reports the slice basically good and accepts it with this adjustment, explicitly waiving an additional test. Spec13 acceptance and deferred help rewrite recorded in the implementation/resume documents. No new compile/build/playtest or tests were run for this constant-only follow-up; previous phase checks remain historical evidence.
+- GPL source-change review: actual License.txt sections4–5 reviewed; dated conversion notice and this exact source record added, earlier notices/license/attribution/warranty terms preserved. No external source/assets/dependencies introduced. Inherited provenance and distribution-method review remain open before distribution. No file deletion/move, commit or publication.
+
+## 2026-11-02 — Spec13: road encounters, practice duel and per-level XP
+
+- Added `Assets/Scripts/Core/CompanyRoadEvents.cs` and its `Assets/Scripts/Core/CompanyRoadEvents.cs.meta` Unity identity for approved saved travel events: forced wild Spitter Slug combat and a two-mercenary practice-duel choice. Includes provisional travel frequency/cooldown, weighted full-company scaling, exact shared 50/50 duel outcomes and serialization validation. No legacy event definitions returned.
+- Modified `Assets/Scripts/Core/CompanyCampaign.cs`, `Assets/Scripts/Core/CompanyContracts.cs`, `Assets/Scripts/Core/CompanyBattle.cs`, `Assets/Scripts/Core/CompanyCampaignSave.cs`, `Assets/Scripts/Subwindows/CompanyCampaignView.cs` and `Assets/Scripts/Subwindows/CompanyMissionsUI.cs` to persist/route events, share approved enemy creation and tactical fate/deployment/return, and keep road combat separate from contract payments/reputation/counts/bonus XP. Event occurrence and committed travel save before presentation; existing contract saves remain supported.
+- Modified `Assets/Scripts/Entities/Units/Unit.cs`, `Assets/Scripts/Subwindows/CompanyManagementUI.cs` and `Assets/Scripts/Subwindows/InfoPanel.cs` to show per-level XP progress/cost with surplus preserved after leveling. Cumulative save totals, leveling choices and existing pacing remain unchanged. Help rewriting remains deferred.
+- See [implementation, tuning and player review](docs/implementation/13-road-events-and-xp.md). Actual checks: Unity2018.3.12f1 compile/read-only scene audit passed after a network-enabled license renewal retry; no new compiler warnings, retained72terrain and scene references; existing32managed regression checks passed. New live events/XP UI await one combined review. No current player rebuild or new tests/framework.
+- GPL source-change check: actual License.txt sections4–5 reviewed, dated notices on all10affected C#sources and exact associated meta path here; earlier notices, license/attribution/warranty terms preserved. New source identified as this fork's addition; no external source/assets/dependencies introduced. Inherited provenance and distribution-method review remain gates. No file deletion/move, commit/push or publication.
+
+## 2026-11-02 — Spec12 acceptance and payday visibility
+
+- User reports all combined review results good with no material issues. This records their confirmation, without claiming unreported specialist combat cases or release approval.
+- Modified `Assets/Scripts/Subwindows/CompanyCampaignView.cs` to show a non-interrupting world-map countdown above the contract list: Payday in 7 days down to 1 day, then back to 7 after the existing weekly wage stage. Uses saved NextPayday minus ElapsedDays, including after rest/loading; a due but unprocessed payday reads Payday due. Map-only previews omit it. Wage timing, amounts, debt and saves are unchanged.
+- Help copy is explicitly deferred for a later user-led rewrite: remove design/developer commentary and unnecessary detail. No help strings changed in this batch.
+- GPL source-change review: actual License.txt sections 4–5 reviewed; dated conversion notice and exact source record added, earlier notices/licensing/attribution preserved. No external code/assets/dependencies added. Inherited provenance and distribution-method review remain release gates.
+- This UI-only feedback batch was reviewed against its task-start source diff; no compilation, new player build or playtest was run. The earlier Win64 build predates this countdown. No files deleted/moved, commit or publication.
+
+## 2026-11-02 — Spec12: integrated campaign review and current help
+
+- Modified `Assets/Scripts/Utility/Texts/HelpText.cs` and `Assets/Scripts/UI/HelpPanel.cs` to replace conquest/village/diplomacy/training instructions with the implemented company loop, wages/recovery, combat/fates, progression, save/Ironman limits and project/license information. Corrected the invalid Race-array cast in trait enumeration, filtered retired references and deferred trait/spell reference generation until selected.
+- Modified `Assets/Scripts/Subwindows/CompanyCampaignView.cs`, `Assets/Scripts/Subwindows/CompanyMissionsUI.cs` and `Assets/Scripts/Subwindows/CompanyManagementUI.cs`: twelve paged company-help chapters with safe setup/creator/decision/result return; Retry checkpoint reachable on every company page, only while a write is actually failed; shared resume validation; independent contract-expiry acknowledgment instead of wage controls. Creator help returns to the existing draft without regenerating it.
+- Modified `Assets/Scripts/Core/CompanyCampaignSave.cs` to centralize prospective load validation, enforce matching company folders/supported dimensions and latest-valid-only Ironman resumption, and extend the existing serialization preservation guard to mana, level/XP, raw stats, equipped item identities/uses/cooldowns. Older valid generations remain intact for recovery; live battle saving still uses the accepted deployment fallback.
+- Modified `Assets/Scripts/Core/CompanyInjuries.cs` to restore the original Army.Refresh rate of60%maximum mana per elapsed day through the single resumable recovery stage for members and active targets. No HP, injury, wage or XP tuning changes. Modified `Assets/Scripts/Entities/Units/Actor_Unit.cs` so summons entering the fear/nonlethal downed path disappear instead of retaining a permanent-character downed state. Ordinary downed characters remain alive and latched out of action.
+- Modified `Assets/Scripts/Core/State.cs` to replace obsolete company-not-available messages with current checkpoint guidance. No source additions, scenes, prefabs, artwork, packages or dependency changes.
+- Related [spec12](docs/specs/12-mvp-review-and-help.md), [integration report](docs/implementation/12-integrated-review-and-help.md) and [release-readiness record](docs/release-readiness.md). Managed data, Unity compile/scene, current Win64 player build and headless startup checks are recorded separately from pending graphical player/battle checks. The private build includes the root license/change record and inspected third-party notices; full distribution/provenance obligations remain release gates. No publication or release claim.
+- GPL source-change check: all nine modified C# sources have2026-11-02conversion notices, meaningful earlier legal/modification notices remain and exact paths are recorded here. Actual License.txt sections4–5 reviewed; original license/attribution/warranty terms retained. No copied external code/assets/dependencies. Separate inherited provenance, interactive-notice and distribution-method obligations remain release gates; this is not a blanket distribution compliance certification. No deletion/move, commit or publishing action.
+
+## 2026-11-02 — Spec11 feedback: injury outline and final positioning
+
+- Modified `Assets/Scripts/Races/Graphics/UnitSprite.cs`: moved injury text from1tile to0.75tiles right of the unit (a quarter tile left), increased fixed font size from1.5to2.5, and explicitly enabled the text shader's outline with opaque black and a minimum0.2outline width. Outline settings apply to the independent injury material. The accepted2.5-second timing, left alignment and ordinary combat text remain unchanged.
+- Related [spec11 feedback report](docs/implementation/11-feedback-progression-and-notices.md). Dated conversion notice and exact source record added; earlier notices, license, attribution and warranty terms preserved. Actual License.txt sections4–5 reviewed. No external code, assets, dependencies, scene/prefab edits, deletion/move, commit or publication. Inherited provenance and distribution review remain release gates; source-change review is not distribution certification.
+
+## 2026-11-02 — Spec11 feedback: compact injury text to the right
+
+- Modified `Assets/Scripts/Races/Graphics/UnitSprite.cs` to disable injury-label auto-sizing and use a fixed1.5font size, substantially smaller than the previous6.5ceiling. The label now has a left-edge pivot, explicit left alignment and one-line text, starting one tactical world unit to the injured unit's right at the same height. Existing canvas draw depth is retained. This replaces the centered, above-unit placement; the accepted2.5-second timing and independent damage/healing labels remain unchanged.
+- Related [spec11 feedback report](docs/implementation/11-feedback-progression-and-notices.md). User accepts popup timing, XP functionality and Departures; size/placement awaits focused visual confirmation.
+- GPL source-change check: dated conversion notice added, meaningful earlier notices preserved and exact source identified here. Actual License.txt sections4–5 reviewed; original license/attribution/warranty terms retained. No external code/assets/dependencies, prefab/scene changes, file deletion/move, commit or publication. Inherited provenance/distribution review remains a release gate.
+
+## 2026-11-02 — Spec11 feedback: readable injury notices
+
+- Modified `Assets/Scripts/Races/Graphics/UnitSprite.cs` to display each queued injury in its own runtime text component above the ordinary combat numbers. Reuses the installed font/style with a65% font-size ceiling, a wider text area and an independent color material; no prefab or art changes. Each injury remains steady for2.5unscaled seconds, independent of repeated sprite updates or later damage/healing. Ordinary damage/healing setup, font and0.75-second timer remain unchanged.
+- User confirmed XP is functional with later tuning expected, and the Departures screen is accepted. Only injury-text readability remains for focused visual confirmation. Related [spec11 feedback report](docs/implementation/11-feedback-progression-and-notices.md).
+- GPL source-change check: dated conversion notice added, meaningful earlier notices and license/attribution/warranty terms preserved, exact source identified here. Actual License.txt sections4–5 reviewed; no copied external code, new assets or dependencies. Inherited provenance and distribution-method obligations remain release gates. No file deletion/move, commit or publication.
+
+## 2026-11-01 — Spec11 feedback: progression and battle/departure feedback
+
+- Modified `Assets/Scripts/Entities/Units/Unit.cs` and `Assets/Scripts/Core/CompanyEconomy.cs`: company XP thresholds now use a provisional cumulative exponential curve independent of retired world caps; weaker-enemy action XP and lower-rated contract completion XP diminish for veterans. Surviving deployed starters qualify for their first level-up on completing a contract; existing player choices remain. Rules-version4 migration repairs earlier sentinel-valued veteran XP without discarding ordinary earned XP or changing levels. Modified `Assets/Scripts/Core/CompanyBattle.cs` for once-only contract completion XP and result feedback, and `Assets/Scripts/Entities/Units/Actor_Unit.cs` to correct spell XP calculations that compared the target's level with itself.
+- Modified `Assets/Scripts/Core/CompanyInjuries.cs` and `Assets/Scripts/Races/Graphics/UnitSprite.cs`: each new injury creates a named informational battle-log entry and queues orange tactical text after damage numbers. Hidden/contained units do not display a map popup, and instant simulation skips visual notifications while preserving log entries. No prefab/artwork changes.
+- Modified `Assets/Scripts/Core/CompanyCampaign.cs`, `Assets/Scripts/Core/CompanyContracts.cs`, `Assets/Scripts/Core/CompanyCampaignSave.cs`, `Assets/Scripts/Subwindows/CompanyCampaignView.cs` and `Assets/Scripts/Subwindows/CompanyManagementUI.cs`: rules-version4 state, a distinct OK-only departure notice, and persistence/routing for a separate simultaneous wage warning when necessary. No further campaign day is consumed between those notices; the promised payment grace day remains available. Departure text no longer says departed mercenaries are willing to wait or offers payment controls.
+- Related spec11; [feedback report](docs/implementation/11-feedback-progression-and-notices.md) records source trace, initial tuning, checks and focused player review. All11modified C# sources have dated conversion notices; prior notices and original license/attribution/warranty terms are preserved. Actual License.txt sections4–5 reviewed; no outside code/assets/dependencies or new licensing terms. Inherited provenance and section5(d)/6 distribution review remain release gates, not a completed distribution certification. No source additions, file deletion/move, publication or commit.
+
+## 2026-11-01 — Spec11: persistent injuries, recovery and downtime
+
+- Added this fork's `Assets/Scripts/Core/CompanyInjuries.cs` and `Assets/Scripts/Subwindows/CompanyRecoveryUI.cs` for independent minor/serious/old-injury records, derived stacking penalties, body-part armor risk reduction, daily company/enemy recovery, healthy-member sparring, injury inspection and paid per-member town treatment. Associated non-commentable metadata: `Assets/Scripts/Core/CompanyInjuries.cs.meta`, `Assets/Scripts/Subwindows/CompanyRecoveryUI.cs.meta`. Numerical values are provisional.
+- Modified `Assets/Scripts/Entities/Units/Unit.cs` and `Assets/Scripts/Entities/Units/Actor_Unit.cs` to roll injury risk once per actual lasting-damage entry (plus one deep-attrition opportunity per battle), serialize the injury backing field, apply combat penalties without modifying base stats/maximum HP, and detach cloned injury records. Temporary HP shields injury risk; ordinary zero HP remains downed, not dead. Modified `Assets/Scripts/Subwindows/InfoPanel.cs` for injury inspection in both game modes.
+- Modified `Assets/Scripts/Core/CompanyCampaign.cs`, `Assets/Scripts/Core/CompanyEconomy.cs` and `Assets/Scripts/Core/CompanyContracts.cs` for version3 migration, saved explicit resting-day intent and the existing resumable clock. Modified `Assets/Scripts/Core/CompanyCampaignSave.cs` to verify injury/treatment/immunity and interrupted recovery progress before publishing checkpoints and after readback. Modified `Assets/Scripts/Core/CompanyBattle.cs` to clear leader wounds on special revival and consolidate target healing into the shared recovery stage. Modified `Assets/Scripts/Core/CompanyEquipment.cs` for safe armor coverage in nine-slot company and original Pure Tactical inventories.
+- Modified `Assets/Scripts/Subwindows/CompanyCampaignView.cs`, `Assets/Scripts/Subwindows/CompanyManagementUI.cs` and `Assets/Scripts/Subwindows/CompanyMissionsUI.cs` for chosen-day rest, town treatment, roster/member XP and injury details, and final-deployment injury counts. Existing contract, wages/debt, terrain, species eligibility, actual digestion/fate and battle-time rules remain in use.
+- Related specification: [11](docs/specs/11-injuries-rest-and-progression.md). Source trace, tuning and grouped review: [implementation report](docs/implementation/11-injuries-rest-and-progression.md). User accepted the preceding HP/naming feedback before this milestone.
+- GPL source-change check: all14 C# sources have dated fork notices; earlier legal/modification notices and original license/attribution/warranty terms are preserved. Exact source and new metadata paths are identified here. Actual License.txt sections4–5 reviewed; no outside code, assets or dependencies introduced. Inherited asset/dependency provenance and section5(d)/6 distribution review remain release gates; this is not a blanket distribution compliance certification. No file deletion/move, publication or commit.
+
+## 2026-11-01 — 09–10 feedback: HP persistence and individual names
+
+- Modified `Assets/Scripts/Entities/Units/Unit.cs` to serialize the HP backing field explicitly, retaining an alias for the earlier Health field. The installed Odin version ignores custom-accessor properties, which caused both checkpoint and detached-battle-copy HP loss. Modified `Assets/Scripts/Core/CompanyCampaignSave.cs` and `Assets/Scripts/Core/CompanyBattle.cs` to verify health/fate values on checkpoint readback and battle copying. No blanket healing or existing checkpoint repair; the user prioritized future games.
+- Modified `Assets/Scripts/Core/SpeciesPolicy.cs` for singular spaced display labels and reversible label-to-enum parsing; all species IDs, keys and eligibility remain unchanged. User-confirmed labels include Matron's Minion, T. rex and Space Roach. Modified `Assets/Scripts/Core/CompanyContracts.cs` for enemy-only species/archetype names, and `Assets/Scripts/Core/GameManager.cs` for the Enemy forces tactical side label. Player/recruit identities and personal names are preserved.
+- Modified display/binding consumers: `Assets/Scripts/Subwindows/CompanyManagementUI.cs`, `Assets/Scripts/Subwindows/CompanyMissionsUI.cs`, `Assets/Scripts/Subwindows/CompanyCampaignView.cs`, `Assets/Scripts/Subwindows/ContentSettings.cs`, `Assets/Scripts/Subwindows/CreateTacticalGame.cs`, `Assets/Scripts/Subwindows/RaceEditorPanel.cs` and `Assets/Scripts/Subwindows/InfoPanel.cs`. Race Editor mapping and skirmish selections resolve the original IDs behind the display names. Battle memorials use individual labels. No new species was curated.
+- [Cause, checks, boundaries and focused review](docs/implementation/09-10-feedback-hp-and-labels.md). Unity compilation/scene opening and managed HP/label diagnostics passed; actual reserve/revival/reload workflow remains pending player confirmation. Company health recovery remains planned in11, not implemented in this fix. No new framework/project tests, source files/metadata, assets/dependencies, checkpoint edits, deletion/move, commit or publication.
+- GPL source-change check: all13modified C# sources have dated conversion notices, meaningful earlier legal/modification notices remain, and exact paths are identified here. Actual License.txt sections4–5 reviewed; license text, attribution/copyright/warranty notices and existing dependency grants preserved. No external code/assets/dependencies or changed licensing terms introduced. Inherited provenance and section5(d)/6 distribution review remain release gates; this is a source-change check, not a blanket distribution compliance certification.
+
+## 2026-11-01 — Grouped specs09–10: first contract and battle loop
+
+- Added this fork's `Assets/Scripts/Core/CompanyContracts.cs`, `Assets/Scripts/Core/CompanyBattle.cs` and `Assets/Scripts/Subwindows/CompanyMissionsUI.cs`: saved local rout offers/targets, bounded fixed-power procedural enemies, reputation/deadlines, final deployment, detached once-only battle settlement, results/revival phases, active-campaign memorial/statistics and target recovery. Numeric values are provisional. Associated non-commentable metadata: `Assets/Scripts/Core/CompanyContracts.cs.meta`, `Assets/Scripts/Core/CompanyBattle.cs.meta`, `Assets/Scripts/Subwindows/CompanyMissionsUI.cs.meta`.
+- Modified `Assets/Scripts/Core/CompanyCampaign.cs`, `Assets/Scripts/Core/CompanyEconomy.cs` and `Assets/Scripts/Core/CompanyEquipment.cs`: mission/fate state and accepted-save migration, offer refresh/hire counters, enemy-only natural gear and merchant revenue accounting. Modified `Assets/Scripts/Subwindows/CompanyCampaignView.cs` and `Assets/Scripts/Subwindows/CompanyManagementUI.cs` for map target/list/town/deployment/result routing and the connected mission interface. Existing inventory/people/debt identities remain canonical; no new species approval.
+- Modified `Assets/Scripts/Core/World.cs`, `Assets/Scripts/Core/GameManager.cs` and `Assets/Scripts/Core/State.cs`: isolated battle services without empire simulation/config resets, explicit company battle entry/return, restored prior services and a guard against incomplete legacy company tactical saves. The supported save boundary is deployment/results; live tactical-turn saving is not implemented.
+- Modified `Assets/Scripts/Entities/Units/Unit.cs`, `Assets/Scripts/Entities/Units/Actor_Unit.cs`, `Assets/Scripts/Entities/Units/PredatorComponent.cs` and `Assets/Scripts/Races/Traits.cs`: separate lasting/temporary HP, nonserialized combat context, latched downed state, explicit actual digestion death, movement/direct-attack guards and lasting retained digestion recovery. Zero-damage containment does not kill merely because a passenger is downed at0HP. Modified `Assets/Scripts/Modes/TacticalMode.cs` for actual survivor completion, continued absorption/healing/XP, enemy captive-flight blocking, stalemates instead of forced deaths, company reconciliation and an anytime revival preference; removed obsolete private abstract/strategic result helpers while retaining glamour restoration.
+- Modified `Assets/Scripts/AI/TacticalAI.cs`, `Assets/Scripts/Entities/Spells/SpellList.cs` and `Assets/Scripts/Modes/Tactical/TacticalAction.cs`: downed direct-target/command filtering and voluntary surrender retirement. Modified `Assets/Scripts/Races/Graphics/UnitSprite.cs`, `Assets/Scripts/UI/RightClickMenu.cs`, `Assets/Scripts/Subwindows/InfoPanel.cs` and `Assets/Scripts/Utility/Texts/HoveringTooltip.cs` for grey temporary HP, downing previews and accurate player-facing explanations.
+- [Implementation, provisional values and combined runtime checklist](docs/implementation/09-10-contract-and-battle-loop.md). User accepted07–08 before this milestone. Shared HP/result changes apply to Pure Tactical as well; campaign injuries/treatment/company daily recovery/sparring remain11. No new tests/framework, scene/prefab/terrain changes, dependency/engine upgrades, file deletion/move, commit or publication.
+- GPL source-change review: reread actual License.txt sections4–5; all23changed/new C# sources have dated conversion/addition notices, meaningful prior legal/modification notices remain, and this entry identifies all source/metadata paths. No external code/assets/dependencies or changed license grants were introduced; existing GPL terms, attribution, copyrights and warranty notices are preserved. New code reuses existing Unity/Odin/project interfaces and artwork. Inherited third-party provenance and applicable section5(d)/6 distribution obligations remain explicit release-review items; source notices/changelog/compilation do not certify every distribution obligation. Final checks and runtime limits are recorded in the report/checkpoint.
+
+## 2026-11-01 — Grouped specs07–08: curated people and company economy
+
+- Curated only the user-selected Avians/ranged, Lizards/magic, Gnolls/melee and animal SpitterSlugs/weak ranged support. Modified `Assets/Scripts/Core/SpeciesPolicy.cs` and `Assets/Scripts/Races/RaceParameters.cs` for eligibility and authorized provisional default stats/traits. Existing developer override rows retain precedence. Modified `Assets/Scripts/Entities/Items/ItemRepository.cs` to lower the slug natural ranged weapon's damage/cost; no other species approval or retired90 reactivation.
+- Added this fork's `Assets/Scripts/Core/CompanyEconomy.cs`, `Assets/Scripts/Core/CompanyEquipment.cs` and `Assets/Scripts/Subwindows/CompanyManagementUI.cs`: leader creation, canonical candidates/former members, recruitment/roster/nicknames/reserves, weekly advance wages/prorating/debt/player-selected repayment/departures, nine typed gear slots/ownership/safe HP adjustment, and town shopping. Values are provisional; contracts, company combat and injury recovery remain later specs.
+- Modified `Assets/Scripts/Core/CompanyCampaign.cs`, `Assets/Scripts/Core/CompanyCampaignSave.cs` and `Assets/Scripts/Subwindows/CompanyCampaignView.cs`: economy state, validation/rebinding, persisted decisions/rest interruption, normal checkpoint history/latest-valid Ironman access, connected management and original terrain-sprite rendering. No scene, prefab, artwork or bundle was edited in this milestone.
+- Modified `Assets/Scripts/Entities/Units/Unit.cs`: independent company item context, persisted company nine-slot arrays, pure company MaxHealth reads and no re-equipping on load. Company slots resist legacy Resourceful resizing and slotted books are not consumed by BookEater. Modified `Assets/Scripts/Entities/Units/Actor_Unit.cs` only for Unit-owned item-provider access in best-weapon/portrait rendering. Modified `Assets/Scripts/Entities/Items/Item.cs` for stable definition/instance IDs, `Assets/Scripts/Utility/Rand.cs` for explicit seeded instances, and `Assets/Scripts/UI/Connectors/CustomizerPanel.cs` for company-owned creator callbacks. Legacy standalone battle setup retains its two/three-slot layout.
+- Extended `Assets/Editor/SpeciesResourceAudit.cs` with a read-only creator/portrait/terrain reference inspection; no asset-saving, new test framework or gameplay test was added. Associated new non-commentable script metadata: `Assets/Scripts/Core/CompanyEconomy.cs.meta`, `Assets/Scripts/Core/CompanyEquipment.cs.meta`, `Assets/Scripts/Subwindows/CompanyManagementUI.cs.meta`.
+- GPL source-change check: reread actual License.txt sections4–5; all fifteen changed/new C# sources carry dated conversion/addition notices, meaningful earlier notices are preserved, and this record covers exact source/metadata paths. Existing License.txt, upstream attribution/copyright/warranty notices and dependency grants remain unchanged. New implementation uses existing project/Unity/Odin APIs, UI and terrain assets; no external code, asset, dependency or new licensing terms were introduced. Inherited asset/dependency provenance and any eventual section5(d)/6 distribution obligations remain release-review matters, not certified by compilation or this changelog. No distribution/commit/deletion/move occurred.
+- Implementation and provisional values: [people/economy report](docs/implementation/07-08-people-and-economy.md). Unity compilation and explicit base-scene checks passed; scene references and source/resource preservation were inspected. Automated window capture failed; the nonempty save/equipment/debt workflow and curated tactical battle still need the one combined runtime review. See the report/checkpoint for exact final logs and limitations; do not treat this as user acceptance or a complete playable contract loop.
+
 ## 2026-10-30 â€” Compliance workflow and documentation
 
 - Added the per-source-change GPL-3.0 review, dated source-notice policy, and change-record requirements to `AGENTS.md`.
@@ -303,3 +485,235 @@ No gameplay-source conversion changes preceded packet 02A. That packet now recor
 - `Assets/Scripts/Races/Traits.cs`: retain Metamorphosis, MetamorphicConversion and ForcedMetamorphosis class/registry identities with retired descriptions and inert inherited callbacks. Retire full-health revival, XP/species/side mutation, forced grants, no-escape interfaces and the forced trait's incoming escape boost.
 - ForcedMetamorphosis now derives from non-boosting VoreTrait so no null stat-booster delegate is invoked. Existing callbacks continue ordinary digestion. Other traits/disguises/summons remain unchanged. Related spec: 05 and design clarifications 1/11/12.
 - Dated conversion notice added; upstream comments/attribution/license preserved. No external additions or file deletions/moves.
+
+## 2026-11-01 — 05A3B17 consolidated ability-retirement completion
+
+- `Assets/Scripts/Enums/Tags.cs`
+- `Assets/Scripts/Races/Traits.cs`
+- `Assets/Scripts/Entities/Units/Unit.cs`
+- `Assets/Scripts/Entities/Units/Actor_Unit.cs`
+- `Assets/Scripts/Entities/Units/Prey.cs`
+- `Assets/Scripts/Modes/TacticalMode.cs`
+- `Assets/Scripts/Modes/Strategic/StrategicUtilities.cs`
+- `Assets/Scripts/Modes/Recruit_Mode.cs`
+- `Assets/Scripts/AI/StrategicArmyCommander.cs`
+- `Assets/Scripts/Utility/Texts/HoveringTooltip.cs`
+- `Assets/Scripts/Entities/Items/ItemRepository.cs`
+
+- Added one 31-ID retirement policy for the already excluded revival/replacement, conversion, possession and allegiance traits. Active trait lookup/views/counts and random selection suppress retired entries without changing stored IDs/data; tooltip descriptions identify retirement.
+- Closed direct possession/controller/corruption, status charm/hypnosis/respawn, prey-side conversion, tactical alignment, Friendosoma result-conversion, legacy empire-leader revival and soul-imprint creation paths. Existing ordinary non-conversion result fallback is preserved; no new fate system.
+- Removed Leadership aura, automatic growth, AI growth weight and combat power terms. Filtered retired ability books from random generation. Preserved other spells, temporary disguises, clone/animal summons and assimilation runtime (only its old authoring tool was approved for removal).
+- Related spec 05; this completes the current approved ability-retirement pass, not all strategic/provider cleanup or the new combat/health system. Dated source notices, exact-path record and upstream license/attribution retained; no external code/dependencies/assets or file deletions/moves.
+- Documentation: recorded the user's combined-test cadence in AGENTS.md; this instruction edit is not a gameplay-source change.
+
+## 2026-11-01 — 05A4 campaign combat-provider retirement
+
+- `Assets/Scripts/Modes/TacticalMode.cs`: retire empire-trait injection and both armies' strategic tower/barrier/caster/encampment combat effects, including activation dialogs, spell/mana/soul/camp bookkeeping, reinforcements and related wait coroutines/fields/report text.
+- Disconnect the campaign race-defection processor; initialize extra participant lists and initial statistics directly. Neutralize obsolete defection-only empty-side messages and make the optional village race fallback null-safe.
+- Preserve tactical map/scenery buildings, village skirmishes, creature/trait summons, tactical pause, AI policies, statistics/results and Pure Tactical startup/return. Related spec: 05. This removes campaign providers, not the shared Army/World compatibility types or new company mechanics.
+- Dated source notice added; prior licensing/attribution preserved. No third-party source/dependencies/assets added, paths deleted/moved or scene/prefab/schema edits.
+
+## 2026-11-01 — 05A5 World/Army campaign lifecycle retirement
+
+- `Assets/Scripts/Core/World.cs`: remove unused map-editor construction branch and five uncalled monster/empire initialization/rebuild/turn-order/population-name routines. Keep inert compatibility entries for old bandit-limit/turn-order UI callers; retain all World fields and lookup services. Constructor now explicitly creates the retained standalone context without a boolean mode.
+- `Assets/Scripts/Subwindows/CreateTacticalGame.cs`: update the sole World constructor call; standalone initialization matches the previous false branch.
+- `Assets/Scripts/Entities/Army.cs`: retire campaign Refresh, civilian DevourHeal/capacity, paid Train and village recovery calculation; remove now-uncalled village inventory/XP/trait processing and AI spell redistribution. Keep empty compatibility entries where old callers remain; preserve tactical roster/item/size/movement helpers and serialized fields.
+- Related spec 05. New company recovery, wages, training and world generation are not implemented or delegated to old campaign routines. Dated notices and existing licensing/attribution preserved; no external additions, paths deleted/moved or scene/prefab/schema edits.
+
+## 2026-11-01 — 05A6 battle side/diplomacy isolation
+
+- `Assets/Scripts/Modes/Tactical/TacticalUtilities.cs`: retain existing standalone control, preferred-side, hostility and disguise-visibility logic without empire diplomacy/alliances or LastHumanEmpire. Shared signatures remain for callers.
+- `Assets/Scripts/Modes/TacticalMode.cs`: retire campaign-only AI retreat setup/calls, world-empire-dependent skip override and strategic village-color override. Preserve existing Pure Tactical AI defaults, skip rules, manual retreat and scene presentation.
+- `Assets/Scripts/Entities/Units/Unit.cs`: remove four strategic AI cheat-level XP multipliers and empire-trait reinjection in ReloadTraits; retain ordinary XP formulas, trait/conditional modifiers and level progression.
+- Related spec 05. New campaign retreat policies and battle-context integration remain separate work. Dated source notices, prior attribution/license retained; no external additions, file deletions/moves or scene/prefab/schema edits.
+
+## 2026-11-01 — 05A7 residual-boundary review and direct metadata lookup
+
+- `Assets/Scripts/Races/RaceParameters.cs`: replace the cached randomized dummy Unit used by GetRaceTraits with direct enum-to-definition dispatch. GetTraitData preserves its disabled-racial-traits/null-unit behavior and delegates to the same metadata dispatch. Prototype payloads, all case/result mappings, eligibility and unknown-ID fallback remain unchanged.
+- Remove metadata-triggered dummy stat rolls; gameplay RNG consumption changes at the former first metadata allocation, with no same-seed equivalence promise. No balance/stat/graphics/override schema changed.
+- Added consolidated active/retired/shared provider review and refreshed caller inventory for the next grouped stat/override boundary work. Related specs 05/03. Dated notice, prior license/attribution preserved; no external additions or file deletions/moves. This is not removal of rejected species prototypes or completion of phase 2.
+
+
+## 2026-11-01 — 03B3C stored species reads and intentional edits
+
+- `Assets/Scripts/Utility/Stored/RaceSettings.cs`
+- `Assets/Scripts/Entities/Units/Unit.cs`
+- `Assets/Scripts/Races/Graphics/DefaultRaceData.cs`
+- `Assets/Scripts/Entities/Units/PredatorComponent.cs`
+- `Assets/Scripts/Entities/MercenaryHouse.cs`
+- `Assets/Scripts/Entities/Village.cs`
+- `Assets/Scripts/Modes/Strategic/StrategicUtilities.cs`
+- `Assets/Scripts/AI/RaceServantTacticalAI.cs`
+- `Assets/Scripts/Subwindows/RaceEditorPanel.cs`
+- `Assets/Scripts/Subwindows/RandomizerTraitEditor.cs`
+- `Assets/Scripts/Subwindows/TaggedTraitEditor.cs`
+
+Separate non-creating GetExisting reads from GetOrCreate writes throughout the caller group. Resolve power multipliers without hydrating graphics or settings, retain zero-value fallback, and preserve global cosmetic defaults when no override exists. Editor/assimilation edits explicitly create records; randomizer cleanup only edits existing records. New settings for permanently retired species are rejected before metadata/graphics hydration, while existing rows remain accessible. No parameter prototypes, enum IDs, assets, save fields or approved species changed. See docs/implementation/03b3c-stored-override-read-boundary.md.
+
+
+## 2026-11-01 — 03B3D rejected species stat retirement
+
+- `Assets/Scripts/Races/RaceParameters.cs`: retire all 90 rejected species prototype declarations, initializer payloads and matching enum dispatch arms together. Preserve all 64 nonretired species definitions plus Default exactly. Explicitly reject retired metadata requests before the racial-traits-disabled/default path; retain existing null-unit/traits-disabled and unrelated unknown-ID behavior. Numeric IDs, serialized settings records, remaining raw mapping destinations, shared supporting types, graphics and assets unchanged. See `docs/implementation/03b3d-rejected-stat-definition-retirement.md`.
+
+
+## 2026-11-01 — 03B4 rejected graphics registry retirement
+
+- `Assets/Scripts/Races/Races.cs`
+- `Assets/Scripts/Subwindows/UnitCustomizer.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Centaur.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Humans.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Imps.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/MainlandElves.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Umbreon.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Yordles.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/Cockatrice.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/Goblins.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/OoviKat.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/Renamon.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/Vipers.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/Youko.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Auri.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Salix.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Zoey.cs`
+- `Assets/Scripts/Modes/Tactical/TacticalGraphicalEffects.cs`
+- `Assets/Scripts/Entities/Clothing/ClothingDiscards.cs`
+
+Retire 91 eager rejected graphics instances (the 90 species plus Slime Queen) and 90 lookup arms, with explicit rejection before BlankSlate fallback. Preserve 66 other instance declarations, 64 species mappings and Ant Queen. Disconnect rejected catalog/customizer/projectile hooks; private retired clothing callbacks use the drawing actor instead of deleted global instance fields so the retained source remains compilable. No graphics class files, sprites, loaders, bundles or serialized assets deleted/moved/rewritten. See docs/implementation/03b4-rejected-graphics-registry-retirement.md.
+
+
+## 2026-11-01 — 03B5 retired-only sprite-loader bindings
+
+- `Assets/Scripts/Core/AssetBundleLoader.cs`: replace 156 bundle sprite-array loads whose code readers are confined to the disconnected rejected graphics classes with explicit null assignments. Preserve the remaining 199 sprite-array load expressions, all four mixed bundle opens, static field declarations, source artwork, bundle files and serialized data. Explicit clearing also prevents stale bindings if the loader is called again. No bundle-size/memory-saving or asset-exclusivity claim. See `docs/implementation/03b5-retired-only-sprite-loader-bindings.md`.
+
+
+## 2026-11-01 — 03B6 obsolete serialized sprite arrays
+
+- `Assets/Editor/SpeciesResourceAudit.cs` (new fork editor inspection command) and `Assets/Editor/SpeciesResourceAudit.cs.meta`: capture Unity 2018 serialized fields, object references and dependencies into project Logs without resaving assets or rebuilding bundles.
+- `Assets/Prefabs/Sprite Dictionary.prefab`: remove exactly 156 obsolete saved blocks corresponding to retired-only static fields already cleared by 03B5 (9,478 lines / 9,181 raw GUID references). Unity confirms none is serialized and its complete inspection snapshots before/after are identical. All other prefab text, identities, active fields and dependencies preserved. This entry supplies the associated modification notice for the non-commentable prefab/meta. No source artwork or bundle changed; no file deletion/move. See `docs/implementation/03b6-obsolete-serialized-sprite-arrays.md`.
+
+
+## 2026-11-01 — 03B7 source disposition review (documentation only)
+
+Inventory the 91 disconnected rejected graphics definition paths, external type-operation candidates and internal inheritance/imports. Define the grouped payload/effect retirement gate while preserving shared helpers and paths. No gameplay-source or asset changes; see docs/implementation/03b7-disconnected-source-disposition-review.md.
+
+
+## 2026-11-01 — 03B8 disconnected graphics payloads and projectiles
+
+- `Assets/Scripts/Races/Graphics/MainRaces/Aabayx.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Abakhanskya.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Alraune.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Bears.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Cats.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Centaur.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Crux.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Crypters.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Dogs.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Driders.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Eevee.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Equaleon.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Foxes.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Ghosts.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Harpies.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Humans.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Imps.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Lamia.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/MainlandElves.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Mermen.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Scylla.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/SlimeQueen.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Slimes.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Taurus.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Umbreon.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Wolves.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Yordles.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/Cockatrice.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/DewSprite.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/Goblins.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/Hamsters.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/OoviKat.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/Puca.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/Renamon.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/RwuMercenaries.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/Succubi.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/Tigers.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/Viisels.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/Vipers.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/Youko.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Bella.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/BoomBunnies.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Cake.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Collector.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Compy.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/DarkSwallower.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/EarthDryad.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Earthworms.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Fairy.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/FeraEqualeon.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/FeralEevee.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/FeralOrcas.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Frogs.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/FungalDryad.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Iliijiith.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Pudding.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Raptor.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/RiverDryad.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Schiwardez.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Sharks.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/SoulSprite.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Vagrants.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/ViraeUltimae.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Voilin.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Whisp.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/WoodDryad.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Asura.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Auri.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Cherub.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Cierihaka.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/DRACO.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Erin.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Feit.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Ki.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Konane.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Nectar.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Olivia.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Ryan.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Salix.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Scorch.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Selicia.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Seraph.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Seville.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Singularity.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Skapa.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Taraluxia.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Tatltuae.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Vision.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Xelhilde.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Zera.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Zoey.cs`
+- `Assets/Scripts/Modes/Tactical/TacticalGraphicalEffects.cs`
+
+Retire 91 disconnected graphics class bodies while retaining paths, earlier modification/legal comment blocks and the shared FairyType/FairyUtil preamble. Remove 27 rejected-only projectile branches/setup helpers from TacticalGraphicalEffects; retain other species and general effects. Initial compile exposed FairyUtil sharing; final validation recorded in docs/implementation/03b8-disconnected-graphics-payload-retirement.md. No art/bundle/scene deletion or new species.
+
+
+## 2026-11-01 — Consolidated milestone cadence (documentation only)
+
+Record user acceptance of 03B8 and revise AGENTS.md, roadmap and resume checkpoint to group remaining cleanup and conversion work into larger milestones, with manual testing at meaningful workflow/risk boundaries. No gameplay-source or asset changes.
+
+
+## 2026-11-01 — Consolidated functional cleanup closure
+
+- `Assets/Scripts/Core/AssetBundleLoader.cs`: clear 14 newly orphaned sprite bindings after the accepted 03B8 class/projectile retirement; preserve the remaining 187 asset requests and four mixed bundle opens. Exact bindings and retained residuals in docs/implementation/phase-2-cleanup-closure.md.
+- Reconcile specs02–05, documented retained compatibility services, manual acceptance and deferred combat/release checks. Documentation is not new campaign implementation. No files removed/moved, art/bundles rebuilt or species approved.
+
+
+## 2026-11-01 — 06 company campaign foundation preview
+
+- Added `Assets/Scripts/Core/CompanyCampaign.cs` and `.cs.meta`: canonical identity/roster/town/world state, seeded region and persisted RNG, discovery/movement/action budget and ordered resumable daily-stage contract with campaign-state rollback.
+- Added `Assets/Scripts/Core/CompanyCampaignSave.cs` and `.cs.meta`: separate schema/magic, bounded/checksummed immutable generations, validated loading and same-company recovery. Uses existing Odin serializer; no new dependency.
+- Added `Assets/Scripts/Subwindows/CompanyCampaignView.cs` and `.cs.meta`: runtime Unity UI map/town/company preview, rest/day navigation, checkpoints and failure handling without scene/prefab rewrites.
+- `Assets/Scripts/Modes/StartMode.cs`: main campaign entry opens the explicitly labeled foundation preview; suppress old menu input behind it and close it on returning to main menu. Legacy campaign/load paths remain retired. No species/leader invented; actual campaign creation remains07. Associated notices for new .meta paths are this entry. See docs/implementation/06-campaign-foundation-preview.md.
+
+
+## 2026-11-01 — People/economy preparation and terrain-art requirement (documentation only)
+
+Record user acceptance of06 preview and requirement to reuse original4X terrain artwork. Trace grouped07–08 Unit/item/customizer/wage dependencies and request species/tuning decisions together. No runtime source, assets, species approvals or numerical tuning changed. See docs/implementation/07-08-people-economy-preparation.md.

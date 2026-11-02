@@ -1,9 +1,14 @@
-﻿using System;
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-01: Explicit seeded instances for isolated company generation (spec 07).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using System;
 
 
 public class Rand
 {
     Random rand = new Random();
+    public Rand() { }
+    public Rand(int seed) { rand = new Random(seed); }
 
     internal int Next()
     {

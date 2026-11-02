@@ -3,6 +3,8 @@
 // 2026-10-31: Retire legacy world load/preview and empire campaign entry routes (spec 05A1).
 // 2026-10-31: Block strategic-mode activation while preserving Pure Tactical return to menu (spec 05A2).
 // 2026-10-31: Retire campaign battle and loaded-world tactical transitions (spec 05A3A).
+// 2026-11-01: Enter/return company battles explicitly and route deliberate battle exit to its prebattle checkpoint (spec 10).
+// 2026-11-01: Label the tactical enemy side as Enemy forces, keeping contract ratings in mission views (09–10 feedback).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System.Linq;
 using UnityEngine;
@@ -76,6 +78,7 @@ public class GameManager : MonoBehaviour
     bool menuOpen = false;
 
     public bool PureTactical = false;
+    internal CompanyBattleSession CompanyBattle;
 
     public GameObject UnitBase;
     public UnitEditorPanel UnitEditor;
@@ -233,6 +236,7 @@ public class GameManager : MonoBehaviour
 
     public void SwitchToMainMenu()
     {
+        if (CompanyBattle != null) { CompanyBattle.ExitToCheckpoint(); return; }
         PureTactical = false;
         CurrentScene.CleanUp();
         CurrentScene = Start_Mode;
@@ -300,6 +304,19 @@ public class GameManager : MonoBehaviour
     public void SwitchToMapEditor()
     {
         Menu.ShowRetiredToolMessage();
+    }
+
+    internal void ActivateCompanyBattle(StrategicTileType terrain, Army attacker, Army defender, int rating)
+    {
+        PureTactical = false; CurrentScene = TacticalMode;
+        TacticalMode.AttackerName = "Your company"; TacticalMode.DefenderName = "Enemy forces";
+        TacticalMode.Begin(terrain, null, attacker, defender, TacticalAIType.None, TacticalAIType.Full);
+        CenterCameraOnTile(Config.TacticalSizeX / 2, Config.TacticalSizeY / 2);
+        CameraController.SetZoom(Config.TacticalSizeX * .5f);
+    }
+    internal void ReturnFromCompanyBattle()
+    {
+        CurrentScene.CleanUp(); CurrentScene = Start_Mode; PureTactical = false; CloseMenu();
     }
 
     public void ActivatePureTacticalMode(StrategicTileType tiletype, Village village, Army invader, Army defender, TacticalAIType attackerAI, TacticalAIType defenderAI)

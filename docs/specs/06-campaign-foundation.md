@@ -1,6 +1,6 @@
 # 06 — Company campaign state, world, clock, and saving
 
-**Status:** Proposed specification. Planning only; execution has not started.
+**Status:** Foundation mechanics preview implemented and user-accepted, 2026-11-01. See [implementation/boundaries](../implementation/06-campaign-foundation-preview.md). Real species/leader/economy starts are implemented in grouped07–08, pending their combined runtime review. The complete contract loop remains09–10.
 
 **Phase:** Phase 3 — build the first company campaign loop
 
@@ -52,3 +52,9 @@ Company campaign foundation, generated map/town navigation, daily update contrac
 
 Before execution, refine this spec with the architecture study, list its small change batches, and resolve decisions needed for the next batch. Follow the review and file-operation rules in [the roadmap](../conversion-roadmap.md). Design intent comes from [the campaign plan](../mercenary-company-campaign-plan.md) and the three curation checklists.
 
+
+
+The connected foundation milestone implements data, generated region/discovery, travel/actions, town/company preview navigation and new-format checkpoints together. Preview tuning, no-op future daily stages, save retention/coverage and manual workflow are recorded in the implementation report. No new species or unrequested campaign balancing is approved.
+
+
+User accepted the connected mechanics preview. The final world map MUST reuse the existing 4X terrain artwork; the lettered grid is temporary. Connect retained StrategicTileDictionary terrain assets to company-owned map/discovery data without reactivating retired strategic behavior. Do not treat preview acceptance as approval of replacement terrain artwork.

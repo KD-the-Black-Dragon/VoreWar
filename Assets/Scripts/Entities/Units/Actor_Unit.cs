@@ -7,6 +7,12 @@
 // 2026-10-31: Retire damage/surrender defection and Goddess Mercy full-health recovery (spec 05A3B13).
 // 2026-10-31: Retire charm/hypnosis trait grants and reject retired direct status-spell casts (spec 05A3B14).
 // 2026-11-01: Retire SeductiveTouch support-action conversion/distraction runtime (spec 05A3B15).
+// 2026-11-01: Complete approved ability retirement and close legacy reactivation paths (spec 05A3B17).
+// 2026-11-01: Render company weapons through the unit item context without a legacy World (specs 07–08).
+// 2026-11-01: Latch downed status until battle ends; fear and zero HP cannot restore command ability (specs 09–10).
+// 2026-11-01: Apply persistent weapon/movement penalties and route damage through the single lasting-injury check (spec 11).
+// 2026-11-01: Use the actual caster-target level difference for spell XP challenge scaling (spec 11 feedback).
+// 2026-11-02: Dismiss magical summons instead of placing them in a persistent downed state through fear/nonlethal damage (spec 12).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
 using System;
@@ -72,7 +78,8 @@ public class Actor_Unit
     [OdinSerialize]
     public Vec2i Position { get; private set; }
     [OdinSerialize]
-    public int Movement;
+    int movement;
+    public int Movement { get { return Unit != null && Unit.Downed ? 0 : movement; } set { movement = value; } }
     [OdinSerialize]
     public bool Visible;
     [OdinSerialize]
@@ -85,7 +92,24 @@ public class Actor_Unit
 
 
     [OdinSerialize]
-    public bool Surrendered;
+    bool surrendered;
+    public bool Surrendered
+    {
+        get { return Unit != null && Unit.BattleActive ? Unit.Downed : surrendered; }
+        set
+        {
+            if (Unit != null && Unit.BattleActive)
+            {
+                if (value)
+                {
+                    if (Unit.Type == UnitType.Summon) { Unit.Health = 0; Unit.Downed = false; }
+                    else Unit.Downed = true;
+                    Movement = 0;
+                }
+            }
+            else surrendered = value;
+        }
+    }
 
     public bool DefectedThisTurn;
 
@@ -313,7 +337,7 @@ public class Actor_Unit
         total = (int)(total * Unit.TraitBoosts.SpeedMultiplier);
         if (total < Unit.TraitBoosts.MinSpeed)
             total = Unit.TraitBoosts.MinSpeed;
-        return total;
+        return Math.Max(1, total - CompanyInjuries.MovementPenalty(Unit));
     }
 
     public int CurrentMaxMovement()
@@ -341,7 +365,7 @@ public class Actor_Unit
             total /= 2;
         if (total < Unit.TraitBoosts.MinSpeed)
             total = Unit.TraitBoosts.MinSpeed;
-        return total;
+        return Math.Max(1, total - CompanyInjuries.MovementPenalty(Unit));
     }
 
     /// <summary>
@@ -386,6 +410,7 @@ public class Actor_Unit
         animationUpdateTime = 0;
         Position = p;
         Unit = unit;
+        if (!unit.BattleActive && State.GameManager.CurrentScene == State.GameManager.TacticalMode) unit.BeginCombat();
         MultifacetedCooldown = Unit.HasTrait(Traits.Multifaceted) && Unit.IsHighestStat(Stat.Dexterity) ? Unit.Level + 1 : 0; // Set timer for extra attacks.
         Visible = true;
         Targetable = true;
@@ -466,7 +491,7 @@ public class Actor_Unit
     {
         if (Unit.HasTrait(Traits.Feral))
         {
-            BestMelee = State.World.ItemRepository.Claws;
+            BestMelee = Unit.ItemCatalog.Claws;
             BestRanged = null;
             return;
         }
@@ -773,7 +798,7 @@ public class Actor_Unit
             else
                 return BestRanged.Graphic + 1;
         }
-        else if (BestMelee != null && BestMelee != State.World.ItemRepository.Claws)
+        else if (BestMelee != null && BestMelee != Unit.ItemCatalog.Claws)
         {
             if (Mode != DisplayMode.Attacking)
                 return BestMelee.Graphic;
@@ -840,6 +865,7 @@ public class Actor_Unit
 
     internal float GetMagicChance(Actor_Unit attacker, Spell currentSpell, float modifier = 0, Stat stat = Stat.Mind)
     {
+        if (Surrendered && currentSpell != null && currentSpell.IsConsumption) return 1;
         if (TacticalUtilities.SneakAttackCheck(attacker.Unit, Unit)) // sneakAttack
         {
             modifier -= 0.3f;
@@ -1319,6 +1345,7 @@ public class Actor_Unit
         }
 
 
+        damage -= CompanyInjuries.DamagePenalty(Unit);
         if (damage < 1)
             damage = 1;
         return damage;
@@ -1755,6 +1782,7 @@ public class Actor_Unit
 
     public bool Attack(Actor_Unit target, bool ranged, bool forceBite = false, float damageMultiplier = 1, bool canKill = true, bool canRecurse = true)
     {
+        if (Surrendered || target == null || target.Surrendered && !forceBite) return false;
         Weapon weapon;
         if (ranged)
             weapon = BestRanged;
@@ -2304,10 +2332,10 @@ public class Actor_Unit
                 Unit.RestoreMana((int)(spell.ManaCost * 0.75f));
                 Unit.UpdateSpells();
             }
-            attacker.Unit.GiveScaledExp(1 * Unit.ExpMultiplier, Unit.Level - Unit.Level);
+            attacker.Unit.GiveScaledExp(1 * Unit.ExpMultiplier, attacker.Unit.Level - Unit.Level);
             if (Unit.IsDead)
             {
-                attacker.Unit.GiveScaledExp(4 * Unit.ExpMultiplier, Unit.Level - Unit.Level);
+                attacker.Unit.GiveScaledExp(4 * Unit.ExpMultiplier, attacker.Unit.Level - Unit.Level);
             }
             return true;
         }
@@ -2315,7 +2343,7 @@ public class Actor_Unit
         {
             UnitSprite.DisplayDamage(0);
             State.GameManager.TacticalMode.Log.RegisterSpellMiss(attacker.Unit, Unit, spell.SpellType, chance);
-            attacker.Unit.GiveScaledExp(.25f * Unit.ExpMultiplier, Unit.Level - Unit.Level);
+            attacker.Unit.GiveScaledExp(.25f * Unit.ExpMultiplier, attacker.Unit.Level - Unit.Level);
             EquipmentFunctions.CheckEquipment(Unit, EquipmentActivator.WhenMissedBySpellDamage, new object[] { this, attacker, damage });
         }
 
@@ -2707,6 +2735,7 @@ public class Actor_Unit
 
     public bool Move(int direction, TacticalTileType[,] tiles)
     {
+        if (Surrendered) return false;
         //check if we can move in that direction
         switch (direction)
         {
@@ -2773,6 +2802,7 @@ public class Actor_Unit
 
     internal bool MoveTo(Vec2i destination, TacticalTileType[,] tiles, float delay)
     {
+        if (Surrendered) return false;
         if (destination.x < 0 || destination.y < 0 || destination.x > tiles.GetUpperBound(0) || destination.y > tiles.GetUpperBound(1))
             return false;
         int cost = TacticalTileInfo.TileCost(new Vec2(destination.x, destination.y));
@@ -2907,7 +2937,7 @@ public class Actor_Unit
     public void NewTurnPreMPTraits()
     {
 
-        if (Surrendered && Unit.HasTrait(Traits.Fearless))
+        if (Surrendered && !Unit.BattleActive && Unit.HasTrait(Traits.Fearless))
         {
             Surrendered = false;
         }
@@ -3125,7 +3155,7 @@ public class Actor_Unit
 
     public void SubtractHealth(int damage)
     {
-        Unit.Health -= damage;
+        Unit.ApplyCombatDamage(damage);
         if (Unit.Health > Unit.MaxHealth)
             Unit.Health = Unit.MaxHealth;
         if (damage <= 0)
@@ -3200,7 +3230,7 @@ public class Actor_Unit
                 {
                     PredatorComponent?.FreeAnyAlivePrey();
                 }
-                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{Unit.Name} surrendered.");
+                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{Unit.Name} is downed.");
             }
         }
         if (Unit.HasTrait(Traits.MutualBiology) && damageType != DamageTypes.Mutual)
@@ -3744,59 +3774,21 @@ public class Actor_Unit
     
     internal void AddCorruption(int amount, int side)
     {
-        if (!Unit.HasTrait(Traits.Corruption)) { 
-            Corruption += amount;
-            if (Corruption >= Unit.GetStatTotal() + Unit.GetStat(Stat.Will))
-            {
-                Unit.AddPermanentTrait(Traits.Corruption);
-                Corruption = 0;
-                if (!Unit.HasTrait(Traits.Untamable))
-                    Unit.FixedSide = side;
-                Unit.hiddenFixedSide = true;
-                sidesAttackedThisBattle = new List<int>();
-            }
-        } else
-            Corruption = 0;
+        // Retired: combat cannot transfer character allegiance.
     }
 
     internal void AddPossession(Actor_Unit possessor)
     {
-        if (this.Unit.FixedSide != possessor.Unit.FixedSide)
-        {
-            this.Possessed = this.Possessed + possessor.Unit.GetStatTotal() + possessor.Unit.GetStat(Stat.Mind);
-        }
-        CheckPossession(possessor);
+        // Retired: combat cannot transfer character allegiance.
     }
 
     internal void RemovePossession(Actor_Unit possessor)
     {
-        this.Possessed = this.Possessed - possessor.Unit.GetStatTotal() - possessor.Unit.GetStat(Stat.Mind);
-        if (this.Possessed <= 0)
-            this.Possessed = 0;
-        CheckPossession(possessor);
+        // Retired: combat cannot transfer character allegiance.
     }
 
     internal bool CheckPossession(Actor_Unit possessor)
     {
-        if (this.Possessed + this.Corruption >= this.Unit.GetStatTotal() + this.Unit.GetStat(Stat.Will))
-        {
-            if (this.Unit.Controller != possessor.Unit)
-            {
-                if (!this.Unit.HasTrait(Traits.Untamable))
-                    this.Unit.Controller = possessor.Unit;
-                this.Unit.hiddenFixedSide = true;
-                sidesAttackedThisBattle = new List<int>();
-            }
-            return true;
-        }
-        else
-        {
-            if (this.Unit.Controller == possessor.Unit)
-            {
-                this.Unit.Controller = null;
-                this.Unit.hiddenFixedSide = false;
-            }
-        }
         return false;
     }
 

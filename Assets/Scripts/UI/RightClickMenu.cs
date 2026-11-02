@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-01: Omit direct attacks against downed targets and label lethal physical previews as downing (spec 10).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -247,12 +250,17 @@ public class RightClickMenu : MonoBehaviour
             Range = range,
             DevourChance = devourChance
         };
+        if (target.Surrendered)
+        {
+            foreach (var spell in actor.Unit.UseableSpells.Where(spell => spell.AllowsDownedTarget && spell.AcceptibleTargets.Contains(AbilityTargets.Enemy)))
+                currentButton = AddSpell(spell, actor, target, currentButton, range, target.GetMagicChance(actor, spell));
+        }
         int damage = actor.WeaponDamageAgainstTarget(target, false);
-        if (!TacticalUtilities.IsUnitControlledByPlayer(target.Unit) || Config.AllowInfighting ||  (!State.GameManager.TacticalMode.AIDefender && !State.GameManager.TacticalMode.AIAttacker))
+        if (!target.Surrendered && (!TacticalUtilities.IsUnitControlledByPlayer(target.Unit) || Config.AllowInfighting ||  (!State.GameManager.TacticalMode.AIDefender && !State.GameManager.TacticalMode.AIAttacker)))
         {
             Buttons[currentButton].onClick.AddListener(() => State.GameManager.TacticalMode.MeleeAttack(actor, target));
             Buttons[currentButton].onClick.AddListener(FinishAction);
-            Buttons[currentButton].GetComponentInChildren<Text>().text = $"Melee Attack {Math.Round(100 * target.GetAttackChance(actor, false, true))}% {(damage >= target.Unit.Health ? "Kill" : $"{damage} dmg")} ";
+            Buttons[currentButton].GetComponentInChildren<Text>().text = $"Melee Attack {Math.Round(100 * target.GetAttackChance(actor, false, true))}% {(damage >= target.Unit.Health ? "Down" : $"{damage} dmg")} ";
             if (range != 1)
                 Buttons[currentButton].interactable = false;
             currentButton++;
@@ -263,7 +271,7 @@ public class RightClickMenu : MonoBehaviour
                 Buttons[currentButton].onClick.AddListener(() => State.GameManager.TacticalMode.RangedAttack(actor, target));
                 Buttons[currentButton].onClick.AddListener(FinishAction);
                 damage = actor.WeaponDamageAgainstTarget(target, true);
-                Buttons[currentButton].GetComponentInChildren<Text>().text = $"Ranged Attack {Math.Round(100 * target.GetAttackChance(actor, true, true))}% {(damage >= target.Unit.Health ? "Kill" : $"{damage} dmg")} ";
+                Buttons[currentButton].GetComponentInChildren<Text>().text = $"Ranged Attack {Math.Round(100 * target.GetAttackChance(actor, true, true))}% {(damage >= target.Unit.Health ? "Down" : $"{damage} dmg")} ";
                 if (actor.BestRanged.Omni == false && (range < 2 || range > actor.BestRanged.Range))
                     Buttons[currentButton].interactable = false;
                 currentButton++;
@@ -349,7 +357,7 @@ public class RightClickMenu : MonoBehaviour
                     Buttons[currentButton].onClick.AddListener(() => targetedAction.OnExecute(data.Actor, data.Target));
                     Buttons[currentButton].onClick.AddListener(FinishAction);
                     damage = 2 * actor.WeaponDamageAgainstTarget(target, false);
-                    Buttons[currentButton].GetComponentInChildren<Text>().text = $"Shun Goku Satsu {Math.Round(100 * target.GetAttackChance(actor, false, true))}% {(damage >= target.Unit.Health ? "Kill" : $"{damage} dmg")} ";
+                    Buttons[currentButton].GetComponentInChildren<Text>().text = $"Shun Goku Satsu {Math.Round(100 * target.GetAttackChance(actor, false, true))}% {(damage >= target.Unit.Health ? "Down" : $"{damage} dmg")} ";
                     if (data.Range != 1)
                         Buttons[currentButton].interactable = false;
                     currentButton++;
@@ -541,7 +549,7 @@ public class RightClickMenu : MonoBehaviour
         PounceButtons[currentButton].onClick.AddListener(() => actor.MeleePounce(target));
         PounceButtons[currentButton].onClick.AddListener(FinishAction);
         int damage = actor.WeaponDamageAgainstTarget(target, false);
-        PounceButtons[currentButton].GetComponentInChildren<Text>().text = $"Melee Pounce {Math.Round(100 * target.GetAttackChance(actor, false, true))}% {(damage >= target.Unit.Health ? "Kill" : $"{damage} dmg")}";
+        PounceButtons[currentButton].GetComponentInChildren<Text>().text = $"Melee Pounce {Math.Round(100 * target.GetAttackChance(actor, false, true))}% {(damage >= target.Unit.Health ? "Down" : $"{damage} dmg")}";
         if (range < 2 || range > 4)
             PounceButtons[currentButton].interactable = false;
         currentButton++;

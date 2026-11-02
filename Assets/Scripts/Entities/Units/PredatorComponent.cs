@@ -4,6 +4,8 @@
 // Upstream additional narrative contributions were credited to Tatltuae; credit retained after reset.
 // 2026-10-31: Retire Respawns resurrection after completed digestion (spec 05A3B7).
 // 2026-10-31: Retire digestion/absorption allegiance conversion and species rebirth branches (spec 05A3B8).
+// 2026-11-01: Separate stored species reads from intentional override creation (spec 03B3C).
+// 2026-11-01: Mark actual digestion death explicitly and preserve lasting vore recovery through temporary HP (specs 09–10).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
 using System;
@@ -1309,11 +1311,11 @@ public class PredatorComponent
                     preyUnit.Unit.ModifyStat(stat, 1);
                     if (stat == 6)
                     {
-                        preyUnit.Unit.Health += 2;
+                        preyUnit.Unit.HealLasting(2);
                     }
                     if (stat == 0)
                     {
-                        preyUnit.Unit.Health += 1;
+                        preyUnit.Unit.HealLasting(1);
                     }
                     actor.PredatorComponent.birthStatBoost--;
                 }
@@ -1380,13 +1382,13 @@ public class PredatorComponent
                     unit.BaseScale = Config.GrowthCap;
             }
         }
-        if (!(unit.Health < unit.MaxHealth))
+        if (!(unit.LastingHealth < unit.MaxHealth))
         {
             totalHeal = 0;
         }
         if (totalHeal > 0)
         {
-            unit.Heal(totalHeal);
+            unit.HealLasting(totalHeal);
             actor.UnitSprite.DisplayDamage(-totalHeal);
             TacticalUtilities.Log.RegisterHeal(unit, new int[] { totalHeal, 0 });
         }
@@ -1574,7 +1576,7 @@ public class PredatorComponent
             {
                 unit.DickSize = Math.Min(unit.DickSize + 1, Races.GetRace(unit).DickSizes - 1);
                 if (Config.RaceSizeLimitsWeightGain && State.RaceSettings.GetOverrideDick(unit.Race))
-                    unit.DickSize = Math.Min(unit.DickSize, State.RaceSettings.Get(unit.Race).MaxDick);
+                    unit.DickSize = Math.Min(unit.DickSize, State.RaceSettings.GetExisting(unit.Race).MaxDick);
             }
         }
         else if (Location(preyUnit) == PreyLocation.breasts || Location(preyUnit) == PreyLocation.leftBreast || Location(preyUnit) == PreyLocation.rightBreast)
@@ -1583,7 +1585,7 @@ public class PredatorComponent
             {
                 unit.SetDefaultBreastSize(Math.Min(unit.DefaultBreastSize + 1, Races.GetRace(unit).BreastSizes - 1), unit.BreastSize == unit.DefaultBreastSize);
                 if (Config.RaceSizeLimitsWeightGain && State.RaceSettings.GetOverrideBreasts(unit.Race))
-                    unit.SetDefaultBreastSize(Math.Min(unit.DefaultBreastSize, State.RaceSettings.Get(unit.Race).MaxBoob));
+                    unit.SetDefaultBreastSize(Math.Min(unit.DefaultBreastSize, State.RaceSettings.GetExisting(unit.Race).MaxBoob));
             }
         }
         else
@@ -1594,7 +1596,7 @@ public class PredatorComponent
                 {
                     unit.DickSize = Math.Min(unit.DickSize + 1, Races.GetRace(unit).DickSizes - 1);
                     if (Config.RaceSizeLimitsWeightGain && State.RaceSettings.GetOverrideDick(unit.Race))
-                        unit.DickSize = Math.Min(unit.DickSize, State.RaceSettings.Get(unit.Race).MaxDick);
+                        unit.DickSize = Math.Min(unit.DickSize, State.RaceSettings.GetExisting(unit.Race).MaxDick);
                 }
             }
 
@@ -1604,7 +1606,7 @@ public class PredatorComponent
                 {
                     unit.SetDefaultBreastSize(Math.Min(unit.DefaultBreastSize + 1, Races.GetRace(unit).BreastSizes - 1), unit.BreastSize == unit.DefaultBreastSize);
                     if (Config.RaceSizeLimitsWeightGain && State.RaceSettings.GetOverrideBreasts(unit.Race))
-                        unit.SetDefaultBreastSize(Math.Min(unit.DefaultBreastSize, State.RaceSettings.Get(unit.Race).MaxBoob));
+                        unit.SetDefaultBreastSize(Math.Min(unit.DefaultBreastSize, State.RaceSettings.GetExisting(unit.Race).MaxBoob));
                 }
             }
 
@@ -1612,7 +1614,7 @@ public class PredatorComponent
             {
                 unit.BodySize = Math.Max(Math.Min(unit.BodySize + 1, Races.GetRace(unit).BodySizes - 1), 0);
                 if (Config.RaceSizeLimitsWeightGain && State.RaceSettings.GetOverrideWeight(unit.Race))
-                    unit.BodySize = Math.Min(unit.BodySize, State.RaceSettings.Get(unit.Race).MaxWeight);
+                    unit.BodySize = Math.Min(unit.BodySize, State.RaceSettings.GetExisting(unit.Race).MaxWeight);
             }
 
             
@@ -1637,7 +1639,7 @@ public class PredatorComponent
                     trait = possibleTraits[State.Rand.Next(possibleTraits.Length)];
                     if (unit.HasTrait(Traits.SynchronizedEvolution))
                     {
-                        RaceSettingsItem item = State.RaceSettings.Get(unit.Race);
+                        RaceSettingsItem item = State.RaceSettings.GetOrCreate(unit.Race);
                         item.RaceTraits.Add(trait);
                         UpdateRaceTraits();
                     }
@@ -1695,7 +1697,7 @@ public class PredatorComponent
             if (preyUnit.Unit.Level == 0) preyDamage = 1;
             actor.Unit.GiveRawExp(Math.Max(1, (int)(preyUnit.Unit.Experience - prevLevelExp)));
         }
-        if (preyUnit.Unit.IsThisCloseToDeath(preyDamage))
+        if (preyDamage > 0 && preyUnit.Unit.IsThisCloseToDeath(preyDamage))
         {
             if (preyUnit.Unit.HasTrait(Traits.Corruption))
             {
@@ -1716,6 +1718,7 @@ public class PredatorComponent
             freshKill = true;
             TacticalUtilities.Log.RegisterDigest(unit, preyUnit.Unit, Location(preyUnit));
             preyUnit.Actor.KilledByDigestion = true;
+            preyUnit.Unit.Digested = true;
             if (preyUnit.Unit.HasTrait(Traits.CursedMark))
             {
                 unit.AddPermanentTrait(Traits.CursedMark);
@@ -2003,11 +2006,11 @@ public class PredatorComponent
     //                    newPrey.Unit.ModifyStat(stat, 1);
     //                    if (stat == 6)
     //                    {
-    //                        preyUnit.Unit.Health += 2;
+    //                        preyUnit.Unit.HealLasting(2);
     //                    }
     //                    if (stat == 0)
     //                    {
-    //                        preyUnit.Unit.Health += 1;
+    //                        preyUnit.Unit.HealLasting(1);
     //                    }
     //                    actor.PredatorComponent.birthStatBoost--;
     //                }
@@ -2076,7 +2079,7 @@ public class PredatorComponent
                     unit.RemoveTrait(Traits.Assimilate);
                 if (unit.HasTrait(Traits.SynchronizedEvolution))
                 {
-                    RaceSettingsItem item = State.RaceSettings.Get(unit.Race);
+                    RaceSettingsItem item = State.RaceSettings.GetOrCreate(unit.Race);
                     item.RaceTraits.Add(possibleTraits[State.Rand.Next(possibleTraits.Length)]);
                     UpdateRaceTraits();
                 }

@@ -1,6 +1,6 @@
 # 02 — Retire unwanted menus and lock balance settings
 
-**Status:** In progress, 2026-10-30. The user confirmed the repaired 02C settings tests succeeded. [03A1](../implementation/03a1-approved-species-and-empty-setup.md) now integrates the approved-only availability page, with its own review pending. Full species-route enforcement and later integrated checks remain open; no species curated.
+**Status:** Functional retirement milestone complete, 2026-11-01, with final agent checks passed as recorded in the [closure report](../implementation/phase-2-cleanup-closure.md). Earlier packet records remain historical. Combat/log scenarios await approved species; distribution/shared-asset review remains a release gate.
 
 **Phase:** Phase 2 — retire unwanted systems
 
@@ -62,3 +62,8 @@ Small menu/settings batches with updated control mapping and an in-game review c
 
 Before each remaining batch, refine its concrete source/scene trace and resolve decisions needed for that batch. Follow the review and file-operation rules in [the roadmap](../conversion-roadmap.md). Design intent comes from [the campaign plan](../mercenary-company-campaign-plan.md) and the three curation checklists.
 
+
+
+## Consolidated cleanup milestone closure (2026-11-01)
+
+See [phase-2 cleanup closure](../implementation/phase-2-cleanup-closure.md) for current accepted work, exact retained services and deferred combat/release gates. Earlier packet status lines are historical. No further per-packet menu tests are required; final milestone verification status is in that report. New campaign/character mechanics remain subsequent specs.

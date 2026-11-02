@@ -81,3 +81,8 @@ This list follows direct SpriteDictionary tokens in the 90 definitions and recor
 ## Operation constraints
 
 [AssetBundleHandler.cs](../../Assets/Editor/AssetBundleHandler.cs) contains a hard-rebuild command that deletes its output directory. Do not invoke it under AGENTS.md. A later approved repacking operation should write to a verified new staging directory, validate its manifest/assets and only then plan how to switch active loading. Keep existing bundles and assets intact during this preflight. No output directory or archive was created here.
+
+
+## Unity dependency follow-up (2026-11-01)
+
+The raw GUID inventory above is historical text-reference evidence. [03B6](03b6-obsolete-serialized-sprite-arrays.md) queries the actual Sprite Dictionary prefab in Unity 2018.3.12f1: 49 serialized fields, 650 object-reference records and 22 asset dependencies (20 PNGs), unchanged before/after removing 156 obsolete static-field blocks. Do not equate the earlier 372 raw sheet references with active Unity dependencies or infer permission to remove/repack those assets.

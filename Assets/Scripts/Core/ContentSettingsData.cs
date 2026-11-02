@@ -2,6 +2,7 @@
 // 2026-10-30: Separate content-setting defaults and preference loading from menu widgets (spec 02A).
 // 2026-10-30: Lock retired settings to code defaults; persist only retained preferences (spec 02C).
 // 2026-10-30: Route species preferences through the approved roster (spec 03A1).
+// 2026-11-02: Retire nine additional content preferences to their existing defaults (spec 15B).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 // Defaults and loading logic are extracted from the upstream ContentSettings component.
 using System;
@@ -132,9 +133,6 @@ internal static class ContentSettingsData
         "HermsOnlyUseFemaleHair",
         "HideBreasts",
         "HideCocks",
-        "RagsForSlaves",
-        "VisibleCorpses",
-        "LeadersUseCustomizations",
         "HermsCanUB",
         "Unbirth",
         "CockVore",
@@ -145,7 +143,6 @@ internal static class ContentSettingsData
         "AllowHugeDicks",
         "AllowTopless",
         "FurryGenitals",
-        "LamiaUseTailAsSecondBelly",
         "AnimatedBellies",
         "DigestionSkulls",
         "BellyRubHands",
@@ -158,8 +155,6 @@ internal static class ContentSettingsData
         "ClothingDiscards",
         "ExtraRandomHairColors",
         "LizardsHaveNoBreasts",
-        "LewdDialog",
-        "LeadersRerandomizeOnDeath",
         "HideViperSlit",
         "Cumstains",
         "BurpOnDigest",
@@ -196,6 +191,9 @@ internal static class ContentSettingsData
         world.BreastWeight = 40;
         world.BladderWeight = 40;
         world.MonsterConquest = (Config.MonsterConquestType)0;
+        world.MalesLike = (Orientation)0;
+        world.FemalesLike = (Orientation)0;
+        world.WinterStuff = (Config.SeasonalType)0;
         world.FartFraction = .1f;
         world.WeightGainFraction = .5f;
         world.DigestionSpeedMult = 1;
@@ -294,9 +292,6 @@ internal static class ContentSettingsData
         world.CockWeight = PlayerPrefs.GetInt("CockWeight", 40);
         world.TailWeight = PlayerPrefs.GetInt("TailWeight", 40);
         world.BurpFraction = PlayerPrefs.GetFloat("BurpFraction", .1f);
-        world.MalesLike = (Orientation)PlayerPrefs.GetInt("MalesLike", 0);
-        world.FemalesLike = (Orientation)PlayerPrefs.GetInt("FemalesLike", 0);
-        world.WinterStuff = (Config.SeasonalType)PlayerPrefs.GetInt("WinterStuff", 0);
         world.HermBreastSizeModifier = PlayerPrefs.GetInt("HermBreastSizeModifier", 0);
     }
 
@@ -318,9 +313,6 @@ internal static class ContentSettingsData
         PlayerPrefs.SetInt("CockWeight", world.CockWeight);
         PlayerPrefs.SetInt("TailWeight", world.TailWeight);
         PlayerPrefs.SetFloat("BurpFraction", world.BurpFraction);
-        PlayerPrefs.SetInt("MalesLike", (int)world.MalesLike);
-        PlayerPrefs.SetInt("FemalesLike", (int)world.FemalesLike);
-        PlayerPrefs.SetInt("WinterStuff", (int)world.WinterStuff);
         PlayerPrefs.SetInt("HermBreastSizeModifier", world.HermBreastSizeModifier);
         SpeciesPolicy.SavePreferences();
         PlayerPrefs.Save();

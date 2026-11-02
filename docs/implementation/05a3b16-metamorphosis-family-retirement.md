@@ -21,3 +21,5 @@ Read License.txt sections 4/5; content hash matches HEAD. Added dated conversion
 ## User check / next work
 
 Confirm main menu and Pure Tactical setup open without new red errors; existing settings/editor tests need not be repeated. Next trace possession/SpiritPossession and containment allegiance callbacks, including Friendosoma result handling, before retiring them. Preserve temporary disguises/summons. Providers/catalog/species read closure remain unfinished.
+
+User confirmed the manual check working on 2026-11-01 and requested that all remaining approved ability retirement be completed as one consolidated effort before the next manual test.

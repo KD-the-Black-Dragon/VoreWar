@@ -1,3 +1,6 @@
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-01: Separate stored species reads from intentional override creation (spec 03B3C).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System.Collections.Generic;
 using System.Linq;
 
@@ -35,6 +38,6 @@ public class RaceServantTacticalAI : HedonistTacticalAI
 
     private Race GetStrongestFriendlyRaceOnBattlefield(Actor_Unit unit)
     {
-        return actors.Where(a => !TacticalUtilities.TreatAsHostile(unit, a)).OrderByDescending(a => State.RaceSettings.Get(a.Unit.Race).PowerAdjustment == 0 ? RaceParameters.GetTraitData(a.Unit).PowerAdjustment : State.RaceSettings.Get(a.Unit.Race).PowerAdjustment).First().Unit.Race;
+        return actors.Where(a => !TacticalUtilities.TreatAsHostile(unit, a)).OrderByDescending(a => State.RaceSettings.GetPowerAdjustment(a.Unit.Race)).First().Unit.Race;
     }
 }

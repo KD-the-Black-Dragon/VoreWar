@@ -1,6 +1,6 @@
 # 03 — Disable the legacy roster and retire rejected species
 
-**Status:** In progress, 2026-10-30. The user accepted 03A/04, 03B preflight, 03B1 and 03B2. [03B3A](../implementation/03b3a-override-hydration-boundary.md) prepares override loading for definition retirement and corrects new mapping defaults; compile/scene checks passed, interactive review accepted. 03B3B review advances 05A1 before prototype removal. Stat definitions, graphics/resources and 05 provider retirement remain. Spec 03 is not complete; no species approved.
+**Status:** Functional retirement milestone complete, 2026-11-01, with final agent checks passed as recorded in the [closure report](../implementation/phase-2-cleanup-closure.md). Earlier packet records remain historical. Combat/log scenarios await approved species; distribution/shared-asset review remains a release gate.
 
 **Phase:** Phase 2 — retire unwanted systems
 
@@ -63,3 +63,31 @@ Before execution, refine this spec with the architecture study, list its small c
 ### 03B3 subdivision
 
 03B3A changes only RaceSettings.cs: retired records remain stored but are skipped during Sanitize, while new leader/morph mappings use their own defaults. All serialized fields and existing lookup/save behavior remain. This is an accepted-scope preparation step with checks recorded in its report, not removal of 90 stat definitions. After user review, 03B3B must close direct metadata/read dependencies before prototype retirement; graphics and shared-clothing dependencies stay a separate bounded packet.
+
+05A1–05A6 retired the legacy application/save/world/combat providers. [05A7](../implementation/05a7-residual-boundary-and-metadata-review.md) reopens the remaining stat/override boundary with a refreshed caller inventory and non-instantiating parameter getter; no prototypes removed. Next grouped implementation separates stored override reads from creation before matched rejected parameter retirement. Graphics/assets remain separate.
+
+
+[03B3C](../implementation/03b3c-stored-override-read-boundary.md) separates stored settings reads from deliberate creation across eleven sources. Legacy records remain stored, new rejected-record hydration is blocked, and ordinary metadata/cosmetic/power reads no longer create graphics-backed overrides. Parameter definitions and graphics remain pending; check the packet report for verification status.
+
+
+[03B3D](../implementation/03b3d-rejected-stat-definition-retirement.md) retires all 90 matched stat declarations/initializers/dispatch arms and rejects retired metadata before Default fallback, preserving the other 64 species payloads and all numeric IDs. Compile/scene/source/scope/GPL checks passed; focused manual review is pending. Graphics registry/shared assets remain separate; spec 03 is not complete.
+
+
+[03B4](../implementation/03b4-rejected-graphics-registry-retirement.md) retires 91 rejected eager graphics instances (90 species plus SlimeQueen), removes their 90 lookup arms, and closes all direct typed-field consumers across 19 sources. Remaining 66 instances/64 species mappings and shared resource files remain. Verification status is in its report; no species approved and no physical asset retirement.
+
+
+[03B5](../implementation/03b5-retired-only-sprite-loader-bindings.md) clears 156 retired-only static sprite bindings instead of loading their assets. Other 199 requests and all four mixed bundle opens remain unchanged. Artwork/serialized references/class payloads remain on disk; this is not physical asset retirement or proof of resource unloading. Verification status in report; spec03 still open.
+
+
+[03B6](../implementation/03b6-obsolete-serialized-sprite-arrays.md) adds a read-only editor resource inspection and removes 156 ignored saved static-field blocks from Sprite Dictionary.prefab. Unity before/after serialized fields/object references/dependencies are identical; source artwork/bundles retained. Remaining disconnected definition/effect source and shared ownership still require closure. No repeat manual startup test for this engine-invisible data cleanup.
+
+
+[03B7 source disposition review](../implementation/03b7-disconnected-source-disposition-review.md) inventories91 disconnected definition paths and defines the remaining grouped payload/effect retirement checks. Documentation only; shared helpers and all paths remain.
+
+
+[03B8](../implementation/03b8-disconnected-graphics-payload-retirement.md) retires disconnected class payloads and rejected-only projectile branches as a group, retaining paths/notices and shared FairyUtil. Final verification status in report; resource-reader refresh and phase2closure remain.
+
+
+## Consolidated cleanup milestone closure (2026-11-01)
+
+See [phase-2 cleanup closure](../implementation/phase-2-cleanup-closure.md) for current accepted work, exact retained services and deferred combat/release gates. Earlier packet status lines are historical. No further per-packet menu tests are required; final milestone verification status is in that report. New campaign/character mechanics remain subsequent specs.

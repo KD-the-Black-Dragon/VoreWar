@@ -1,5 +1,8 @@
 // Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Restrict setup, previews and bulk generation to approved species; handle empty pools (spec 03A1).
+// 2026-11-01: Construct only the retained standalone battle World context (spec 05A5).
+// 2026-11-01: Keep skirmish selections bound to stable species IDs with singular display labels (09–10 feedback).
+// 2026-11-02: Host the retained Single Battle fields/previews in the shared blue two-column presentation (spec 15D).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Collections;
@@ -40,15 +43,36 @@ public class CreateTacticalGame : MonoBehaviour
     Race batchingDefenderRace;
 
     bool refreshingSpeciesChoices;
+    SingleBattleSetupView presentation;
 
     public void Start()
     {
         RefreshSpeciesChoices();
+        EnsurePresentation();
     }
 
     internal void Open()
     {
         RefreshSpeciesChoices();
+        EnsurePresentation();
+    }
+
+    void EnsurePresentation()
+    {
+        if (presentation == null)
+        {
+            presentation = new SingleBattleSetupView(this);
+            UpdateAIBoxes();
+            AutoScaleChanged();
+            UpdateTextPercentages();
+            UpdateBulkSlider();
+        }
+        presentation.Refresh();
+    }
+
+    void Update()
+    {
+        if (presentation != null) presentation.Refresh();
     }
 
     public void AttackerRaceChanged()
@@ -70,16 +94,18 @@ public class CreateTacticalGame : MonoBehaviour
         foreach (Dropdown dropdown in new[] { Attacker.Race, Defender.Race })
         {
             string previous = dropdown.options.Count > dropdown.value ? dropdown.options[dropdown.value].text : "Random";
+            Race previousRace;
+            if (SpeciesPolicy.TryParseName(previous, out previousRace)) previous = SpeciesPolicy.DisplayName(previousRace);
             dropdown.ClearOptions();
             var labels = available.Length == 0 ? new List<string> { "No approved species" } :
                 new List<string> { "Random" };
-            labels.AddRange(available.Select(r => r.ToString()));
+            labels.AddRange(available.Select(SpeciesPolicy.DisplayName));
             dropdown.AddOptions(labels);
             dropdown.value = Math.Max(0, labels.IndexOf(previous));
             dropdown.interactable = available.Length > 0;
             dropdown.RefreshShownValue();
         }
-        Text allSpeciesLabel = AllRaces.GetComponentInChildren<Text>();
+        Text allSpeciesLabel = AllRaces.GetComponentInChildren<Text>(true);
         if (allSpeciesLabel != null)
             allSpeciesLabel.text = "Include animals";
         refreshingSpeciesChoices = false;
@@ -95,7 +121,7 @@ public class CreateTacticalGame : MonoBehaviour
         string choice = dropdown.options[dropdown.value].text;
         Race race;
         return choice == "Random" ? SpeciesPolicy.GetAvailable(SpeciesUse.Skirmish).Length > 0 :
-            Enum.TryParse(choice, out race) && SpeciesPolicy.IsAllowed(race, SpeciesUse.Skirmish);
+            SpeciesPolicy.TryParseName(choice, out race) && SpeciesPolicy.IsAllowed(race, SpeciesUse.Skirmish);
     }
 
     bool TrySelectedRace(Dropdown dropdown, out Race race)
@@ -104,7 +130,7 @@ public class CreateTacticalGame : MonoBehaviour
         if (!IsSelectionAvailable(dropdown))
             return false;
         string choice = dropdown.options[dropdown.value].text;
-        return choice == "Random" ? SpeciesPolicy.TryRandom(SpeciesUse.Skirmish, out race) : Enum.TryParse(choice, out race);
+        return choice == "Random" ? SpeciesPolicy.TryRandom(SpeciesUse.Skirmish, out race) : SpeciesPolicy.TryParseName(choice, out race);
     }
 
     void UpdateSpeciesPreview(Dropdown dropdown, ref Actor_Unit actor, UIUnitSprite sprite)
@@ -121,7 +147,7 @@ public class CreateTacticalGame : MonoBehaviour
             actor = new Actor_Unit(new Unit(race));
         actor.Unit.TotalRandomizeAppearance();
         sprite.UpdateSprites(actor);
-        sprite.Name.text = race.ToString();
+        sprite.Name.text = SpeciesPolicy.DisplayName(race);
     }
 
     bool CanCreateBattle()
@@ -191,7 +217,7 @@ public class CreateTacticalGame : MonoBehaviour
 
     public void UpdateBulkSlider()
     {
-        Bulk.GetComponentInChildren<Text>().text = $"Runs per matchup: {Bulk.value}";
+        Bulk.GetComponentInChildren<Text>(true).text = $"Runs per matchup: {Bulk.value}";
     }
 
     public void WatchOptionChanged()
@@ -458,7 +484,7 @@ public class CreateTacticalGame : MonoBehaviour
 
         Vec2i none = new Vec2i(0, 0);
 
-        State.World = new World(false);
+        State.World = new World();
         int attackerRangedCount = fightersA * (int)Attacker.RangedPercentage.value / 100;
         int defenderRangedCount = fightersB * (int)Defender.RangedPercentage.value / 100;
         int attackerMeleeHeavyCount = (fightersA - attackerRangedCount) * (int)Attacker.HeavyWeaponsPercentage.value / 100;
@@ -484,7 +510,7 @@ public class CreateTacticalGame : MonoBehaviour
 
         Func<Race> SetupRace(Dropdown tacRace)
         {
-            if (Enum.TryParse(tacRace.options[tacRace.value].text, out Race race))
+            if (SpeciesPolicy.TryParseName(tacRace.options[tacRace.value].text, out Race race))
             {
                 return () => race;
             }
@@ -581,8 +607,8 @@ public class CreateTacticalGame : MonoBehaviour
         }
         else
         {
-            State.GameManager.TacticalMode.AttackerName = AttackerRace().ToString();
-            attacker.Name = AttackerRace().ToString();
+            State.GameManager.TacticalMode.AttackerName = SpeciesPolicy.DisplayName(AttackerRace());
+            attacker.Name = SpeciesPolicy.DisplayName(AttackerRace());
         }
 
         if (Defender.Race.value == 0 && batching == false)
@@ -592,8 +618,8 @@ public class CreateTacticalGame : MonoBehaviour
         }
         else
         {
-            State.GameManager.TacticalMode.DefenderName = DefenderRace().ToString();
-            defender.Name = DefenderRace().ToString();
+            State.GameManager.TacticalMode.DefenderName = SpeciesPolicy.DisplayName(DefenderRace());
+            defender.Name = SpeciesPolicy.DisplayName(DefenderRace());
         }
 
         State.GameManager.ActivatePureTacticalMode(tileType, village, attacker, defender, attackerAI, defenderAI);

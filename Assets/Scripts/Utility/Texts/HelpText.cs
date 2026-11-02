@@ -1,188 +1,177 @@
-﻿using System;
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-02: Replace retired empire guidance with company gameplay, save boundaries and retained references; correct trait enumeration (spec 12).
+// 2026-11-02: Restore vore terminology in existing help without rewriting its deferred content (Options feedback).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using System;
+using System.Linq;
 using System.Text;
 
 static class HelpText
 {
-    public static string GameBasics = @"Goals:
-Claim all enemy villages for your side, to do this raise armies at your villages by recruiting soldiers and equipping them with items in the village shop then moving them towards the enemy.  There's 3 different selectable victory conditions.
+    public static string GameBasics = @"Mercenary campaign
 
-Terms:
-Village, can be inhabited by any race and owned by any side. You get income from these, you can only recruit soldiers at villages of your own race, unless you build subjugation pens in them.
-Army: how you take your fight to the enemy, armies by default can have up to 16 soldiers but that can be changed in the create strategic screen.
+Lead one company through a finite world generated for each new campaign. There is no conquest victory or final objective: keep the company alive, take work and develop its members.
 
-Gold and you:
-You need gold to buy weapons for garrisons, recruit soldiers and buy equipment. You get gold based on the population of your villages, you also however lose 3 gold per turn for each soldier in your armies (armies are the little banners).
+Create your leader, then enter the starting town. Your initial gold comfortably hires about two inexperienced mercenaries; choose among the available names, species and backstories. The leader draws no wages and must join every battle.
 
-The game autosaves at the beginning of every tactical battle, and the beginning of every strategic turn, so it's recommended to make a proper save when you stop playing so you don't overwrite it.";
+Town services offer recruitment, equipment, contracts and treatment. Return to the world map between errands. The company roster is available outside battle; active members fight and reserves stay out. Every battle gives a final deployment choice.
 
-    public static string StrategyMode = @"Strategy Mode - The main view of a normal campaign, you can click on villages to go into them, or click on armies to select them.  To view a village that's occupied by an army, you have to select the army and then click on unit info.  To move the selected army, use the numpad, or whatever you have rebound it to.
+Pure Tactical is a separate single battle with no campaign progress. Only curated species can generate. Global species preferences stop new individuals from appearing while preserving existing characters and offers.
 
-Villages have a happiness value that decreases when conquered by other races, and will gradually increase to 80 if they are not the same race as you, and 100 if they are.  Happiness controls the amount of taxes paid.
+Values are provisional. Use the other help chapters for travel, wages, injuries and supported saving.";
 
-If your army enters the same tile as an enemy army, a battle will start and the game switches to tactical mode.
+    public static string StrategyMode = @"World map and days
 
-You can buy weapons to outfit garrisons at your villages, capitals get 8 bonus troop slots. When you are attacked any units in your hiring list come to the towns defense, if that's not sufficient, townspeople are drafted and given weapons.
+Your company is the only moving force. Click adjacent map tiles to travel; grass/desert currently cost one action and forest/hills two. Nearby terrain is revealed as you explore. Towns are static, and accepted contracts mark their exact target even under fog.
 
-Your soldiers can equip two items each, one of which should be a ranged or melee weapon. 
+Each campaign turn is one day with ten actions. At zero actions you cannot pay for further movement; End day advances time and refills actions. Visiting a service and taking individual transactions are separate concepts; most service action costs currently remain zero.
 
-If there is not enough gold to pay for maintenance, army troops will start deserting.
+Rest advances the chosen number of days, anywhere. Resting in town improves recovery. Every skipped day still processes wages, contract deadlines, pool refreshes, healing and healthy-member sparring. Required notices interrupt rest; deal with them and explicitly resume or cancel the remaining plan.
 
-Health Recovery:
-Put your wounded armies in villages. If the village has an inn, they will heal faster. If you want it to go faster still then you'll have to accept villages being emptier when you're done and devour village population.";
+Tactical battles take no campaign days. Moving to a contract target opens final deployment before the battle starts.";
 
-    public static string RecruitMode = @"Recruit / Village Mode:
+    public static string RecruitMode = @"Recruitment, roster and wages
 
-You can create armies by recruiting up to your empire's maximum army size to join the army.   Make sure you visit the shop to buy items for your troops, as troops without items are much less effective in combat.  You can use the cheap equip button to buy basic weapons for all of your troops to save time.
+Each town has a small separate recruit pool that refreshes over time. Higher company reputation allows more and stronger candidates. Species talents affect roles, but any sapient recruit can develop in any direction. Appearance is fixed; ordinary members may be nicknamed. The leader's creation choices remain fixed.
 
-You can recruit units from any race in a village, but note that units from other races may defect when they encounter armies or villages of their own race.  
+There is no fixed roster or deployment cap. Wages are the main growth constraint and include rations/upkeep in the fiction. Active and reserve members both draw wages, including when injured. Mark reserves from Company or final deployment; the leader always deploys.
 
-The shop will open for whatever character you currently have selected for buying or selling, but there are options to modify multiple units at once.
+Wages are paid in advance every seven days, first due seven days after campaign start. Midweek hiring costs a prorated advance through the next payday, plus any old debt. Quoted weekly wages rise with level.
 
-Villages will use any stationed defenders (in the hiring list), and / or draft units and give them stored weapons to form a defensive squad up to your empires maximum garrison size.  Note that a defender can use both his army and garrison for defense at the same time, making a large defensive force.
+If the full payday cannot be covered, everyone owed gains personal debt. You decide whom to pay, in full. Threatened members get their stated grace day. An actual departure gets a separate notice. Former members retain their level, injuries, equipment and unpaid debt, and may offer their services in a town again. Rehiring must settle their old debt.";
 
-You can also dismiss units, who will then stay on station in the town, they cost no maintenance and can be rehired using the hire button.  Units dimissed outside of town will return to the closest town, but take a few turns to get there.
+    public static string TacticalMode = @"Tactical battle
 
-You can also purchase upgrades for villages in the village view.";
+Control your company against the AI using the existing combat actions. Melee and ranged equipment are separate: a unit with both automatically uses the melee weapon for melee attacks. Without one, it attacks unarmed.
 
-    public static string TacticalMode = @"Tactical mode:
+At zero HP a permanent character is downed and cannot take any action for the rest of the battle. Fear can also down someone above zero HP. Downed units are not ordinary direct-attack targets; collateral damage does not kill them. They remain vulnerable to vore. Magical summons disappear instead of becoming downed.
 
-Two factions battle it out until only one side remains.  
+Reach the appropriate edge and use Retreat when the existing retreat rules permit it. Downed allies do not silently retreat or become assumed casualties: if opponents can still act, the battle continues. You may use the existing instant simulation to finish it.
 
-To move, either use the keyboard movement keys or the mouse movement mode (see controls), and then you can left click on the tile you wish to move to.  (yellow dots mean if you move here you can still attack, and if you move to the red dot, you won't be able to take any further actions)
+Downed or contained units do not by themselves finish a battle. Both sides unable to act, or the generous 200-turn limit, cause a stalemate: remaining units are released and count as fled. Enemy flight counts as contract defeat, even on a draw. Enemies cannot leave while carrying a living captive.
 
-To perform other actions, click the action buttons, or use the hotkeys.  Red text is for targets in range, black for targets out of range, and yellow in vore mode for targets that are currently too big to be eaten by you.
+After battle, read the results, then handle any leader revival. Campaign rewards settle automatically.";
 
-You can click click on a unit, including the selected units, to get a list of options.  Things that are out of range are greyed out.  
+    public static string Stats = @"Character stats
 
-Units that do not have a melee weapon equipped can use their claws as a weak melee weapon.
+Strength: melee accuracy/damage and part of maximum HP.
+Dexterity: ranged accuracy/damage and a smaller contribution to escape.
+Agility: defense and tactical movement.
+Endurance: maximum HP and resistance to some damage.
+Mind: magic accuracy, damage and other spell effects.
+Will: magic defense, mana and much of vore defense/escape.
+Voracity: vore accuracy and related offense.
+Stomach: capacity, retention and digestion.
 
-After the 8th turn, units can retreat by heading to the map edge of the side they started from (top/bottom) and hitting the retreat button.
+Species and traits still influence these stats. Leadership is retired; the company leader instead starts with stronger ordinary stats.
 
-You can use the AI move button to let the AI make the rest of your units act and end your turn, which can be useful to speed up battles that you don't care as much about.
+Injury penalties are derived separately from base stats and stack. Hand injuries reduce Dexterity, head injuries Mind, leg injuries movement, and arm/body injuries weapon damage. Equipment and existing trait/status effects still matter. Inspect a unit for its current effects.";
 
-You can also press nextunit key to select a unit that has moves remaining.";
+    public static string Items = @"Company equipment
 
-    public static string Stats = @"Stats:
-strength, controls hit chance for melee and affects melee damage, also increases max health, also plays a minor role in vore defense and escape
-dexterity, controls hit chance for ranged and affects ranged damage, plays a minor role in vore escape
-agility, controls melee and ranged defense and movement points
-endurance, controls health maximum, also reduces damage from acid, has a minor role in escape chance.
-mind, increases damage, effect, accuracy and duration of magic spells.  
-will, has the largest share of vore defense, and escape boost.  Also controls magic defense, slightly effects digestion damage has an effect on mana points.
-voracity, controls vore hit chance and has a minor effect on keeping prey down and digestion damage
-stomach, controls digestion damage, keeping prey down, and stomach size";
+Nine slots: Helmet, Torso armor, Leg armor, Arm armor, Accessory, Melee weapon, Ranged weapon and two spells.
 
-    public static string Items = @"Item Reference:
-claws, very weak innate melee weapon that all units have
-mace, simple melee weapon, weak but slightly higher accuracy
-axe, stronger melee weapon
-bow, simple ranged weapon, weak but slightly higher accuracy
-compound bow, stronger ranged weapon
-helmet, raises agility
-body armor, raises health
-gauntlet, raise strength
-gloves, raises dexterity
-shoes, raises agility";
+Buy gear at a town merchant, then equip it through Company > Manage. Equipment can change outside battle. The company inventory owns unequipped items and members' equipped items; sell spare unequipped gear at a merchant. Dismissed or departing members keep their gear.
 
-    public static string Vore = @"Vore is an important mechanic in this world.
+An HP-granting item changes current and maximum HP by the same amount when equipped/removed. If removing one would leave its wearer without positive HP, recover first.
 
-A unit can attempt to eat another unit.  The odds are determined by the attackers Voracity stat and health, and the defender's will, strength and remaining health %. There are also other modifiers, for instance, the bigger the prey, the more difficult, and having more space in a stomach makes it easier.
+Armor also reduces injury risk for its covered body part. Helmets protect the head, torso armor the body, leg armor the legs and arm armor the hands/arms. There is no armor appearance system in this version.
 
-Units can fight their way out of a stomach, this is a random chance that depends on the relative health between the two targets, the predator's stomach stat, and the prey's strength, endurance dexterity and will.  The first few turns after being eaten, the prey's chance of escape is reduced while they get their bearings.
+Digested mercenaries' equipped gear is lost with them. The initial contract reward is gold only. Pure Tactical keeps its original equipment setup.";
 
-A living unit will be digested and slowly lose health, once a unit dies, it will enter the absorption phase, and the predator will be slowly healed until absorption finishes. 
+    public static string Vore = @"Vore, HP and company fate
 
-Units have a certain amount of prey capacity determined by a combination of their race and their stomach stat (you can hover over the stomach stat to show the total).   Eating units that have eaten other units take up more space.
+The retained vore/digestion mechanics remain central to combat. Health, stats, size and capacity affect attempts against standing units. Downed units have guaranteed vore odds when the attempt otherwise meets its capacity/range requirements.
 
-A predator's available movement will reduce as they have more prey in their stomach, and they are also easier to hit.  
+A downed or contained character is still alive. Permanent characters are only removed by actual completed digestion; collateral damage cannot permanently kill a downed member. The battle continues to resolve those fates rather than inventing off-screen losses.
 
-When units are killed in a stomach, a few turns later any living prey they had will be able to fight their way out into the main stomach.  Dead prey only breaks out once the host is completely absorbed.   If friendly regurgitation is on, friendly units will be regurgitated, otherwise they will simply be digested.  Units can also be freed by killing the host as long as the prey is still alive.";
+Grey temporary HP absorbs damage first and disappears after battle. Retained spells/traits normally grant temporary healing. Retained vore recovery raises lasting HP and survives battle end. Surviving critically hurt characters return with a modest HP baseline, currently 15%, and keep their injuries.
 
-    public static string Experience = @"Your soldiers can gain experience in battle
-You can also train them for experience at any village with a training building, but there are diminishing returns on training speed.  The upper levels of training are mainly designed to help out when you have an overwhelming money advantage but the enemy has a very strong army.  Units also start with experience points depending on how many training buildings are built for your team.  
+Digested non-leaders are permanently lost and recorded in the memorial. A digested leader can use the optional unique revival service if the company still has survivors: results/rewards first, then a nearest-town cutscene, fee 20 gold per leader level, full health and no remaining injuries. No campaign day passes. If gold is insufficient it falls to zero; revival creates no extra debt. With revival disabled, leader digestion ends the campaign immediately. Losing the whole company also ends it.";
 
-To level up, click the level up button in the army/recruit window.  It will raise all of your stats by a small amount, and you can pick one stat from 3 randomly chosen stats to get a large bonus. ";
+    public static string Experience = @"Experience and level-ups
 
-    public static string Controls = $@"These are the default controls unless you've changed them
+Surviving deployed starters qualify for level 2 after completing a contract. Choose their improvement through Company > Manage > Level up; the existing level-up choices are preserved.
 
-Camera:
-wasd or arrow keys move the camera
-you can also click and drag to move the camera
-scroll wheel to zoom in/out
+Current cumulative XP thresholds without trait modifiers are 20, 56, 121, 238, 448 and 826 for levels 2 through 7. Requirements rise progressively faster. Trait learning modifiers still apply.
 
-Gameplay:
-numpad to move units around
-m to enable mouse movement mode, then click to move
-you can also right click when you have a unit selected to move
-n selects next unit capable of moving
-space cancels current action or deselects units
-enter ends turn
+Contract completion awards participants challenge-scaled XP; reserves receive no participation award. Actions against weaker enemies give veterans much less XP. Repeating easy contracts is progressively less useful for development and their small payouts may not cover veteran wages.
 
-tactical only:
-1 for melee attack
-2 for ranged attack
-3 for vore attack
-Right click for possible actions
+All healthy current members gain a little daily sparring XP, active or reserve. Healthy means full lasting HP with no recovering temporary injury after daily recovery; old injuries alone do not prevent sparring. Sparring does not pick a level-up improvement for you. Wages rise with actual level.
 
-Misc:
-Esc opens the menu or closes it
-F5 is quicksave
-F9 is quickload
-p pauses game, its main use is if you want to look around during the AI's turn
+These values are provisional and may be tuned after integrated playtesting.";
 
-on a message box, space will close it";
+    public static string Controls = @"Controls
 
-    public static string Teams = @"In the strategic creation screen, you can assign races to different teams.  Armies can't occupy the same space as allied armies, but you can sit in allied towns.  You can also recruit units from, or create entire armies from allied towns.  If attacked while in an allied town, your units will join their garrison on the defense.  If a human player controls either the defending army or the garrison, he can control both.  
+Company map: click adjacent tiles to move, use Enter town for services, Company for roster/gear and End day to advance time. Rest buttons support chosen days. Contract book lists work and exact targets. Use the campaign's Save checkpoint/Choose checkpoint controls for company saves.
 
-If someone on a team takes back a village that is a teammate's race from the enemy, that village will switch to the side of its race.  
+Tactical defaults:1 melee attack,2 ranged attack,3 vore; right click for available actions. Use the movement mode/buttons and existing key bindings to select destinations. N selects a unit that can act; Enter ends the tactical turn. WASD/arrows or dragging move the camera, and the mouse wheel zooms. Bindings can differ in Options.
 
-Right now the only benefit shared across teams is the +exp bonus from the number of training facilities built. 
+Use the existing AI action/instant-simulation controls to speed combat. Escape opens/closes the ordinary tactical menu; Pause lets you inspect an AI turn.
 
+Legacy F5/F9 and the old save/load screen do not save/load a live company battle. A company battle resumes from its saved deployment checkpoint if interrupted. See Saving and Ironman for the exact boundary.";
 
-Each empire has its own side, regardless of teams or diplomacy, which generally determines who controls something and on whose turn. In tactical, the sides can be taken literally, as they correspond to what half of the battlefield a unit starts in.
+    public static string Teams = @"Injuries and recovery
 
-However, units with certain traits, like Infiltrator, can have a fixed allegiance that's different to their side and can end up being controlled by the enemy or a third party in the middle of their supposed side's turn. If that allegiance is not known to an enemy, they can be sneak-attacked for extra hit/vore chance and extra attack damage.
+Minor and serious injuries can arise from lasting combat damage and deep attrition. Neither reaching 1 HP nor becoming downed guarantees an injury. Temporary HP protects against injury risk. New injuries appear in the battle log and as outlined orange tactical text.
 
-Certaín effects can cause or prevent a change in this allegiance. Normal defection does not affect it, and can thus be used by infiltrators to infiltrate.
-Units with the Untamable trait cannot be converted by any means other than vore – e.g the DigestionConversion trait or Unbirth with KuroTenko rebirth/conversion settings.
-Corruption prevents these vore-based conversions and may instead corrupt the predator, changing their allegiance to the prey's (unless they have Untamable).
-Check the Traits help section or a trait's tooltip for more info. As a rule of thumb, hidden traits will have something to do with special allegiances.
+Minor injuries heal away. Serious injuries impose stronger penalties while recovering, then become weaker permanent old injuries. Old injuries stack and cannot be cured. The leader never retains permanent old injuries, and special revival clears their temporary injuries.
 
-If only units that are friendly to eachother remain on the battlefield, Infiltrators will flee and other units with a special allegiance will defect.
-";
+Ordinary days recover a little HP and one injury recovery day. Resting in the field recovers more HP and two injury recovery days; town rest gives the best recovery and three injury recovery days. Surviving contract targets recover normally over elapsed days too. Mana recovers 60% of maximum per campaign day.
 
-    public static string Diplomacy = @"If diplomacy is enabled, you can declare war, or ask for peace and alliances from allies, you need a minimum amount of influence to achieve peace or alliances. 
+Town treatment costs gold per injured member and shortens untreated temporary injuries. It does not instantly refill HP, leaves at least one recovery day, and cannot treat the same injury repeatedly or cure an old injury. Inspect Company > Manage > Injuries / recovery for exact current penalties and recovery.";
 
-Relations increase when you: Give gold, attack the enemy of an empire, or give someone back a village of their race (offered if you capture a village belonging to your ally or someone you're at peace with)
+    public static string Diplomacy = @"Contracts and reputation
 
-Relations decrease when you: Attack someone directly, attack the ally of an empire, or devour 100% of a town that's not your race.  
+Accept work in a discovered town. Each town has a limited local offer pool that refreshes slowly. Several contracts can be active with equal priority. The current mission type is rout the enemy force.
 
-Relations will slowly work their way back to a semi-neutral state over time depending on your current relation type (to 1.5 for allies, 0 for peace/war)
+Ratings are numeric fixed enemy-power budgets, independent of your company size. Rosters are generated from units, levels, traits and equipment within a tight power range. Inspect the generated enemy roster before committing. Taking a contract marks the exact target tile even under fog.
 
-Allies can win the game as a team, but sides with simply a peace treaty can't.   If an AI has no enemies, it will declare war on the neutral empire it likes the least (to keep the game from ending up in a stalemate), but this system doesn't declare war on allies";
+Defeat the target before its generous deadline, currently 30 days after acceptance. Actual digested or fleeing enemies count as defeated; casualties do not respawn on a retry. A surviving target remains available until the deadline, recovering over time.
+
+Completion automatically grants the quoted gold and reputation; no return trip is required. Abandoning and expiry have the same difficulty-scaled reputation penalty and remove the map target. Reputation is a visible company-wide number, changes only through contract outcomes and improves access to contracts/recruits. It does not decay just for waiting.";
+
+    public static string Saving = @"Saving, recovery and Ironman
+
+Company saves use their own checkpoint list. New campaigns do not import old empire saves. Normal companies can manually save and choose retained checkpoint history. A failed load does not replace the current company.
+
+Automatic checkpoints are written after daily updates and committed company changes, with a deployment checkpoint before combat and saved results/revival phases afterward. Travel within the current day is captured by the next checkpoint; normal mode can use Save checkpoint before stopping. Loading does not advance days, repeat healing, add XP or re-award settled contract rewards.
+
+Live tactical-turn saving is not implemented for company battles. Interruption or the company battle menu's return restores deployment, not the last combat turn. This limitation applies to Ironman too.
+
+Ironman is chosen at creation and cannot be toggled later. It resumes only the latest valid checkpoint through the game interface. Older checkpoints are kept as recovery copies; an unreadable newest file can fall back to an earlier valid checkpoint. This is not protection against external file editing.
+
+If a checkpoint write fails, use Retry checkpoint, available even over pending results or decisions. Existing generations are retained; further changes wait for a successful retry.";
+
+    public static string Legal = @"Project and license
+
+This is the VoreWar mercenary-company conversion fork. VoreWar continues darkevilme's Vore War; upstream project attribution remains applicable.
+
+The covered derivative work remains under the applicable GNU GPL version 3 terms in License.txt. Modification dates and source paths are recorded in CHANGES.md. The program is provided without warranty under those terms.
+
+Third-party assets and dependencies retain their own applicable notices and terms. Their inclusion is not a new claim of ownership by this fork. See the distributed source and accompanying notices for the full license texts.
+
+This proof of concept has provisional tuning and documented limitations. Help describes the implemented campaign; further integrated testing and distribution review remain before a release.";
 
     public static string Traits()
     {
-        StringBuilder sb = new StringBuilder();
-        foreach (Traits trait in (Race[])Enum.GetValues(typeof(Traits)))
+        var sb = new StringBuilder("Retained traits. A trait's presence here does not guarantee it can appear on every species.\n\n");
+        foreach (Traits trait in Enum.GetValues(typeof(Traits)))
         {
-            sb.AppendLine($"{trait} - {HoveringTooltip.GetTraitData(trait).Replace('\n', ' ')}");
+            if (TraitsMethods.IsRetired(trait) || (int)trait >= 1000) continue;
+            sb.AppendLine(trait + " - " + HoveringTooltip.GetTraitData(trait).Replace('\n', ' '));
         }
         return sb.ToString();
-
     }
-
     public static string Spells()
     {
-        StringBuilder sb = new StringBuilder();
-        sb.AppendLine(@"Spells have a variety of effects and can be cast using mana.  Some spells can target tiles (done by using shift-right click and choosing the spell, or shift-left clicking when the spell is selected
-Mana regenerates 60% of its max on each strategic turn.");
-
-        foreach (Spell spell in SpellList.SpellDict.Values)
-        {
-            sb.AppendLine($"{spell.Name}\n{spell.Description}\nRange: {spell.Range.Min}-{spell.Range.Max}\nMana Cost: {spell.ManaCost}\nTargets: {string.Join(", ", spell.AcceptibleTargets)}\n");
-        }
+        var sb = new StringBuilder("Retained spells use mana. Company mana recovers daily; ordinary magical healing supplies temporary HP.\n\n");
+        if (SpellList.SpellDict == null) return sb.ToString();
+        foreach (var spell in SpellList.SpellDict.Values.Where(s => !s.IsRetired).OrderBy(s => s.Name))
+            sb.AppendLine(spell.Name + "\n" + spell.Description + "\nRange: " + spell.Range.Min + "-" + spell.Range.Max +
+                " | Mana: " + spell.ManaCost + "\nTargets: " + string.Join(", ", spell.AcceptibleTargets) + "\n");
         return sb.ToString();
     }
+    internal static readonly string[] CompanyTitles = { "Getting started", "World map and days", "Contracts", "Roster and wages", "Equipment", "Battle", "HP and company fate", "Recovery", "Progression", "Saving and Ironman", "Controls", "Project and license" };
+    internal static readonly string[] CompanyPages = { GameBasics, StrategyMode, Diplomacy, RecruitMode, Items, TacticalMode, Vore, Teams, Experience, Saving, Controls, Legal };
 }
-

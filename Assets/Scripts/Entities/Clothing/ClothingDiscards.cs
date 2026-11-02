@@ -1,4 +1,7 @@
-﻿using OdinSerializer;
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-01: Disconnect rejected graphics instances and their typed rendering hooks (spec 03B4).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using OdinSerializer;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -50,42 +53,19 @@ internal class ClothingDiscards
             AllClothes.AddRange(Races.Panthers.AllClothing);
             AllClothes.AddRange(Races.Hippos.AllowedMainClothingTypes);
             AllClothes.AddRange(Races.Hippos.AllowedWaistTypes);
-            AllClothes.AddRange(Races.Mermen.AllowedMainClothingTypes);
-            AllClothes.AddRange(Races.Mermen.AllowedWaistTypes);
-            AllClothes.AddRange(Races.Vipers.AllowedWaistTypes);
             AllClothes.AddRange(Races.Demifrogs.AllowedMainClothingTypes);
             AllClothes.AddRange(Races.Demifrogs.AllowedWaistTypes);
-            AllClothes.AddRange(Races.Imps.AllowedMainClothingTypes);
-            AllClothes.AddRange(Races.Imps.AllowedWaistTypes);
-            AllClothes.AddRange(Races.Imps.ExtraMainClothing1Types);
-            AllClothes.AddRange(Races.Imps.ExtraMainClothing2Types);
-            AllClothes.AddRange(Races.Imps.ExtraMainClothing3Types);
-            AllClothes.AddRange(Races.Imps.ExtraMainClothing4Types);
-            AllClothes.AddRange(Races.Imps.ExtraMainClothing5Types);
-            AllClothes.AddRange(Races.Goblins.AllowedMainClothingTypes);
-            AllClothes.AddRange(Races.Goblins.AllowedWaistTypes);
-            AllClothes.AddRange(Races.Goblins.ExtraMainClothing1Types);
-            AllClothes.AddRange(Races.Goblins.ExtraMainClothing2Types);
-            AllClothes.AddRange(Races.Goblins.ExtraMainClothing3Types);
-            AllClothes.AddRange(Races.Goblins.ExtraMainClothing4Types);
-            AllClothes.AddRange(Races.Goblins.ExtraMainClothing5Types);
             AllClothes.AddRange(Races.Demisharks.AllowedMainClothingTypes);
             AllClothes.AddRange(Races.Demisharks.AllowedWaistTypes);
             AllClothes.AddRange(Races.Demisharks.ExtraMainClothing1Types);
             AllClothes.AddRange(Races.Komodos.AllowedMainClothingTypes);
             AllClothes.AddRange(Races.Komodos.AllowedWaistTypes);
             AllClothes.AddRange(Races.Demibats.AllowedMainClothingTypes);
-            AllClothes.AddRange(Races.Cockatrice.AllowedMainClothingTypes);
-            AllClothes.AddRange(Races.Cockatrice.AllowedWaistTypes);
             AllClothes.AddRange(Races.Deer.AllowedMainClothingTypes);
             AllClothes.AddRange(Races.Deer.AllowedWaistTypes);
             AllClothes.AddRange(Races.Deer.ExtraMainClothing1Types);
-            AllClothes.AddRange(Races.Humans.AllowedMainClothingTypes);
-            AllClothes.AddRange(Races.Humans.AllowedWaistTypes);
             AllClothes.AddRange(Races.Vargul.AllowedMainClothingTypes);
             AllClothes.AddRange(Races.Vargul.AllowedWaistTypes);
-            AllClothes.AddRange(Races.Aabayx.AllowedMainClothingTypes);
-            AllClothes.AddRange(Races.Aabayx.AllowedWaistTypes);
             AllClothes.AddRange(Races.Lupine.AllowedMainClothingTypes);
             AllClothes.AddRange(Races.Lupine.AllowedWaistTypes);
             AllClothes.AddRange(Races.Jackals.AllowedMainClothingTypes);
@@ -93,11 +73,6 @@ internal class ClothingDiscards
             AllClothes.AddRange(Races.Jackals.ExtraMainClothing1Types);
             AllClothes.AddRange(Races.Jackals.ExtraMainClothing2Types);
             AllClothes.AddRange(Races.Jackals.ExtraMainClothing3Types);
-            AllClothes.AddRange(Races.Yordles.AllowedMainClothingTypes);
-            AllClothes.AddRange(Races.Yordles.AllowedWaistTypes);
-            AllClothes.AddRange(Races.Renamon.AllowedMainClothingTypes);
-            AllClothes.AddRange(Races.Renamon.AllowedWaistTypes);
-            AllClothes.AddRange(Races.Renamon.ExtraMainClothing1Types);
             AllClothes = AllClothes.Distinct().ToList();
         }
 

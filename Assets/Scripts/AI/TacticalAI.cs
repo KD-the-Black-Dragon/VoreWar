@@ -2,6 +2,8 @@
 // 2026-10-30: 04B2: Replace retreat flavor with a functional objective notice.
 // 2026-10-31: Retire obsolete Resurrection AI action and planning calls (spec 05A3B9).
 // 2026-10-31: Retire obsolete Reanimate and Bind actions/planning (spec 05A3B12).
+// 2026-11-01: Keep downed opponents off direct attack lists; retain consumption cleanup and normal battle AI (spec 10).
+// 2026-11-02: Restore vore terminology in the existing tactical retreat log (Options feedback).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
 using System;
@@ -142,7 +144,7 @@ public abstract class TacticalAI : ITacticalAI
             {
                 if (retreating == false)
                 {
-                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"<color=orange>{(actors[0].Unit.Side == AISide ? "Attackers" : "Defenders")} are retreating (consumption objective met)</color>");
+                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"<color=orange>{(actors[0].Unit.Side == AISide ? "Attackers" : "Defenders")} are retreating (vore objective met)</color>");
                 }
                 retreating = true;
             }
@@ -966,7 +968,7 @@ public abstract class TacticalAI : ITacticalAI
             return targets;
         foreach (Actor_Unit unit in actors)
         {
-            if (unit.Targetable == true && (unit.InSight || !State.World.IsNight) && TacticalUtilities.FreeSpaceAroundTarget(unit.Position, actor) && TacticalUtilities.TreatAsHostile(actor, unit) && (unit.Surrendered == false || (onlySurrenderedEnemies && lackPredators) || currentTurn > 150))
+            if (unit.Targetable == true && (unit.InSight || !State.World.IsNight) && TacticalUtilities.FreeSpaceAroundTarget(unit.Position, actor) && TacticalUtilities.TreatAsHostile(actor, unit) && unit.Surrendered == false)
             {
                 int distance = unit.Position.GetNumberOfMovesDistance(position);
                 if (distance <= 2 + moves)
@@ -1062,7 +1064,7 @@ public abstract class TacticalAI : ITacticalAI
         {
             if (target?.Unit == null) //If this doesn't prevent exceptions I might have to just try/catch this function.  
                 continue;
-            if (target.Targetable == true && TacticalUtilities.TreatAsHostile(actor, target) && (target.Surrendered == false || (onlySurrenderedEnemies && lackPredators) || currentTurn > 150))
+            if (target.Targetable == true && TacticalUtilities.TreatAsHostile(actor, target) && target.Surrendered == false)
             {
                 int distance = target.Position.GetNumberOfMovesDistance(position);
                 float chance = target.GetAttackChance(actor, true, true);
@@ -1192,7 +1194,7 @@ public abstract class TacticalAI : ITacticalAI
             return targets;
         foreach (Actor_Unit unit in actors)
         {
-            if (unit.Targetable == true && TacticalUtilities.TreatAsHostile(actor, unit) && (unit.Surrendered == false || (onlySurrenderedEnemies && lackPredators) || currentTurn > 150))
+            if (unit.Targetable == true && TacticalUtilities.TreatAsHostile(actor, unit) && unit.Surrendered == false)
             {
 
                 int distance = unit.Position.GetNumberOfMovesDistance(position);

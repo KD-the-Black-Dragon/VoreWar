@@ -1,4 +1,12 @@
-﻿using TMPro;
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-01: Display temporary combat HP as a grey segment separate from lasting health (spec 10).
+// 2026-11-01: Display queued orange injury text after damage numbers instead of overwriting them (spec 11 feedback).
+// 2026-11-02: Separate smaller injury notices from damage text and retain each for 2.5 real-time seconds (spec 11 feedback).
+// 2026-11-02: Fix injury-label font size and left pivot; place its text one tactical tile to the unit's right (spec 11 feedback).
+// 2026-11-02: Move injury text a quarter tile left, enlarge its fixed font and explicitly enable a black outline (spec 11 feedback).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,10 +19,61 @@ public class UnitSprite : MonoBehaviour
     public Slider HealthBar;
     public RectTransform HealthBarOrange;
 
+    UnityEngine.UI.Image temporaryFill;
+    int lastTemporaryHealth;
     float timeUntilHealthBarReset = -1;
 
     public SpriteRenderer FlexibleSquare;
     internal bool BlueColored;
+
+    readonly Queue<string> injuryNotices = new Queue<string>();
+    internal void DisplayInjury(string name) { injuryNotices.Enqueue(name); }
+    TextMeshProUGUI injuryIndicator;
+    float injuryNoticeUntil;
+    const float InjuryNoticeSeconds = 2.5f;
+
+    void UpdateInjuryNotices()
+    {
+        if (injuryIndicator != null && injuryIndicator.gameObject.activeSelf)
+        {
+            if (Time.unscaledTime < injuryNoticeUntil) return;
+            injuryIndicator.gameObject.SetActive(false);
+        }
+        if (injuryNotices.Count == 0 || DamageIndicator == null) return;
+        if (injuryIndicator == null)
+        {
+            // A fresh text component avoids sharing the damage label's mutable color material.
+            var notice = new GameObject("Injury notice", typeof(RectTransform));
+            notice.layer = DamageIndicator.gameObject.layer;
+            var rect = notice.GetComponent<RectTransform>();
+            var original = DamageIndicator.rectTransform;
+            rect.SetParent(original.parent, false);
+            rect.anchorMin = original.anchorMin; rect.anchorMax = original.anchorMax;
+            rect.pivot = new Vector2(0, .5f); // The text starts here instead of extending left of a centered box.
+            rect.localScale = original.localScale; rect.localRotation = original.localRotation;
+            rect.sizeDelta = new Vector2(30, 3);
+            injuryIndicator = notice.AddComponent<TextMeshProUGUI>();
+            injuryIndicator.font = DamageIndicator.font;
+            injuryIndicator.fontSharedMaterial = DamageIndicator.fontSharedMaterial;
+            injuryIndicator.fontStyle = DamageIndicator.fontStyle;
+            injuryIndicator.alignment = TextAlignmentOptions.Left;
+            injuryIndicator.enableWordWrapping = false;
+            injuryIndicator.raycastTarget = false;
+            injuryIndicator.enableAutoSizing = false;
+            injuryIndicator.fontSize = 2.5f; // Compact world-canvas text, independent of the damage label's large auto-size limit.
+        }
+        // Tactical tile centers are one world unit apart; preserve the existing canvas draw depth.
+        injuryIndicator.rectTransform.position = new Vector3(transform.position.x + .75f, transform.position.y, DamageIndicator.transform.position.z);
+        injuryIndicator.faceColor = new Color(1, .6f, .1f);
+        injuryIndicator.outlineColor = Color.black;
+        injuryIndicator.outlineWidth = Mathf.Max(.2f, DamageIndicator.outlineWidth);
+        injuryIndicator.fontMaterial.EnableKeyword("OUTLINE_ON");
+        injuryIndicator.text = "Injury: " + injuryNotices.Dequeue();
+        injuryIndicator.gameObject.SetActive(true);
+        // Timestamp rather than accumulated update deltas: sprite updates may run more than once per frame.
+        injuryNoticeUntil = Time.unscaledTime + InjuryNoticeSeconds;
+    }
+
 
     float remainingTimeForDamage;
     float startingTimeForDamage = .75f;
@@ -59,7 +118,7 @@ public class UnitSprite : MonoBehaviour
             return;
         HealthBarOrange.gameObject.SetActive(false);
         float healthFraction = unit.Unit.HealthPct;
-        if (healthFraction > .99f || healthFraction <= 0)
+        if ((healthFraction > .99f || healthFraction <= 0) && unit.Unit.TemporaryHealth == 0)
         {
             HealthBar.gameObject.SetActive(false);
         }
@@ -68,6 +127,18 @@ public class UnitSprite : MonoBehaviour
             HealthBar.gameObject.SetActive(true);
             HealthBar.value = healthFraction;
         }
+        if (temporaryFill == null)
+        {
+            var go = new GameObject("Temporary HP", typeof(RectTransform), typeof(UnityEngine.UI.Image));
+            go.transform.SetParent(HealthBar.fillRect != null ? HealthBar.fillRect.parent : HealthBar.transform, false);
+            temporaryFill = go.GetComponent<UnityEngine.UI.Image>(); temporaryFill.color = Color.grey; temporaryFill.raycastTarget = false;
+        }
+        var rect = temporaryFill.rectTransform;
+        rect.anchorMin = new Vector2(Mathf.Clamp01((float)unit.Unit.LastingHealth / unit.Unit.MaxHealth), 0);
+        rect.anchorMax = new Vector2(Mathf.Clamp01(unit.Unit.HealthPct), 1);
+        rect.offsetMin = rect.offsetMax = Vector2.zero;
+        temporaryFill.gameObject.SetActive(unit.Unit.TemporaryHealth > 0);
+        lastTemporaryHealth = unit.Unit.TemporaryHealth;
         lastHealth = unit.Unit.Health;
     }
 
@@ -232,7 +303,7 @@ public class UnitSprite : MonoBehaviour
 
         goalScale *= actor.Unit.GetScale();
 
-        if (lastHealth != actor.Unit.Health)
+        if (lastHealth != actor.Unit.Health || lastTemporaryHealth != actor.Unit.TemporaryHealth)
             UpdateHealthBar(actor);
      
 
@@ -280,6 +351,7 @@ public class UnitSprite : MonoBehaviour
 
         if (remainingTimeForDamage >= 0)
             UpdateDisplayDamage();
+        UpdateInjuryNotices();
 
         if (CompleteSprite == null)
         {

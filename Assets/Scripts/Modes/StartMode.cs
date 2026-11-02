@@ -2,6 +2,9 @@
 // 2026-10-30: Retire startup authoring/tutorial/map routes and route trait warning through the gate (spec 02B).
 // 2026-10-30: Guard the empty approved roster before entering old campaign setup (spec 03A1).
 // 2026-10-31: Retire legacy world load/preview and empire campaign entry routes (spec 05A1).
+// 2026-11-01: Open the independent company foundation preview without legacy campaign setup (spec 06).
+// 2026-11-02: Restyle/reorder main-menu buttons, retire presets, display version 1.0 and open company checkpoints (spec 15C).
+// 2026-11-02: Enlarge menu controls, separate Credits/Help and replace title text with the supplied banner logo (spec 15C feedback).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using UnityEngine;
 using UnityEngine.UI;
@@ -25,19 +28,21 @@ public class StartMode : SceneBase
     {
         State.GameManager.Menu.Options.LoadFromStored();
         State.GameManager.Menu.CheatMenu.LoadFromStored();
-        versionNumber.text = $"Version: {State.Version}";
+        versionNumber.text = "Version: 1.0";
+        StyleMainMenu();
         State.GameManager.Menu.ContentSettings.Refresh();
-        Preset1.onClick.AddListener(() => SetPreset(1));
-        Preset2.onClick.AddListener(() => SetPreset(2));
-        Preset3.onClick.AddListener(() => SetPreset(3));
+        UpdatePresetsVisible();
         State.LoadRaceData();
         RunTaggedTraitCheck();
     }
 
+    CompanyCampaignView companyCampaignView;
+
     public CreateStrategicGame CreateStrategicGame;
     public void CreateStrategic()
     {
-        State.GameManager.CreateMessageBox(State.CampaignUnavailableMessage);
+        if (companyCampaignView == null) companyCampaignView = gameObject.AddComponent<CompanyCampaignView>();
+        companyCampaignView.Open(this);
     }
 
     public CreateTacticalGame CreateTacticalGame;
@@ -49,32 +54,74 @@ public class StartMode : SceneBase
 
     }
 
-    private void SetPreset(int value)
-    {
-        State.ChangeRaceSlotUsed(value);
-        UpdatePresetsVisible();
-    }
-
     public void UpdatePresetsVisible()
     {
-        if (State.RaceSlot <= 1)
+        Preset1.gameObject.SetActive(false);
+        Preset2.gameObject.SetActive(false);
+        Preset3.gameObject.SetActive(false);
+    }
+
+    void StyleMainMenu()
+    {
+        // Expand keeps space for the banner and larger controls in short widescreen windows.
+        UI.GetComponent<CanvasScaler>().screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
+        UITheme.Surface(UI.transform.Find("Panel").gameObject, UITheme.Background);
+        foreach (Button button in UI.GetComponentsInChildren<Button>(true))
         {
-            Preset1.interactable = false;
-            Preset2.interactable = true;
-            Preset3.interactable = true;
+            if (button.transform.parent != UI.transform) continue;
+            if (button.targetGraphic != null)
+                UITheme.Surface(button.targetGraphic.gameObject, UITheme.Control, true);
+            UITheme.StyleSelectable(button);
+            foreach (Text label in button.GetComponentsInChildren<Text>(true))
+            {
+                UITheme.StyleText(label, 32);
+                label.alignment = TextAnchor.MiddleCenter;
+            }
         }
-        else if (State.RaceSlot == 2)
-        {
-            Preset1.interactable = true;
-            Preset2.interactable = false;
-            Preset3.interactable = true;
-        }
-        if (State.RaceSlot == 3)
-        {
-            Preset1.interactable = true;
-            Preset2.interactable = true;
-            Preset3.interactable = false;
-        }
+        // These are the existing scene objects and callbacks, including developer access.
+        PlaceMainButton("Create Strategic Button", "New Campaign", 420);
+        PlaceMainButton("Create Tactical Button", "Single Battle", 328);
+        PlaceMainButton("Load Game Button", "Load Saved Game", 236);
+        PlaceMainButton("Options Button", "Options", 144);
+        PlaceCornerButton("Credits Button", 204);
+        PlaceCornerButton("Help Button", 120);
+        PlaceCornerButton("Exit Game Button", 0);
+        ReplaceTitleWithLogo();
+        UITheme.StyleText(versionNumber, 28); versionNumber.color = UITheme.Muted;
+        UITheme.StyleText(miscText, 24); miscText.color = UITheme.Muted;
+    }
+
+    void PlaceMainButton(string objectName, string caption, float bottom)
+    {
+        var button = UI.transform.Find(objectName).GetComponent<Button>();
+        var rect = button.GetComponent<RectTransform>();
+        rect.localScale = Vector3.one;
+        rect.anchorMin = rect.anchorMax = new Vector2(.5f, 0);
+        rect.pivot = new Vector2(.5f, 0);
+        rect.sizeDelta = new Vector2(460, 76);
+        rect.anchoredPosition = new Vector2(0, bottom);
+        button.GetComponentInChildren<Text>(true).text = caption;
+    }
+
+    void PlaceCornerButton(string objectName, float bottom)
+    {
+        var rect = UI.transform.Find(objectName).GetComponent<RectTransform>();
+        rect.sizeDelta = new Vector2(400, 68);
+        rect.anchoredPosition = new Vector2(rect.anchoredPosition.x, bottom);
+    }
+
+    void ReplaceTitleWithLogo()
+    {
+        var sprite = Resources.Load<Sprite>("UI/VoreWarbandLogo");
+        if (sprite == null) return; // Retain the original title if the required asset is unavailable.
+        var logo = UITheme.Node("Vore Warband logo", UI.transform);
+        var rect = logo.GetComponent<RectTransform>();
+        rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(.5f, .5f);
+        rect.sizeDelta = new Vector2(1200, 400);
+        rect.anchoredPosition = new Vector2(0, 260);
+        var image = logo.AddComponent<Image>();
+        image.sprite = sprite; image.preserveAspect = true; image.raycastTarget = false;
+        UI.transform.Find("TextMeshPro Text").gameObject.SetActive(false);
     }
 
     public void ChangeAssimilableTraits()
@@ -99,6 +146,7 @@ public class StartMode : SceneBase
 
     public void ReturnToStart()
     {
+        if (companyCampaignView != null) companyCampaignView.Close();
         if (State.GameManager.Menu.RaceEditor.gameObject.activeSelf)
             State.GameManager.Menu.RaceEditor.CloseWithoutSave();
         State.TutorialMode = false;
@@ -116,7 +164,8 @@ public class StartMode : SceneBase
 
     public void LoadGame()
     {
-        State.GameManager.OpenSaveLoadMenu();
+        if (companyCampaignView == null) companyCampaignView = gameObject.AddComponent<CompanyCampaignView>();
+        companyCampaignView.OpenSavedGames(this);
     }
 
     public void MapEditor()
@@ -126,6 +175,7 @@ public class StartMode : SceneBase
 
     public override void ReceiveInput()
     {
+        if (companyCampaignView != null && companyCampaignView.IsOpen) return;
         State.GameManager.Menu.HandleRaceEditorInput();
         //Vector2 currentMousePos = GetComponent<Camera>().ScreenToWorldPoint(Input.mousePosition);
     }

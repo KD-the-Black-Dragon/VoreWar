@@ -1,4 +1,8 @@
-﻿using TMPro;
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-02: Present company help chapters and evaluate trait/spell references only when selected (spec 12).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,18 +20,20 @@ public class HelpPanel : MonoBehaviour
         if (generatedHelp)
             return;
         CreatePageButton(HelpText.GameBasics, "Game Basics");
-        CreatePageButton(HelpText.StrategyMode, "Strategy Mode");
-        CreatePageButton(HelpText.RecruitMode, "Recruit Screen");
+        CreatePageButton(HelpText.StrategyMode, "World Map and Days");
+        CreatePageButton(HelpText.RecruitMode, "Company and Wages");
         CreatePageButton(HelpText.TacticalMode, "Tactical Mode");
         CreatePageButton(HelpText.Stats, "Character Stats");
         CreatePageButton(HelpText.Items, "Items");
         CreatePageButton(HelpText.Vore, "Vore");
         CreatePageButton(HelpText.Experience, "Experience");
         CreatePageButton(HelpText.Controls, "Controls");
-        CreatePageButton(HelpText.Teams, "Teams and Sides");
-        CreatePageButton(HelpText.Diplomacy, "Diplomacy");
-        CreatePageButton(HelpText.Traits(), "Traits");
-        CreatePageButton(HelpText.Spells(), "Spells");
+        CreatePageButton(HelpText.Teams, "Injuries and Recovery");
+        CreatePageButton(HelpText.Diplomacy, "Contracts and Reputation");
+        CreatePageButton(HelpText.Saving, "Saving and Ironman");
+        CreatePageButton(HelpText.Legal, "Project and License");
+        CreatePageButton(HelpText.Traits, "Traits");
+        CreatePageButton(HelpText.Spells, "Spells");
         Text.text = HelpText.GameBasics;
 
 
@@ -39,10 +45,11 @@ public class HelpPanel : MonoBehaviour
 
     }
 
-    void CreatePageButton(string pageText, string pageName)
+    void CreatePageButton(string pageText, string pageName) { CreatePageButton(() => pageText, pageName); }
+    void CreatePageButton(Func<string> pageText, string pageName)
     {
         Button button = Instantiate(ButtonPrefab, ButtonFolder).GetComponent<Button>();
         button.GetComponentInChildren<Text>().text = pageName;
-        button.onClick.AddListener(() => Text.text = pageText);
+        button.onClick.AddListener(() => Text.text = pageText());
     }
 }

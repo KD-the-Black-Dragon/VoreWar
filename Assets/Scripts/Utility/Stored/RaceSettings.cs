@@ -1,5 +1,6 @@
 ﻿// Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Preserve retired override records without hydration; use correct new mapping defaults (spec 03B3A).
+// 2026-11-01: Separate stored species reads from intentional override creation (spec 03B3C).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
 using System;
@@ -59,14 +60,29 @@ class RaceSettings
         }
     }
 
-    internal RaceSettingsItem Get(Race race)
+    // Reading a stored override must not create defaults or load graphics.
+    internal RaceSettingsItem GetExisting(Race race)
     {
-        if (Races.TryGetValue(race, out RaceSettingsItem item))
-        {
+        RaceSettingsItem item;
+        return Races.TryGetValue(race, out item) ? item : null;
+    }
+
+    // Only intentional edits may materialize a complete override record.
+    internal RaceSettingsItem GetOrCreate(Race race)
+    {
+        var item = GetExisting(race);
+        if (item != null)
             return item;
-        }
-        Races[race] = new RaceSettingsItem(race);
-        return Races[race];
+        item = new RaceSettingsItem(race);
+        Races[race] = item;
+        return item;
+    }
+
+    internal float GetPowerAdjustment(Race race)
+    {
+        var item = GetExisting(race);
+        float power = item == null ? RaceParameters.GetRaceTraits(race).PowerAdjustment : item.PowerAdjustment;
+        return power == 0 ? RaceParameters.GetRaceTraits(race).PowerAdjustment : power;
     }
 
     internal bool Exists(Race race)
@@ -77,42 +93,42 @@ class RaceSettings
     internal bool GetOverrideGender(Race race)
     {
         if (Races.ContainsKey(race))
-            return Get(race).OverrideGender;
+            return GetExisting(race).OverrideGender;
         return false;
     }
 
     internal bool GetOverrideFurry(Race race)
     {
         if (Races.ContainsKey(race))
-            return Get(race).OverrideFurry;
+            return GetExisting(race).OverrideFurry;
         return false;
     }
 
     internal bool GetOverrideClothed(Race race)
     {
         if (Races.ContainsKey(race))
-            return Get(race).overrideClothes;
+            return GetExisting(race).overrideClothes;
         return false;
     }
 
     internal bool GetOverrideWeight(Race race)
     {
         if (Races.ContainsKey(race))
-            return Get(race).overrideWeight;
+            return GetExisting(race).overrideWeight;
         return false;
     }
 
     internal bool GetOverrideBreasts(Race race)
     {
         if (Races.ContainsKey(race))
-            return Get(race).overrideBoob;
+            return GetExisting(race).overrideBoob;
         return false;
     }
 
     internal bool GetOverrideDick(Race race)
     {
         if (Races.ContainsKey(race))
-            return Get(race).overrideDick;
+            return GetExisting(race).overrideDick;
         return false;
     }
 
@@ -120,28 +136,28 @@ class RaceSettings
     internal int GetBodySize(Race race)
     {
         if (Races.ContainsKey(race))
-            return Get(race).BodySize;
+            return GetExisting(race).BodySize;
         return RaceParameters.GetRaceTraits(race).BodySize;
     }
 
     internal int GetStomachSize(Race race)
     {
         if (Races.ContainsKey(race))
-            return Get(race).StomachSize;
+            return GetExisting(race).StomachSize;
         return RaceParameters.GetRaceTraits(race).StomachSize;
     }
 
     internal float GetDeployCost(Race race)
     {
         if (Races.ContainsKey(race))
-            return Get(race).DeployCost;
+            return GetExisting(race).DeployCost;
         return RaceParameters.GetRaceTraits(race).DeployCost;
     }
 
     internal float GetUpkeep(Race race)
     {
         if (Races.ContainsKey(race))
-            return Get(race).Upkeep;
+            return GetExisting(race).Upkeep;
         return RaceParameters.GetRaceTraits(race).Upkeep;
     }
 
@@ -150,7 +166,7 @@ class RaceSettings
         if (race == null)
             return null;
         if (Races.ContainsKey((Race)race))
-            return Get((Race)race).RaceTraits;
+            return GetExisting((Race)race).RaceTraits;
         return RaceParameters.GetRaceTraits((Race)race).RacialTraits;
     }
 
@@ -159,42 +175,42 @@ class RaceSettings
         if (race == null)
             return null;
         if (Races.ContainsKey((Race)race))
-            return Get((Race)race).RaceTags;
+            return GetExisting((Race)race).RaceTags;
         return RaceParameters.GetRaceTraits((Race)race).RacialTags;
     }
 
     internal List<Traits> GetMaleRaceTraits(Race race)
     {
         if (Races.ContainsKey(race))
-            return Get(race).MaleTraits;
+            return GetExisting(race).MaleTraits;
         return null;
     }
 
     internal List<Traits> GetFemaleRaceTraits(Race race)
     {
         if (Races.ContainsKey(race))
-            return Get(race).FemaleTraits;
+            return GetExisting(race).FemaleTraits;
         return null;
     }
 
     internal List<Traits> GetHermRaceTraits(Race race)
     {
         if (Races.ContainsKey(race))
-            return Get(race).HermTraits;
+            return GetExisting(race).HermTraits;
         return null;
     }
 
     internal List<Traits> GetSpawnRaceTraits(Race race)
     {
         if (Races.ContainsKey(race))
-            return Get(race).SpawnTraits;
+            return GetExisting(race).SpawnTraits;
         return RaceParameters.GetRaceTraits(race).SpawnTraits;
     }
 
     internal List<Traits> GetLeaderRaceTraits(Race race)
     {
         if (Races.ContainsKey(race))
-            return Get(race).LeaderTraits;
+            return GetExisting(race).LeaderTraits;
         return RaceParameters.GetRaceTraits(race).LeaderTraits;
     }
 
@@ -202,7 +218,7 @@ class RaceSettings
     {
         if (Races.ContainsKey(race))
         {
-            var par = Get(race);
+            var par = GetExisting(race);
             if (par.FavoredStatSet)
             {
                 return par.FavoredStat;
@@ -216,7 +232,7 @@ class RaceSettings
     {
         if (Races.ContainsKey(race))
         {
-            return Get(race).InnateSpell;
+            return GetExisting(race).InnateSpell;
         }
         return SpellTypes.None;
     }
@@ -225,7 +241,7 @@ class RaceSettings
     {
         if (Races.ContainsKey(race))
         {
-            return Get(race).RaceAI;
+            return GetExisting(race).RaceAI;
         }
         return RaceAI.Standard;
     }
@@ -249,7 +265,7 @@ class RaceSettings
     {
         if (Races.ContainsKey(race))
         {
-            return Get(race).AllowedVoreTypes;
+            return GetExisting(race).AllowedVoreTypes;
         }
 
         return RaceParameters.GetRaceTraits(race).AllowedVoreTypes;
@@ -258,7 +274,7 @@ class RaceSettings
     internal RaceStats GetRaceStats(Race race)
     {
         if (Races.ContainsKey(race))
-            return Get(race).Stats;
+            return GetExisting(race).Stats;
         return RaceParameters.GetRaceTraits(race).RaceStats;
     }
 
@@ -266,7 +282,7 @@ class RaceSettings
     {
         Race spawnRace = Race.none;
         if (Races.ContainsKey(race))
-            spawnRace = Get(race).SpawnRace;
+            spawnRace = GetExisting(race).SpawnRace;
         if (spawnRace == Race.none)
             spawnRace = RaceParameters.GetRaceTraits(race).SpawnRace; 
         return (spawnRace == Race.none) ? race : spawnRace;
@@ -276,7 +292,7 @@ class RaceSettings
     {
         Race conversionRace = Race.none;
         if (Races.ContainsKey(race))
-            conversionRace = Get(race).ConversionRace;
+            conversionRace = GetExisting(race).ConversionRace;
         if (conversionRace == Race.none)
             conversionRace = RaceParameters.GetRaceTraits(race).ConversionRace; 
         return (conversionRace == Race.none) ? race : conversionRace;
@@ -286,7 +302,7 @@ class RaceSettings
     {
         Race leaderRace = Race.none;
         if (Races.ContainsKey(race))
-            leaderRace = Get(race).LeaderRace;
+            leaderRace = GetExisting(race).LeaderRace;
         if (leaderRace == Race.none)
             leaderRace = RaceParameters.GetRaceTraits(race).LeaderRace; 
         return (leaderRace == Race.none) ? race : leaderRace;
@@ -296,7 +312,7 @@ class RaceSettings
     {
         Race morphRace = Race.none;
         if (Races.ContainsKey(race))
-            morphRace = Get(race).MorphRace;
+            morphRace = GetExisting(race).MorphRace;
         if (morphRace == Race.none)
             morphRace = RaceParameters.GetRaceTraits(race).MorphRace; 
         return (morphRace == Race.none) ? race : morphRace;
@@ -305,7 +321,7 @@ class RaceSettings
     //internal Race GetDisplayedGraphic(Race race)
     //{
     //    if (Races.ContainsKey(race))
-    //        return Get(race).DisplayGraphics;
+    //        return GetExisting(race).DisplayGraphics;
     //    return race;
     //}
 
@@ -433,6 +449,9 @@ class RaceSettingsItem
 
     public RaceSettingsItem(Race race)
     {
+        if (SpeciesPolicy.IsRetired(race))
+            throw new InvalidOperationException("Cannot create settings for retired species: " + race);
+
         OverrideGender = false;
         maleFraction = Config.MaleFraction;
         hermFraction = Config.HermFraction;

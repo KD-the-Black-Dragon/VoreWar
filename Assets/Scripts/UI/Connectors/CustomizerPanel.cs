@@ -1,9 +1,13 @@
-﻿using TMPro;
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-01: Route company creator controls to their own customizer (spec 07).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using TMPro;
 using UnityEngine;
 
 
 public class CustomizerPanel : MonoBehaviour
 {
+    [System.NonSerialized] internal UnitCustomizer CompanyCustomizer;
     public UIUnitSprite DisplayedSprite;
     public GameObject ButtonPanel;
     public GameObject ButtonPrefab;
@@ -18,6 +22,7 @@ public class CustomizerPanel : MonoBehaviour
 
     public virtual void ChangeGender()
     {
+        if (CompanyCustomizer != null) { CompanyCustomizer.ChangeGender(); return; }
         if (CustomizationLoader.EnteredFromUnitEditor)
             State.GameManager.UnitEditor?.UnitEditor?.ChangeGender();
         else
@@ -26,6 +31,7 @@ public class CustomizerPanel : MonoBehaviour
 
     public virtual void ChangePronouns()
     {
+        if (CompanyCustomizer != null) { CompanyCustomizer.ChangePronouns(); return; }
         if (CustomizationLoader.EnteredFromUnitEditor)
             State.GameManager.UnitEditor?.UnitEditor?.ChangePronouns();
         else

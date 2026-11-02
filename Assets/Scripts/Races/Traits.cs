@@ -1,5 +1,7 @@
 ﻿// Modified for the VoreWar mercenary-company conversion.
 // 2026-11-01: Retire metamorphosis-family revival, conversion, grants and escape restrictions (spec 05A3B16).
+// 2026-11-01: Complete approved ability retirement and close legacy reactivation paths (spec 05A3B17).
+// 2026-11-01: Keep the retained digestion-triggered recovery trait lasting; other combat healing remains temporary (spec 10).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Collections.Generic;
@@ -204,6 +206,8 @@ static class TraitList
 
     static internal Trait GetTrait(Traits trait)
     {
+        if (TraitsMethods.IsRetired(trait))
+            return null;
         traits.TryGetValue(trait, out Trait retTrait);
         return retTrait;
     }
@@ -587,7 +591,7 @@ internal class PleasantDigestion : VoreTrait
 
     public override bool OnDigestion(Prey preyUnit, Actor_Unit predUnit, PreyLocation location)
     {
-        predUnit.Unit.Heal(1);
+        predUnit.Unit.HealLasting(1);
         return true;
     }
 }

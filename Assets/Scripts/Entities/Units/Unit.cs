@@ -1,6 +1,15 @@
 // Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Validate new shape destinations before mutation; leave original-form restoration unrestricted (spec 03A2).
 // 2026-10-31: Exclude retired Resurrection from all assembled usable spell sources (spec 05A3B6).
+// 2026-11-01: Enforce retired ability/status/control policy and remove Leadership effects (spec 05A3B17).
+// 2026-11-01: Remove strategic AI XP cheats and empire-trait reinjection from shared unit runtime (spec 05A6).
+// 2026-11-01: Separate stored species reads from intentional override creation (spec 03B3C).
+// 2026-11-01: Independent company item context and persistent nine-slot loadouts (specs 07–08).
+// 2026-11-01: Separate lasting/temporary combat HP, downed survival and explicit digestion death (specs 09–10).
+// 2026-11-01: Persist the HP backing field; custom properties are not serialized by this Odin version (09–10 feedback).
+// 2026-11-01: Serialize independent injury records and derive combat penalties; roll only on actual lasting combat damage (spec 11).
+// 2026-11-01: Use company-owned exponential XP requirements and weak-enemy scaling instead of retired world level caps (spec 11 feedback).
+// 2026-11-02: Expose per-level XP progress and cost without changing saved totals or level-up rules (spec 13 feedback).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
 using OdinSerializer.Utilities;
@@ -45,23 +54,8 @@ public class Unit
 
     internal Unit Controller
     {
-        get
-        {
-            if(_controller != null)
-                if (_controller.Controller != null)
-                    return _controller.Controller;
-            return _controller;
-        }
-        set
-        {
-            if (value == null)
-                _controller = value;
-            else if ((_controller == null) || (_controller.GetStat(Stat.Mind) < value.GetStat(Stat.Mind)))
-                if (value == this || value.Controller == this)
-                    return;
-                else
-                    _controller = value;
-        }
+        get => null;
+        set { } // Retain stored controller data without permitting possession.
     }
     [OdinSerialize]
     private int _fixedSide = -1;
@@ -86,8 +80,61 @@ public class Unit
 
     [OdinSerialize]
     public Race Race;
-    [OdinSerialize]
-    public int Health;
+    [OdinSerialize, PreviouslySerializedAs("Health")]
+    int health;
+    [System.NonSerialized] internal bool BattleActive;
+    [System.NonSerialized] bool lastingHealing;
+    [OdinSerialize] internal bool Digested;
+    [OdinSerialize] internal bool Downed;
+    [OdinSerialize] internal int TemporaryHealth;
+    [OdinSerialize] List<CompanyInjury> injuries;
+    [OdinSerialize] internal bool PermanentInjuryImmune;
+    [System.NonSerialized] internal bool AttritionInjuryChecked;
+    internal List<CompanyInjury> Injuries { get { return injuries ?? (injuries = new List<CompanyInjury>()); } }
+    internal void ApplyCombatDamage(int amount)
+    {
+        int before = LastingHealth;
+        Health -= amount;
+        CompanyInjuries.RecordDamage(this, Math.Max(0, before - LastingHealth));
+    }
+    public int Health
+    {
+        get { return health; }
+        set
+        {
+            if (BattleActive && !Digested)
+            {
+                if (value < health) TemporaryHealth = Math.Max(0, TemporaryHealth - (health - value));
+                else if (value > health && !lastingHealing) TemporaryHealth += value - health;
+                if (value <= 0 && Type != UnitType.Summon) { health = 0; Downed = true; TemporaryHealth = 0; return; }
+            }
+            health = value;
+        }
+    }
+    internal int LastingHealth { get { return Math.Max(0, Health - TemporaryHealth); } }
+    internal void BeginCombat()
+    { TemporaryHealth = 0; Downed = false; Digested = false; AttritionInjuryChecked = false; BattleActive = true; }
+    internal void FinishCombat()
+    {
+        int lasting = LastingHealth; BattleActive = false; TemporaryHealth = 0;
+        if (!Digested && Type != UnitType.Summon) Health = Math.Min(MaxHealth, Math.Max(lasting, Math.Max(1, (int)Math.Ceiling(MaxHealth * .15))));
+        Downed = false;
+    }
+    internal int HealLasting(int amount)
+    {
+        bool previous = lastingHealing; lastingHealing = true;
+        try
+        {
+            // Lasting recovery replaces grey HP before raising the total, so it is never lost at the cap.
+            int share = BattleActive ? Math.Min(Math.Max(0, amount), TemporaryHealth) : 0;
+            int convert = share;
+            var necrosis = GetStatusEffect(StatusEffectType.Necrosis);
+            if (necrosis != null) convert -= (int)Math.Round(convert * .25f * necrosis.Strength);
+            convert = Math.Max(0, convert); TemporaryHealth -= convert;
+            return convert + Heal(amount - share);
+        }
+        finally { lastingHealing = previous; }
+    }
     [OdinSerialize]
     protected int[] Stats;
     [OdinSerialize]
@@ -126,6 +173,13 @@ public class Unit
         get // Ah yes, a simple getter function u?u. Keeps health percentage consistent after gaining/losing stats mid battle, doesn't break Thrillseeker, doesn't cause prey orphans, doesn't break on save/load... etc.
         {
             if (Stats == null) return 1;
+            if (CompanyLoadout || BattleActive)
+            {
+                // Company equipment owns explicit HP deltas; a display/read must not heal.
+                int endurance = Config.StatBoostsAffectMaxHP ? GetStat(Stat.Endurance) : Stats[(int)Stat.Endurance];
+                int strength = Config.StatBoostsAffectMaxHP ? GetStat(Stat.Strength) : Stats[(int)Stat.Strength];
+                return (int)((endurance * 2 + strength) * TraitBoosts.HealthMultiplier) + TempBoosts.HealthBoost;
+            }
             if (!Config.StatBoostsAffectMaxHP) {
                 _maxHealth = Stats[(int)Stat.Endurance] * 2 + Stats[(int)Stat.Strength];
                  return (int)(_maxHealth * TraitBoosts.HealthMultiplier) + TempBoosts.HealthBoost;
@@ -450,7 +504,7 @@ public class Unit
 
     internal bool CanBeConverted()
     {
-        return Type != UnitType.Summon && Type != UnitType.Leader && Type != UnitType.SpecialMercenary && HasTrait(Traits.Eternal) == false && SavedCopy == null && Level > 0;
+        return false;
     }
 
     internal bool AtypicalBiology()
@@ -511,7 +565,7 @@ public class Unit
         {
             if (Items[i] == null)
                 continue;
-            if (types.Contains(State.World.ItemRepository.GetItemType(Items[i])))
+            if (types.Contains(ItemCatalog.GetItemType(Items[i])))
                 return true;
         }
         return false;
@@ -634,7 +688,7 @@ public class Unit
     internal int NearbyEnemies = 0;
     internal bool Harassed = false;
 
-    public bool IsDead => (Health < 1);
+    public bool IsDead => Digested || (Health < 1 && (!BattleActive || Type == UnitType.Summon));
     private PermanentBoosts _traitBoosts;
     internal PermanentBoosts TraitBoosts
     {
@@ -710,6 +764,11 @@ public class Unit
     /// <summary>
     /// Creates an empty unit for various purposes
     /// </summary>
+    [System.NonSerialized] ItemRepository companyItems;
+    [OdinSerialize] internal bool CompanyLoadout;
+    internal ItemRepository ItemCatalog { get { return companyItems ?? State.World?.ItemRepository; } }
+    internal void BindCompanyItems(ItemRepository catalog) { companyItems = catalog; }
+
     public Unit(Race race)
     {
         Race = race;
@@ -728,8 +787,10 @@ public class Unit
         Barrier = 0;
     }
 
-    public Unit(int side, Race race, int startingXP, bool predator, UnitType type = UnitType.Soldier, bool immuneToDefectons = false)
+    public Unit(int side, Race race, int startingXP, bool predator, UnitType type = UnitType.Soldier, bool immuneToDefectons = false, ItemRepository itemContext = null, bool companyLoadout = false)
     {
+        companyItems = itemContext;
+        CompanyLoadout = companyLoadout;
         Stats = new int[(int)Stat.None];
         Race = race;
         Side = side;
@@ -751,9 +812,9 @@ public class Unit
         RandomizeNameAndGender(race, raceData, true);
 
         DefaultBreastSize = BreastSize;
-        Items = new Item[Config.ItemSlots];
-        ItemUses = new int[] {1, 1, 1};
-        ItemCooldowns = new int[3];
+        Items = new Item[CompanyLoadout ? 9 : Config.ItemSlots];
+        ItemUses = CompanyLoadout ? new int[9] : new int[] { 1, 1, 1 };
+        ItemCooldowns = new int[CompanyLoadout ? 9 : 3];
         EquippedPotions = new Dictionary<int, int[]>();
 
 
@@ -764,12 +825,12 @@ public class Unit
         RefreshSecrecy();
         InitializeFixedSide(side);
 
-        if (HasTrait(Traits.Resourceful))
+        if (!CompanyLoadout && HasTrait(Traits.Resourceful))
         {
             Items = new Item[3];
         }
 
-        SetGear(race);
+        if (!CompanyLoadout) SetGear(race);
 
         InnateSpells = new List<SpellTypes>();
         ShifterShapes = new List<Unit>();
@@ -859,6 +920,7 @@ public class Unit
 
     private void ReincarnateCheck()
     {
+        if (CompanyLoadout) return;
         if (State.World != null && State.World.Reincarnators != null && State.World.Reincarnators?.Count > 0 && Type != UnitType.SpecialMercenary && Type != UnitType.Summon)
         {
             if (State.World.Reincarnators.Where(r => r.Race == Race).Count() > 0 && State.Rand.Next(3) == 0)
@@ -904,101 +966,102 @@ public class Unit
 
     internal void SetGear(Race race, bool skipTraitItems = false)
     {
+        if (CompanyLoadout) return;
         if (race >= Race.Vagrants && race < Race.Selicia)
         {
             FixedGear = true;
-            Items[0] = State.World.ItemRepository.GetMonsterItem((int)Race - 100);
+            Items[0] = ItemCatalog.GetMonsterItem((int)Race - 100);
         }
         else if (race == Race.Selicia)
         {
             FixedGear = true;
-            Items[0] = State.World.ItemRepository.GetSpecialItem(SpecialItems.SeliciaWeapon);
+            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.SeliciaWeapon);
         }
         else if (race == Race.Vision)
         {
             FixedGear = true;
-            Items[0] = State.World.ItemRepository.GetSpecialItem(SpecialItems.VisionWeapon);
+            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.VisionWeapon);
         }
         else if (race == Race.Ki)
         {
             FixedGear = true;
-            Items[0] = State.World.ItemRepository.GetSpecialItem(SpecialItems.KiWeapon);
+            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.KiWeapon);
         }
         else if (race == Race.Scorch)
         {
             FixedGear = true;
-            Items[0] = State.World.ItemRepository.GetSpecialItem(SpecialItems.ScorchWeapon);
+            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.ScorchWeapon);
         }
         else if (race == Race.Succubi)
         {
-            Items[0] = State.World.ItemRepository.GetSpecialItem(SpecialItems.SuccubusWeapon);
+            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.SuccubusWeapon);
         }
         else if (race == Race.OoviKat)
         {
-            Items[0] = State.World.ItemRepository.GetSpecialItem(SpecialItems.OoviKatWeapon);
+            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.OoviKatWeapon);
         }
         else if (race == Race.Asura)
         {
-            Items[0] = State.World.ItemRepository.GetItem(ItemType.Axe);
+            Items[0] = ItemCatalog.GetItem(ItemType.Axe);
         }
         else if (race == Race.DRACO)
         {
             FixedGear = true;
-            Items[0] = State.World.ItemRepository.GetSpecialItem(SpecialItems.DRACOWeapon);
+            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.DRACOWeapon);
         }
         else if (race == Race.Zoey)
         {
             FixedGear = true;
-            Items[0] = State.World.ItemRepository.GetSpecialItem(SpecialItems.ZoeyWeapon);
+            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.ZoeyWeapon);
         }
         else if (race == Race.Cierihaka)
         {
             FixedGear = true;
-            Items[0] = State.World.ItemRepository.GetSpecialItem(SpecialItems.CierihakaWeapon);
+            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.CierihakaWeapon);
         }
         else if (race == Race.Zera)
         {
             FixedGear = true;
-            Items[0] = State.World.ItemRepository.GetSpecialItem(SpecialItems.ZeraWeapon);
+            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.ZeraWeapon);
         }
         else if (race == Race.Auri)
         {
             FixedGear = true;
-            Items[0] = State.World.ItemRepository.GetSpecialItem(SpecialItems.AurilikaWeapon);
+            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.AurilikaWeapon);
         }
         else if (race == Race.Salix)
         {
             FixedGear = true;
-            Items[0] = State.World.ItemRepository.GetSpecialItem(SpecialItems.SalixWeapon);
+            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.SalixWeapon);
         }
         else if (race == Race.Erin)
         {
             FixedGear = true;
-            Items[0] = State.World.ItemRepository.GetSpecialItem(SpecialItems.ErinWeapon);
-            Items[1] = State.World.ItemRepository.GetSpecialItem(SpecialItems.ErinWings);
+            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.ErinWeapon);
+            Items[1] = ItemCatalog.GetSpecialItem(SpecialItems.ErinWings);
         }
         else if (race == Race.Abakhanskya)
         {
             try
             {
                 FixedGear = true;
-                Items[0] = State.World.ItemRepository.GetSpecialItem(SpecialItems.AbaWeapon);
-                Items[1] = State.World.ItemRepository.GetSpecialItem(SpecialItems.AbaArmor);
+                Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.AbaWeapon);
+                Items[1] = ItemCatalog.GetSpecialItem(SpecialItems.AbaArmor);
             }
             catch { }
         }
         else if (race == Race.Bella)
         {
             FixedGear = true;
-            Items[0] = State.World.ItemRepository.GetSpecialItem(SpecialItems.BellaWeapon);
+            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.BellaWeapon);
         }
         else if (race == Race.Singularity)
         {
             try
             {
                 FixedGear = true;
-                Items[0] = State.World.ItemRepository.GetSpecialItem(SpecialItems.SingularityWeapon);
-                Items[1] = State.World.ItemRepository.GetSpecialItem(SpecialItems.SingularityArmor);
+                Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.SingularityWeapon);
+                Items[1] = ItemCatalog.GetSpecialItem(SpecialItems.SingularityArmor);
             }
             catch { }
         }
@@ -1007,8 +1070,8 @@ public class Unit
             try
             {
                 FixedGear = true;
-                Items[0] = State.World.ItemRepository.GetSpecialItem(SpecialItems.FeitWeapon);
-                Items[1] = State.World.ItemRepository.GetSpecialItem(SpecialItems.FeitArmor);
+                Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.FeitWeapon);
+                Items[1] = ItemCatalog.GetSpecialItem(SpecialItems.FeitArmor);
             }
             catch { }
         }
@@ -1017,61 +1080,61 @@ public class Unit
             try
             {
                 FixedGear = true;
-                Items[0] = State.World.ItemRepository.GetSpecialItem(SpecialItems.TaraWeapon);
+                Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.TaraWeapon);
             }
             catch { }
         }
         else if (race == Race.Xelhilde)
         {
             FixedGear = true;
-            Items[0] = State.World.ItemRepository.GetSpecialItem(SpecialItems.XelhildeWeapon);
+            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.XelhildeWeapon);
         }
         else if (race == Race.Olivia)
         {
             FixedGear = false;
-            Items[0] = State.World.ItemRepository.GetSpecialItem(SpecialItems.OliviaWeapon);
+            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.OliviaWeapon);
         }
         else if (race == Race.Skapa)
         {
             FixedGear = true;
-            Items[0] = State.World.ItemRepository.GetSpecialItem(SpecialItems.SkapaWeapon);
+            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.SkapaWeapon);
         }
         else if (race == Race.Tatltuae)
         {
             FixedGear = false;
-            Items[0] = State.World.ItemRepository.GetSpecialItem(SpecialItems.TatltuaeWeapon);
+            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.TatltuaeWeapon);
         }
         else if (race == Race.Seville)
         {
             try
             {
                 FixedGear = true;
-                Items[0] = State.World.ItemRepository.GetSpecialItem(SpecialItems.SevilleMelee);
-                Items[1] = State.World.ItemRepository.GetSpecialItem(SpecialItems.SevilleArmor);
+                Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.SevilleMelee);
+                Items[1] = ItemCatalog.GetSpecialItem(SpecialItems.SevilleArmor);
             }
             catch { }
         }
         else if (race == Race.Nectar)
         {
             FixedGear = false;
-            Items[0] = State.World.ItemRepository.GetSpecialItem(SpecialItems.NectarWeapon);
+            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.NectarWeapon);
         }
         else if (race == Race.Ryan)
         {
             FixedGear = true;
-            Items[0] = State.World.ItemRepository.GetSpecialItem(SpecialItems.RyanWeapon);
+            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.RyanWeapon);
         }
         else if (race == Race.Konane)
         {
             FixedGear = true;
-            Items[0] = State.World.ItemRepository.GetSpecialItem(SpecialItems.KonaneWeapon);
+            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.KonaneWeapon);
         }
         else if (race == Race.Cherub || race == Race.SoulSprite)
         {
             try
             {
                 FixedGear = false;
-                Items[0] = State.World.ItemRepository.GetSpecialItem(SpecialItems.CherubWeapon);
+                Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.CherubWeapon);
             }
             catch { }
         }
@@ -1080,35 +1143,35 @@ public class Unit
             try
             {
                 FixedGear = false;
-                Items[0] = State.World.ItemRepository.GetSpecialItem(SpecialItems.SeraphWeapon);
+                Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.SeraphWeapon);
             }
             catch { }
         }
         else if (race == Race.Renamon)
         {
             FixedGear = false;
-            Items[0] = State.World.ItemRepository.GetSpecialItem(SpecialItems.RenamonWeapon);
+            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.RenamonWeapon);
         }
         else
         {
             FixedGear = false;
             for (int i = 0; i < Items.Length; i++)
             {
-                if (Items[i] != null && State.World.ItemRepository.ItemIsUnique(Items[i]))
+                if (Items[i] != null && ItemCatalog.ItemIsUnique(Items[i]))
                     Items[i] = null;
             }
             if (RaceParameters.GetRaceTraits(race).CanUseRangedWeapons == false && RaceParameters.GetRaceTraits(race).CanUseMeleeWeapons == true)
             {
                 for (int i = 0; i < Items.Length; i++)
                 {
-                    if (Items[i] != null && State.World.ItemRepository.ItemIsRangedWeapon(Items[i]))
+                    if (Items[i] != null && ItemCatalog.ItemIsRangedWeapon(Items[i]))
                     {
                         if (Items[i] is Weapon weapon)
                         {
                             if (weapon.Damage > 4)
-                                Items[i] = State.World.ItemRepository.GetItem(ItemType.Axe);
+                                Items[i] = ItemCatalog.GetItem(ItemType.Axe);
                             else
-                                Items[i] = State.World.ItemRepository.GetItem(ItemType.Mace);
+                                Items[i] = ItemCatalog.GetItem(ItemType.Mace);
                         }
                     }
                 }
@@ -1117,14 +1180,14 @@ public class Unit
             {
                 for (int i = 0; i < Items.Length; i++)
                 {
-                    if (Items[i] != null && State.World.ItemRepository.ItemIsMeleeWeapon(Items[i]))
+                    if (Items[i] != null && ItemCatalog.ItemIsMeleeWeapon(Items[i]))
                     {
                         if (Items[i] is Weapon weapon)
                         {
                             if (weapon.Damage > 4)
-                                Items[i] = State.World.ItemRepository.GetItem(ItemType.CompoundBow);
+                                Items[i] = ItemCatalog.GetItem(ItemType.CompoundBow);
                             else
-                                Items[i] = State.World.ItemRepository.GetItem(ItemType.Bow);
+                                Items[i] = ItemCatalog.GetItem(ItemType.Bow);
                         }
                     }
                 }
@@ -1170,7 +1233,7 @@ public class Unit
                 if (Items[i] == null)
                 {
                     int t = tiers.Count > 1 ? tiers[State.Rand.Next(tiers.Count - 1)] : tiers[0];
-                    Items[i] = State.World.ItemRepository.GetRandomBook(t, t == 3 ? 4 : t, true);
+                    Items[i] = ItemCatalog.GetRandomBook(t, t == 3 ? 4 : t, true);
                     tiers.Remove(t);
                 }
             }
@@ -1179,7 +1242,7 @@ public class Unit
         {
             foreach (int t in tiers)
             {
-                SpellTypes spell = ((SpellBook)State.World.ItemRepository.GetRandomBook(t, t == 3 ? 4 : t, true)).ContainedSpell;
+                SpellTypes spell = ((SpellBook)ItemCatalog.GetRandomBook(t, t == 3 ? 4 : t, true)).ContainedSpell;
                 if (!InnateSpells.Contains(spell))
                     InnateSpells.Add(spell);
             }
@@ -1189,6 +1252,9 @@ public class Unit
     internal Unit Clone()
     {
         var clone = (Unit)MemberwiseClone();
+        // A copied template must never share mutable injury records with the original person.
+        clone.injuries = Injuries.Select(i => new CompanyInjury { Id = i.Id, Part = i.Part, Grade = i.Grade,
+            DaysRemaining = i.DaysRemaining, Treated = i.Treated }).ToList();
         clone.Stats = new int[(int)Stat.None];
         for (int i = 0; i < Stats.Length; i++)
         {
@@ -1314,11 +1380,11 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
 
     internal void RandomizeNameAndGender(Race race, DefaultRaceData raceData, bool skipTraits = false)
     {
-        var raceStats = State.RaceSettings.Get(race);
+        var raceStats = State.RaceSettings.GetExisting(race);
         float maleFraction;
         float hermFraction;
         bool isMale = false;
-        if (raceStats.OverrideGender)
+        if (raceStats != null && raceStats.OverrideGender)
         {
             maleFraction = raceStats.maleFraction;
             hermFraction = raceStats.hermFraction;
@@ -1391,10 +1457,10 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
 
     internal void RandomizeGender(Race race, DefaultRaceData raceData, bool skipTraits = false)
     {
-        var raceStats = State.RaceSettings.Get(race);
+        var raceStats = State.RaceSettings.GetExisting(race);
         float maleFraction;
         float hermFraction;
-        if (raceStats.OverrideGender)
+        if (raceStats != null && raceStats.OverrideGender)
         {
             maleFraction = raceStats.maleFraction;
             hermFraction = raceStats.hermFraction;
@@ -1446,11 +1512,6 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
     {
         exp *= TraitBoosts.ExpGain;
 
-        if (State.World.GetEmpireOfSide(Side)?.StrategicAI is StrategicAI ai)
-        {
-            if (ai.CheatLevel > 0)
-                exp *= 1 + .25f * ai.CheatLevel;
-        }
 
         if (voreSource) exp *= TraitBoosts.ExpGainFromVore;
         if (voreSource && isKill) exp *= TraitBoosts.ExpGainFromAbsorption;
@@ -1462,11 +1523,6 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
     {
         exp *= TraitBoosts.ExpGain;
 
-        if (State.World.GetEmpireOfSide(Side)?.StrategicAI is StrategicAI ai)
-        {
-            if (ai.CheatLevel > 0)
-                exp *= 1 + .25f * ai.CheatLevel;
-        }
 
         if (voreSource) exp *= TraitBoosts.ExpGainFromVore;
         if (voreSource && isKill) exp *= TraitBoosts.ExpGainFromAbsorption;
@@ -1502,15 +1558,15 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
 
     public void GiveScaledExp(float exp, int attackerLevelAdvantage, bool voreSource = false, bool isKill = false)
     {
+        if (CompanyLoadout)
+        {
+            GiveExp(CompanyProgression.ScaleCombatExp(exp, attackerLevelAdvantage), voreSource, isKill);
+            return;
+        }
         if (Config.FlatExperience)
         {
             GiveExp(exp, voreSource, isKill);
             return;
-        }
-        if (State.World.GetEmpireOfSide(Side)?.StrategicAI is StrategicAI ai)
-        {
-            if (ai.CheatLevel > 0)
-                exp *= 1 + .25f * ai.CheatLevel;
         }
         exp *= TraitBoosts.ExpGain;
         if (voreSource) exp *= TraitBoosts.ExpGainFromVore;
@@ -1528,14 +1584,10 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
 
     public float CalcScaledExp(float exp, int attackerLevelAdvantage, bool voreSource = false, bool isKill = false)//Used for calculations only
     {
+        if (CompanyLoadout) return CalcGiveExp(CompanyProgression.ScaleCombatExp(exp, attackerLevelAdvantage), voreSource, isKill);
         if (Config.FlatExperience)
         {
             return CalcGiveExp(exp, voreSource, isKill);
-        }
-        if (State.World.GetEmpireOfSide(Side)?.StrategicAI is StrategicAI ai)
-        {
-            if (ai.CheatLevel > 0)
-                exp *= 1 + .25f * ai.CheatLevel;
         }
         exp *= TraitBoosts.ExpGain;
         if (voreSource) exp *= TraitBoosts.ExpGainFromVore;
@@ -1570,9 +1622,12 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
     }
 
     public float Experience => experience;
+    // Keep cumulative save values; present only the progress and cost of the current level.
+    public float CurrentLevelExperience => Math.Max(0, Experience - GetExperienceRequiredForLevel(Level - 1));
+    public int CurrentLevelExperienceRequired => Math.Max(0, ExperienceRequiredForNextLevel - GetExperienceRequiredForLevel(Level - 1));
     public int Level => level;
     public int ExperienceRequiredForNextLevel => GetExperienceRequiredForLevel(level);
-    public int GetExperienceRequiredForLevel(int lvl) => GetExperienceRequiredForLevel(lvl, ExpRequiredMod);
+    public int GetExperienceRequiredForLevel(int lvl) => CompanyLoadout ? CompanyProgression.Threshold(lvl, ExpRequiredMod) : GetExperienceRequiredForLevel(lvl, ExpRequiredMod);
     float ExpRequiredMod => TraitBoosts.ExpRequired;
     public bool HasEnoughExpToLevelUp() => Experience >= ExperienceRequiredForNextLevel;
 
@@ -1629,22 +1684,22 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
         get
         {
             if (PermanentTraits == null)
-                return Tags.ToList();
+                return (Tags.ToList()).Where(t => !TraitsMethods.IsRetired(t)).ToList();
             if (SharedTraits == null)
             {
                 if (ActiveConditionalTraits == null)              
-                    return Tags.Concat(PermanentTraits).ToList();
-                return Tags.Concat(PermanentTraits).ToList().Concat(ActiveConditionalTraits).ToList();
+                    return (Tags.Concat(PermanentTraits).ToList()).Where(t => !TraitsMethods.IsRetired(t)).ToList();
+                return (Tags.Concat(PermanentTraits).ToList().Concat(ActiveConditionalTraits).ToList()).Where(t => !TraitsMethods.IsRetired(t)).ToList();
             }
             if (ActiveConditionalTraits == null)
             {
-                return Tags.Concat(PermanentTraits).ToList().Concat(SharedTraits).ToList();
+                return (Tags.Concat(PermanentTraits).ToList().Concat(SharedTraits).ToList()).Where(t => !TraitsMethods.IsRetired(t)).ToList();
             }
-            return Tags.Concat(PermanentTraits).ToList().Concat(SharedTraits).ToList().Concat(ActiveConditionalTraits).ToList();
+            return (Tags.Concat(PermanentTraits).ToList().Concat(SharedTraits).ToList().Concat(ActiveConditionalTraits).ToList()).Where(t => !TraitsMethods.IsRetired(t)).ToList();
         }
     }
 
-    internal int BaseTraitsCount => Tags.Count + PermanentTraits.Count;
+    internal int BaseTraitsCount => Tags.Count(t => !TraitsMethods.IsRetired(t)) + PermanentTraits.Count(t => !TraitsMethods.IsRetired(t));
 
     public int GetStatBase(Stat stat) => Stats[(int)stat];
     public void SetStatBase(Stat stat, int value) => Stats[(int)stat] = value;
@@ -1657,11 +1712,7 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
     }
     public int GetLeaderBonus()
     {
-        if (CurrentLeader == null)
-            return 0;
-        if (CurrentLeader.IsDead)
-            return 0;
-        return CurrentLeader.Stats[(int)Stat.Leadership] / 10;
+        return 0;
     }
     public int GetTraitBonus(Stat stat)
     {
@@ -1810,6 +1861,7 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
             default:
                 break;
         }
+        total -= CompanyInjuries.StatPenalty(this, stat);
         if (total < 1)
             return 1;
 
@@ -1900,6 +1952,8 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
 
     public bool HasTrait(Traits tag)
     {
+        if (TraitsMethods.IsRetired(tag))
+            return false;
         if (tag == Traits.TheGreatEscape && Race == Race.Erin)
             return true;
         if (Tags != null)
@@ -1975,7 +2029,7 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
         if (Health <= 0)
             return;
         int actual = Math.Min(Health - 1, amount);
-        Health -= actual;
+        ApplyCombatDamage(actual);
         State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"<b>{Name}</b> took <color=red>{actual}</color> points of {type} damage");
 
     }
@@ -2216,6 +2270,14 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
 
     internal void SetMaxItems()
     {
+        if (CompanyLoadout)
+        {
+            System.Array.Resize(ref Items, 9);
+            System.Array.Resize(ref ItemUses, 9);
+            System.Array.Resize(ref ItemCooldowns, 9);
+            return;
+        }
+
 
         if (HasTrait(Traits.Resourceful) == false)
         {
@@ -2267,6 +2329,8 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
 
     public bool HasSharedTrait(Traits trait)
     {
+        if (TraitsMethods.IsRetired(trait))
+            return false;
         if (SharedTraits == null)
             SharedTraits = new List<Traits>();
         return (SharedTraits.Contains(trait));
@@ -2485,15 +2549,6 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
             Tags.AddRange(SharedTraits);
         if (PersistentSharedTraits != null)
             Tags.AddRange(PersistentSharedTraits);
-        if (!State.GameManager.PureTactical && (State.GameManager.CurrentScene == State.GameManager.StrategyMode || State.GameManager.CurrentScene == State.GameManager.TacticalMode || State.GameManager.CurrentScene == State.GameManager.Recruit_Mode))//Execption fix due to how saves are loaded
-        {
-            if (State.World.GetEmpireOfSide(HiddenUnit.Side) == null) {}
-            else if (State.World.GetEmpireOfSide(HiddenUnit.Side).EmpTraits != null)
-                foreach (Traits trait in State.World.GetEmpireOfSide(HiddenUnit.Side).EmpTraits)
-                {
-                    AddPermanentTrait(trait);
-                }
-        }
         if (RemovedTraits != null)
         {
             foreach (Traits trait in RemovedTraits)
@@ -2593,7 +2648,7 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
                     var rolls = UnityEngine.Random.Range(0,randomizeList.count);
                     while (chance > 0 && State.Rand.NextDouble() < randomizeList.chance)
                     {
-                        List<Traits> gainable = randomizeList.RandomTraits.Where(rt => !Tags.Contains(rt) && !PermanentTraits.Contains(rt)).ToList();
+                        List<Traits> gainable = randomizeList.RandomTraits.Where(rt => !TraitsMethods.IsRetired(rt) && !Tags.Contains(rt) && !PermanentTraits.Contains(rt)).ToList();
                         if (gainable.Count() > 0)
                         {                           
                             var randomPick = gainable[State.Rand.Next(gainable.Count())];
@@ -2678,7 +2733,7 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
     public Stat[] GetLevelUpPossibilities(bool canVore)
     {
         if (Type == UnitType.Leader)
-            return Leader.GetLevelUpPossibilities();
+            return Leader.GetLevelUpPossibilities().Where(s => s != Stat.Leadership).ToArray();
         int[] stats = new int[(int)Stat.None - 1];
         for (int i = 0; i < stats.Length; i++)
         {
@@ -2784,10 +2839,6 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
             }
         }
 
-        if (Config.LeadersAutoGainLeadership)
-        {
-            ModifyStat((int)Stat.Leadership, 2);
-        }
         level++;
         Stats[(int)stat] += 4;
         if (stat == Stat.Endurance)
@@ -3012,7 +3063,7 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
     {
         if (HasTrait(Traits.Feral))
         {
-            return State.World.ItemRepository.Claws;
+            return ItemCatalog.Claws;
         }
         Weapon best = null;
         for (int i = 0; i < Items.Length; i++)
@@ -3033,7 +3084,7 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
 
         if (best == null)
         {
-            best = State.World.ItemRepository.Claws;
+            best = ItemCatalog.Claws;
         }
         return best;
     }
@@ -3087,6 +3138,7 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
 
     public void UpdateItems(ItemRepository NewRepository)
     {
+        if (CompanyLoadout) { BindCompanyItems(NewRepository); return; }
         for (int i = 0; i < Items.Length; i++)
         {
             if (Items[i] != null)
@@ -3114,9 +3166,11 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
 
     public void SetItem(Item item, int i, bool fromUnitEditor = false)
     {
+        if (CompanyLoadout && !CompanyEquipment.CanPlace(item, i))
+            throw new System.InvalidOperationException("Equipment is incompatible with this slot.");
         if (item == null && (ShifterShapes?.Any() ?? false))
         {
-            ShifterShapes.Where(shape => shape.GetItem(i) == GetItem(i)).ForEach(s => // test what happens if main has resourceful but shape has not
+            ShifterShapes.Where(shape => shape.Items != null && i >= 0 && i < shape.Items.Length && shape.GetItem(i) == GetItem(i)).ForEach(s => // test what happens if main has resourceful but shape has not
             {
                 s.Items[i] = null;
             });
@@ -3126,7 +3180,7 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
             UnityEngine.Debug.LogWarning("Tried to assign item to a non-existent slot!");
             return;
         }
-        if (item is SpellBook && HasTrait(Traits.BookEater) && !fromUnitEditor)
+        if (item is SpellBook && HasTrait(Traits.BookEater) && !fromUnitEditor && !CompanyLoadout)
         {
             InnateSpells.Add(((SpellBook)item).ContainedSpell);
             return;
@@ -3242,10 +3296,13 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
             }
         }
         UseableSpells.RemoveAll(spell => spell.IsRetired);
+        if (CompanyLoadout) UseableSpells = UseableSpells.Distinct().ToList();
     }
 
     public void ApplyStatusEffect(StatusEffectType type, float strength, int duration, Unit applicator = null, StatusEffect expireEffect = null)
     {
+        if (type == StatusEffectType.Charmed || type == StatusEffectType.Hypnotized || type == StatusEffectType.Respawns)
+            return;
         if (type == StatusEffectType.Poisoned && HasTrait(Traits.PoisonSpit))
             return;
         if (type == StatusEffectType.Morphed && strength != 123)
@@ -3259,6 +3316,8 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
 
     internal StatusEffect GetStatusEffect(StatusEffectType type)
     {
+        if (type == StatusEffectType.Charmed || type == StatusEffectType.Hypnotized || type == StatusEffectType.Respawns)
+            return null;
         if (type == StatusEffectType.WillingPrey && HasTrait(Traits.WillingRace))
             return new StatusEffect(StatusEffectType.WillingPrey, 0, 100);
         return StatusEffects.Where(s => s.Type == type).OrderByDescending(s => s.Strength).ThenByDescending(s => s.Duration).FirstOrDefault();
@@ -3835,7 +3894,7 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
         var chance = randomizeList.chance;
         var rolls = UnityEngine.Random.Range(0, randomizeList.count);
         var traitsToAdd = new List<Traits>();
-        List<Traits> gainable = randomizeList.RandomTraits.Where(rt => !Tags.Contains(rt) && !PermanentTraits.Contains(rt)).ToList();
+        List<Traits> gainable = randomizeList.RandomTraits.Where(rt => !TraitsMethods.IsRetired(rt) && !Tags.Contains(rt) && !PermanentTraits.Contains(rt)).ToList();
         while (State.Rand.NextDouble() < chance)
         {
             if (gainable.Count() > 0)

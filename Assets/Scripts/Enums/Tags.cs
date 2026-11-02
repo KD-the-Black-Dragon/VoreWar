@@ -1,4 +1,7 @@
-﻿/// <summary>
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-01: Complete approved ability retirement and close legacy reactivation paths (spec 05A3B17).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+/// <summary>
 /// The list of possible unit traits
 /// </summary>
 public enum Traits
@@ -682,6 +685,48 @@ public enum Traits
 
 static class TraitsMethods
 {
+
+    // Retain serialized IDs; this list controls active conversion abilities.
+    public static bool IsRetired(Traits trait)
+    {
+        switch (trait)
+        {
+            case Traits.Eternal:
+            case Traits.Replaceable:
+            case Traits.LuckySurvival:
+            case Traits.Reformer:
+            case Traits.Revenant:
+            case Traits.Reincarnation:
+            case Traits.InfiniteReincarnation:
+            case Traits.Transmigration:
+            case Traits.InfiniteTransmigration:
+            case Traits.CloseCall:
+            case Traits.DeathCheater:
+            case Traits.Respawner:
+            case Traits.RespawnerIII:
+            case Traits.Metamorphosis:
+            case Traits.MetamorphicConversion:
+            case Traits.ForcedMetamorphosis:
+            case Traits.Possession:
+            case Traits.SpiritPossession:
+            case Traits.Corruption:
+            case Traits.Friendosoma:
+            case Traits.TurnCoat:
+            case Traits.SeductiveTouch:
+            case Traits.Charmer:
+            case Traits.HypnoticGas:
+            case Traits.Whispers:
+            case Traits.Reanimator:
+            case Traits.Binder:
+            case Traits.DigestionConversion:
+            case Traits.DigestionRebirth:
+            case Traits.PredConverter:
+            case Traits.PredRebirther:
+                return true;
+            default:
+                return false;
+        }
+    }
 
     static public bool IsRaceModifying(Traits trait)
     {

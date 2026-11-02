@@ -7,10 +7,13 @@
 // 2026-10-31: Retire empire bounty payouts and army/village loot transfers from battle results (spec 05A3B4).
 // 2026-10-31: Retire remaining post-battle survival-trait resurrection branches (spec 05A3B5).
 // 2026-10-31: Retire unused casualty-to-summon roster/allegiance mutation helper (spec 05A3B12).
+// 2026-11-01: Complete approved ability retirement and close legacy reactivation paths (spec 05A3B17).
+// 2026-11-01: Retire empire traits and strategic-building combat/result providers (spec 05A4).
+// 2026-11-01: Retire empire-dependent retreat/skip/color setup while preserving skirmish AI defaults (spec 05A6).
+// 2026-11-01: Connect company battles and replace legacy completion with actual survival, downed permanence, captive-safe retreat and stalemate (specs 09–10).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using LegacyAI;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TacticalDecorations;
@@ -49,6 +52,8 @@ public class TacticalMode : SceneBase
     WallType wallType;
 
     List<Actor_Unit> units;
+    bool battleFinished;
+    UnityEngine.UI.Button companyRevivalButton;
     List<MiscDiscard> miscDiscards;
     List<ClothingDiscards> discardedClothing;
     Army[] armies;
@@ -126,8 +131,6 @@ public class TacticalMode : SceneBase
 
     public RightClickMenu RightClickMenu;
 
-    bool manualSkip = false;
-    bool blockActive = true;
 
     public TacticalStats TacticalStats;
 
@@ -226,8 +229,6 @@ public class TacticalMode : SceneBase
     List<Actor_Unit> garrison;
     Dictionary<Traits, List<Actor_Unit>> linkedUnits;
 
-    internal List<ConstructibleBuilding> attackerBuildingsInRange;
-    internal List<ConstructibleBuilding> defenderBuildingsInRange;
 
     SpecialAction specialType;
     SpecialAction lastSpecial;
@@ -410,11 +411,12 @@ public class TacticalMode : SceneBase
 
     public void Begin(StrategicTileType tiletype, Village village, Army invader, Army defender, TacticalAIType AIinvader, TacticalAIType AIdefender, TacticalBattleOverride tacticalBattleOverride = TacticalBattleOverride.Ignore)
     {
-        if (!State.GameManager.PureTactical)
+        if (!State.GameManager.PureTactical && State.GameManager.CompanyBattle == null)
         {
             State.GameManager.CreateMessageBox(State.CampaignUnavailableMessage);
             return;
         }
+        battleFinished = false;
         BattleReviewText.gameObject.SetActive(false);
         CheatAttackerControl = false;
         CheatDefenderControl = false;
@@ -453,7 +455,8 @@ public class TacticalMode : SceneBase
 
 
 
-        DefectProcessor defectors = new DefectProcessor(armies[0], armies[1], village);
+
+        foreach (var member in invader.Units.Concat(defender == null ? new List<Unit>() : defender.Units)) member.BeginCombat();
 
         //convert armies	
 
@@ -502,30 +505,10 @@ public class TacticalMode : SceneBase
         StartingAttackerPower = StrategicUtilities.UnitValue(armies[0].Units);
         StartingDefenderPower = StrategicUtilities.UnitValue(defenders.Concat(garrison).Select(s => s.Unit).ToList());
 
-        Race defenderRace = defender?.Empire?.ReplacedRace ?? village.Empire?.Race ?? (Race)defenderSide;
+        Race defenderRace = defender?.Empire?.ReplacedRace ?? village?.Empire?.Race ?? (Race)defenderSide;
         Race attackerRace = invader.Empire?.ReplacedRace ?? (Race)invader.Side;
-        if (Config.Defections && !State.GameManager.PureTactical)
-        {
-            
-
-            foreach (Actor_Unit actor in attackers)
-            {
-                defectors.AttackerDefectCheck(actor, defenderRace);
-            }
-            foreach (Actor_Unit actor in defenders)
-            {
-                defectors.DefenderDefectCheck(actor, attackerRace);
-            }
-            foreach (Actor_Unit actor in garrison.ToList())
-            {
-                defectors.GarrisonDefectCheck(actor, attackerRace);
-                if (actor.Unit.Side != defenderSide)
-                    garrison.Remove(actor);
-            }
-        }
-
-        extraAttackers = defectors.extraAttackers;
-        extraDefenders = defectors.extraDefenders;
+        extraAttackers = new List<Actor_Unit>();
+        extraDefenders = new List<Actor_Unit>();
 
         retreatedAttackers = new List<Unit>();
         retreatedDefenders = new List<Unit>();
@@ -554,15 +537,14 @@ public class TacticalMode : SceneBase
 
         int summonedUnits = SummonUnits(mapGen, AttackerLeader, DefenderLeader);
         int antSummonedUnits = SummonAnts(mapGen, AttackerLeader, DefenderLeader);
-        int DefCampSummonedUnits = 0;
 
 
         activeSide = armies[0].Side;
 
         TacticalStats = new TacticalStats();
-        TacticalStats.SetInitialUnits(armies[0].Units.Count + defectors.newAttackers + defectors.DefectedGarrison,
-            armies[1]?.Units.Count ?? 0 + defectors.newDefenders,
-            garrison.Count - defectors.DefectedGarrison,
+        TacticalStats.SetInitialUnits(armies[0].Units.Count,
+            armies[1]?.Units.Count ?? 0,
+            garrison.Count,
             armies[0].Side, defenderSide);
 
 
@@ -576,34 +558,6 @@ public class TacticalMode : SceneBase
 
         IsPlayerTurn = !AIAttacker;
 
-        if (!State.GameManager.PureTactical)//Apply Empire Traits to units that don't have them at the start of combat
-        {
-            foreach (Actor_Unit actor in attackers)
-            {
-                if (State.World.GetEmpireOfSide(actor.Unit.HiddenUnit.Side).EmpTraits != null)
-                    foreach (Traits trait in State.World.GetEmpireOfSide(actor.Unit.HiddenUnit.Side).EmpTraits)
-                    {
-                        actor.Unit.AddPermanentTrait(trait);
-                    }
-            }
-            foreach (Actor_Unit actor in defenders)
-            {
-                if (State.World.GetEmpireOfSide(actor.Unit.HiddenUnit.Side).EmpTraits != null)
-                    foreach (Traits trait in State.World.GetEmpireOfSide(actor.Unit.HiddenUnit.Side).EmpTraits)
-                    {
-                        actor.Unit.AddPermanentTrait(trait);
-                    }
-            }
-            foreach (Actor_Unit actor in garrison.ToList())
-            {
-                if (State.World.GetEmpireOfSide(actor.Unit.HiddenUnit.Side).EmpTraits != null)
-                    foreach (Traits trait in State.World.GetEmpireOfSide(actor.Unit.HiddenUnit.Side).EmpTraits)
-                    {
-                        actor.Unit.AddPermanentTrait(trait);
-                    }
-            }
-        }
-
         ActivatePreBattleTraits();
 
         GeneralSetup();
@@ -611,14 +565,14 @@ public class TacticalMode : SceneBase
         if ((armies[1]?.Units.Count ?? 0) <= 0 && garrison.Count <= 0)
         {
             VictoryCheck();
-            string msg = $"All defenders have defected to rejoin their race, attackers win by default.";
+            string msg = $"No defending units remain; attackers win by default.";
             State.GameManager.CreateMessageBox(msg);
             return;
         }
         if (armies[0].Units.Count <= 0)
         {
             VictoryCheck();
-            string msg = $"All attackers have defected to rejoin their race, defenders win by default.";
+            string msg = $"No attacking units remain; defenders win by default.";
             State.GameManager.CreateMessageBox(msg);
             return;
         }
@@ -630,7 +584,6 @@ public class TacticalMode : SceneBase
             object[] argArray = { units, tiles, armies[0].Side, false };
             RaceAI rai = State.RaceSettings.GetRaceAI(attackerRace);
             attackerAI = Activator.CreateInstance(RaceAIType.Dict[rai], args: argArray) as TacticalAI;
-            InitRetreatConditions(attackerAI, attackers, invader.Empire, AIAttacker);
         }
 
         if (AIdefender == TacticalAIType.Legacy)
@@ -641,8 +594,6 @@ public class TacticalMode : SceneBase
             RaceAI rai = State.RaceSettings.GetRaceAI(defenderRace);
             defenderAI = Activator.CreateInstance(RaceAIType.Dict[rai], args: argArray) as TacticalAI;
 
-            var defenderEmp = defender?.Empire ?? village.Empire;
-            InitRetreatConditions(defenderAI, defenders, defenderEmp, AIDefender);
 
         }
 
@@ -658,595 +609,6 @@ public class TacticalMode : SceneBase
             skip = false;
         if (tacticalBattleOverride == TacticalBattleOverride.ForceSkip && AIAttacker && AIDefender)
             skip = true;
-        if (units.Any(actor => State.World.AllActiveEmpires != null && State.World.GetEmpireOfSide(actor.Unit.FixedSide)?.StrategicAI == null))
-            skip = false;       
-
-        if (!State.GameManager.PureTactical)
-        {
-            foreach (ConstructibleBuilding building in attackerBuildingsInRange)
-            {
-                if (building.Owner == null || building.ruined)
-                {
-                    continue;
-                }
-                if (building is BlackMagicTower)
-                {
-                    BlackMagicTower darkMagicTower = building as BlackMagicTower;
-                    int acc = 5;
-                    int durr = 3;
-                    int eff = 1 + (darkMagicTower.afflictUpgrade.built ? darkMagicTower.PactLevel : 0);
-                    switch (darkMagicTower.Affliction)
-                    {
-                        case StatusEffectType.Necrosis:
-                            if (darkMagicTower.PactLevel >= 1)
-                                acc = Config.BuildConfig.DarkMagicTowerAccImprovement;
-                            if (darkMagicTower.PactLevel >= 2)
-                                durr += Config.BuildConfig.DarkMagicTowerDurationImprovement;
-                            break;
-                        case StatusEffectType.Errosion:
-                            if (darkMagicTower.PactLevel >= 4)
-                                acc = Config.BuildConfig.DarkMagicTowerAccImprovement;
-                            if (darkMagicTower.PactLevel >= 5)
-                                durr += Config.BuildConfig.DarkMagicTowerDurationImprovement;
-                            break;
-                        case StatusEffectType.Lethargy:
-                            if (darkMagicTower.PactLevel >= 7)
-                                acc = Config.BuildConfig.DarkMagicTowerAccImprovement;
-                            if (darkMagicTower.PactLevel >= 8)
-                                durr += Config.BuildConfig.DarkMagicTowerDurationImprovement;
-                            break;
-                        case StatusEffectType.Agony:
-                            if (darkMagicTower.PactLevel >= 10)
-                                acc = Config.BuildConfig.DarkMagicTowerAccImprovement;
-                            eff = 0;
-                            durr *= 2;
-                            break;
-                        default:
-                            break;
-                    }
-                    foreach (Actor_Unit unit in defenders)
-                    {
-                        if (acc > State.Rand.Next(20))
-                        {
-                            unit.Unit.ApplyStatusEffect(darkMagicTower.Affliction, eff, durr);
-                        }
-                    }
-                }
-                if (building is BarrierTower)
-                {
-                    BarrierTower barrierTower = (BarrierTower)building;
-                    if (barrierTower.AvailCores <= 0)
-                    {
-                        continue;
-                    }
-                    if (barrierTower.CoreProtection && !AIAttacker)
-                    {
-                        bool shouldskip = false;
-                        StartCoroutine(WaitForBuildingInput());
-                        var box = Instantiate(State.GameManager.DialogBoxPrefab).GetComponent<DialogBox>();
-                        Action action = delegate ()
-                        {
-                            shouldskip = true;
-                            blockActive = false;
-                        };
-                        box.SetData(action, "No", "Yes", $"Would you like to activate the barrier tower for this battle?\nAvailable Cores: {barrierTower.AvailCores}\nA {barrierTower.CurrentDowntimeValue} turn downtime will be incured if used.", ()=>blockActive = false);
-                        if (shouldskip)
-                        {                      
-                            continue;
-                        }
-                    }
-                    if (!Config.BuildConfig.BarrierTowerIgnoreDowntime)
-                    {
-                        if (barrierTower.DowntimeSlot1 <= 0)
-                        {
-                            barrierTower.DowntimeSlot1 = barrierTower.CurrentDowntimeValue;
-                        }
-                        else if (barrierTower.DowntimeSlot2 <= 0 && barrierTower.improveUpgrade.built)
-                        {
-                            barrierTower.DowntimeSlot2 = barrierTower.CurrentDowntimeValue;
-                        }
-                        else if (barrierTower.DowntimeSlot3 <= 0 && barrierTower.improveUpgrade.built)
-                        {
-                            barrierTower.DowntimeSlot3 = barrierTower.CurrentDowntimeValue;
-                        }
-                    }
-                    foreach (Actor_Unit unit in attackers)
-                    {
-                        unit.Unit.RestoreBarrier(Config.BuildConfig.BarrierTowerBaseBarrierStrength * barrierTower.BarrierMagnitude);
-                        if (barrierTower.healUpgrade.built && barrierTower.MendingMagnitude > 0)
-                        {
-                            unit.Unit.ApplyStatusEffect(StatusEffectType.Mending, barrierTower.MendingMagnitude, 4 + barrierTower.MendingMagnitude);
-                        }
-                        if (barrierTower.buffUpgrade.built && barrierTower.EmpowerMagnitude > 0)
-                        {
-                            unit.Unit.ApplyStatusEffect(StatusEffectType.Empowered, 3f, barrierTower.EmpowerMagnitude);
-                        }
-                    }
-                }
-
-                if (building is CasterTower && SpeciesPolicy.IsAllowed(Race.Fairies, SpeciesUse.Copy))
-                {
-                    CasterTower casterTower = (CasterTower)building;
-                    Unit newUnit = new NPC_unit(10, false, 2, armies[0].Side, Race.Fairies, 0, false);
-                    newUnit.Type = UnitType.Summon;
-                    newUnit.Name = $"{casterTower.Owner.Name} Tower Mage";
-                    Actor_Unit unit = new Actor_Unit(new Vec2i(Config.TacticalSizeX / 2, Config.TacticalSizeY - 1), newUnit);
-                    unit.Visible = false;
-                    unit.Targetable = false;
-                    List<Actor_Unit> defenderunits = new List<Actor_Unit>();
-                    if (defenders != null)
-                    {
-                        defenderunits.AddRange(defenders);
-                    }
-                    if (garrison != null)
-                    {
-                        defenderunits.AddRange(garrison);
-                    }
-                    foreach (var spellCasts in casterTower.spellCasts)
-                    {
-                        if (casterTower.ManaCharges <= 0)
-                        {
-                            break;
-                        }                        
-                        int counter = 0;
-                        switch (spellCasts.Key)
-                        {
-                            case SpellTypes.Fireball:
-                                counter = casterTower.spellCasts[spellCasts.Key];
-                                while (counter > 0)
-                                {                                  
-                                    SpellList.Fireball.TryCast(unit, defenderunits[State.Rand.Next(defenderunits.Count())]);
-                                    newUnit.RestoreMana(100); unit.Movement = 1;
-                                    casterTower.ManaCharges -= Config.BuildConfig.CasterTowerBaseChargeCost;
-                                    counter--;
-                                }
-                                break;
-                            case SpellTypes.PowerBolt:
-                                counter = casterTower.spellCasts[spellCasts.Key];
-                                while (counter > 0)
-                                {
-                                    SpellList.PowerBolt.TryCast(unit, defenderunits[State.Rand.Next(defenderunits.Count())]);
-                                    newUnit.RestoreMana(100); unit.Movement = 1;
-                                    casterTower.ManaCharges -= Config.BuildConfig.CasterTowerBaseChargeCost;
-                                    counter--;
-                                }
-                                break;
-                            case SpellTypes.LightningBolt:
-                                counter = casterTower.spellCasts[spellCasts.Key];
-                                while (counter > 0)
-                                {
-                                    SpellList.LightningBolt.TryCast(unit, defenderunits[State.Rand.Next(defenderunits.Count())]);
-                                    newUnit.RestoreMana(100); unit.Movement = 1;
-                                    casterTower.ManaCharges -= Config.BuildConfig.CasterTowerBaseChargeCost;
-                                    counter--;
-                                }
-                                break;
-                            case SpellTypes.Shield:
-                                if (casterTower.buffUpgrade.built)
-                                {
-                                    counter = casterTower.spellCasts[spellCasts.Key];
-                                    while (counter > 0)
-                                    {
-                                        SpellList.Shield.TryCast(unit, attackers[State.Rand.Next(attackers.Count())]);
-                                        newUnit.RestoreMana(100); unit.Movement = 1;
-                                        casterTower.ManaCharges -= Config.BuildConfig.CasterTowerBuffChargeCost;
-                                        counter--;
-                                    }
-                                }
-                                break;
-                            case SpellTypes.Speed:
-                                if (casterTower.buffUpgrade.built)
-                                {
-                                    counter = casterTower.spellCasts[spellCasts.Key];
-                                    while (counter > 0)
-                                    {
-                                        SpellList.Speed.TryCast(unit, attackers[State.Rand.Next(attackers.Count())]);
-                                        newUnit.RestoreMana(100); unit.Movement = 1;
-                                        casterTower.ManaCharges -= Config.BuildConfig.CasterTowerBuffChargeCost;
-                                        counter--;
-                                    }
-                                }
-                                break;
-                            case SpellTypes.Valor:
-                                if (casterTower.buffUpgrade.built)
-                                {
-                                    counter = casterTower.spellCasts[spellCasts.Key];
-                                    while (counter > 0)
-                                    {
-                                        SpellList.Valor.TryCast(unit, attackers[State.Rand.Next(attackers.Count())]);
-                                        newUnit.RestoreMana(100); unit.Movement = 1;
-                                        casterTower.ManaCharges -= Config.BuildConfig.CasterTowerBuffChargeCost;
-                                        counter--;
-                                    }
-                                }
-                                break;
-                            case SpellTypes.Predation:
-                                if (casterTower.buffUpgrade.built)
-                                {
-                                    counter = casterTower.spellCasts[spellCasts.Key];
-                                    while (counter > 0)
-                                    {
-                                        SpellList.Predation.TryCast(unit, attackers[State.Rand.Next(attackers.Count())]);
-                                        newUnit.RestoreMana(100); unit.Movement = 1;
-                                        casterTower.ManaCharges -= Config.BuildConfig.CasterTowerBuffChargeCost;
-                                        counter--;
-                                    }
-                                }
-                                break;
-                            case SpellTypes.IceBlast:
-                                if (casterTower.forceUpgrade.built)
-                                {
-                                    counter = casterTower.spellCasts[spellCasts.Key];
-                                    while (counter > 0)
-                                    {
-                                        SpellList.IceBlast.TryCast(unit, defenderunits[State.Rand.Next(defenderunits.Count())]);
-                                        newUnit.RestoreMana(100); unit.Movement = 1;
-                                        casterTower.ManaCharges -= Config.BuildConfig.CasterTowerBetterTierChargeCost;
-                                        counter--;
-                                    }
-                                }
-                                break;
-                            case SpellTypes.Pyre:
-                                if (casterTower.forceUpgrade.built)
-                                {
-                                    counter = casterTower.spellCasts[spellCasts.Key];
-                                    while (counter > 0)
-                                    {
-                                        SpellList.Pyre.TryCast(unit, defenderunits[State.Rand.Next(defenderunits.Count())]);
-                                        newUnit.RestoreMana(100); unit.Movement = 1;
-                                        casterTower.ManaCharges -= Config.BuildConfig.CasterTowerBetterTierChargeCost;
-                                        counter--;
-                                    }
-                                }
-                                break;
-                            case SpellTypes.Flamberge:
-                                if (casterTower.forceUpgrade.built)
-                                {
-                                    counter = casterTower.spellCasts[spellCasts.Key];
-                                    while (counter > 0)
-                                    {
-                                        SpellList.Flamberge.TryCast(unit, defenderunits[State.Rand.Next(defenderunits.Count())]);
-                                        newUnit.RestoreMana(100); unit.Movement = 1;
-                                        casterTower.ManaCharges -= Config.BuildConfig.CasterTowerBetterTierChargeCost;
-                                        counter--;
-                                    }
-                                }
-                                break;
-                            case SpellTypes.ForkLightning:
-                                if (casterTower.forceUpgrade.built)
-                                {
-                                    counter = casterTower.spellCasts[spellCasts.Key];
-                                    while (counter > 0)
-                                    {
-                                        SpellList.ForkLightning.TryCast(unit, defenderunits[State.Rand.Next(defenderunits.Count())]);
-                                        newUnit.RestoreMana(100); unit.Movement = 1;
-                                        casterTower.ManaCharges -= Config.BuildConfig.CasterTowerBetterTierChargeCost;
-                                        counter--;
-                                    }
-                                }
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                    unit.UnitSprite.GraphicsFolder.gameObject.SetActive(false);
-                    unit.UnitSprite.OtherFolder.gameObject.SetActive(false);
-                }
-            }
-
-            foreach (ConstructibleBuilding building in defenderBuildingsInRange)
-            {
-                if (building.Owner == null || building.ruined)
-                {
-                    continue;
-                }
-                if (building is DefenseEncampment)
-                {
-                    DefenseEncampment defenseEncampment = (DefenseEncampment)building;
-                    int summonCount = (int)Math.Ceiling(attackers.Count() * (Config.BuildConfig.DefenseEncampmentArmyPercentage * (defenseEncampment.unitUpgrade.built ? 1.5f : 1)));
-                    while (summonCount > 0 && defenseEncampment.AvailibleDefenders > 0)
-                    {
-                        Empire empire = defender?.Empire ?? village.Empire;
-                        if (!SpeciesPolicy.IsAllowed(empire.Race, SpeciesUse.Enemy))
-                            break;
-                        float advancedChance = 0.2f * (defenseEncampment.improveUpgrade.built ? 4f : 1);
-                        float unitScale = Config.BuildConfig.DefenseEncampmentUnitScale * (defenseEncampment.levelUpgrade.built ? 1.5f : 1);
-                        Unit newUnit = new NPC_unit((int)Math.Max(Mathf.Floor((empire.Leader != null ? empire.Leader.Level : 3) * unitScale),1), advancedChance >= State.Rand.NextDouble(), 2, defenders.Concat(garrison).FirstOrDefault().Unit.Side, empire.Race, 0, empire.CanVore);
-                        newUnit.Type = UnitType.Reinforcement;
-                        Actor_Unit unit = new Actor_Unit(mapGen.RandomActorPosition(tiles, BlockedTile, units, TacticalMapGenerator.SpawnLocation.lower, newUnit.GetBestRanged() == null), newUnit);
-                        if (defenseEncampment.improveUpgrade.built)
-                        {
-                            switch (State.Rand.Next(5))
-                            {
-                                case 0:
-                                    newUnit.Items[1] = State.World.ItemRepository.GetItem(ItemType.Helmet);
-                                    break;
-                                case 1:
-                                    newUnit.Items[1] = State.World.ItemRepository.GetItem(ItemType.BodyArmor);
-                                    break;
-                                case 2:
-                                    newUnit.Items[1] = State.World.ItemRepository.GetItem(ItemType.Shoes);
-                                    break;
-                                case 3:
-                                    newUnit.Items[1] = State.World.ItemRepository.GetItem(ItemType.Bolas);
-                                    break;
-                                case 4:
-                                    if (newUnit.GetBestRanged().Range > 2)
-                                    {
-                                        newUnit.Items[1] = State.World.ItemRepository.GetItem(ItemType.Gloves);
-                                    }
-                                    else
-                                    {
-                                        newUnit.Items[1] = State.World.ItemRepository.GetItem(ItemType.Gauntlet);
-                                    }
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-                        unit.UpdateBestWeapons();
-                        units.Add(unit);
-                        unit.Unit.CurrentLeader = DefenderLeader;
-                        DefCampSummonedUnits++;
-                        defenseEncampment.AvailibleDefenders--;
-                        summonCount--;
-                    }
-                }
-                if (building is BarrierTower)
-                {
-                    BarrierTower barrierTower = (BarrierTower)building;
-                    if (barrierTower.AvailCores <= 0)
-                    {
-                        continue;
-                    }
-                    if (barrierTower.CoreProtection && !AIDefender)
-                    {
-                        bool shouldskip = false;
-                        StartCoroutine(WaitForBuildingInput());
-                        var box = Instantiate(State.GameManager.DialogBoxPrefab).GetComponent<DialogBox>();
-                        Action action = delegate ()
-                        {
-                            shouldskip = true;
-                            blockActive = false;
-                        };
-                        box.SetData(action, "No", "Yes", $"Would you like to activate the barrier tower for this battle?\nAvailable Cores: {barrierTower.AvailCores}\nA {barrierTower.CurrentDowntimeValue} turn downtime will be incured if used.", () => blockActive = false);
-                        if (shouldskip)
-                        {
-                            continue;
-                        }
-                    }
-                    if (!Config.BuildConfig.BarrierTowerIgnoreDowntime)
-                    {
-                        if (barrierTower.DowntimeSlot1 <= 0)
-                        {
-                            barrierTower.DowntimeSlot1 = barrierTower.CurrentDowntimeValue;
-                        }
-                        else if (barrierTower.DowntimeSlot2 <= 0 && barrierTower.improveUpgrade.built)
-                        {
-                            barrierTower.DowntimeSlot2 = barrierTower.CurrentDowntimeValue;
-                        }
-                        else if (barrierTower.DowntimeSlot3 <= 0 && barrierTower.improveUpgrade.built)
-                        {
-                            barrierTower.DowntimeSlot3 = barrierTower.CurrentDowntimeValue;
-                        }
-                    }
-                    foreach (Actor_Unit unit in defenders)
-                    {
-                        unit.Unit.RestoreBarrier(Config.BuildConfig.BarrierTowerBaseBarrierStrength * barrierTower.BarrierMagnitude);
-                        if (barrierTower.healUpgrade.built && barrierTower.MendingMagnitude > 0)
-                        {
-                            unit.Unit.ApplyStatusEffect(StatusEffectType.Mending, barrierTower.MendingMagnitude, 4 + barrierTower.MendingMagnitude);
-                        }
-                        if (barrierTower.buffUpgrade.built && barrierTower.EmpowerMagnitude > 0)
-                        {
-                            unit.Unit.ApplyStatusEffect(StatusEffectType.Empowered, 3f, barrierTower.EmpowerMagnitude);
-                        }
-                    }
-                }
-                if (building is BlackMagicTower)
-                {
-                    BlackMagicTower darkMagicTower = building as BlackMagicTower;
-                    int acc = 5;
-                    int durr = 3;
-                    int eff = 1 + (darkMagicTower.afflictUpgrade.built ? darkMagicTower.PactLevel : 0);
-                    switch (darkMagicTower.Affliction)
-                    {
-                        case StatusEffectType.Necrosis:
-                            if (darkMagicTower.PactLevel >= 1)
-                                acc = Config.BuildConfig.DarkMagicTowerAccImprovement;
-                            if (darkMagicTower.PactLevel >= 2)
-                                durr += Config.BuildConfig.DarkMagicTowerDurationImprovement;
-                            break;
-                        case StatusEffectType.Errosion:
-                            if (darkMagicTower.PactLevel >= 4)
-                                acc = Config.BuildConfig.DarkMagicTowerAccImprovement;
-                            if (darkMagicTower.PactLevel >= 5)
-                                durr += Config.BuildConfig.DarkMagicTowerDurationImprovement;
-                            break;
-                        case StatusEffectType.Lethargy:
-                            if (darkMagicTower.PactLevel >= 7)
-                                acc = Config.BuildConfig.DarkMagicTowerAccImprovement;
-                            if (darkMagicTower.PactLevel >= 8)
-                                durr += Config.BuildConfig.DarkMagicTowerDurationImprovement;
-                            break;
-                        case StatusEffectType.Agony:
-                            if (darkMagicTower.PactLevel >= 10)
-                                acc = Config.BuildConfig.DarkMagicTowerAccImprovement;
-                            eff = 0;
-                            break;
-                        default:
-                            break;
-                    }
-                    foreach (Actor_Unit unit in attackers)
-                    {
-                        if (acc > State.Rand.Next(20))
-                        {
-                            unit.Unit.ApplyStatusEffect(darkMagicTower.Affliction, eff, durr);
-                        }
-                    }
-                }
-                if (building is CasterTower && SpeciesPolicy.IsAllowed(Race.Fairies, SpeciesUse.Copy))
-                {
-                    CasterTower casterTower = (CasterTower)building;
-                    Unit newUnit = new NPC_unit(10, false, 2, defenders.Concat(garrison).FirstOrDefault().Unit.Side, Race.Fairies, 0, false);
-                    newUnit.Type = UnitType.Summon;
-                    newUnit.Name = $"{casterTower.Owner.Name} Tower Mage";
-                    Actor_Unit unit = new Actor_Unit(new Vec2i(Config.TacticalSizeX / 2, 0), newUnit);
-                    unit.Visible = false;
-                    unit.Targetable = false;
-                    foreach (var spellCasts in casterTower.spellCasts)
-                    {
-                        if (casterTower.ManaCharges <= 0)
-                        {
-                            break;
-                        }
-                        casterTower.ManaCharges--;
-                        int counter = 0;
-                        switch (spellCasts.Key)
-                        {
-                            case SpellTypes.Fireball:
-                                counter = casterTower.spellCasts[spellCasts.Key];
-                                while (counter > 0)
-                                {
-                                    SpellList.Fireball.TryCast(unit, attackers[State.Rand.Next(attackers.Count())]);
-                                    newUnit.RestoreMana(100); unit.Movement = 1;
-                                    casterTower.ManaCharges -= Config.BuildConfig.CasterTowerBaseChargeCost;
-                                    counter--;
-                                }
-                                break;
-                            case SpellTypes.PowerBolt:
-                                counter = casterTower.spellCasts[spellCasts.Key];
-                                while (counter > 0)
-                                {
-                                    SpellList.PowerBolt.TryCast(unit, attackers[State.Rand.Next(attackers.Count())]);
-                                    newUnit.RestoreMana(100); unit.Movement = 1;
-                                    casterTower.ManaCharges -= Config.BuildConfig.CasterTowerBaseChargeCost;
-                                    counter--;
-                                }
-                                break;
-                            case SpellTypes.LightningBolt:
-                                counter = casterTower.spellCasts[spellCasts.Key];
-                                while (counter > 0)
-                                {
-                                    SpellList.LightningBolt.TryCast(unit, attackers[State.Rand.Next(attackers.Count())]);
-                                    newUnit.RestoreMana(100); unit.Movement = 1;
-                                    casterTower.ManaCharges -= Config.BuildConfig.CasterTowerBaseChargeCost;
-                                    counter--;
-                                }
-                                break;
-                            case SpellTypes.Shield:
-                                if (casterTower.buffUpgrade.built)
-                                {
-                                    counter = casterTower.spellCasts[spellCasts.Key];
-                                    while (counter > 0)
-                                    {
-                                        SpellList.Shield.TryCast(unit, defenders[State.Rand.Next(defenders.Count())]);
-                                        newUnit.RestoreMana(100); unit.Movement = 1;
-                                        casterTower.ManaCharges -= Config.BuildConfig.CasterTowerBuffChargeCost;
-                                        counter--;
-                                    }
-                                }
-                                break;
-                            case SpellTypes.Speed:
-                                if (casterTower.buffUpgrade.built)
-                                {
-                                    counter = casterTower.spellCasts[spellCasts.Key];
-                                    while (counter > 0)
-                                    {
-                                        SpellList.Speed.TryCast(unit, defenders[State.Rand.Next(defenders.Count())]);
-                                        newUnit.RestoreMana(100); unit.Movement = 1;
-                                        casterTower.ManaCharges -= Config.BuildConfig.CasterTowerBuffChargeCost;
-                                        counter--;
-                                    }
-                                }
-                                break;
-                            case SpellTypes.Valor:
-                                if (casterTower.buffUpgrade.built)
-                                {
-                                    counter = casterTower.spellCasts[spellCasts.Key];
-                                    while (counter > 0)
-                                    {
-                                        SpellList.Valor.TryCast(unit, defenders[State.Rand.Next(defenders.Count())]);
-                                        newUnit.RestoreMana(100); unit.Movement = 1;
-                                        casterTower.ManaCharges -= Config.BuildConfig.CasterTowerBuffChargeCost;
-                                        counter--;
-                                    }
-                                }
-                                break;
-                            case SpellTypes.Predation:
-                                if (casterTower.buffUpgrade.built)
-                                {
-                                    counter = casterTower.spellCasts[spellCasts.Key];
-                                    while (counter > 0)
-                                    {
-                                        SpellList.Predation.TryCast(unit, defenders[State.Rand.Next(defenders.Count())]);
-                                        newUnit.RestoreMana(100); unit.Movement = 1;
-                                        casterTower.ManaCharges -= Config.BuildConfig.CasterTowerBuffChargeCost;
-                                        counter--;
-                                    }
-                                }
-                                break;
-                            case SpellTypes.IceBlast:
-                                if (casterTower.forceUpgrade.built)
-                                {
-                                    counter = casterTower.spellCasts[spellCasts.Key];
-                                    while (counter > 0)
-                                    {
-                                        SpellList.IceBlast.TryCast(unit, attackers[State.Rand.Next(attackers.Count())]);
-                                        newUnit.RestoreMana(100); unit.Movement = 1;
-                                        casterTower.ManaCharges -= Config.BuildConfig.CasterTowerBetterTierChargeCost;
-                                        counter--;
-                                    }
-                                }
-                                break;
-                            case SpellTypes.Pyre:
-                                if (casterTower.forceUpgrade.built)
-                                {
-                                    counter = casterTower.spellCasts[spellCasts.Key];
-                                    while (counter > 0)
-                                    {
-                                        SpellList.Pyre.TryCast(unit, attackers[State.Rand.Next(attackers.Count())]);
-                                        newUnit.RestoreMana(100); unit.Movement = 1;
-                                        casterTower.ManaCharges -= Config.BuildConfig.CasterTowerBetterTierChargeCost;
-                                        counter--;
-                                    }
-                                }
-                                break;
-                            case SpellTypes.Flamberge:
-                                if (casterTower.forceUpgrade.built)
-                                {
-                                    counter = casterTower.spellCasts[spellCasts.Key];
-                                    while (counter > 0)
-                                    {
-                                        SpellList.Flamberge.TryCast(unit, attackers[State.Rand.Next(attackers.Count())]);
-                                        newUnit.RestoreMana(100); unit.Movement = 1;
-                                        casterTower.ManaCharges -= Config.BuildConfig.CasterTowerBetterTierChargeCost;
-                                        counter--;
-                                    }
-                                }
-                                break;
-                            case SpellTypes.ForkLightning:
-                                if (casterTower.forceUpgrade.built)
-                                {
-                                    counter = casterTower.spellCasts[spellCasts.Key];
-                                    while (counter > 0)
-                                    {
-                                        SpellList.ForkLightning.TryCast(unit, attackers[State.Rand.Next(attackers.Count())]);
-                                        newUnit.RestoreMana(100); unit.Movement = 1;
-                                        casterTower.ManaCharges -= Config.BuildConfig.CasterTowerBetterTierChargeCost;
-                                        counter--;
-                                    }
-                                }
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                    unit.UnitSprite.GraphicsFolder.gameObject.SetActive(false);
-                    unit.UnitSprite.OtherFolder.gameObject.SetActive(false);
-                }
-            }
-        }       
 
         if (skip)
         {
@@ -1255,17 +617,14 @@ public class TacticalMode : SceneBase
         else
         {
             turboMode = false;
-            State.Save($"{State.SaveDirectory}Autosave_Battle.sav");
-            defectors.DefectReport();
-            if (summonedUnits > 0 || antSummonedUnits > 0 || DefCampSummonedUnits > 0)
+            if (State.GameManager.CompanyBattle == null) State.Save($"{State.SaveDirectory}Autosave_Battle.sav");
+            if (summonedUnits > 0 || antSummonedUnits > 0)
             {
                 string message = "";
                 if (summonedUnits > 0)
                     message += $"{summonedUnits} units were summoned by astral call\n";
                 if (antSummonedUnits > 0)
                     message += $"{antSummonedUnits} units were summoned by ant pheromones\n";
-                if (DefCampSummonedUnits > 0)
-                    message += $"{DefCampSummonedUnits} units join as reinforcements";
                 if (AIDefender && AIAttacker)
                     State.GameManager.CreateMessageBox(message, 4);
                 else
@@ -1275,33 +634,10 @@ public class TacticalMode : SceneBase
 
     }
 
-    private void InitRetreatConditions(ITacticalAI AI, List<Actor_Unit> fighters, Empire empire, bool nonPlayer)
+    void RefreshRevivalSetting()
     {
-        if (State.GameManager.PureTactical == false && Config.NoAIRetreat == false)
-        {
-            if (empire != null && empire?.Race == Race.Vagrants)
-            {
-                AI.RetreatPlan = new TacticalAI.RetreatConditions(.2f, fighters.Count + 2);
-            }
-            if (empire != null && empire?.ReplacedRace == Race.FeralLions)
-            {
-                AI.RetreatPlan = new TacticalAI.RetreatConditions(0, fighters.Count * 3, 0.9f);
-            }
-            else if (empire != null && empire is MonsterEmpire)
-            {
-                if (fighters.Where(s => s.Unit.HasTrait(Traits.EvasiveBattler)).Count() / (float)fighters.Count > .8f) //If more than 80% has fast flee
-                    AI.RetreatPlan = new TacticalAI.RetreatConditions(.05f, 0);
-                else
-                    AI.RetreatPlan = new TacticalAI.RetreatConditions(.025f, 0);
-            }
-            else if (nonPlayer) //Don't set retreat for players
-            {
-                if (fighters.Where(s => s.Unit.HasTrait(Traits.EvasiveBattler)).Count() / (float)fighters.Count > .8f) //If more than 80% has fast flee
-                    AI.RetreatPlan = new TacticalAI.RetreatConditions(.3f, 0);
-                else
-                    AI.RetreatPlan = new TacticalAI.RetreatConditions(.15f, 0);
-            }
-        }
+        if (State.GameManager.CompanyBattle != null)
+            companyRevivalButton.GetComponentInChildren<UnityEngine.UI.Text>().text = "Leader revival: " + (State.GameManager.CompanyBattle.RevivalEnabled ? "enabled" : "disabled");
     }
 
     private int SummonUnits(TacticalMapGenerator mapGen, Unit AttackerLeader, Unit DefenderLeader)
@@ -1552,7 +888,6 @@ Turns: {currentTurn}
         {
             object[] argArray = { units, tiles, activeSide, false };
             currentAI = Activator.CreateInstance(desiredAIType, args: argArray) as TacticalAI;
-            InitRetreatConditions(currentAI, fighters, State.World.GetEmpireOfSide(activeSide), true);
             if (attackersTurn)
             {
                 attackerAI = currentAI;
@@ -1636,6 +971,27 @@ Turns: {currentTurn}
         }
 
         LogUI.SetBase();
+        SkipUI.Surrender.isOn = false; SkipUI.Surrender.gameObject.SetActive(false);
+        if (companyRevivalButton == null)
+        {
+            var go = new GameObject("Leader revival setting", typeof(RectTransform), typeof(UnityEngine.UI.Image), typeof(UnityEngine.UI.Button));
+            go.transform.SetParent(UI.transform, false);
+            var rect = go.GetComponent<RectTransform>(); rect.anchorMin = rect.anchorMax = rect.pivot = Vector2.one;
+            rect.anchoredPosition = new Vector2(-20, -55); rect.sizeDelta = new Vector2(270, 34);
+            go.GetComponent<UnityEngine.UI.Image>().color = new Color(.16f, .2f, .25f);
+            var words = new GameObject("Label", typeof(RectTransform), typeof(UnityEngine.UI.Text)); words.transform.SetParent(go.transform, false);
+            var labelRect = words.GetComponent<RectTransform>(); labelRect.anchorMin = Vector2.zero; labelRect.anchorMax = Vector2.one; labelRect.offsetMin = labelRect.offsetMax = Vector2.zero;
+            var label = words.GetComponent<UnityEngine.UI.Text>(); label.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            label.fontSize = 16; label.color = Color.white; label.alignment = TextAnchor.MiddleCenter; label.raycastTarget = false;
+            companyRevivalButton = go.GetComponent<UnityEngine.UI.Button>();
+            companyRevivalButton.onClick.AddListener(() =>
+            {
+                try { State.GameManager.CompanyBattle.ToggleRevival(); RefreshRevivalSetting(); }
+                catch (Exception ex) { State.GameManager.CreateMessageBox("Could not save the revival preference: " + ex.Message); }
+            });
+        }
+        companyRevivalButton.gameObject.SetActive(State.GameManager.CompanyBattle != null);
+        RefreshRevivalSetting();
 
         DirtyPack = true;
         paused = false;
@@ -1643,10 +999,6 @@ Turns: {currentTurn}
         RebuildDecorations();
         RebuildBlockedTiles();
 
-        if (village != null && State.World.MainEmpires != null)
-        {
-            FrontColorTilemap.color = State.World.GetEmpireOfSide(village.Side)?.UnityColor ?? Color.white;
-        }
 
         waitingForDialog = false;
 
@@ -1710,7 +1062,6 @@ Turns: {currentTurn}
         Translator = new Translator();
         UpdateEndTurnButtonText();
         StatusUI.EndTurn.interactable = IsPlayerTurn;
-        manualSkip = false;
         StatusUI.SkipToEndButton.interactable = true;
         EnemyTurnText.SetActive(!IsPlayerTurn);
 
@@ -3046,6 +2397,7 @@ Turns: {currentTurn}
 
     public void ButtonCallback(int ID)
     {
+        if (battleFinished) return;
         RightClickMenu.CloseAll();
         if (ButtonsInteractable)
         {
@@ -3093,36 +2445,8 @@ Turns: {currentTurn}
                             ActionMode = 5;
                         }
                     break;
-                case 9:
-                    if (State.TutorialMode && State.GameManager.TutorialScript.step < 6)
-                        return;
-                    if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
-                    {
-                        bool curAttacker = attackersTurn;
-                        var box = Instantiate(State.GameManager.DialogBoxPrefab).GetComponent<DialogBox>();
-                        box.SetData(() => SurrenderAll(curAttacker), "Yes", "No", "Are you sure you want to surrender all your units (you were holding left shift)");
-                    }
-                    else if (SelectedUnit != null && SelectedUnit.Targetable)
-                    {
-                        if (SelectedUnit.Surrendered && SelectedUnit.SurrenderedThisTurn)
-                        {
-                            SelectedUnit.Surrendered = false;
-                            SelectedUnit.SurrenderedThisTurn = false;
-                            RebuildInfo();
-                        }
-                        else if (SelectedUnit.Surrendered == false)
-                        {
-                            SelectedUnit.Surrendered = true;
-                            if (State.Rand.NextDouble() <= Config.SurrenderedPredAutoRegur)
-                            {
-                                SelectedUnit.PredatorComponent?.FreeAnyAlivePrey();
-                            }
-                            SelectedUnit.SurrenderedThisTurn = true;
-                            RebuildInfo();
-                        }
-
-                    }
-                    break;
+                case 9: // Voluntary surrender is retired; downing is an outcome, not a command.
+                    return;
                 case 10:
                     if (SelectedUnit != null && SelectedUnit.Targetable)
                     {
@@ -3161,7 +2485,6 @@ Turns: {currentTurn}
         {
             if (AIDefender && AIAttacker)
             {
-                manualSkip = true;
                 TurboMode();
                 return;
             }
@@ -3209,10 +2532,9 @@ Turns: {currentTurn}
 
     internal void ProcessSkip(bool surrender, bool watchRest)
     {
+        surrender = false; // Existing serialized callbacks cannot request voluntary surrender.
         var defenderRace = armies[1]?.Empire?.ReplacedRace ?? village?.Empire?.ReplacedRace ?? ((Race)defenderSide);
         var attackerRace = armies[0]?.Empire?.ReplacedRace;
-
-        manualSkip = true;
         if (IsPlayerTurn == false)
         {
             if (AIDefender == false)
@@ -3223,14 +2545,7 @@ Turns: {currentTurn}
                 if (SkipUI.AllowRetreat.isOn)
                     defenderAI.RetreatPlan = new TacticalAI.RetreatConditions(.2f, 0);
                 AIDefender = true;
-                if (surrender)
-                {
-                    foreach (Actor_Unit actor in units.Where(s => s.Unit.Side == defenderSide && unitControllableBySide(s, defenderSide)))
-                    {
-                        actor.Surrendered = true;
-                        actor.Movement = 0;
-                    }
-                }
+
             }
             else if (AIAttacker == false)
             {
@@ -3240,14 +2555,7 @@ Turns: {currentTurn}
                 if (SkipUI.AllowRetreat.isOn)
                     attackerAI.RetreatPlan = new TacticalAI.RetreatConditions(.2f, 0);
                 AIAttacker = true;
-                if (surrender)
-                {
-                    foreach (Actor_Unit actor in units.Where(s => s.Unit.Side != defenderSide && unitControllableBySide(s, s.Unit.Side)))
-                    {
-                        actor.Surrendered = true;
-                        actor.Movement = 0;
-                    }
-                }
+
             }
             if (watchRest == false)
                 TurboMode();
@@ -3276,14 +2584,7 @@ Turns: {currentTurn}
         }
         AITimer = 1;
         IsPlayerTurn = false;
-        if (surrender)
-        {
-            foreach (Actor_Unit actor in units.Where(s => s.Unit.Side == activeSide && unitControllableBySide(s, activeSide)))
-            {
-                actor.Surrendered = true;
-                actor.Movement = 0;
-            }
-        }
+
         if (watchRest == false)
             TurboMode();
         else SpectatorMode = true;
@@ -3291,6 +2592,7 @@ Turns: {currentTurn}
 
     internal void SetMagicMode(Spell spell)
     {
+        if (battleFinished || SelectedUnit != null && SelectedUnit.Surrendered) return;
         if (ButtonsInteractable && spell != null && SelectedUnit != null && SelectedUnit.Targetable && SelectedUnit.Movement > 0)
         {
             CurrentSpell = spell;
@@ -3350,15 +2652,7 @@ Turns: {currentTurn}
 
     internal void SurrenderAll(bool attacker)
     {
-        for (int i = 0; i < units.Count; i++)
-        {
-            if (attacker ? units[i].Unit.Side != defenderSide : units[i].Unit.Side == defenderSide)
-            {
-                units[i].Surrendered = true;
-                units[i].SurrenderedThisTurn = true;
-            }
-        }
-        RebuildInfo();
+        // Retired voluntary command; retained callback compatibility only.
     }
     internal void KillAll(bool attacker)
     {
@@ -3374,6 +2668,12 @@ Turns: {currentTurn}
 
     internal void AttemptRetreat(Actor_Unit actor, bool silent, bool fromWarp = false)
     {
+        if (actor.Surrendered || actor.Unit.IsDead || actor.Fled) return;
+        if ((State.GameManager.CompanyBattle != null ? actor.Unit.Side == defenderSide : !TacticalUtilities.IsUnitControlledByPlayer(actor.Unit)) && actor.PredatorComponent != null && actor.PredatorComponent.GetAllPrey().Any(p => !p.Unit.IsDead))
+        {
+            if (!silent) State.GameManager.CreateMessageBox("Release all living captives before retreating.");
+            return;
+        }
         if (!fromWarp)
         {
 
@@ -3430,6 +2730,7 @@ Turns: {currentTurn}
 
     void RetreatUnit(Actor_Unit actor, bool defender)
     {
+        if ((State.GameManager.CompanyBattle != null ? actor.Unit.Side == defenderSide : !TacticalUtilities.IsUnitControlledByPlayer(actor.Unit)) && actor.PredatorComponent != null && actor.PredatorComponent.GetAllPrey().Any(p => !p.Unit.IsDead)) return;
         if (defender)
         {
             if (armies[1] != null)
@@ -3453,6 +2754,7 @@ Turns: {currentTurn}
 
     void UpdateStatus(float dt)
     {
+        if (VictoryCheck()) return;
         if (SpectatorMode) RunningFriendlyAI = true;
 
         Translator?.UpdateLocation();
@@ -3954,7 +3256,7 @@ Turns: {currentTurn}
         {
             var voreTypes = State.RaceSettings.GetVoreTypes(SelectedUnit.Unit.Race);
             StatusUI.UnitName.text = SelectedUnit.Unit.Name;
-            StatusUI.HP.text = "HP:" + SelectedUnit.Unit.Health + "/" + SelectedUnit.Unit.MaxHealth;
+            StatusUI.HP.text = "HP:" + SelectedUnit.Unit.LastingHealth + (SelectedUnit.Unit.TemporaryHealth > 0 ? " + <color=grey>" + SelectedUnit.Unit.TemporaryHealth + " temporary</color>" : "") + "/" + SelectedUnit.Unit.MaxHealth;
             StatusUI.MP.text = "AP:" + SelectedUnit.Movement;
 
             StatusUI.ZeroAPButton.interactable = true;
@@ -4279,12 +3581,14 @@ Turns: {currentTurn}
 
     internal void RangedAttack(Actor_Unit actor, Actor_Unit unit)
     {
+        if (actor.Surrendered || unit.Surrendered) return;
         actor.Attack(unit, true);
         ActionDone();
     }
 
     internal void MeleeAttack(Actor_Unit actor, Actor_Unit unit)
     {
+        if (actor.Surrendered || unit.Surrendered) return;
         actor.Attack(unit, false);
         ActionDone();
     }
@@ -4335,6 +3639,7 @@ Turns: {currentTurn}
 
     internal void OrderSelectedUnitToMoveTo(int x, int y)
     {
+        if (SelectedUnit == null || SelectedUnit.Surrendered || battleFinished) return;
         arrowManager.ClearNodes();
         Vec2i clickLoc = new Vec2i(x, y);
         queuedPath = TacticalPathfinder.GetPath(SelectedUnit.Position, clickLoc, 0, SelectedUnit);
@@ -4348,13 +3653,7 @@ Turns: {currentTurn}
 
     internal void SwitchAlignment(Actor_Unit actor)
     {
-        int startingSide = actor.Unit.Side;
-        if (actor.Unit.Side == defenderSide)
-            AttackerConvert(actor);
-        else
-            DefenderConvert(actor);
-        actor.DefectedThisTurn = startingSide != actor.Unit.Side;
-        actor.sidesAttackedThisBattle = new List<int>();
+        // Retired: tactical actions cannot convert existing characters.
     }
 
     internal bool IsDefender(Actor_Unit actor)
@@ -4439,6 +3738,7 @@ Turns: {currentTurn}
 
     void EndTurn()
     {
+        if (battleFinished) return;
         if (waitingForDialog)
             return;
         if (PseudoTurn)
@@ -4472,6 +3772,7 @@ Turns: {currentTurn}
             activeSide = defenderSide;
             currentAI = defenderAI;
             NewTurn();
+            if (battleFinished) return;
             if (AIDefender)
                 IsPlayerTurn = false;
         }
@@ -4483,6 +3784,7 @@ Turns: {currentTurn}
             activeSide = armies[0].Side;
             currentAI = attackerAI;
             NewTurn();
+            if (battleFinished) return;
             if (AIAttacker)
                 IsPlayerTurn = false;
         }
@@ -4537,7 +3839,7 @@ Turns: {currentTurn}
 
     void NewTurn()
     {
-        AllSurrenderedCheck();
+        if (battleFinished) return;
         Log.RegisterNewTurn(attackersTurn ? AttackerName : DefenderName, currentTurn);
 
         for (int i = 0; i < units.Count; i++)
@@ -4620,35 +3922,7 @@ Turns: {currentTurn}
         }
     }
 
-    void AllSurrenderedCheck()
-    {
-        bool allSurrendered = true;
-        foreach (Actor_Unit actor in units)
-        {
-            if (actor.Unit.IsDead == false && actor.Surrendered == false && actor.Visible && actor.Fled == false)
-                allSurrendered = false;
-        }
-        if (allSurrendered)
-        {
-            bool flipped = false;
-            foreach (Actor_Unit actor in units)
-            {
-                if (actor.Surrendered)
-                    flipped = true;
-                actor.Surrendered = false;
-            }
-            if (flipped)
-            {
-                if (turboMode == false && State.GameManager.CurrentScene == State.GameManager.TacticalMode)
-                    State.GameManager.CreateMessageBox("After several minutes of staring at each other doing nothing, all of the surrendered units decided to fight again");
-                else
-                    Debug.Log("The AI ended up needing an all surrendered reset... this probably shouldn't have happened");
-            }
-            else
-                Debug.Log("All units had apparently surrendered without any units surrendered.  I'm guessing it has to do with fleeing units");
 
-        }
-    }
 
     internal bool IsOnlyOneSideVisible()
     {
@@ -4691,507 +3965,60 @@ Turns: {currentTurn}
 
     bool VictoryCheck()
     {
-        if (waitingForDialog)
-            return false;
-        int remainingAttackers = 0;
-        int remainingDefenders = 0;
-        CalculateRemaining(ref remainingAttackers, ref remainingDefenders);
-
-        if (remainingAttackers == 0 || remainingDefenders == 0)
+        if (battleFinished) return true;
+        if (waitingForDialog) return false;
+        foreach (var a in units.Where(a => a.Unit.Type == UnitType.Summon && a.Unit.IsDead))
+        { a.Visible = false; a.Targetable = false; a.PredatorComponent?.FreeAnyAlivePrey(); }
+        var living = units.Where(a => !a.Unit.IsDead && !a.Fled).ToArray();
+        bool attackersRemain = living.Any(a => a.Unit.Side == attackerSide);
+        bool defendersRemain = living.Any(a => a.Unit.Side == defenderSide);
+        bool immediateEnd = State.GameManager.CompanyBattle != null && State.GameManager.CompanyBattle.LeaderPermanentlyLost;
+        bool stalemate = !immediateEnd && (currentTurn >= 200 || (attackersRemain && defendersRemain &&
+            !living.Any(a => !a.Surrendered && a.Targetable && a.Visible)));
+        if (!immediateEnd && attackersRemain && defendersRemain && !stalemate) return false;
+        // Preserve the retained digestion/absorption simulation and its healing/XP, rather than truncating it.
+        if (!immediateEnd && !stalemate && units.Any(a => !a.Unit.IsDead && a.PredatorComponent != null && a.PredatorComponent.DigestingUnitCount > 0)) return false;
+        if (stalemate)
         {
-            foreach (Actor_Unit actor in units.ToList())
-            {
-                if (actor.Targetable && actor.Visible && !actor.Fled && !actor.Surrendered && (actor.TurnsSinceLastDamage < 2 & !actor.Unit.HasTrait(Traits.CurseOfImmolation))) return false;
-                if (actor.Targetable && actor.Visible && !actor.Fled && !actor.Surrendered && !actor.Unit.hiddenFixedSide && units.Any(u => u.Targetable && !u.Fled && u.Visible && TacticalUtilities.TreatAsHostile(actor, u))) return false;
-                if (actor.Unit.Predator == false)
-                    continue;
-                foreach (var prey in actor.PredatorComponent.GetDirectPrey().Where(s => s.Unit.HasTrait(Traits.TheGreatEscape)).ToList())
-                {
-                    actor.PredatorComponent.FreeGreatEscapePrey(prey);
-                    RetreatUnit(prey.Actor, prey.Unit.Side == defenderSide);
-                }
-                if (actor.Unit.HasTrait(Traits.Endosoma))
-                {
-                    foreach (var prey in actor.PredatorComponent.GetDirectPrey().Where(s => s.Unit.Stamina <= 0).ToList())
-                    {
-                        actor.PredatorComponent.FreeEndoPrey(prey);
-                        if (actor.Unit.HasTrait(Traits.Friendosoma) && prey.Actor.Unit.IsEnemyOfSide(actor.Unit.Side))
-                        {
-                            SwitchAlignment(prey.Actor);
-                            RetreatUnit(prey.Actor, prey.Unit.Side == defenderSide);
-                        }
-                        else
-                        {
-                            if (remainingAttackers == 0 && prey.Actor.Unit.IsEnemyOfSide(0))
-                            {
-                                continue;
-                            }
-                            if (remainingDefenders == 0 && !prey.Actor.Unit.IsEnemyOfSide(0))
-                            {
-                                continue;
-                            }
-                            prey.Actor.Unit.Health = 0;
-                            prey.Actor.Unit.Kill();
-                            foreach (var item in prey.Actor.Unit.AllConditionalTraits.Keys.Where(t => t.trigger == TraitConditionTrigger.OnDeath || t.trigger == TraitConditionTrigger.All).ToList())
-                            {
-                                if (ConditionalTraitConditionChecker.TacticalTraitConditionActive(prey.Actor, item))
-                                {
-                                    prey.Actor.Unit.ActivateConditionalTrait(item.id);
-                                }
-                                else
-                                {
-                                    prey.Actor.Unit.DeactivateConditionalTrait(item.id);
-                                }
-                            }
-                        }
-
-                    }
-                }
-                if (actor.Fled == false)
-                    continue;
-                for (int i = 0; i < 1000; i++)
-                {
-                    if (actor.PredatorComponent.DigestingUnitCount < 1)
-                        break;
-                    actor.DigestCheck();
-                }
-            }
-            remainingAttackers = 0;
-            remainingDefenders = 0;
-            CalculateRemaining(ref remainingAttackers, ref remainingDefenders);
-            if (units.Where(s => s.Unit.IsDead == false && s.PredatorComponent?.DigestingUnitCount > 0).FirstOrDefault() != null)
-            {
-                return false;
-            }
-            if (remainingAttackers > 0 && remainingDefenders > 0)
-            {
-                Debug.Log("It's a battle again, an escaped unit came back to the battlefield - going back to minimize undefined behavior");
-                return false;
-            }
-
-            if (Config.StopAtEndOfBattle && reviewingBattle == false && turboMode == false)
-            {
-                reviewingBattle = true;
-                autoAdvancing = false;
-                BattleReviewText.SetActive(true);
-                foreach (Actor_Unit actor in units)
-                {
-                    actor.Movement = 0;
-                    actor.DigestCheck();
-                    actor.Update(2);
-                    actor.UnitSprite.UpdateSprites(actor, actor.Unit.Side == activeSide);
-                }
-                StatusUI.EndTurn.interactable = true;
-                return false;
-            }
-            HandlePostBattleTraits();
-
-            foreach (Actor_Unit actor in units)
-            {
-                actor.Unit.GiveExp(4);
-                if (actor.Unit.TraitBoosts.HealthRegen > 0 && actor.Unit.IsDead == false)
-                    actor.Unit.HealPercentage(1);
-                if (actor.Unit.GetStatusEffect(StatusEffectType.Morphed) != null)
-                {
-                    actor.Unit.RevertMorph(actor.Unit.GetStatusEffect(StatusEffectType.Morphed).Applicator);
-                }
-                actor.Unit.StatusEffects.Clear();
-
-                actor.Unit.SetBarrier(0);
-                
-                EquipmentFunctions.CheckEquipment(actor.Unit, EquipmentActivator.OnTacticalBattleEnd, new object[] { actor, armies[actor.Unit.Side == attackerSide ? 0 : 1], null });
-
-                // Refill used potions
-                foreach (var potion in actor.Unit.EquippedPotions)
-                {
-                    if (armies[actor.Unit.Side == attackerSide ? 0 : 1] != null)
-                    { 
-                        int WantedPots = potion.Value[1];
-
-                        while (WantedPots > actor.Unit.EquippedPotions[potion.Key][0] && armies[actor.Unit.Side == attackerSide ? 0 : 1].ItemStock.HasItem((ItemType)potion.Key))
-                        {
-                            armies[actor.Unit.Side == attackerSide ? 0 : 1].ItemStock.TakeItem((ItemType)potion.Key);
-                            actor.Unit.EquippedPotions[potion.Key][0] = actor.Unit.EquippedPotions[potion.Key][0] + 1;
-                        }
-                    }
-
-                }
-
-            }
-            BattleReviewText.SetActive(false);
-            foreach (Actor_Unit actor in units.ToList())
-            {
-
-                if (actor.Unit.IsDead)
-                {
-                    if (defenderBuildingsInRange != null)
-                    {
-                        IEnumerable<BlackMagicTower> possible_BlackTowers = defenderBuildingsInRange.Where(b => b is BlackMagicTower).Cast<BlackMagicTower>();
-                        foreach (BlackMagicTower tower in possible_BlackTowers)
-                        {
-                            tower.SoulPower += actor.Unit.Level * (tower.soulUpgrade.built ? 2 : 1);
-                        }
-                    }
-                    if (attackerBuildingsInRange != null)
-                    {
-                        IEnumerable<BlackMagicTower> possible_BlackTowers = attackerBuildingsInRange.Where(b => b is BlackMagicTower).Cast<BlackMagicTower>();
-                        foreach (BlackMagicTower tower in possible_BlackTowers)
-                        {
-                            tower.SoulPower += actor.Unit.Level * (tower.soulUpgrade.built ? 2 : 1);
-                        }
-                    }
-                }
-
-                if (actor.Unit.Type == UnitType.Reinforcement && actor.Unit.IsDead == false)
-                {
-                    IEnumerable<DefenseEncampment> possible_camps = defenderBuildingsInRange.Where(b => b is DefenseEncampment).Cast<DefenseEncampment>();
-                    if (possible_camps != null)
-                    {
-                        DefenseEncampment camp = possible_camps.Where(d => d.maxDefenders > d.AvailibleDefenders).First();
-                        if (camp != null)
-                            camp.AvailibleDefenders++;
-                    }
-                    units.Remove(actor);
-                    continue;
-                }
-                actor.Unit.SetSizeToDefault();
-                actor.Unit.TempBoosts.ResetAll();
-                actor.Unit.EnemiesKilledThisBattle = 0;
-            }
-            EatSurrenderedAllies();
-            SelectedUnit = null;
-            if (remainingAttackers > 0)
-            {
-                if (retreatedAttackers != null)
-                {
-                    if (armies[0] != null) armies[0].Units.AddRange(retreatedAttackers);
-                    retreatedAttackers.Clear();
-                }
-
-            }
-            else
-            {
-                if (retreatedDefenders != null)
-                {
-                    if (armies[1] != null) armies[1].Units.AddRange(retreatedDefenders);
-                    else if (village != null) village.GetRecruitables().AddRange(retreatedDefenders);
-                    retreatedDefenders.Clear();
-                }
-            }
-            if (remainingAttackers > 0 && extraAttackers != null && extraAttackers.Any())
-            {
-                AssignLeftoverTroops(armies[0], extraAttackers);
-            }
-            else if (remainingDefenders > 0 && extraDefenders != null && extraDefenders.Any())
-            {
-                AssignLeftoverTroops(armies[1], extraDefenders);
-            }
-                
-
-            ProcessFledUnits();
-            remainingAttackers = 0;
-            remainingDefenders = 0;
-            CalculateRemaining(ref remainingAttackers, ref remainingDefenders);
-            if (remainingAttackers > 0 && remainingDefenders > 0)
-            {
-                //This is just a back-up incase there's some other method of causing the issue I fixed
-                VictoryCheck();
-                return false;
-            }
-            ProcessConsumedCorpses();
-            bool skipStats = false;
-            if (AIAttacker && AIDefender && Config.SkipAIOnlyStats)
-                skipStats = true;
-            if (remainingAttackers > 0)
-            {
-                Wins.x++;
-            }
-            else
-            {
-                Wins.y++;
-            }
-
-            if (skipStats == false && (turboMode == false || Config.ShowStatsForSkippedBattles || manualSkip || (Config.BattleReport && State.GameManager.CurrentPreviewSkip == GameManager.PreviewSkip.SkipWithStats)))
-            {
-                int remainingGarrison = 0;
-                if (garrison != null)
-                    remainingGarrison = garrison.Where(s => s.Unit.IsDead == false).Count();
-                string defenderNames = "";
-                if (armies[1] != null)
-                    defenderNames += $"{armies[1].Name}\n";
-                if (village != null && (garrison?.Any() ?? false))
-                    defenderNames += $"{village.Name} Garrison\n";
-                State.GameManager.StatScreen.AttackerTitle.text = $"{AttackerName} - Attacker\n{armies[0].Name}";
-                State.GameManager.StatScreen.DefenderTitle.text = $"{DefenderName} - Defender\n{defenderNames}";
-                List<Unit> defenders = new List<Unit>();
-                if (armies[1] != null) defenders.AddRange(armies[1].Units);
-                if (garrison != null) defenders.AddRange(garrison.Select(s => s.Unit));
-                double endingAttackerPower = StrategicUtilities.UnitValue(armies[0].Units.Where(s => s.IsDead == false).ToList());
-                double endingDefenderPower = StrategicUtilities.UnitValue(defenders.Where(s => s.IsDead == false).ToList());
-                State.GameManager.StatScreen.VictoryType.text = TacticalStats.OverallSummary(StartingAttackerPower, endingAttackerPower, StartingDefenderPower, endingDefenderPower, remainingAttackers > 0);
-                State.GameManager.StatScreen.AttackerText.text = TacticalStats.AttackerSummary(remainingAttackers);
-                State.GameManager.StatScreen.DefenderText.text = TacticalStats.DefenderSummary(remainingDefenders - remainingGarrison, remainingGarrison);
-                State.GameManager.StatScreen.Open(AIAttacker && AIDefender);
-
-            }
-            else
-                State.GameManager.SwitchToStrategyMode();
-            autoAdvancing = false;
+            foreach (var a in living) a.PredatorComponent?.FreeAnyAlivePrey();
+            foreach (var a in living) { a.Fled = true; a.Targetable = false; a.Movement = 0; }
+        }
+        HandlePostBattleTraits(); // Preserve temporary glamour restoration within the retained combat framework.
+        // No legacy surrender reset, forced death, instant cleanup meal, full heal or strategic return.
+        foreach (var a in units.Where(a => !a.Unit.IsDead))
+        { a.PredatorComponent?.FreeAnyAlivePrey(); a.Unit.GiveExp(4); }
+        battleFinished = true; autoAdvancing = false;
+        if (State.GameManager.CompanyBattle != null)
+        {
+            State.GameManager.CompanyBattle.Complete(units, stalemate);
             return true;
         }
-        return false;
+        foreach (var a in units) { a.Unit.StatusEffects.Clear(); a.Unit.TempBoosts.ResetAll(); a.Unit.FinishCombat(); a.Unit.SetBarrier(0); }
+        if (!stalemate) { if (attackersRemain) Wins.x++; else Wins.y++; }
+        if (AIAttacker && AIDefender && Config.SkipAIOnlyStats)
+        { State.GameManager.SwitchToStrategyMode(); return true; }
+        var screen = State.GameManager.StatScreen;
+        screen.AttackerTitle.text = AttackerName; screen.DefenderTitle.text = DefenderName;
+        screen.VictoryType.text = stalemate ? "Stalemate — remaining units fled" : attackersRemain ? "Attackers victorious" : "Defenders victorious";
+        screen.AttackerText.text = TacticalStats.AttackerSummary(living.Count(a => a.Unit.Side == attackerSide));
+        screen.DefenderText.text = TacticalStats.DefenderSummary(living.Count(a => a.Unit.Side == defenderSide), 0);
+        screen.Open(AIAttacker && AIDefender);
+        return true;
     }
 
     private void CalculateRemaining(ref int remainingAttackers, ref int remainingDefenders)
     {
-        int surrenderedAttackers = 0;
-        int surrenderedDefenders = 0;
-
-        for (int i = 0; i < units.Count; i++)
-        {
-            if (units[i] != null && units[i].Fled == false)
-            {
-                Actor_Unit actor = units[i];
-                if (actor.Unit.IsDead == false)
-                {
-                    //if (actor.SelfPrey == null && actor.Visible == false || actor.Targetable == false)
-                    //{
-                    //    actor.Visible = true;
-                    //    actor.Targetable = true;
-                    //}
-                    if ((actor.SelfPrey?.Predator == null || actor.SelfPrey?.Predator.PredatorComponent?.IsActorInPrey(actor) == false || actor.SelfPrey.TurnsSinceLastDamage > 3 && (actor.SelfPrey.Predator.Unit.HasTrait(Traits.FriendlyStomach) || actor.SelfPrey.Predator.Unit.HasTrait(Traits.Endosoma))) && actor.Unit.IsDead == false && actor.Visible == false && actor.Targetable == false)
-                    {
-                        actor.SelfPrey = null;
-                        Debug.Log("Prey orphan found, fixing");
-                        actor.Targetable = true;
-                        actor.Visible = true;
-                    }
-                    if (actor.SelfPrey?.Predator != null && (actor.SelfPrey.Predator.Unit?.IsDead ?? true))
-                    {
-                        actor.SelfPrey.Predator.PredatorComponent.FreeAnyAlivePrey();
-                    }
-                    if (actor.Unit.Side == armies[0].Side)
-                    {
-                        remainingAttackers++;
-                        if ((actor.SelfPrey != null && actor.Unit.HasTrait(Traits.TheGreatEscape) || (actor.SelfPrey != null && actor.Unit.Stamina <= 0)))
-                            remainingAttackers--;
-                        if (actor.Surrendered)
-                            surrenderedAttackers++;
-                        var preyCount = actor.PredatorComponent?.PreyCount ?? 0;
-                        if (preyCount > 0)
-                        {
-                            remainingDefenders += preyCount;
-                            if ((actor.Unit.HasTrait(Traits.FriendlyStomach) || actor.Unit.HasTrait(Traits.Endosoma)))
-                            {
-                                remainingDefenders -= actor.PredatorComponent.GetDirectPrey().Where(s => actor.Unit.Side == s.Unit.Side || s.Unit.HasTrait(Traits.TheGreatEscape) || s.Unit.Stamina <= 0).Count();
-                            }
-                            else
-                            {
-                                remainingDefenders -= actor.PredatorComponent.GetDirectPrey().Where(s => s.Unit.HasTrait(Traits.TheGreatEscape)).Count(); 
-                            }
-                        }
-                    }
-                    else
-                    {
-                        remainingDefenders++;
-                        if ((actor.SelfPrey != null && actor.Unit.HasTrait(Traits.TheGreatEscape) || (actor.SelfPrey != null && actor.Unit.Stamina <= 0)))
-                            remainingDefenders--;
-                        if (actor.Surrendered)
-                            surrenderedDefenders++;
-                        var preyCount = actor.PredatorComponent?.PreyCount ?? 0;
-                        if (preyCount > 0)
-                        {
-                            remainingAttackers += preyCount;
-                            if (actor.Unit.HasTrait(Traits.FriendlyStomach) || actor.Unit.HasTrait(Traits.Endosoma))
-                            {
-                                remainingAttackers -= actor.PredatorComponent.GetDirectPrey().Where(s => actor.Unit.Side == s.Unit.Side || s.Unit.HasTrait(Traits.TheGreatEscape) || s.Unit.Stamina <= 0).Count();
-                            }
-                            else
-                            {
-                                remainingAttackers -= actor.PredatorComponent.GetDirectPrey().Where(s => s.Unit.HasTrait(Traits.TheGreatEscape)).Count();
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        if (currentTurn > 500)
-        {
-            if (surrenderedAttackers == remainingAttackers)
-            {
-                for (int i = 0; i < units.Count; i++)
-                {
-                    if (units[i] != null && units[i].Fled == false)
-                    {
-                        Actor_Unit actor = units[i];
-                        if (actor.Unit.IsDead == false)
-                        {
-                            if (actor.Unit.Side == armies[0].Side)
-                            {
-                                actor.Unit.Health = 0;
-                            }
-                        }
-
-                    }
-                }
-            }
-            else if (surrenderedDefenders == remainingDefenders)
-            {
-                for (int i = 0; i < units.Count; i++)
-                {
-                    if (units[i] != null && units[i].Fled == false)
-                    {
-                        Actor_Unit actor = units[i];
-                        if (actor.Unit.IsDead == false)
-                        {
-                            if (actor.Unit.Side != armies[0].Side)
-                            {
-                                actor.Unit.Health = 0;
-                            }
-                        }
-
-                    }
-                }
-            }
-        }
+        remainingAttackers = units.Count(a => !a.Unit.IsDead && !a.Fled && a.Unit.Side == attackerSide);
+        remainingDefenders = units.Count(a => !a.Unit.IsDead && !a.Fled && a.Unit.Side == defenderSide);
     }
 
-    void AssignLeftoverTroops(Army army, List<Actor_Unit> actors)
-    {
-        foreach (Actor_Unit actor in actors.ToList())
-        {
-            if (actor.Unit.IsDead)
-            {
-                actors.Remove(actor);
-            }
-            else
-            {  //Extra safety to eliminate the possibility of doubled units
-                retreatedAttackers.Remove(actor.Unit);
-                retreatedDefenders.Remove(actor.Unit);
-            }
-        }
-        List<Actor_Unit> leftover = new List<Actor_Unit>();
-        if (army != null)
-        {
-            foreach (Actor_Unit actor in actors.ToList()) //Prevent doubling up of retreated defected units
-            {
-                if (army.Units.Contains(actor.Unit))
-                {
-                    actors.Remove(actor);
-                }
-            }
 
-            foreach (Unit unit in army.Units.ToList())
-            {
-                if (unit.IsDead)
-                {
-                    army.Units.Remove(unit);
-                    State.World.Stats?.SoldiersLost(1, unit.Side);
-                }
-            }
-            if (actors.Any())
-            {
-                while (StrategicUtilities.ArmyCanFitUnit(army, actors.OrderByDescending(u => State.RaceSettings.GetDeployCost(u.Unit.Race) * u.Unit.TraitBoosts.DeployCostMult).Last().Unit))
-                {
-                    army.Units.Add(actors[0].Unit);
-                    actors.RemoveAt(0);
-                    if (!actors.Any())
-                        break;
-                }
-            }
-            army.RecalculateSizeValue();
-            if (army.RemainnigSize  < 0)
-            {
-                while (!StrategicUtilities.ArmyCanFitUnit(army, army.Units.OrderByDescending(u => State.RaceSettings.GetDeployCost(u.Race) * u.TraitBoosts.DeployCostMult).First()))
-                {
-                    var last = army.Units.OrderByDescending(u => State.RaceSettings.GetDeployCost(u.Race) * u.TraitBoosts.DeployCostMult).First();
-                    army.Units.Remove(last);
-                    actors.Add(new Actor_Unit(last));
-                    if (!army.Units.Any())
-                        break;
-                }
-            }
-        }
 
-        if (village != null && actors.Any())
-        {
-            foreach (var unit in actors.Select(s => s.Unit))
-            {
-                if (village.GetRecruitables().Contains(unit) == false)
-                    village.VillagePopulation.AddHireable(unit);
-            }
 
-            actors.Clear();
-        }
-    }
 
-    void ProcessFledUnits()
-    {
-        retreatedAttackers.RemoveAll(s => s.IsDead);
-        retreatedDefenders.RemoveAll(s => s.IsDead);
-    }
 
-    void ProcessConsumedCorpses()
-    {
-        if (Config.EdibleCorpses == false)
-            return;
-        Actor_Unit[] survivingPredators = units.Where(s => s.Unit.IsDead == false && s.Unit.Predator).ToArray();
-        if (survivingPredators.Length == 0)
-            return;
-        for (int i = 0; i < 500; i++)
-        {
-            Actor_Unit preyUnit = units.Where(s => s.Unit.IsDead && s.Unit.Health > s.Unit.MaxHealth * -1).FirstOrDefault();
-            if (preyUnit == null)
-                break;
-            Actor_Unit predatorUnit = survivingPredators.Where(s => s.Unit.Health < s.Unit.MaxHealth).OrderByDescending(s => s.Unit.MaxHealth - s.Unit.Health).FirstOrDefault();
-            if (predatorUnit == null)
-                predatorUnit = survivingPredators[State.Rand.Next(survivingPredators.Length)];
-            predatorUnit.Unit.GiveScaledExp(4, predatorUnit.Unit.Level - preyUnit.Unit.Level, true);
-            predatorUnit.Unit.Heal((preyUnit.Unit.MaxHealth + preyUnit.Unit.Health) / 2);
-            //Weight gain disabled for consuming corpses
-            preyUnit.Unit.Health = -999999;
-        }
 
-    }
 
-    void EatSurrenderedAllies()
-    {
-        if (Config.EatSurrenderedAllies == false)
-            return;
-        Actor_Unit[] survivingPredators = units.Where(s => s.Unit.IsDead == false && s.Unit.Predator && s.Unit.Predator).ToArray();
-        if (survivingPredators.Length == 0)
-            return;
-        for (int i = 0; i < 500; i++)
-        {
-            Actor_Unit preyUnit = units.Where(s => s.Unit.IsDead == false && s.Surrendered).FirstOrDefault();
-            if (preyUnit == null)
-                break;
-            Actor_Unit predatorUnit = survivingPredators.Where(s => s.Unit.Health < s.Unit.MaxHealth).OrderByDescending(s => s.Unit.MaxHealth - s.Unit.Health).FirstOrDefault();
-            if (predatorUnit == null)
-                predatorUnit = survivingPredators[State.Rand.Next(survivingPredators.Length)];
-            predatorUnit.Unit.GiveScaledExp(6, predatorUnit.Unit.Level - preyUnit.Unit.Level, true);
-            predatorUnit.Unit.Heal((preyUnit.Unit.MaxHealth + preyUnit.Unit.Health) / 2);
-            //Weight gain disabled for consuming allies
-            TacticalStats.RegisterAllyVore(predatorUnit.Unit.Side);
-            predatorUnit.Unit.DigestedUnits++;
-            preyUnit.Unit.Kill();
-            foreach (var item in preyUnit.Unit.AllConditionalTraits.Keys.Where(t => t.trigger == TraitConditionTrigger.OnDeath || t.trigger == TraitConditionTrigger.All).ToList())
-            {
-                if (ConditionalTraitConditionChecker.TacticalTraitConditionActive(preyUnit, item))
-                {
-                    preyUnit.Unit.ActivateConditionalTrait(item.id);
-                }
-                else
-                {
-                    preyUnit.Unit.DeactivateConditionalTrait(item.id);
-                }
-            }
-            if (predatorUnit.Unit.HasTrait(Traits.EssenceAbsorption) && predatorUnit.Unit.DigestedUnits % 4 == 0)
-                predatorUnit.Unit.GeneralStatIncrease(1);
-            preyUnit.Unit.Health = -999999;
-        }
-
-    }
 
 
 
@@ -5515,19 +4342,5 @@ Turns: {currentTurn}
         }
     }
 
-    private IEnumerator WaitForBuildingInput()
-    {
-        paused = true;
 
-        yield return BuildingInputUnpause();
-
-        paused = false;
-    }
-    private IEnumerator BuildingInputUnpause()
-    {
-        while (blockActive)
-        {
-            yield return null;
-        }
-    }
 }

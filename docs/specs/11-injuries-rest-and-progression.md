@@ -1,6 +1,6 @@
 # 11 — Persistent injuries, recovery, and downtime
 
-**Status:** Proposed specification. Planning only; execution has not started.
+**Status:** Initial grouped implementation complete; reported feedback corrections accepted. Broader integrated review and tuning remain spec12. See the [implementation report](../implementation/11-injuries-rest-and-progression.md) for tuning and verification.
 
 **Phase:** Phase 4 — complete the intended character experience
 
@@ -34,7 +34,7 @@ Study [01C](../architecture/01c-combat-equipment-and-results.md) found that batt
 
 ## Decisions, constraints, and risks
 
-- Agree injury chances, attrition thresholds, stat penalties, 'healthy' for sparring, recovery rates, treatment price/effect, post-battle HP baseline, and temporary/lasting HP interactions. Rest interruption for warnings/required choices is agreed.
+- The user authorized provisional tuning. Initial injury chances, thresholds, penalties, healthy-member criteria, recovery and treatment values are documented in the implementation report; refine them during12. The accepted15% post-battle baseline and separate HP pools remain in use. Rest interruption for warnings/required choices is agreed.
 - Descriptions stay plain and non-graphic; avoid amputation framing.
 - Damage-type and armor-location refinements can follow after the initial random-part model.
 
@@ -44,9 +44,12 @@ Injuries, treatment/rest UI, daily recovery/sparring, and complete persistent ch
 
 ## Execution record
 
-- Source trace and exact change locations: pending.
-- Implementation batches and user review: pending.
-- Checks actually performed and remaining checks: none for this spec yet.
+- One grouped milestone implements injury data/penalties, armor risk, daily recovery, explicit chosen-day rest, treatment and healthy-member sparring. User authorized provisional tuning; no species additions or new assets.
+- Source trace, tuning, actual checks and the single connected manual workflow are in the [implementation report](../implementation/11-injuries-rest-and-progression.md). Player review remains pending.
 
-Before execution, refine this spec with the architecture study, list its small change batches, and resolve decisions needed for the next batch. Follow the review and file-operation rules in [the roadmap](../conversion-roadmap.md). Design intent comes from [the campaign plan](../mercenary-company-campaign-plan.md) and the three curation checklists.
+Use milestone-sized review batches, as requested by the user. The initial numerical decisions are provisional; refine them through the integrated balance review. Follow the review and file-operation rules in [the roadmap](../conversion-roadmap.md). Design intent comes from [the campaign plan](../mercenary-company-campaign-plan.md) and the three curation checklists.
 
+
+###2026-11-01 feedback
+
+Company-owned exponential XP thresholds, challenge scaling and starter contract participation rewards replace the inherited cap sentinel; existing chosen level-up improvements remain. New injuries receive a battle-log entry and queued tactical text. Departures have a separate OK-only notice; simultaneous genuine wage warnings follow separately without consuming the grace day. See the [feedback report](../implementation/11-feedback-progression-and-notices.md). Player confirmation pending.

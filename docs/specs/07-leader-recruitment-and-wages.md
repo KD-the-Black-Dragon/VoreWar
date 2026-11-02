@@ -1,6 +1,6 @@
 # 07 — Curated starters, company members, recruitment, and wages
 
-**Status:** Proposed specification. Planning only; execution has not started.
+**Status:** Implemented with provisional tuning; combined runtime review user-accepted, 2026-11-01. See [milestone implementation and limits](../implementation/07-08-people-and-economy.md). Battle/injury integration remains09–11.
 
 **Phase:** Phase 3 — build the first company campaign loop
 
@@ -44,9 +44,14 @@ A created leader, curated starting roster, hiring/company screens, and persisten
 
 ## Execution record
 
-- Source trace and exact change locations: pending.
-- Implementation batches and user review: pending.
-- Checks actually performed and remaining checks: none for this spec yet.
+- Source trace and exact changes: [07–08 implementation](../implementation/07-08-people-and-economy.md).
+- One grouped people/economy implementation; user selected Avians/ranged, Lizards/magic, Gnolls/melee and animal SpitterSlugs, and authorized provisional tuning.
+- Unity compilation and scene opening passed; read-only wiring/source/resource checks performed. Actual creation, hiring, debt, equipment and nonempty save round-trips await the combined runtime review. No Play-mode or battle pass claimed.
 
-Before execution, refine this spec with the architecture study, list its small change batches, and resolve decisions needed for the next batch. Follow the review and file-operation rules in [the roadmap](../conversion-roadmap.md). Design intent comes from [the campaign plan](../mercenary-company-campaign-plan.md) and the three curation checklists.
+For subsequent work, refine this spec from actual runtime findings and resolve decisions needed for the next milestone. Follow the review and file-operation rules in [the roadmap](../conversion-roadmap.md). Design intent comes from [the campaign plan](../mercenary-company-campaign-plan.md) and the three curation checklists.
 
+
+
+## Grouped milestone preparation (2026-11-01)
+
+User authorized grouped07–08 following accepted06 preview. [Source/dependency preparation](../implementation/07-08-people-economy-preparation.md) records item/Unit/customizer/clock integration and required species/tuning decisions. Those decisions have now been supplied explicitly and implemented; the preparation report is historical, and the implementation report above is current. One connected review milestone, not per-species/control tests.

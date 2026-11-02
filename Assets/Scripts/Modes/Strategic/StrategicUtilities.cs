@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-01: Complete approved ability retirement and close legacy reactivation paths (spec 05A3B17).
+// 2026-11-01: Separate stored species reads from intentional override creation (spec 03B3C).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -693,18 +697,13 @@ static class StrategicUtilities
         {
             int count = army.Units.Count;
             double power = 0;
-            double effectiveLevelBoost = (army.LeaderIfInArmy()?.GetStatBase(Stat.Leadership) ?? 0) / 10 * .5;
             foreach (Unit unit in army.Units)
             {
-                var racePower = State.RaceSettings.Get(unit.Race).PowerAdjustment;
-                if (racePower == 0)
-                {
-                    racePower = RaceParameters.GetTraitData(unit).PowerAdjustment;
-                }
+                var racePower = State.RaceSettings.GetPowerAdjustment(unit.Race);
                 double weaponFactor;
                 if (unit.GetBestRanged() != null) weaponFactor = 1.5 / 4 * unit.GetBestRanged().Damage;
                 else weaponFactor = unit.GetBestMelee().Damage / 4f;
-                power += weaponFactor * racePower * (((unit.GetScale() - 1) * 0.9) + 1) * Math.Pow(1.2, unit.Level - 1 + effectiveLevelBoost + (unit.GetStatBase(Stat.Leadership) > 0 ? 3 : 0));
+                power += weaponFactor * racePower * (((unit.GetScale() - 1) * 0.9) + 1) * Math.Pow(1.2, unit.Level - 1);
 
             }
             finalPower = count * power;
@@ -722,18 +721,13 @@ static class StrategicUtilities
             int count = units.Count;
             double power = 0;
 
-            double effectiveLevelBoost = (units.Where(s => s.GetStat(Stat.Leadership) > 0).FirstOrDefault()?.GetStatBase(Stat.Leadership) ?? 0) / 10 * .5f;
             foreach (Unit unit in units)
             {
-                var racePower = State.RaceSettings.Get(unit.Race).PowerAdjustment;
-                if (racePower == 0)
-                {
-                    racePower = RaceParameters.GetTraitData(unit).PowerAdjustment;
-                }
+                var racePower = State.RaceSettings.GetPowerAdjustment(unit.Race);
                 double weaponFactor;
                 if (unit.GetBestRanged() != null) weaponFactor = 1.5 / 4 * unit.GetBestRanged().Damage;
                 else weaponFactor = unit.GetBestMelee().Damage / 4f;
-                power += weaponFactor * racePower * (((unit.GetScale() - 1) * 0.9) + 1) * Math.Pow(1.2, unit.Level - 1 + effectiveLevelBoost + (unit.GetStatBase(Stat.Leadership) > 0 ? 3 : 0));
+                power += weaponFactor * racePower * (((unit.GetScale() - 1) * 0.9) + 1) * Math.Pow(1.2, unit.Level - 1);
             }
             finalPower = count * power;
         }
@@ -752,15 +746,11 @@ static class StrategicUtilities
         {
             foreach (Unit unit in units)
             {
-                var racePower = State.RaceSettings.Get(unit.Race).PowerAdjustment;
-                if (racePower == 0)
-                {
-                    racePower = RaceParameters.GetTraitData(unit).PowerAdjustment;
-                }
+                var racePower = State.RaceSettings.GetPowerAdjustment(unit.Race);
                 double weaponFactor;
                 if (unit.GetBestRanged() != null) weaponFactor = 1.5 / 4 * unit.GetBestRanged().Damage;
                 else weaponFactor = unit.GetBestMelee().Damage / 4;
-                value += weaponFactor * racePower * Math.Pow(1.2, unit.Level - 1 + (unit.GetStatBase(Stat.Leadership) > 0 ? 3 : 0));
+                value += weaponFactor * racePower * Math.Pow(1.2, unit.Level - 1);
             }
         }
         return value;
@@ -1205,6 +1195,7 @@ static class StrategicUtilities
                 weight[i] = unit.StatWeights.Weight[i];
             }
         }
+        weight[(int)Stat.Leadership] = 0;
         int highest = 0;
         for (int i = 0; i < priority.Length; i++)
         {
@@ -1248,11 +1239,7 @@ static class StrategicUtilities
             MercenaryContainer merc = new MercenaryContainer();
             merc.Unit = unit;
             merc.Title = $"{InfoPanel.RaceSingular(merc.Unit)} - Mercenary";
-            var power = State.RaceSettings.Get(merc.Unit.Race).PowerAdjustment;
-            if (power == 0)
-            {
-                power = RaceParameters.GetTraitData(merc.Unit).PowerAdjustment;
-            }
+            var power = State.RaceSettings.GetPowerAdjustment(merc.Unit.Race);
             merc.Cost = (int)((25 + State.Rand.Next(15) + (.12 * unit.Experience)) * UnityEngine.Random.Range(0.8f, 1.2f) * power);
             mercDestination.Add(merc);
             originArmy.Units.Remove(unit);
@@ -1295,11 +1282,7 @@ static class StrategicUtilities
             MercenaryContainer merc = new MercenaryContainer();
             merc.Unit = unit;
             merc.Title = $"{InfoPanel.RaceSingular(merc.Unit)} - Mercenary";
-            var power = State.RaceSettings.Get(merc.Unit.Race).PowerAdjustment;
-            if (power == 0)
-            {
-                power = RaceParameters.GetTraitData(merc.Unit).PowerAdjustment;
-            }
+            var power = State.RaceSettings.GetPowerAdjustment(merc.Unit.Race);
             merc.Cost = (int)((25 + State.Rand.Next(15) + (.12 * unit.Experience)) * UnityEngine.Random.Range(0.8f, 1.2f) * power);
             mercDestination.Add(merc);
             originArmy.Units.Remove(unit);

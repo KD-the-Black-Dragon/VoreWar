@@ -1,5 +1,9 @@
 // Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Remove the retired Unit Editor hyperlink from unit inspection (spec 02B).
+// 2026-11-01: Label out-of-fight units as downed in character information (spec 10).
+// 2026-11-01: Use the shared individual display names for retained species (09–10 feedback).
+// 2026-11-01: Show persistent injury penalties in unit inspection, including Pure Tactical (spec 11).
+// 2026-11-02: Show per-level XP and remaining progress consistently in unit details (spec 13 feedback).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Linq;
@@ -81,13 +85,13 @@ public class InfoPanel
 
     private void UpdateBars(Unit actor, bool showNextText = false)
     {
-        UnitInfoPanel.ExpBar.GetComponentInChildren<Text>().text = $"EXP: {(int)actor.Experience} ";
+        UnitInfoPanel.ExpBar.GetComponentInChildren<Text>().text = $"EXP: {actor.CurrentLevelExperience:0.#}/{actor.CurrentLevelExperienceRequired} ";
         if (showNextText)
-            UnitInfoPanel.ExpBar.GetComponentInChildren<Text>().text += $"(To Next: {actor.ExperienceRequiredForNextLevel - (int)actor.Experience})";
+            UnitInfoPanel.ExpBar.GetComponentInChildren<Text>().text += $"(To Next: {Math.Max(0, actor.CurrentLevelExperienceRequired - actor.CurrentLevelExperience):0.#})";
         UnitInfoPanel.HealthBar.GetComponentInChildren<Text>().text = $"Health: {actor.Health}/{actor.MaxHealth}" + (actor.Barrier > 0 ? $" + {actor.Barrier}" : "");
         UnitInfoPanel.ManaBar.GetComponentInChildren<Text>().text = $"Mana: {actor.Mana}/{actor.MaxMana}";
-        if (actor.ExperienceRequiredForNextLevel != 0)
-            UnitInfoPanel.ExpBar.value = (actor.Experience - actor.GetExperienceRequiredForLevel(actor.Level - 1)) / (actor.ExperienceRequiredForNextLevel - actor.GetExperienceRequiredForLevel(actor.Level - 1));
+        if (actor.CurrentLevelExperienceRequired != 0)
+            UnitInfoPanel.ExpBar.value = actor.CurrentLevelExperience / actor.CurrentLevelExperienceRequired;
         else
             UnitInfoPanel.ExpBar.value = 1;
         UnitInfoPanel.HealthBar.value = actor.HealthPct;
@@ -147,6 +151,7 @@ public class InfoPanel
 
     public static string RaceSingular(Unit unit)
     {
+        if (!SpeciesPolicy.IsRetired(unit.Race)) return SpeciesPolicy.DisplayName(unit.Race);
         if (unit.Race >= Race.Selicia)
             return unit.Race.ToString();
         switch (unit.Race)
@@ -798,12 +803,13 @@ public class InfoPanel
             if (unit.SavedCopy != null && unit.SavedVillage != null)
                 sb.AppendLine($"Imprinted");
             if (actor?.Surrendered ?? false)
-                sb.AppendLine("Unit has surrendered!");
+                sb.AppendLine("Unit is downed for the remainder of this battle.");
             string traits = unit.ListTraits(!(TacticalUtilities.IsUnitControlledByPlayer(unit) && TacticalUtilities.PlayerCanSeeTrueSide(unit)));
             if (Config.RaceTraitsEnabled == false && (traits == ""))
                 sb.AppendLine("Race Traits disabled");
             if (traits != "")
                 sb.AppendLine("Traits:\n" + traits);
+            if (unit.Injuries.Count > 0) sb.AppendLine("Injuries:\n" + string.Join("\n", unit.Injuries.Select(CompanyInjuries.Description).ToArray()));
             StringBuilder sbSecond = new StringBuilder();
             sbSecond.AppendLine("Status:");
             if (unit.HasTrait(Traits.Frenzy) && unit.EnemiesKilledThisBattle > 0)

@@ -3,6 +3,9 @@
 // 2026-10-30: Remove legacy event initialization and startup/reset event-file seeding (spec 04A).
 // 2026-10-30: Retire rejected-species name seeds and reset active lists without deleting paths (spec 03B2).
 // 2026-10-31: Retire legacy world load/preview and empire campaign entry routes (spec 05A1).
+// 2026-11-01: Keep legacy tactical saves from writing incomplete company campaigns (spec 10).
+// 2026-11-02: Replace obsolete campaign-not-available save/tool messages with current checkpoint guidance (spec 12).
+// 2026-11-02: Clear the routine race-settings success message and match main-menu load/campaign guidance (spec 15C).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
 using System;
@@ -502,7 +505,7 @@ public static class State
             {
                 byte[] bytes = File.ReadAllBytes(RaceSaveDataName);
                 RaceSettings = SerializationUtility.DeserializeValue<RaceSettings>(bytes, DataFormat.Binary);
-                GameManager.Start_Mode.miscText.text = "Successfully read race settings";
+                GameManager.Start_Mode.miscText.text = string.Empty;
                 RaceSettings.Sanitize();
             }
             else
@@ -543,6 +546,7 @@ public static class State
 
     public static void Save(string filename)
     {
+        if (GameManager.CompanyBattle != null) { GameManager.CreateMessageBox("Company battles use the saved prebattle checkpoint. Save again after the results are settled."); return; }
         try
         {
             for (int i = 0; i < 3; i++)
@@ -580,8 +584,8 @@ public static class State
 
     }
 
-    public const string LegacyLoadUnavailableMessage = "Legacy VoreWar saves cannot be loaded in this conversion. Company save support will be added with the new campaign.";
-    public const string CampaignUnavailableMessage = "The empire campaign is retired. The mercenary-company campaign is not available yet.";
+    public const string LegacyLoadUnavailableMessage = "Legacy VoreWar saves cannot be loaded in this conversion. Use Load Saved Game from the main menu to resume a company.";
+    public const string CampaignUnavailableMessage = "The empire campaign is retired. Choose New Campaign from the main menu.";
 
     public static World PreviewSave(string filename)
     {

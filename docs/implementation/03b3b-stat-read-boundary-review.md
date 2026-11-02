@@ -82,3 +82,7 @@ Two nonretired prototype owners retain rejected destinations: MatronsMinions.Lea
 ## Verification and limits
 
 Source inspection only. No Unity build/import, Play-mode test, personal-data read, new tests/framework or source edits. The user accepted the preceding compile/scene/manual results; this review does not extend those results to real battles or old-save safety. Source files remain unchanged during this packet. Existing license/attribution and all source notices are preserved; no new source notices apply to untouched files. No files deleted or moved.
+
+## Follow-up after campaign-provider retirement (2026-11-01)
+
+05A1–05A6 have retired the application/save/campaign providers identified above. [05A7 residual review](05a7-residual-boundary-and-metadata-review.md) refreshes the remaining caller inventory and removes randomized dummy Unit construction from the parameter metadata getter without changing any prototype or dispatch result. RaceSettings stored/lazy-creation and graphics readers still require grouped closure before the 90 prototype definitions can be retired. Earlier line numbers in this report are historical.

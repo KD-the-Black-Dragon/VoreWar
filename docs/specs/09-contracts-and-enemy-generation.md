@@ -1,6 +1,6 @@
 # 09 — Contracts, reputation, and procedural enemy power
 
-**Status:** Proposed specification. Planning only; execution has not started.
+**Status:** Implemented as grouped09–10 with provisional tuning, 2026-11-01; agent compile/scene/source checks passed; one connected runtime review pending. See [implementation and boundaries](../implementation/09-10-contract-and-battle-loop.md). Injury/recovery work remains11.
 
 **Phase:** Phase 3 — build the first company campaign loop
 
@@ -43,9 +43,9 @@ Contracts/reputation screens, saved targets, and a bounded procedural force gene
 
 ## Execution record
 
-- Source trace and exact change locations: pending.
-- Implementation batches and user review: pending.
-- Checks actually performed and remaining checks: none for this spec yet.
+- Source trace, actual implementation, numeric choices and save boundaries: [grouped09–10 report](../implementation/09-10-contract-and-battle-loop.md).
+- User accepted07–08, authorized the next grouped milestone and closed Unity for checks. No new species inferred.
+- Final compilation, explicit/read-only scene opening and source/resource checks passed. Exact evidence is recorded in the report/checkpoint; actual battle outcomes and nonempty result/revival round-trips await the combined player review. No Play-mode or balance pass claimed.
 
-Before execution, refine this spec with the architecture study, list its small change batches, and resolve decisions needed for the next batch. Follow the review and file-operation rules in [the roadmap](../conversion-roadmap.md). Design intent comes from [the campaign plan](../mercenary-company-campaign-plan.md) and the three curation checklists.
+For subsequent work, refine this spec from actual runtime findings and resolve decisions needed for the next milestone. Follow the review and file-operation rules in [the roadmap](../conversion-roadmap.md). Design intent comes from [the campaign plan](../mercenary-company-campaign-plan.md) and the three curation checklists.
 

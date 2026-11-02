@@ -1,3 +1,6 @@
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-01: Complete approved ability retirement and close legacy reactivation paths (spec 05A3B17).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -726,46 +729,12 @@ public class Recruit_Mode : SceneBase
 
     void MakeClone(Unit unit, int cost)
     {
-        if (empire.Gold < cost)
-            return;
-        empire.SpendGold(cost);
-        var clonedUnit = unit.Clone();
-        unit.SavedCopy = clonedUnit;
-        unit.SavedVillage = village;
-        GenText();
+        State.GameManager.CreateMessageBox("Legacy revival and soul imprints are retired.");
     }
 
     void ResurrectLeader()
     {
-        empire.SpendGold(100);
-        empire.Leader.LeaderLevelDown();
-        empire.Leader.Health = empire.Leader.MaxHealth;
-        empire.Leader.FixedSide = empire.Side;
-        empire.Leader.Type = UnitType.Leader;
-        if (village.GetStartingXp() > empire.Leader.Experience)
-        {
-            empire.Leader.SetExp(village.GetStartingXp());
-        }
-        State.World.Stats.ResurrectedLeader(empire.Side);
-        army.Units.Add(empire.Leader);
-        if (Config.LeadersRerandomizeOnDeath)
-        {
-            empire.Leader.TotalRandomizeAppearance();
-            empire.Leader.ReloadTraits();
-            empire.Leader.InitializeTraits();
-        }
-
-        UpdateActorList();
-        GenText();
-        if (army.Units.Count > Config.ScoutMax && army.RemainingMP > Config.ArmyMP)
-        {
-            army.RemainingMP = Config.ArmyMP;
-        }
-        if (Config.LeaderSpawnFreeze)
-        {
-            army.JustSpawnedLeader = true;
-            army.RemainingMP = 0;
-        }
+        State.GameManager.CreateMessageBox("Legacy revival and soul imprints are retired.");
     }
 
     void BuildRename()

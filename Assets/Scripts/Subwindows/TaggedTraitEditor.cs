@@ -1,4 +1,7 @@
-﻿using OdinSerializer.Utilities;
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-01: Separate stored species reads from intentional override creation (spec 03B3C).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using OdinSerializer.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +30,7 @@ public class TaggedTraitEditor : MonoBehaviour
 
         AllTaggedTraits = new List<TaggedTrait>();
         TierSelect = new Dictionary<TraitTier, bool>();
-        item = State.RaceSettings.Get(race);
+        item = State.RaceSettings.GetOrCreate(race);
         CurrentTraits = incomingtraits;
         raceName.text = item.SpawnRace.ToString();
         NameSearch.onValueChanged.AddListener((x) =>

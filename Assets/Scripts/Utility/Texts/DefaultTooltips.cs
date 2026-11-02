@@ -1,4 +1,7 @@
-﻿static class DefaultTooltips
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-02: Use the preferred herm terminology and correct outright tooltip typos (spec 15B feedback).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+static class DefaultTooltips
 {
     internal static string Tooltip(int tooltip)
     {
@@ -16,7 +19,7 @@ Legacy strategic AI starts with small armies and works its way up, but always pl
 Basic is equivalent to the AI from 15E, it plays at a decent level 
 Advanced is a slightly tweaked version of basic to play at a slightly higher level.
 Cheating is designed for advanced players. It gets a moderate amount of extra gold each turn, and gains exp at a slightly faster rate.
-Further levels of cheating boost that further, and also effect starting Exp.   Brutals can even feed off each other to an extent, so be warned.";
+Further levels of cheating boost that further, and also affect starting Exp.   Brutals can even feed off each other to an extent, so be warned.";
             case 5:
                 return @"Legacy tactical AI plays somewhat wastefully, with poor target prioritization
 Full Strength will prioritize damaged targets and generally plays pretty well";
@@ -75,12 +78,12 @@ The starting spots are assigned counter-clockwise from low team number to high t
                 return "Sets a hard level cap.  This will be the absolute maximum level a unit can reach.";
             case 30:
                 return @"When enabled, preds of certain races can gain weight when absorbing prey.
-It is recommended to set units' breast/body/cock sizes to lower vales for a more pronounced effect and to allow more room to grow.";
+It is recommended to set units' breast/body/cock sizes to lower values for a more pronounced effect and to allow more room to grow.";
             case 31:
                 return @"Controls the amount of females vs males that appear.  
 Does not retroactively affect already created units.";
             case 32:
-                return @"Affects what % of all units end up as Futanari / Hermaphrodite.  
+                return @"Affects what % of all units end up as Futanari / Herm.  
 Does not retroactively affect already created units.";
             case 33:
                 return @"Affects what % of all units wear clothes, does not prevent you from changing individual characters in the customizer.  Does not retroactively affect already created units.";
@@ -132,7 +135,7 @@ Useful for bringing old save games up to speed, but new games are automatically 
             case 48:
                 return "When enabled, preds' bellies (or balls/breasts in the case of CV/BV) will be animated.";
             case 49:
-                return "When enabled, a brief skull effect displays when a pred finishes diegesting and begins absorbing a prey.";
+                return "When enabled, a brief skull effect displays when a pred finishes digesting and begins absorbing a prey.";
             case 50:
                 return "Affects how likely a unit is to burp after absorbing prey, or after digesting if \"Burp after Digestion\" is enabled.";
             case 51:
@@ -140,7 +143,7 @@ Useful for bringing old save games up to speed, but new games are automatically 
 and scat-related tactical log messages will be displayed.";
             case 52:
                 return @"Causes units to surrender when they receive what would normally be a killing blow, allowing them to be eaten, or possibly survive.
-You can adjust the fractional odds of it occuring, to anywhere from 0% to 100% of the time.";
+You can adjust the fractional odds of it occurring, to anywhere from 0% to 100% of the time.";
             case 53:
                 return "When enabled, scat can contain bones (it's random whether or not they're visible).";
             case 54:

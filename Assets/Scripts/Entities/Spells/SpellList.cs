@@ -6,6 +6,7 @@
 // 2026-10-31: Retire Reanimate execution and include it in spell availability/casting retirement (spec 05A3B10).
 // 2026-10-31: Retire Bind/Resummon callbacks and spell availability (spec 05A3B11).
 // 2026-10-31: Retire Capture Net, Charm, Hypnotic Gas and Whispers casting callbacks/availability (spec 05A3B14).
+// 2026-11-01: Reject commands by downed casters and intentional hostile targeting while preserving collateral spells (spec 10).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Collections.Generic;
@@ -1697,8 +1698,12 @@ public class Spell
         SpellType == SpellTypes.HypnoGas || SpellType == SpellTypes.Whispers;
     
 
+    internal bool IsConsumption { get { return SpellType == SpellTypes.Maw || SpellType == SpellTypes.GateMaw || SpellType == SpellTypes.ForceFeed; } }
+    internal bool AllowsDownedTarget { get { return IsConsumption || SpellType == SpellTypes.SummonDoppelganger; } }
+
     internal bool TryCast(Actor_Unit actor, Vec2i location)
     {
+        if (actor.Surrendered) return false;
         if (IsRetired)
             return false;
         if ((actor.Unit.Mana >= ManaCost || IsFree) && actor.Movement > 0)
@@ -1716,6 +1721,7 @@ public class Spell
     }
     internal bool TryCast(Actor_Unit actor, Actor_Unit target)
     {
+        if (actor.Surrendered || (target.Surrendered && !AllowsDownedTarget && (this is DamageSpell || AcceptibleTargets.Contains(AbilityTargets.Enemy)))) return false;
         if (IsRetired)
             return false;
         if ((actor.Unit.Mana >= ManaCost || IsFree) && actor.Movement > 0)

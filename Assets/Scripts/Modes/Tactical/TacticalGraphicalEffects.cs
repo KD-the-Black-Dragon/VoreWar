@@ -1,4 +1,8 @@
-﻿using UnityEngine;
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-01: Disconnect rejected graphics instances and their typed rendering hooks (spec 03B4).
+// 2026-11-01: Retire rejected-only projectile branches and setup helpers (spec 03B8).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using UnityEngine;
 
 static class TacticalGraphicalEffects
 {
@@ -23,14 +27,6 @@ static class TacticalGraphicalEffects
         var sprite = ArrowType(actor, out Material material);
         if (actor.Unit.Race == Race.Panthers)
             PantherSetup(arrow, actor);
-        if (actor.Unit.Race == Race.Bears)
-            BearSetup(arrow, actor);
-        if (actor.Unit.Race == Race.Cherub)
-            CherubSetup(arrow, actor);
-        if (actor.Unit.Race == Race.Seraph)
-            SeraphSetup(arrow, actor);
-        if (actor.Unit.Race == Race.SoulSprite)
-            SoulSpriteSetup(arrow, actor);
         if (sprite != null) arrow.GetComponentInChildren<SpriteRenderer>().sprite = sprite;
         if (material != null) arrow.GetComponentInChildren<SpriteRenderer>().material = material;
         arrow.Setup(actor.Position, target.Position, target);
@@ -70,172 +66,37 @@ static class TacticalGraphicalEffects
 
     }
 
-    private static void BearSetup(ArrowEffect obj, Actor_Unit actor)
-    {
-        Weapon weapon = actor.BestRanged;
-//        if (weapon.Graphic == 4)
-//        {
-//            Sprite[] sprites = SpriteDictionary.Bears ;
-//            anim.Frame = new Sprite[]
-//            {
-//                sprites[34],
-//            };
-//            anim.FrameTime = new float[] { 1f };
-//        }
-        if (weapon.Graphic == 6)
-        {
-            var anim = obj.gameObject.AddComponent<AnimationEffectComponent>();
-            anim.Repeat = true;
-            Sprite[] sprites = SpriteDictionary.Bears;
-            anim.Frame = new Sprite[]
-            {
-                sprites[36],
-                sprites[37],
-            };
-            anim.FrameTime = new float[] { .025f, .025f};
-        }
 
-    }
-    private static void CherubSetup(ArrowEffect obj, Actor_Unit actor)
-    {
-        Weapon weapon = actor.BestRanged;
-        {
-            var anim = obj.gameObject.AddComponent<AnimationEffectComponent>();
-            anim.Repeat = true;
-            Sprite[] sprites = SpriteDictionary.AngelProjectile;
-            anim.Frame = new Sprite[]
-            {
-                sprites[0],
-                sprites[1],
-                sprites[2],
-                sprites[3],
-            };
-            anim.FrameTime = new float[] { .1f, .1f, .1f, .1f};
-        }
 
-    }
-    private static void SeraphSetup(ArrowEffect obj, Actor_Unit actor)
-    {
-        Weapon weapon = actor.BestRanged;
-        {
-            var anim = obj.gameObject.AddComponent<AnimationEffectComponent>();
-            anim.Repeat = true;
-            Sprite[] sprites = SpriteDictionary.AngelProjectile;
-            anim.Frame = new Sprite[]
-            {
-                sprites[4],
-                sprites[5],
-                sprites[6],
-                sprites[7],
-            };
-            anim.FrameTime = new float[] { .1f, .1f, .1f, .1f};
-        }
 
-    }
-    private static void SoulSpriteSetup(ArrowEffect obj, Actor_Unit actor)
-    {
-        Weapon weapon = actor.BestRanged;
-        {
-            var anim = obj.gameObject.AddComponent<AnimationEffectComponent>();
-            anim.Repeat = true;
-            Sprite[] sprites = SpriteDictionary.AngelProjectile;
-            anim.Frame = new Sprite[]
-            {
-                sprites[8],
-                sprites[9],
-                sprites[10],
-                sprites[11],
-                sprites[12],
-                sprites[13],
-                sprites[14],
-            };
-            anim.FrameTime = new float[] { .1f, .1f, .1f, .1f, .1f, .1f, .1f};
-        }
 
-    }
     static Sprite ArrowType(Actor_Unit actor, out Material material)
     {
         Weapon weapon = actor.BestRanged;
         material = null;
-        if (actor.Unit.Race == Race.Harpies)
-        {
-            if (weapon.Graphic == 4)
-                return SpriteDictionary.Harpies[27];
-            else if (weapon.Graphic == 6)
-                return SpriteDictionary.Harpies[28];
-        }
-        else if (actor.Unit.Race == Race.Imps)
-        {
-            if (weapon.Graphic == 4)
-                return SpriteDictionary.NewimpBase[93];
-        }
 
-        else if (actor.Unit.Race == Race.Scylla)
-        {
-            if (weapon.Graphic == 4)
-                return SpriteDictionary.Scylla[22];
-            else if (weapon.Graphic == 6)
-                return SpriteDictionary.Scylla[23];
-        }
-        else if (actor.Unit.Race == Race.Slimes)
-        {
-            if (weapon.Graphic == 4)
-            {
-                material = Races.Slimes.GetSlimeAccentMaterial(actor);
-                return SpriteDictionary.Slimes[16];
-            }
-            else if (weapon.Graphic == 6)
-                return SpriteDictionary.Slimes[17];
-        }
-        else if (actor.Unit.Race == Race.Crypters)
-        {
-            if (weapon.Graphic == 6)
-                return SpriteDictionary.Crypters[27];
-        }
-        else if (actor.Unit.Race == Race.Kangaroos)
+
+
+
+
+        if (actor.Unit.Race == Race.Kangaroos)
         {
             if (weapon.Graphic == 4)
                 return SpriteDictionary.Kangaroos[125];
             else if (weapon.Graphic == 6)
                 return SpriteDictionary.Kangaroos[126];
         }
-        else if (actor.Unit.Race == Race.Tigers && actor.Unit.ClothingType == 1)
-            return SpriteDictionary.Slimes[17];
         else if (actor.Unit.Race == Race.Kobolds)
             return SpriteDictionary.Kobolds[20];
         else if (actor.Unit.Race == Race.Equines && weapon.Graphic == 6)
             return SpriteDictionary.EquineClothes[48];
-        else if (actor.Unit.Race == Race.Alraune && (weapon.Graphic == 4 || weapon.Graphic == 6))
-            return SpriteDictionary.Slimes[17];
         else if (actor.Unit.Race == Race.SpitterSlugs)
             return SpriteDictionary.SpitterSlug[10];
-        else if (actor.Unit.Race == Race.EarthDryad)
-            return SpriteDictionary.DryadSprites3[17];
-        else if (actor.Unit.Race == Race.RiverDryad)
-            return SpriteDictionary.DryadSprites5[17];
         else if (actor.Unit.Race == Race.Bats)
             return SpriteDictionary.Demibats1[132];
-        else if (actor.Unit.Race == Race.RwuMercenaries && (weapon.Graphic == 4 || weapon.Graphic == 6))
-            return SpriteDictionary.Slimes[17];
-        else if (actor.Unit.Race == Race.Tatltuae)
-            return SpriteDictionary.Equaleon[37];// intentionally blank sprite
-        else if (actor.Unit.Race == Race.Hamsters && (weapon.Graphic == 4 || weapon.Graphic == 6))
-            return SpriteDictionary.Slimes[17];
         else if (actor.Unit.Race == Race.Lupine && (weapon.Graphic == 4 || weapon.Graphic == 6))
             return SpriteDictionary.Slimes[17];
-        else if (actor.Unit.Race == Race.Cherub)
-            return SpriteDictionary.AngelProjectile[0];
-        else if (actor.Unit.Race == Race.Seraph)
-            return SpriteDictionary.AngelProjectile[4];
-        else if (actor.Unit.Race == Race.Seraph)
-            return SpriteDictionary.AngelProjectile[8];
-        else if (actor.Unit.Race == Race.Bears)
-        {
-            if (weapon.Graphic == 4)
-                return SpriteDictionary.Bears[34];
-            else if (weapon.Graphic == 6)
-                return SpriteDictionary.Bears[36];
-        }
+
         else if (actor.Unit.Race == Race.Panthers)
         {
             if (weapon.Graphic == 4)
@@ -250,29 +111,9 @@ static class TacticalGraphicalEffects
             else if (weapon.Graphic == 6)
                 return SpriteDictionary.Bees1[89];
         }
-        else if (actor.Unit.Race == Race.Merfolk && weapon.Graphic == 4 || weapon.Graphic == 6)
-            return SpriteDictionary.Slimes[17];
-        else if (actor.Unit.Race == Race.Vipers)
-        {
-            if (weapon.Graphic == 4)
-                return SpriteDictionary.Vipers1[20];
-            else if (weapon.Graphic == 6)
-                return SpriteDictionary.Vipers1[20];
-        }
-        else if (actor.Unit.Race == Race.Bears)
-        {
-            if (weapon.Graphic == 4)
-                return SpriteDictionary.Bears[34];
-            else if (weapon.Graphic == 6)
-                return SpriteDictionary.Bears[36];
-        }
-        else if (actor.Unit.Race == Race.Yordles)
-        {
-            if (weapon.Graphic == 4)
-                return SpriteDictionary.YordlesCustomization2[189];
-            else if (weapon.Graphic == 6)
-                return SpriteDictionary.YordlesCustomization2[190];
-        }
+
+
+
         return null;
     }
 

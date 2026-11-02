@@ -1,6 +1,6 @@
 # 04 — Reset legacy prose and retire 4X events
 
-**Status:** Source implementation complete across accepted 04A/04B1 and implemented [04B2](../implementation/04b2-callback-and-descriptor-reset.md), 2026-10-30. 04B2 compilation/scene/source checks passed; the user accepted its menu smoke review and authorized 03B. Battle-log runtime verification is deferred until approved species exist. No new company narrative/events authored.
+**Status:** Functional retirement milestone complete, 2026-11-01, with final agent checks passed as recorded in the [closure report](../implementation/phase-2-cleanup-closure.md). Earlier packet records remain historical. Combat/log scenarios await approved species; distribution/shared-asset review remains a release gate.
 
 **Phase:** Phase 2 — retire unwanted systems
 
@@ -56,3 +56,8 @@ Narrative inventory with replacement coverage, neutral placeholders, and a disab
 
 Before execution, refine this spec with the architecture study, list its small change batches, and resolve decisions needed for the next batch. Follow the review and file-operation rules in [the roadmap](../conversion-roadmap.md). Design intent comes from [the campaign plan](../mercenary-company-campaign-plan.md) and the three curation checklists.
 
+
+
+## Consolidated cleanup milestone closure (2026-11-01)
+
+See [phase-2 cleanup closure](../implementation/phase-2-cleanup-closure.md) for current accepted work, exact retained services and deferred combat/release gates. Earlier packet status lines are historical. No further per-packet menu tests are required; final milestone verification status is in that report. New campaign/character mechanics remain subsequent specs.

@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-01: Complete approved ability retirement and close legacy reactivation paths (spec 05A3B17).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -684,35 +687,7 @@ class StrategicArmyCommander
 
     Unit ResurrectLeader(Army army, Village village)
     {
-        empire.SpendGold(100);
-        empire.Leader.Side = AISide;
-        empire.Leader.FixedSide = AISide;
-        empire.Leader.Type = UnitType.Leader;
-        empire.Leader.LeaderLevelDown();
-        empire.Leader.Health = empire.Leader.MaxHealth;
-        if (village.GetStartingXp() > empire.Leader.Experience)
-        {
-            empire.Leader.SetExp(village.GetStartingXp());
-            StrategicUtilities.SpendLevelUps(empire.Leader);
-
-        }
-        army.Units.Add(empire.Leader);
-        army.RefreshMovementMode();
-        State.World.Stats.ResurrectedLeader(empire.Side);
-        if (Config.LeadersRerandomizeOnDeath)
-        {
-            empire.Leader.TotalRandomizeAppearance();
-            empire.Leader.ReloadTraits();
-            empire.Leader.InitializeTraits();
-        }
-        if (Config.LeaderSpawnFreeze)
-        {
-            army.JustSpawnedLeader = true;
-            army.RemainingMP = 0;
-        }
-
-
-        return empire.Leader;
+        return null; // Legacy empire leader revival is retired.
     }
 
     private void SetPath(Army army, Vec2i targetPosition, int maxDistance)

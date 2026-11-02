@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-01: Separate stored species reads from intentional override creation (spec 03B3C).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -234,8 +237,8 @@ abstract class DefaultRaceData
         {
             if (State.RaceSettings.GetOverrideWeight(unit.Race))
             {
-                int min = State.RaceSettings.Get(unit.Race).MinWeight;
-                int max = State.RaceSettings.Get(unit.Race).MaxWeight;
+                int min = State.RaceSettings.GetExisting(unit.Race).MinWeight;
+                int max = State.RaceSettings.GetExisting(unit.Race).MaxWeight;
                 unit.BodySize = min + State.Rand.Next(max - min);
                 unit.BodySize = Mathf.Clamp(unit.BodySize, 0, BodySizes - 1);
             }
@@ -366,7 +369,7 @@ abstract class DefaultRaceData
 
         if (MainClothingTypesCount > 1)
         {
-            float fraction = State.RaceSettings.GetOverrideClothed(unit.Race) ? State.RaceSettings.Get(unit.Race).clothedFraction : Config.ClothedFraction;
+            float fraction = State.RaceSettings.GetOverrideClothed(unit.Race) ? State.RaceSettings.GetExisting(unit.Race).clothedFraction : Config.ClothedFraction;
             if (State.Rand.NextDouble() < fraction)
             {
                 unit.ClothingType = State.Rand.Next(Mathf.Max(MainClothingTypesCount - AvoidedMainClothingTypes, 0));
@@ -495,9 +498,9 @@ abstract class DefaultRaceData
 
         if (FurCapable)
         {
-            var raceStats = State.RaceSettings.Get(unit.Race);
+            var raceStats = State.RaceSettings.GetExisting(unit.Race);
             float furryFraction;
-            if (raceStats.OverrideFurry)
+            if (raceStats != null && raceStats.OverrideFurry)
                 furryFraction = raceStats.furryFraction;
             else
                 furryFraction = Config.FurryFraction;
@@ -512,8 +515,8 @@ abstract class DefaultRaceData
         {
             if (State.RaceSettings.GetOverrideDick(unit.Race))
             {
-                int min = State.RaceSettings.Get(unit.Race).MinDick;
-                int max = State.RaceSettings.Get(unit.Race).MaxDick;
+                int min = State.RaceSettings.GetExisting(unit.Race).MinDick;
+                int max = State.RaceSettings.GetExisting(unit.Race).MaxDick;
                 unit.DickSize = min + State.Rand.Next(max - min);
                 unit.DickSize = Mathf.Clamp(unit.DickSize, 0, DickSizes - 1);
             }
@@ -525,8 +528,8 @@ abstract class DefaultRaceData
         {
             if (State.RaceSettings.GetOverrideBreasts(unit.Race))
             {
-                int min = State.RaceSettings.Get(unit.Race).MinBoob;
-                int max = State.RaceSettings.Get(unit.Race).MaxBoob;
+                int min = State.RaceSettings.GetExisting(unit.Race).MinBoob;
+                int max = State.RaceSettings.GetExisting(unit.Race).MaxBoob;
                 unit.SetDefaultBreastSize(min + State.Rand.Next(max - min));
                 unit.SetDefaultBreastSize(Mathf.Clamp(unit.DefaultBreastSize, 0, BreastSizes - 1));
             }

@@ -1,6 +1,8 @@
 // Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Require an authorized editor session and revoke it on close (spec 02B).
 // 2026-10-30: Exclude retired metadata catalogs/previews and preserve unchanged mapping values (spec 03B1).
+// 2026-11-01: Separate stored species reads from intentional override creation (spec 03B3C).
+// 2026-11-01: Preserve species and mapping identity behind singular developer dropdown labels (09–10 feedback).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Collections.Generic;
@@ -136,7 +138,7 @@ public class RaceEditorPanel : MonoBehaviour
 
     static Race[] GetEditableSpecies()
     {
-        return ((Race[])Enum.GetValues(typeof(Race))).Where(IsEditableSpecies).OrderBy(r => r.ToString()).ToArray();
+        return ((Race[])Enum.GetValues(typeof(Race))).Where(IsEditableSpecies).OrderBy(SpeciesPolicy.DisplayName).ToArray();
     }
 
     static bool TrySelectedSpecies(TMP_Dropdown dropdown, out Race race)
@@ -145,7 +147,7 @@ public class RaceEditorPanel : MonoBehaviour
         if (dropdown.value < 0 || dropdown.value >= dropdown.options.Count)
             return false;
         Race selected;
-        if (!Enum.TryParse(dropdown.options[dropdown.value].text, out selected) || !IsEditableSpecies(selected))
+        if (!SpeciesPolicy.TryParseName(dropdown.options[dropdown.value].text, out selected) || !IsEditableSpecies(selected))
             return false;
         race = selected;
         return true;
@@ -155,18 +157,20 @@ public class RaceEditorPanel : MonoBehaviour
     {
         string previous = dropdown.value >= 0 && dropdown.value < dropdown.options.Count ?
             dropdown.options[dropdown.value].text : null;
+        Race previousRace;
+        if (SpeciesPolicy.TryParseName(previous, out previousRace)) previous = SpeciesPolicy.DisplayName(previousRace);
         dropdown.ClearOptions();
         if (mapping)
             dropdown.options.Add(new TMP_Dropdown.OptionData("Keep existing mapping"));
         foreach (Race race in GetEditableSpecies())
-            dropdown.options.Add(new TMP_Dropdown.OptionData(race.ToString()));
+            dropdown.options.Add(new TMP_Dropdown.OptionData(SpeciesPolicy.DisplayName(race)));
         dropdown.value = Math.Max(0, dropdown.options.FindIndex(option => option.text == previous));
         dropdown.RefreshShownValue();
     }
 
     static void SelectMapping(TMP_Dropdown dropdown, Race stored)
     {
-        dropdown.value = Math.Max(0, dropdown.options.FindIndex(option => option.text == stored.ToString()));
+        dropdown.value = Math.Max(0, dropdown.options.FindIndex(option => option.text == SpeciesPolicy.DisplayName(stored)));
         dropdown.RefreshShownValue();
     }
 
@@ -308,7 +312,7 @@ public class RaceEditorPanel : MonoBehaviour
         {
             foreach (Race race in GetEditableSpecies())
             {
-                RaceSettingsItem item = State.RaceSettings.Get(race);
+                RaceSettingsItem item = State.RaceSettings.GetOrCreate(race);
                 item.RaceTraits.Add((Traits)State.RandomizeLists.Where(rl => rl.name == TraitDropdown.options[TraitDropdown.value].text).FirstOrDefault()?.id);
             }
             AddTrait();
@@ -317,7 +321,7 @@ public class RaceEditorPanel : MonoBehaviour
         {
             foreach (Race race in GetEditableSpecies())
             {
-                RaceSettingsItem item = State.RaceSettings.Get(race);
+                RaceSettingsItem item = State.RaceSettings.GetOrCreate(race);
                 item.RaceTraits.Add((Traits)State.CustomTraitList.Where(ct => ct.name == TraitDropdown.options[TraitDropdown.value].text).FirstOrDefault()?.id);
             }
             AddTrait();
@@ -326,7 +330,7 @@ public class RaceEditorPanel : MonoBehaviour
         {
             foreach (Race race in GetEditableSpecies())
             {
-                RaceSettingsItem item = State.RaceSettings.Get(race);
+                RaceSettingsItem item = State.RaceSettings.GetOrCreate(race);
                 item.RaceTraits.Add((Traits)State.ConditionalTraitList.Where(ct => ct.name == TraitDropdown.options[TraitDropdown.value].text).FirstOrDefault()?.id);
             }
             AddTrait();
@@ -335,7 +339,7 @@ public class RaceEditorPanel : MonoBehaviour
         {
             foreach (Race race in GetEditableSpecies())
             {
-                RaceSettingsItem item = State.RaceSettings.Get(race);
+                RaceSettingsItem item = State.RaceSettings.GetOrCreate(race);
                 if (item.RaceTraits.Contains(trait) == false)
                     item.RaceTraits.Add(trait);
             }
@@ -371,7 +375,7 @@ public class RaceEditorPanel : MonoBehaviour
         {
             foreach (Race race in GetEditableSpecies())
             {
-                RaceSettingsItem item = State.RaceSettings.Get(race);
+                RaceSettingsItem item = State.RaceSettings.GetOrCreate(race);
                 item.RaceTraits.Remove((Traits)State.RandomizeLists.Where(rl => rl.name == TraitDropdown.options[TraitDropdown.value].text).FirstOrDefault()?.id);
             }
             RemoveTrait();
@@ -380,7 +384,7 @@ public class RaceEditorPanel : MonoBehaviour
         {
             foreach (Race race in GetEditableSpecies())
             {
-                RaceSettingsItem item = State.RaceSettings.Get(race);
+                RaceSettingsItem item = State.RaceSettings.GetOrCreate(race);
                 item.RaceTraits.Remove((Traits)State.CustomTraitList.Where(rl => rl.name == TraitDropdown.options[TraitDropdown.value].text).FirstOrDefault()?.id);
             }
             RemoveTrait();
@@ -389,7 +393,7 @@ public class RaceEditorPanel : MonoBehaviour
         {
             foreach (Race race in GetEditableSpecies())
             {
-                RaceSettingsItem item = State.RaceSettings.Get(race);
+                RaceSettingsItem item = State.RaceSettings.GetOrCreate(race);
                 item.RaceTraits.Remove((Traits)State.ConditionalTraitList.Where(rl => rl.name == TraitDropdown.options[TraitDropdown.value].text).FirstOrDefault()?.id);
             }
             RemoveTrait();
@@ -398,7 +402,7 @@ public class RaceEditorPanel : MonoBehaviour
         {
             foreach (Race race in GetEditableSpecies())
             {
-                RaceSettingsItem item = State.RaceSettings.Get(race);
+                RaceSettingsItem item = State.RaceSettings.GetOrCreate(race);
                 item.RaceTraits.Remove(trait);
             }
             RemoveTrait();
@@ -422,7 +426,7 @@ public class RaceEditorPanel : MonoBehaviour
         {
             foreach (Race race in GetEditableSpecies())
             {
-                RaceSettingsItem item = State.RaceSettings.Get(race);
+                RaceSettingsItem item = State.RaceSettings.GetOrCreate(race);
                 item.RaceTags.Add((int)State.UnitTagList.Where(ut => ut.name == TagDropdown.options[TagDropdown.value].text).FirstOrDefault()?.id);
             }
             AddTag();
@@ -445,7 +449,7 @@ public class RaceEditorPanel : MonoBehaviour
         {
             foreach (Race race in GetEditableSpecies())
             {
-                RaceSettingsItem item = State.RaceSettings.Get(race);
+                RaceSettingsItem item = State.RaceSettings.GetOrCreate(race);
                 item.RaceTags.Remove((int)State.UnitTagList.Where(ut => ut.name == TagDropdown.options[TagDropdown.value].text).FirstOrDefault()?.id);
             }
             RemoveTag();
@@ -460,7 +464,7 @@ public class RaceEditorPanel : MonoBehaviour
         {
             if (IsEditableSpecies(PreviousRace))
             {
-                RaceSettingsItem item = State.RaceSettings.Get(PreviousRace);
+                RaceSettingsItem item = State.RaceSettings.GetOrCreate(PreviousRace);
                 var racePar = RaceParameters.GetRaceTraits(PreviousRace);
                 var raceData = Races.GetRace(PreviousRace);
                 item.OverrideGender = OverrideGender.isOn;
@@ -675,7 +679,7 @@ public class RaceEditorPanel : MonoBehaviour
             if (TrySelectedSpecies(RaceDropdown, out Race race))
             {
                 PreviousRace = race;
-                RaceSettingsItem item = State.RaceSettings.Get(race);
+                RaceSettingsItem item = State.RaceSettings.GetOrCreate(race);
                 var racePar = RaceParameters.GetRaceTraits(race);
                 var raceData = Races.GetRace(race);
                 OverrideGender.isOn = item.OverrideGender;
@@ -972,7 +976,7 @@ public class RaceEditorPanel : MonoBehaviour
                     continue;
                 if (State.RaceSettings.Exists(emp.Race))
                 {
-                    emp.BannerType = State.RaceSettings.Get(emp.Race).BannerType;
+                    emp.BannerType = State.RaceSettings.GetExisting(emp.Race).BannerType;
                 }
                 else
                     emp.BannerType = 0;
@@ -1047,7 +1051,7 @@ public class RaceEditorPanel : MonoBehaviour
         TraitsPanel.SetActive(false);
         UnitTagsPanel.SetActive(false);
         UnitTagsPanel.SetActive(false);
-        Enum.TryParse(RaceDropdown.options[RaceDropdown.value].text, out Race race);
+        if (!SpeciesPolicy.TryParseName(RaceDropdown.options[RaceDropdown.value].text, out Race race)) return;
         taggedTraitEditor.Open(race, CurrentTraits);
         GeneralButton.interactable = false;
         TraitsButton.interactable = false;

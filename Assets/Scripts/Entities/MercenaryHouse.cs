@@ -1,6 +1,7 @@
 // Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Use approved sapient recruit pools and stop named-unique generation (spec 03A1).
 // 2026-10-30: Retire the uncalled named-unique factory; preserve existing stock and individuals (spec 03B1).
+// 2026-11-01: Separate stored species reads from intentional override creation (spec 03B3C).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
 using System.Collections.Generic;
@@ -120,11 +121,7 @@ public class MercenaryHouse
             }
         }
 
-        var power = State.RaceSettings.Get(merc.Unit.Race).PowerAdjustment;
-        if (power == 0)
-        {
-            power = RaceParameters.GetTraitData(merc.Unit).PowerAdjustment;
-        }
+        var power = State.RaceSettings.GetPowerAdjustment(merc.Unit.Race);
         StrategicUtilities.SetAIClass(merc.Unit);
         StrategicUtilities.SpendLevelUps(merc.Unit);
         merc.Cost = (int)((25 + State.Rand.Next(15) + (.12 * exp)) * Random.Range(0.8f, 1.2f) * power);
