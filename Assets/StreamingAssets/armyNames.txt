@@ -1,31 +1,5 @@
 The first entry after each race is the base army name.  Otherwise there will be a 10% chance that a newly formed army will get one of the unique names below.
 
-Humans
-Company
-The Queensguard
-The Kings Own
-Chevaliers Du Sol
-Golden Company
-The Woodsmen
-The Grim Company
-Hallowed Survivors
-The Untainted
-Eastmarch Company
-Chevaliers Du Man
-Chevaliers Du Barre
-White Company
-Steel Company
-Unfortunate Sons
-Crimson Fist
-Shield Du Pass
-Chain of God
-The Silver Hand
-Crownguard
-Human Defense League
-Defiant Fellows
-Vengeance of Ausburg
-Grim Company
-
 Bunnies
 Militia
 Haven Home Army
@@ -50,43 +24,6 @@ Velvet Yeobuns
 Tighttum Yeobuns
 Bucktooth Yeobuns
 
-Dogs
-Guard
-Hounds of Vore
-Order of Loyalty
-Order of Bone
-The Blackpass Guard
-Hammer of Dogaria
-Mirror Guard
-Scions of Estra
-Vorengian Guard
-Order of the Paw
-Belly Rub Brigade
-Tail Waggers
-The Bad Dogs
-Good Girl Troop
-Whitebelly Guard
-Domesticators
-Dogton Veterans
-Gullet Guard
-Sloshing Guts
-
-Wolves
-Brigade
-The Wolf Brigade
-Bristle-Fur Hunters
-Fang Brigade
-Savage Maulers
-The Feasters
-Southland Butchers
-Stomach-Stuffers
-Broken Tooth Troop
-The Gnashing Teeth
-Gut-Talker Brigade
-The Pack
-Full-Belly Brigade
-Wild Hunt Brigade
-
 Panthers
 Hunters
 Moonbelly Clan
@@ -95,25 +32,6 @@ Vicious Claw Clan
 Open Mouth Raiders
 Daughters of Gher
 Mist Stalkers
-
-Cats
-Army
-Chosen of the Sultina
-Mistresses of Lust
-The Favored
-Fat Cats
-Decadent Despots
-God-Eaters
-Chosen of Avora
-Slaves of Hunger
-Will of the Pharess
-Gutsluts of Gastra
-Unworthy Thralls
-Slaves of Devotion
-Army of the Priestess
-The Pouncers
-Bloody Claws
-The Callers
 
 Lizards
 Horde
@@ -135,80 +53,6 @@ Face Rippers
 Digesters of Kem
 Son-Eaters
 
-Imps
-Host
-World Eaters
-Doomslayers
-Damnation
-Swords of Chaos
-Voiders
-Hellebronai
-Singing Sisters
-Ebony Call
-Raven Heralds
-Ravagers of Rek
-The Crows
-The Crimson Tide
-Brimstone Witches
-Dark Throat Coven
-Lurkers
-Man-Eaters 
-
-Taurus
-Rangers
-Home Defense Force
-Leathernecks
-Freeholder Militia
-Milkmakers
-Udder Uhlans
-Tummy Terrors
-Milkmaidens
-Holstein Highlanders
-Angus Rangers
-Hereford Mothers
-Hefty Heffers
-Titty Tyrants
-Belly Bullies
-Tipsy Rangers
-Voracious Bovines
-Irongut Rangers
-
-Foxes
-Levies
-Vulpine Consumers
-Floof Fondlers
-Banzai Brigade
-The Shogunas Own
-Vulpiyo Ashigaru
-Foxish Expeditionary Force
-
-Slimes
-Amalgamation
-The Thing
-The Consumption
-The Will
-The Hunger
-
-Crypters
-Awoken Pod
-Will of the Ancients
-Hunger of the Void
-Consumers of the Living
-
-Harpies
-Phalanx
-Sky Ladies
-Sun Chasers
-Silver Feathers
-The Phoenix Phalanx
-
-Lamia
-Coven
-The Seducers
-Cult of the Viper
-Worshipers of Hist
-Daughters of Pelsoni
-
 Sergal
 Warband
 Rainmakers
@@ -227,11 +71,6 @@ The Swarm
 Bloodsuckers
 Virgin Eaters
 
-Driders
-Brood
-Silk Singers
-Black Widow Elite
-
 Bees
 Colony
 Swarm
@@ -249,58 +88,6 @@ Shiver
 Raiding Party
 Devouring Jaws
 
-Aabayx
-Triumph
-Atzaxat Exterminators
-Chyrbyksyr Bound
-Triumph of Yef Syeskes
-Fear of Plykryksyr
-For Ysynsr aaz Lextrnl
-By Pntyr aaz Bysnyt
-By Pntyr aaz Zekzek
-By Pntyr aaz Pstkrs
-By Pntyr aaz Yef Tlysl
-By Pntyr aaz Bnsa
-By Pntyr aaz Kanygraa
-By Pntyr aaz Bakanatay
-By Pntyr aaz Chapchap
-In Yef Kastpyrt Chaxtayn
-By Pntyr aaz Flsyl
-By Pntyr aaz Kwn
-Seeker of Kyes
-By Pntyr aaz Dfndr
-By Pntyr aaz Znznzn
-Of Pntyr aaz Kchk
-Of Pntyr aaz Klkl
-Of Pntyr aaz Styn
-Pntyr aaz Yef Mps Hunt
-By Pntyr aaz Lor
-Loyals of Pntyr aaz Festkex
-Loyals of Pstkrsysynsr
-Loyals of Nystylysnynsr
-Loyals Yef Extrlax Tpkl
-Loyals of Yef Sxltl
-Triumph of One
-Triumph of Two
-Triumph of Three
-Triumph of Four
-Triumph of Five
-Triumph of Six
-Triumph of Seven
-Triumph of Eight
-Triumph of Nine
-Triumph of Ten
-Triumph of Eleven
-Triumph of Twelve
-Triumph of Thirteen
-Triumph of Fourteen
-Triumph of Fifteen
-Triumph of Sixteen
-Triumph of Seventeen
-Triumph of Eighteen
-Triumph of Nineteen
-Triumph of Twenty
-
 Deer
 Foresters
 Great Herd
@@ -313,24 +100,11 @@ The Nomads
 From the Outback
 Farsight Scouts
 
-Merfolk
-Adventure
-The Armada
-The Fleet
-The Crew
-School of Fish
-
 Frogs
 Scouts
 Chiefs Guard
 Priests Guard
 The Fly-eaters
-
-Crux
-Loonies
-The Jabberwoks
-The Wide-eyes
-The Escaped
 
 Avians
 Flock
@@ -347,45 +121,11 @@ Dish-ears
 Mazerunner
 Pandimensionals
 
-MainlandElves
-Superiors
-Gladed Glory
-Unbeaten Truth
-Blade of Order
-Unsheathed Honor
-Elven Beauty
-Thalmor Force
-Unmatched Humility
-
-Bears
-Raiders
-Vikings
-Bjornheim Reminents
-Thors Hammer
-Odins Spear
-Lokis Cunning
-Baldrs Talent
-Tyrs Power
-Magnis Thunder
-Modis Lightning
-Freyrs Sword
-Freyas Might
-Sifs Hair
-Heimdalls Sight
-
 Lupine
 Class
 Carnivorans
 Canidae Pack
 Predator Rights Party
-
-Umbreon
-Revolutionaries
-Rioters
-Looters
-Glowring March
-Freedom Fighters
-Drums of Independance
 
 Gnolls
 Tribe
@@ -393,37 +133,10 @@ Spotted Hunters
 Laughers
 The Giggle
 
-Scylla
-Grasp
-Cephalopoda
-Eldritchers
-The Trident
-
-Alraune
-Wargarden
-Rose Thorns
-Thistle Bearers
-Fly Traps
-Thorny Bloom
-
 Jackals
 Sandguard
 Tombbuilders
 Nile Marchers
-
-Ghosts
-Haunt
-The Wild Hunt
-The Unquiet
-Howling Spirits
-Deathcheaters
-Lifestealers
-
-Yordles
-Band
-Free Spirits
-Traveling Group
-Gatesent
 
 DemiDragons
 Pact

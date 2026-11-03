@@ -8,6 +8,20 @@ The covered derivative work continues under the applicable GNU GPL version 3 ter
 
 Record completed source changes by actual date, affected paths, and a short description, with a related spec where useful. Modified source files also receive dated notices under the workflow in [AGENTS.md](AGENTS.md). Mark additions as this fork's additions. Preserve previous entries and do not describe planned removals or features as implemented.
 
+## 2026-11-03 — Spec25: retired species name-list cleanup
+
+- Modified `Assets/StreamingAssets/armyNames.txt`: remove exactly 22 retired-species paragraphs while preserving all remaining paragraphs and their spacing byte-for-byte, including uncurated/future species. Removed headings: Humans, Dogs, Wolves, Cats, Imps, Taurus, Foxes, Slimes, Crypters, Harpies, Lamia, Driders, Aabayx, Merfolk, Crux, MainlandElves, Bears, Umbreon, Scylla, Alraune, Ghosts, Yordles. Kept Bunnies and the historical DemiDragons candidate section; no additional species retirement inferred.
+- Directly moved the following six text/metadata paths to ignored project Recycle Bin; hashes match, nothing deleted:
+
+  - `Assets/StreamingAssets/femaleCentaurs.txt` -> `Recycle Bin/Retired Name Lists/Assets/StreamingAssets/femaleCentaurs.txt`
+  - `Assets/StreamingAssets/femaleCentaurs.txt.meta` -> `Recycle Bin/Retired Name Lists/Assets/StreamingAssets/femaleCentaurs.txt.meta`
+  - `Assets/StreamingAssets/maleCentaurs.txt` -> `Recycle Bin/Retired Name Lists/Assets/StreamingAssets/maleCentaurs.txt`
+  - `Assets/StreamingAssets/maleCentaurs.txt.meta` -> `Recycle Bin/Retired Name Lists/Assets/StreamingAssets/maleCentaurs.txt.meta`
+  - `Assets/StreamingAssets/GhostVillageNames.txt` -> `Recycle Bin/Retired Name Lists/Assets/StreamingAssets/GhostVillageNames.txt`
+  - `Assets/StreamingAssets/GhostVillageNames.txt.meta` -> `Recycle Bin/Retired Name Lists/Assets/StreamingAssets/GhostVillageNames.txt.meta`
+
+- Data-only retirement: no C# changes, personal name/settings files, other text lists, artwork or prior builds touched. Exact non-commentable name-list modification/relocation notice is this entry; no header inserted that could be mistaken for an army name. Actual License.txt sections 4–5 reviewed, existing license/attribution retained; no outside code/assets/dependencies introduced. Existing provenance/distribution gates remain open. Scoped data-diff and move/hash review only; no Unity compile, player build or playtest run.
+
 ## 2026-11-03 — Spec24: physical Bestiary retirement
 
 - Modified `Assets/base.unity`: remove the deprecated Bestiary Screen subtree, inactive Bestiary menu-button instance, dedicated controller component and their callbacks. Remove only the retired transforms from parent child lists; preserve all unrelated scene content, including the pending Spec23 credits changes. Exact retired local IDs recorded in Logs/bestiary24-before.json; no remaining local-ID/GUID consumers found during source/content review.
