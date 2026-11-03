@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-02: Style dynamically generated tactical ability buttons with the shared blue palette (spec 16).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -91,13 +94,7 @@ public class AdvancedUnitCommands : MonoBehaviour
             button = Buttons[index];
             button.onClick.RemoveAllListeners();
         }
-        ColorBlock cb = button.colors;
-        cb.normalColor = color;
-        cb.highlightedColor = color * 1.2f;
-        Color pressed = color * .7f;
-        pressed.a = 1;
-        cb.pressedColor = pressed;
-        button.colors = cb;
+        TacticalHudView.StyleButton(button, color);
 
         button.GetComponentInChildren<Text>().text = text;
         button.onClick.AddListener(new UnityEngine.Events.UnityAction(action));
@@ -155,13 +152,7 @@ public class AdvancedUnitCommands : MonoBehaviour
                 State.GameManager.TacticalMode.CommandsUI.SelectorIcon.transform.position = button.transform.position;
         });
 
-        ColorBlock cb = button.colors;
-        cb.normalColor = color;
-        cb.highlightedColor = color * 1.2f;
-        Color pressed = color * .7f;
-        pressed.a = 1;
-        cb.pressedColor = pressed;
-        button.colors = cb;
+        TacticalHudView.StyleButton(button, color);
 
         button.interactable = (actor.Unit.Mana >= ModifiedManaCost || spell.IsFree);
         button.gameObject.SetActive(true);
@@ -193,13 +184,7 @@ public class AdvancedUnitCommands : MonoBehaviour
                 State.GameManager.TacticalMode.CommandsUI.SelectorIcon.transform.position = button.transform.position;
         });
 
-        ColorBlock cb = button.colors;
-        cb.normalColor = color;
-        cb.highlightedColor = color * 1.2f;
-        Color pressed = color * .7f;
-        pressed.a = 1;
-        cb.pressedColor = pressed;
-        button.colors = cb;
+        TacticalHudView.StyleButton(button, color);
 
         button.gameObject.SetActive(true);
         index++;

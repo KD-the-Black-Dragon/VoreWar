@@ -1,6 +1,7 @@
-// Added by the VoreWar mercenary-company conversion fork.
+﻿// Added by the VoreWar mercenary-company conversion fork.
 // 2026-11-02: Shared restrained blue palette and compact UI styling, introduced with Options (spec 15A).
 // 2026-11-02: Share normalized sliders and bright vector checkmarks across Options and Content Settings (spec 15B).
+// 2026-11-03: Share restrained blue styling for player-facing popup surfaces (spec 17).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,6 +17,28 @@ internal static class UITheme
     internal static readonly Color Foreground = new Color32(231, 240, 251, 255);
     internal static readonly Color Muted = new Color32(167, 193, 220, 255);
     internal static readonly Color Accent = new Color32(128, 179, 231, 255);
+
+    internal static void StylePopup(GameObject root)
+    {
+        // Only popup hierarchies are passed here; preserve dimmers and non-background graphics.
+        foreach (var image in root.GetComponentsInChildren<Image>(true))
+        {
+            if (image.GetComponentInParent<Slider>() != null) continue;
+            Color old = image.color;
+            if (old.b > old.r + .1f && old.b > old.g + .1f)
+            {
+                Color color = Panel; color.a = old.a; image.color = color;
+            }
+        }
+        foreach (var button in root.GetComponentsInChildren<Button>(true))
+        {
+            StyleSelectable(button);
+            var image = button.targetGraphic as Image;
+            if (image != null) Surface(image.gameObject, Control, true);
+        }
+        foreach (var text in root.GetComponentsInChildren<Text>(true)) text.color = Foreground;
+        foreach (var text in root.GetComponentsInChildren<TMPro.TMP_Text>(true)) text.color = Foreground;
+    }
 
     internal static GameObject Node(string name, Transform parent)
     {

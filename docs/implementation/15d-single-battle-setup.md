@@ -35,3 +35,26 @@ No new tests/framework, broad repeat of older32mechanics diagnostics, player bui
 3. If convenient, use small forces and Create World to confirm battle entry still works; there is no need to complete the battle. Back and Content Settings should retain their normal return behavior.
 
 Wait for feedback before another UI group. Broad Help rewriting, final beautification and campaign/live tactical styling remain deferred.
+
+
+## Caption-free 2x sample units (2026-11-02)
+
+After standalone review, user identifies the small Unity Game view as a major contributor to visual confusion. Requested removing the temporary main-menu comparison entry and hiding species captions inside Single Battle sample cards, with sample dolls2×normal UI scale and centered. StartMode no longer calls PortraitComparisonPanel.Attach; retained tool/audit/shader sources are not deleted. SingleBattleSetupView retains the required UIUnitSprite.Name reference for the preview update callback but keeps its object inactive, including after refresh. Unit transform scale2, anchor84,144: the existing renderer adds30upwardpixels scaled to60, bringing image center to84 in the168square card. Species dropdowns remain labeled and functional. No other layout, appearance, sampling, company/recruitment alignment or gameplay change.
+
+Fresh standalone build and scope review will be recorded at handoff; visual fit is pending. No new tests/framework or broad menu/combat retest requested. Dated notices and exact two source paths are in CHANGES; prior notices/licensing/attribution preserved, no external additions or publication.
+
+
+## Larger preview cards (2026-11-02)
+
+User accepts2×dolls and requests approximately15extra screen pixels in each box dimension at1080p. Cards increase168to180reference units (about16.2screen pixels with1080/800scaling). Lower-left remains fixed: x408/top-8/height180 retains bottom172. Dollcenter90,150 includes60renderer offset. Race/AIEnabled rows narrow16units; other fields' scroll viewport and scrollbar move16down. Column backgrounds widen12to contain the cards; scroll areas shorten correspondingly and retain every field. No sampling/artwork/gameplay changes. Fresh standalone build/checks recorded in the resume checkpoint; actual fit needs focused visual review.
+
+
+Subsequent positioning feedback (2026-11-02): user requests moving the complete card down15screen pixels at1080p. Changed only top offset-8to3 (11referenceunits, approximately14.85screen pixels), retaining180square size and2xcentered doll. Other controls remain in their accepted positions. Fresh private build/check recorded in checkpoint.
+
+
+Feet-clearance correction (2026-11-02): user observes whole-card nudge moves the child doll as well, leaving relative feet clearance unchanged. Keep card position/dimensions fixed and move only the doll upward11reference units, anchorY150to139 (~14.85screen pixels at1080p). Scale2andothercontrols unchanged. Build/check recorded at handoff; no graphical pass inferred.
+
+
+## Final preview approval (2026-11-02)
+
+User explicitly approves the corrected layout: “we got it exactly right.” Preserve the180square card at408,3,2xsample scale and child anchor90,139, with species caption hidden. This accepts the final visible fit/feet clearance in the standalone review; no repeated test or further adjustment needed. It does not imply unreported combat/performance coverage.

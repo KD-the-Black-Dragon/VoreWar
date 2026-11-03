@@ -79,6 +79,8 @@ If this repository later adds an OpenSpec workflow or another project-specific p
 
 **Never delete files or directories.** This includes `git rm`, `rm`, `del`, `Remove-Item`, `git clean`, deleting through a GUI, or any command that destroys a path. Editing lines or content within a file is allowed.
 
+User clarification (2026-11-03): the game may delete its own saved games at runtime, including Ironman loss and player-confirmed save deletion. This authorizes implementing that game behavior, not agent filesystem deletion. Automated checks must use synthetic data, preserve their files and suppress actual deletion; never exercise deletion against personal saves.
+
 If a file must be removed from active use, ask the user before taking action. If the user wants it retained but out of the working tree, move it into a project `Recycle Bin/` directory; do not copy it and then delete the original. Never force-add Recycle Bin contents.
 
 Before any copy or move, verify that the operation is intentional and that the destination is inside the project or explicitly requested. Do not use destructive cleanup to resolve Unity-generated files or Git changes.

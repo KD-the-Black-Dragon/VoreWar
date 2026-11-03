@@ -1,0 +1,19 @@
+{
+  "manifest_rows_including_metadata": 894,
+  "statuses": {
+    "PROPOSED_ARCHIVE_AFTER_REFERENCE_CLEANUP": 386,
+    "RETAIN_GENERIC_PALETTE": 64,
+    "PROPOSED_ARCHIVE_AFTER_CODE_CLEANUP": 10,
+    "PROPOSED_MOVE": 178,
+    "RETAIN_GENERIC_BUILDING": 2,
+    "RETAIN_SHARED_PENDING_FRAME_REVIEW": 44,
+    "PRESERVE_PARTS_HOLD_ORIGINAL": 2,
+    "RETAIN_GENERIC_BODY_PARTS": 2,
+    "PROPOSED_ARCHIVE_AFTER_SEED_REVIEW": 206
+  },
+  "selicia_render_branches": 598,
+  "selicia_render_source_files": 63,
+  "implementation": "not started; no moves or game source changes",
+  "approval": "Proposed consolidated manifest ready for scope approval; every conditional archive requires dependency clearance before execution.",
+  "limits": "Static references and conditional frame expressions, not pixel ownership or runtime bundle-order proof. HOLD/RETAIN rows are excluded from any direct move."
+}

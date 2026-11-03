@@ -6,6 +6,7 @@
 // 2026-11-02: Present approved duel choices/results and forced slug deployment without contract rewards or cancel bypass (spec 13).
 // 2026-11-02: Use persistent navigation for campaign/contract pages and retain the town column in offer details (spec 14).
 // 2026-11-02: Retire the separate campaign settings page in favor of normal Options (spec 14 feedback).
+// 2026-11-03: Use the shared Help overlay without replacing the originating company or creator page (spec 20).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Linq;
@@ -24,18 +25,7 @@ internal sealed class CompanyMissionsUI
     }
     internal void Help(int page = 0, bool fromSetup = false, bool fromCreator = false)
     {
-        page = Math.Max(0, Math.Min(HelpText.CompanyPages.Length - 1, page));
-        ui.Clear("Campaign help — " + HelpText.CompanyTitles[page], false, !fromSetup && !fromCreator);
-        ui.Text(HelpText.CompanyPages[page], 30, 150, 1190, 385, 18);
-        ui.Button("Previous", 30, 550, 155, () => Help(page - 1, fromSetup, fromCreator), page > 0);
-        ui.Button("Next", 205, 550, 155, () => Help(page + 1, fromSetup, fromCreator), page + 1 < HelpText.CompanyPages.Length);
-        if (fromSetup || fromCreator || State.Ended) ui.Button(fromCreator ? "Leader creation" : fromSetup ? "Campaign setup" : "Company record", 390, 550, 220, () =>
-        {
-            if (fromCreator) ui.ResumeCreator();
-            else if (fromSetup) view.ShowSetup();
-            else if (!string.IsNullOrEmpty(State.PendingDecision)) ui.Decision();
-            else Resume();
-        });
+        global::State.GameManager.Menu.HelpUI.Open(page);
     }
     internal void Contracts(bool offers = false, int page = 0)
     {

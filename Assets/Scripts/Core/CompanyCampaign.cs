@@ -1,4 +1,4 @@
-// Added by the VoreWar mercenary-company conversion fork.
+﻿// Added by the VoreWar mercenary-company conversion fork.
 // 2026-11-01: Company campaign foundation, independent of the retired empire loop (spec 06).
 // 2026-11-01: Candidate/former identity, wage decisions and shared equipment ownership (specs 07–08).
 // 2026-11-01: Persist contracts, battle transition phases, revival preference and active-campaign memorial/statistics (specs 09–10).
@@ -7,6 +7,7 @@
 // 2026-11-02: Persist road-event choices/cooldowns and block ordinary actions while an event awaits resolution (spec 13).
 // 2026-11-02: Require a full daily action budget to start resting while keeping ordinary turn ending distinct (spec 14).
 // 2026-11-02: Generate requested 80 by 60 new regions while retaining six towns and existing saved dimensions (spec 14 feedback).
+// 2026-11-03: Store logical save slot labels separately from campaign progress (spec 19).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Collections.Generic;
@@ -73,6 +74,8 @@ internal sealed class CompanyCampaign
     public string[] PendingCharacterIds = new string[0];
     public string LastVisitedTownId;
     public bool InBattle;
+    public string SaveSlot, SaveLabel;
+    public int SaveKind;
 
     public int CompanyRulesVersion = 4;
     public bool LeaderRevival = true;

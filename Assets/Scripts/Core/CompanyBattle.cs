@@ -1,9 +1,10 @@
-// Added by the VoreWar mercenary-company conversion fork.
+﻿// Added by the VoreWar mercenary-company conversion fork.
 // 2026-11-01: Isolated tactical adapter, transactional outcomes, revival and memorial records (spec 10).
 // 2026-11-01: Guard HP during detached battle settlement and use individual species labels in memorials (09–10 feedback).
 // 2026-11-01: Clear leader wounds on special revival and consolidate enemy recovery into the shared daily recovery stage (spec 11).
 // 2026-11-01: Award surviving deployed members challenge-scaled XP once on contract completion (spec 11 feedback).
 // 2026-11-02: Reuse tactical deployment/fate/return for saved road encounters while keeping contract rewards isolated (spec 13).
+// 2026-11-03: Persist/resume full company battles and their random state at safe boundaries (spec 19).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,12 @@ internal sealed class CompanyBattleRecord
     public int ReturnTile, TargetTile, Seed;
     public bool PositionCommitted;
     public string[] DeployedIds;
+    public TacticalData Tactical;
+    public int[] RandomState;
+    public string UnityRandomState;
+    public float CameraX, CameraY, CameraZoom;
+    public int WorldTurn;
+    public bool WorldNight;
 }
 [Serializable]
 internal sealed class CompanyMemorial
@@ -75,25 +82,63 @@ internal sealed class CompanyBattleSession
         var gm = State.GameManager; gm.CompanyBattle = this; gm.PureTactical = false;
         var terrain = new[] { StrategicTileType.grass, StrategicTileType.forest, StrategicTileType.hills, StrategicTileType.desert }[state.Terrain[state.Battle.TargetTile]];
         gm.ActivateCompanyBattle(terrain, attacker, defender, Rating(state, state.Battle));
+        Autosave();
+    }
+    internal CompanyCampaign Campaign => state;
+    internal CompanyCampaignView View => view;
+    internal void Capture()
+    {
+        state.Battle.Tactical = State.GameManager.TacticalMode.Export();
+        state.Battle.RandomState = State.Rand.Capture();
+        state.Battle.UnityRandomState = UnityEngine.JsonUtility.ToJson(UnityEngine.Random.state);
+        var camera = State.GameManager.Camera;
+        state.Battle.CameraX = camera.transform.position.x; state.Battle.CameraY = camera.transform.position.y;
+        state.Battle.CameraZoom = camera.orthographicSize;
+        state.Battle.WorldTurn = State.World.Turn;
+        state.Battle.WorldNight = State.World.IsNight;
+        CompanyBattleSnapshot.Validate(state);
+    }
+    internal void Autosave()
+    {
+        if (finished) return;
+        Capture(); CompanyCampaignSave.Save(state, view.SaveDirectory);
+    }
+    internal void Resume()
+    {
+        var gm = State.GameManager;
+        State.Rand = Rand.Resume(state.Battle.RandomState);
+        UnityEngine.Random.state = UnityEngine.JsonUtility.FromJson<UnityEngine.Random.State>(state.Battle.UnityRandomState);
+        new World(CompanyEquipment.Repository); State.World.Turn = state.Battle.WorldTurn; State.World.IsNight = state.Battle.WorldNight;
+        gm.CompanyBattle = this; gm.PureTactical = false;
+        CompanyBattleSnapshot.Bind(state);
+        gm.ResumeCompanyBattle(state.Battle.Tactical);
+        State.Rand = Rand.Resume(state.Battle.RandomState);
+        UnityEngine.Random.state = UnityEngine.JsonUtility.FromJson<UnityEngine.Random.State>(state.Battle.UnityRandomState);
+        gm.Camera.transform.position = new UnityEngine.Vector3(state.Battle.CameraX, state.Battle.CameraY, gm.Camera.transform.position.z);
+        gm.Camera.orthographicSize = state.Battle.CameraZoom;
+    }
+    internal void AbandonForLoad()
+    {
+        finished = true;
+        State.GameManager.ReturnFromCompanyBattle(); RestoreServices();
     }
     internal bool RevivalEnabled { get { return state.LeaderRevival; } }
     internal void ToggleRevival()
     {
         if (finished) return;
-        int skipped;
-        var checkpoint = CompanyCampaignSave.LoadLatest(view.SaveDirectory, out skipped);
-        checkpoint.LeaderRevival = !state.LeaderRevival;
-        // Persist only the preference to deployment fallback; never pretend this is a live battle save.
-        CompanyCampaignSave.Save(checkpoint, view.SaveDirectory);
-        state.LeaderRevival = checkpoint.LeaderRevival;
+        if (!State.GameManager.TacticalMode.CanSaveCompanyBattle) throw new InvalidOperationException("Wait until your side is ready to act before changing this setting.");
+        state.LeaderRevival = !state.LeaderRevival;
+        Autosave();
     }
     internal void ExitToCheckpoint()
     {
         if (finished) return;
-        int skipped;
-        var checkpoint = CompanyCampaignSave.LoadLatest(view.SaveDirectory, out skipped);
-        finished = true; view.QueueBattleReturn(checkpoint, this);
+        if (State.GameManager.TacticalMode.CanSaveCompanyBattle) Autosave();
+        finished = true;
+        AbandonForLoad();
+        view.ReturnToMainMenu();
     }
+
     internal void RestoreServices()
     {
         State.World = previousWorld; State.Rand = previousRandom; UnityEngine.Random.state = previousUnityRandom;
@@ -105,6 +150,7 @@ internal sealed class CompanyBattleSession
         // Reconcile a detached saved graph, then install it atomically. Actors keep the old graph until cleanup.
         var result = SerializationUtility.DeserializeValue<CompanyCampaign>(CompanyCampaignSave.Encode(state), DataFormat.Binary);
         CompanyEconomy.Bind(result);
+        CompanyBattleSnapshot.Bind(result);
         CompanyCampaignSave.RequireHealthPreserved(state, result);
         var battle = result.Battle;
         var contract = battle.RoadEventId == null ? result.Contracts.Single(c => c.Id == battle.ContractId) : null;
@@ -152,7 +198,13 @@ internal sealed class CompanyBattleSession
             "Enemies defeated: " + (defeated + temporaryEnemies) + "\nMercenaries lost: " + losses.Length + "\n" +
             (contract == null ? "Road encounter settled. No gold or reputation awarded.\n" : paid ? "Contract completed: " + contract.Reward + " gold paid automatically; reputation +1. Surviving participants gained contract XP.\n" : "The surviving target remains available before its deadline.\n") +
             (leaderLost && !result.Ended ? "The leader requires revival after these results.\n" : "") + result.EndReason;
+        battle.Tactical = null; battle.RandomState = null;
         battle.Phase = CompanyBattlePhase.Summary; result.InBattle = false; result.Validate();
+        if (result.Ended && result.Ironman)
+        {
+            try { CompanySaveSlots.RemoveCompany(result.Id); }
+            catch (Exception ex) { battle.Summary += "\nSave cleanup could not finish: " + ex.Message; }
+        }
         finished = true; view.QueueBattleReturn(result, this);
     }
     internal static void Acknowledge(CompanyCampaign state)

@@ -1,5 +1,6 @@
 ﻿// Modified for the VoreWar mercenary-company conversion.
 // 2026-11-01: Route company creator controls to their own customizer (spec 07).
+// 2026-11-03: Keep a company-only layout refresh callback (spec 18).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using TMPro;
 using UnityEngine;
@@ -8,6 +9,7 @@ using UnityEngine;
 public class CustomizerPanel : MonoBehaviour
 {
     [System.NonSerialized] internal UnitCustomizer CompanyCustomizer;
+    [System.NonSerialized] internal System.Action CompanyLayout;
     public UIUnitSprite DisplayedSprite;
     public GameObject ButtonPanel;
     public GameObject ButtonPrefab;

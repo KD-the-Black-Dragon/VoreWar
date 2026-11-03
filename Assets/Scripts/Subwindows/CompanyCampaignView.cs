@@ -11,6 +11,8 @@
 // 2026-11-02: Add persistent campaign/town navigation, a larger retained-art map and grouped company status with full-action rest controls (spec 14).
 // 2026-11-02: Center a bounded interface and virtualized draggable map, move contracts/records into navigation and open normal Options (spec 14 feedback).
 // 2026-11-02: Expose the existing company checkpoint browser to the main-menu load button (spec 15C).
+// 2026-11-03: Connect unified saves and exact battle resumption to campaign screens (spec 19).
+// 2026-11-03: Retire Continue/map preview setup entries and compact the remaining creation/load choices (spec 20).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.IO;
@@ -28,7 +30,14 @@ public sealed class CompanyCampaignView : MonoBehaviour
     CompanyCampaign returnedCampaign;
     CompanyBattleSession returningSession;
     string returningError;
+    internal static CompanyCampaignView ActiveView;
+    internal bool HasActiveCompany => state != null && !state.Preview && IsOpen && !setupPage.activeSelf;
     internal string SaveDirectory { get { return saveDirectory; } }
+    internal void PrepareSaveBrowser(StartMode start)
+    { owner = start; if (root == null) { Build(); root.SetActive(false); } ActiveView = this; }
+    internal void ReturnToMainMenu()
+    { Close(); State.GameManager.Start_Mode.ReturnToStart(); }
+
     Text stageBanner;
     internal CompanyCampaign Campaign { get { return state; } }
     GameObject root, frame, mapPage, setupPage, townPage, companyPage, navigation, townNavigation, statusPanel;
@@ -61,7 +70,7 @@ public sealed class CompanyCampaignView : MonoBehaviour
 
     public void Open(StartMode start)
     {
-        owner = start;
+        owner = start; ActiveView = this;
         if (root == null) Build();
         owner.UI.SetActive(false);
         root.SetActive(true);
@@ -69,8 +78,8 @@ public sealed class CompanyCampaignView : MonoBehaviour
     }
     internal void OpenSavedGames(StartMode start)
     {
-        Open(start);
-        management.BrowseCheckpoints();
+        PrepareSaveBrowser(start);
+        CompanySaveMenu.Show(this);
     }
     public void Close()
     {
@@ -228,19 +237,17 @@ public sealed class CompanyCampaignView : MonoBehaviour
         Action(frame.transform, "Main menu", 80, 746, 130, Close);
         Action(frame.transform, "Help", 222, 746, 100, () => missions.Help(0, setupPage.activeSelf || state == null, management.IsCreatingLeader));
         Action(frame.transform, "Options", 334, 746, 120, OpenOptions);
-        retrySaveButton = Action(frame.transform, "Retry checkpoint", 1045, 746, 155, () => { if (checkpointFailed) Save("Checkpoint saved; you can continue."); });
+        retrySaveButton = Action(frame.transform, "Retry save", 1045, 746, 155, () => { if (checkpointFailed) Save("Game saved; you can continue."); });
         retrySaveButton.gameObject.SetActive(false);
         setupPage = Panel("Setup", frame.transform);
-        Label(setupPage.transform, "Create your leader, recruit and equip a small company, then choose contracts and fight.\nThe map-only preview remains available separately. Numeric tuning is provisional.", 30, 105, 1150, 90);
+        Label(setupPage.transform, "Create your leader, recruit and equip a small company, then choose contracts and fight.\nNumeric tuning is provisional.", 30, 105, 1150, 90);
         var toggleGo = Panel("Ironman", setupPage.transform); Place(toggleGo, 30, 220, 25, 25);
         var check = toggleGo.AddComponent<Image>(); check.color = new Color(.3f, .65f, .4f);
         ironman = toggleGo.AddComponent<Toggle>(); ironman.targetGraphic = check;
         var mark = Panel("Check", toggleGo.transform); Place(mark, 5, 5, 15, 15);
         ironman.graphic = mark.AddComponent<Image>(); ironman.isOn = false;
-        Label(setupPage.transform, "Ironman (locked at creation; latest checkpoint only; deployment checkpoint during battles)", 70, 216, 1100, 40);
+        Label(setupPage.transform, "Ironman (locked at creation; autosaves only; recovery backups)", 70, 216, 1100, 40);
         Action(setupPage.transform, "Create company", 30, 285, 250, () => management.StartCreator(ironman.isOn));
-        Action(setupPage.transform, "Map-only preview", 30, 350, 250, NewPreview);
-        Action(setupPage.transform, "Load latest checkpoint", 310, 285, 250, LoadPreview);
         mapPage = Panel("World map", frame.transform);
         var viewport = Panel("Map viewport", mapPage.transform); Place(viewport, 80, 156, 1120, 420);
         viewport.AddComponent<Image>().color = new Color(.08f, .1f, .12f); viewport.AddComponent<RectMask2D>();
@@ -281,7 +288,7 @@ public sealed class CompanyCampaignView : MonoBehaviour
         cancelRestButton = Action(mapPage.transform, "Cancel rest", 780, 108, 120, () => { state.RestDaysRemaining = 0; Save("Remaining rest cancelled."); ShowMap(); });
         Box(mapPage.transform, "Active contracts", 80, 582, 1120, 75, new Color(.09f, .12f, .16f));
         contractList = Label(mapPage.transform, "", 96, 588, 1088, 64, 16);
-        saveButton = Action(mapPage.transform, "Save checkpoint", 912, 108, 140, () => Save("Checkpoint saved."));
+        saveButton = Action(mapPage.transform, "Save / Load", 912, 108, 140, () => CompanySaveMenu.Show(this));
         Action(mapPage.transform, "Center company", 1064, 108, 136, CenterMap);
         townPage = Panel("Town", frame.transform);
         townHeading = Label(townPage.transform, "", 250, 110, 950, 65, 32);
@@ -291,7 +298,7 @@ public sealed class CompanyCampaignView : MonoBehaviour
         management = new CompanyManagementUI(this, frame.transform);
         missions = new CompanyMissionsUI(this, management);
         Recovery = new CompanyRecoveryUI(this, management);
-        Action(setupPage.transform, "Choose checkpoint", 590, 285, 250, () => management.BrowseCheckpoints());
+        Action(setupPage.transform, "Load Game", 310, 285, 250, () => CompanySaveMenu.Show(this));
         clock.Register(new CompanyWages()); clock.Register(new CompanyRecruitRefresh());
         clock.Register(new CompanyContractDeadlines()); clock.Register(new CompanyDailyRecovery()); clock.Register(new CompanySparring());
         navigation = Panel("Campaign navigation", frame.transform);
@@ -327,29 +334,6 @@ public sealed class CompanyCampaignView : MonoBehaviour
     }
     internal void ShowSetup() { Pages(setupPage); heading.text = "Mercenary campaign"; message.text = ""; stageBanner.text = ""; }
 
-    void NewPreview()
-    {
-        var candidate = CompanyCampaign.Generate(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0), ironman.isOn);
-        candidate.Validate(); state = candidate; checkpointFailed = false;
-        saveDirectory = Path.Combine(CompanyCampaignSave.DefaultDirectory, state.Id);
-        Save("New preview checkpoint saved."); ShowMap();
-    }
-    void LoadPreview()
-    {
-        string rootDirectory = CompanyCampaignSave.DefaultDirectory;
-        if (!Directory.Exists(rootDirectory)) { message.text = "No company checkpoints exist yet."; return; }
-        string[] paths = Directory.GetFiles(rootDirectory, "*.company", SearchOption.AllDirectories);
-        Array.Sort(paths, (a, b) => string.CompareOrdinal(Path.GetFileName(b), Path.GetFileName(a)));
-        if (paths.Length == 0) { message.text = "No company checkpoints exist yet."; return; }
-        // Recovery is confined to the selected company, never a silent switch to another run.
-        string selectedDirectory = Path.GetDirectoryName(paths[0]);
-        int skipped; string selected;
-        CompanyCampaignSave.LoadLatest(selectedDirectory, out skipped, out selected);
-        var candidate = CompanyCampaignSave.LoadForResume(selected);
-        state = candidate; saveDirectory = selectedDirectory; checkpointFailed = false;
-        ShowMap(); message.text = "Checkpoint loaded without advancing time." + (skipped > 0 ? " Recovered after skipping " + skipped + " invalid checkpoint(s)." : "");
-        if (!string.IsNullOrEmpty(state.PendingDecision)) management.Decision();
-    }
     void Move(int tile)
     {
         if (checkpointFailed || state.Busy) return;
@@ -366,7 +350,7 @@ public sealed class CompanyCampaignView : MonoBehaviour
             state.Validate();
         }
         catch { CompanyCampaignSave.Restore(state, before); throw; }
-        if (state.RoadEvent != null && state.RoadEvent.Id != previousEvent) Save("Road-event checkpoint saved.");
+        if (state.RoadEvent != null && state.RoadEvent.Id != previousEvent) Save("Road event saved.");
         else message.text = "";
         ShowMap();
     }
@@ -381,7 +365,7 @@ public sealed class CompanyCampaignView : MonoBehaviour
         contractList.text = "Active contracts: " + active.Length + "    Reputation: " + state.Reputation + "\n" +
             string.Join("    |    ", active.Take(3).Select(c => "Rating " + c.Rating + " · " + c.Reward + " gold · day " + (c.Deadline + 1) +
                 " · (" + c.Tile % state.Width + ", " + c.Tile / state.Width + ")").ToArray()) + (active.Length > 3 ? "    More in Contracts." : "");
-        saveButton.interactable = !state.Ironman || checkpointFailed;
+        saveButton.interactable = true;
         dayButton.interactable = !checkpointFailed;
         dayButton.GetComponentInChildren<Text>().text = !string.IsNullOrEmpty(state.PendingDecision) ? "Review notice" : state.UpdatingDay ? "Resume turn" : "End turn";
         restOneButton.interactable = restChosenButton.interactable = !checkpointFailed && state.CanStartRest;
@@ -413,7 +397,7 @@ public sealed class CompanyCampaignView : MonoBehaviour
     bool Save(string success)
     {
         try { CompanyCampaignSave.Save(state, saveDirectory); checkpointFailed = false; message.text = success; return true; }
-        catch (Exception ex) { checkpointFailed = true; message.text = "Checkpoint failed: " + ex.Message + " Use Retry checkpoint before continuing. Existing generations are preserved."; return false; }
+        catch (Exception ex) { checkpointFailed = true; message.text = "Autosave failed: " + ex.Message + " Use Retry save before continuing."; return false; }
         finally
         {
             retrySaveButton.gameObject.SetActive(checkpointFailed && state != null);
@@ -425,7 +409,7 @@ public sealed class CompanyCampaignView : MonoBehaviour
     {
         if (state == null || checkpointFailed || state.Ended || state.InBattle || (state.Battle != null && state.Battle.Phase != CompanyBattlePhase.Returned) || !string.IsNullOrEmpty(state.PendingDecision)) return;
         clock.EndDay(state, resting);
-        Save("Day advanced; checkpoint saved."); ShowMap();
+        Save("Day advanced; game saved."); ShowMap();
         if (!string.IsNullOrEmpty(state.PendingDecision)) management.Decision();
     }
     internal void ShowManagement(bool townServices = false, bool campaign = true)
@@ -437,7 +421,16 @@ public sealed class CompanyCampaignView : MonoBehaviour
     {
         var candidate = CompanyCampaignSave.LoadForResume(path);
         string directory = Path.GetDirectoryName(Path.GetFullPath(path));
-        state = candidate; saveDirectory = directory; checkpointFailed = false; ShowMap();
+        if (State.GameManager.CompanyBattle != null) State.GameManager.CompanyBattle.AbandonForLoad();
+        else if (State.GameManager.CurrentScene == State.GameManager.TacticalMode) State.GameManager.ReturnFromCompanyBattle();
+        state = candidate; saveDirectory = directory; checkpointFailed = false;
+        ActiveView = this; root.SetActive(true); owner.UI.SetActive(false);
+        if (state.InBattle)
+        {
+            root.SetActive(false);
+            new CompanyBattleSession(this, state).Resume();
+        }
+        else missions.Resume();
         message.text = "Company loaded without advancing time.";
         if (!string.IsNullOrEmpty(state.PendingDecision)) management.Decision();
     }
@@ -462,18 +455,21 @@ public sealed class CompanyCampaignView : MonoBehaviour
             battle.DeployedIds = state.Members.Where(m => !m.Reserve || m.CharacterId == state.LeaderId).Select(m => m.CharacterId).ToArray();
         });
         if (checkpointFailed) return;
+        byte[] deployment = CompanyCampaignSave.Encode(state);
         var session = new CompanyBattleSession(this, state); root.SetActive(false);
         try { session.Start(); }
         catch (Exception ex)
         {
-            int skipped; QueueBattleReturn(CompanyCampaignSave.LoadLatest(saveDirectory, out skipped), session);
-            returningError = "Could not start this battle: " + ex.Message + " The deployment checkpoint was preserved.";
+            var restored = new CompanyCampaign(); CompanyCampaignSave.Restore(restored, deployment);
+            QueueBattleReturn(restored, session);
+            returningError = "Could not start this battle: " + ex.Message + " The deployment save was preserved.";
         }
     }
     internal void QueueBattleReturn(CompanyCampaign result, CompanyBattleSession session)
     { returnedCampaign = result; returningSession = session; }
     void Update()
     {
+        if (CompanySaveMenu.IsVisible) return;
         if (optionsOpen)
         {
             var options = State.GameManager.Menu.Options;
@@ -488,21 +484,21 @@ public sealed class CompanyCampaignView : MonoBehaviour
         State.GameManager.ReturnFromCompanyBattle(); returningSession.RestoreServices();
         state = returnedCampaign; returnedCampaign = null; returningSession = null;
         root.SetActive(true); owner.UI.SetActive(false);
-        checkpointFailed = false; Save("Battle transition checkpoint saved."); missions.Resume();
+        checkpointFailed = false; Save("Battle results saved."); missions.Resume();
         if (!string.IsNullOrEmpty(returningError)) { message.text = returningError; returningError = null; }
     }
     internal void Mutate(Action operation)
     {
         if (state.InBattle) throw new InvalidOperationException("Company management is unavailable during battle.");
-        if (checkpointFailed) throw new InvalidOperationException("Use Retry checkpoint before making more changes.");
+        if (checkpointFailed) throw new InvalidOperationException("Use Retry save before making more changes.");
         byte[] before = CompanyCampaignSave.Encode(state);
         try { operation(); state.Validate(); }
         catch { CompanyCampaignSave.Restore(state, before); throw; }
-        Save("Company checkpoint saved.");
+        Save("Company saved.");
     }
     internal void ResolveDecision()
     {
-        if (checkpointFailed) throw new InvalidOperationException("Save the current checkpoint first.");
+        if (checkpointFailed) throw new InvalidOperationException("Save the current game first.");
         if (state.PendingDecisionKind == "Departures" && !string.IsNullOrEmpty(state.DeferredWageDecision))
         {
             state.PendingDecision = state.DeferredWageDecision; state.DeferredWageDecision = null;

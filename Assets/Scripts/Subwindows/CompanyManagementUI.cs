@@ -1,4 +1,4 @@
-// Added by the VoreWar mercenary-company conversion fork.
+﻿// Added by the VoreWar mercenary-company conversion fork.
 // 2026-11-01: Leader creator, recruitment, canonical roster/debt and nine-slot commerce views (specs 07–08).
 // 2026-11-01: Host mission/result views, preserve clear deadline decisions and exclude enemy-only natural weapons from shops (specs 09–10).
 // 2026-11-01: Use singular species names in creation, recruitment and company views (09–10 feedback).
@@ -9,10 +9,11 @@
 // 2026-11-02: Keep town services alongside their pages and surface roster XP/readiness with direct level-up actions (spec 14).
 // 2026-11-02: Enlarge and center paper-doll previews while compensating for their renderer offset (portrait feedback).
 // 2026-11-02: Correct portrait magnification/alignment after visual feedback (spec 15D).
+// 2026-11-03: Present the leader creator as a blue single-screen layout with species dropdown (spec 18).
+// 2026-11-03: Forward prototype checkpoint browsing to the named save/load interface (spec 19).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Linq;
-using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -83,21 +84,20 @@ internal sealed class CompanyManagementUI
     void Creator()
     {
         Clear("Create your company leader", false, false);
+        // Cover the unused campaign heading band while this standalone creator is visible.
+        var background = view.Panel("Leader creation background", Page.transform);
+        view.Place(background, 0, 0, 1280, 744);
+        UITheme.Surface(background, UITheme.Background);
+        Text("Create your company leader", 20, 16, 1240, 42, 25);
         var races = CompanyEconomy.Sapients;
-        for (int i = 0; i < races.Length; i++) { Race race = races[i]; Button(SpeciesPolicy.DisplayName(race), 30 + i * 160, 140, 150, () => MakeDraft(race)); }
-        Button("Melee focus", 560, 140, 165, () => Focus(0));
-        Button("Ranged focus", 735, 140, 165, () => Focus(1));
-        Button("Magic focus", 910, 140, 165, () => Focus(2));
-        Text("Current focus: " + new[] { "Melee", "Ranged", "Magic" }[draft.Focus] + ". Edit the portrait/name below. Name and appearance lock when confirmed. Scroll the appearance panel for more controls.", 30, 187, 1200, 35, 17);
+        Button("Melee focus", 880, 96, 120, () => Focus(0));
+        Button("Ranged focus", 1010, 96, 120, () => Focus(1));
+        Button("Magic focus", 1140, 96, 120, () => Focus(2));
+        Text("Current focus: " + new[] { "Melee", "Ranged", "Magic" }[draft.Focus] + ". Edit the portrait/name below. Name and appearance lock when confirmed.", 880, 150, 380, 90, 15);
         // Clone the existing appearance controls; never activate the retired recruitment mode.
         var original = global::State.GameManager.Recruit_Mode.CustomizerUI;
-        var viewport = view.Panel("Appearance viewport", Page.transform); view.Place(viewport, 25, 230, 1230, 320);
-        viewport.AddComponent<RectMask2D>(); viewport.AddComponent<Image>().color = new Color(.1f, .12f, .15f);
-        var scroll = viewport.AddComponent<ScrollRect>(); scroll.horizontal = false; scroll.movementType = ScrollRect.MovementType.Clamped; scroll.scrollSensitivity = 35;
-        var content = view.Panel("Appearance content", viewport.transform); view.Place(content, 0, 0, 1230, 800);
-        scroll.content = content.GetComponent<RectTransform>(); scroll.viewport = viewport.GetComponent<RectTransform>();
-        var clone = UnityEngine.Object.Instantiate(original.gameObject, content.transform, false);
-        view.Place(clone, 0, 0, 1230, 800);
+        var clone = UnityEngine.Object.Instantiate(original.gameObject, Page.transform);
+        view.Place(clone, 0, 0, 1280, 800); clone.transform.localScale = Vector3.one;
         clone.SetActive(true); creator = clone.GetComponent<CustomizerPanel>();
         foreach (var button in clone.GetComponentsInChildren<Button>(true))
         {
@@ -117,17 +117,20 @@ internal sealed class CompanyManagementUI
         creator.Quantification.onValueChanged.AddListener(_ => { if (creator.CompanyCustomizer != null) creator.CompanyCustomizer.ChangePronouns(); });
         creator.CompanyCustomizer = new UnitCustomizer(draft.Unit, creator);
         foreach (var canvas in clone.GetComponentsInChildren<Canvas>(true)) canvas.overrideSorting = false;
-        Text("Leader name", 550, 550, 620, 24, 16);
-        var nameGo = view.Panel("Leader name", Page.transform); view.Place(nameGo, 550, 575, 650, 38);
-        nameGo.AddComponent<Image>().color = new Color(.2f, .25f, .3f);
+        var presentation = new CompanyLeaderCreatorView(creator, Page.transform, races, draft.Unit.Race, MakeDraft);
+        creator.CompanyLayout = presentation.Refresh;
+        presentation.Refresh();
+        Text("Leader name", 420, 625, 440, 24, 16);
+        var nameGo = view.Panel("Leader name", Page.transform); view.Place(nameGo, 420, 650, 440, 38);
+        UITheme.Surface(nameGo, UITheme.Control, true);
         var nameField = nameGo.AddComponent<InputField>();
-        nameField.textComponent = view.Label(nameGo.transform, draft.Unit.Name, 8, 2, 630, 34, 18);
+        nameField.textComponent = view.Label(nameGo.transform, draft.Unit.Name, 8, 2, 424, 34, 18);
         nameField.characterLimit = 100; nameField.text = draft.Unit.Name;
         nameField.onEndEdit.AddListener(value => { draft.Unit.Name = value.Trim(); creator.DisplayedSprite.Name.text = draft.Unit.Name; });
         var nameButton = creator.DisplayedSprite.Name.GetComponent<Button>();
         nameButton.onClick = new Button.ButtonClickedEvent();
         nameButton.onClick.AddListener(nameField.ActivateInputField);
-        Button("Confirm leader and begin", 30, 575, 300, () =>
+        Button("Confirm leader and begin", 420, 704, 280, () =>
         {
             draft.Unit.Name = nameField.text.Trim();
             if (string.IsNullOrWhiteSpace(draft.Unit.Name)) throw new InvalidOperationException("Choose a leader name first.");
@@ -141,7 +144,9 @@ internal sealed class CompanyManagementUI
             }
             view.Install(draftWorld); draft = null; draftWorld = null;
         });
-        Button("Cancel", 350, 575, 160, view.ShowSetup);
+        Button("Cancel", 710, 704, 150, view.ShowSetup);
+        foreach (var button in Page.GetComponentsInChildren<Button>(true))
+            if (button.transform.parent == Page.transform) UITheme.StylePopup(button.gameObject);
     }
     CompanyTown Town()
     {
@@ -302,32 +307,7 @@ internal sealed class CompanyManagementUI
     }
     internal void BrowseCheckpoints(string directory = null, int page = 0)
     {
-        Clear(directory == null ? "Saved companies" : "Company checkpoints", false, false);
-        string root = CompanyCampaignSave.DefaultDirectory;
-        string[] entries = directory == null ?
-            (Directory.Exists(root) ? Directory.GetDirectories(root).OrderByDescending(d => Path.GetFileName(CompanyCampaignSave.Generations(d).FirstOrDefault() ?? "")).ToArray() : new string[0]) :
-            CompanyCampaignSave.Generations(directory);
-        if (entries.Length == 0) Text("No saved companies yet.", 30, 170, 1100, 60);
-        for (int i = 0; i < 5 && page + i < entries.Length; i++)
-        {
-            string entry = entries[page + i]; int y = 175 + i * 65;
-            CompanyCampaign saved; string path; int skipped;
-            try
-            {
-                if (directory == null) { saved = CompanyCampaignSave.LoadLatest(entry, out skipped, out path); }
-                else { path = entry; saved = CompanyCampaignSave.Load(path); }
-            }
-            catch { Text("Unreadable checkpoint — file preserved", 30, y, 1100, 50); continue; }
-            string label = saved.Preview ? "Map preview" : saved.Characters.First(c => c.Id == saved.LeaderId).Unit.Name;
-            Text(label + " — day " + (saved.ElapsedDays + 1) + " — " + (saved.Ironman ? "Ironman" : "Normal"), 30, y, 710, 50);
-            string chosen = path;
-            if (saved.Ironman && directory != null) continue;
-            Button("Load", 760, y, 170, () => view.LoadCheckpoint(chosen));
-            if (!saved.Ironman && directory == null) Button("History", 950, y, 170, () => BrowseCheckpoints(entry));
-        }
-        Button("Previous", 30, 535, 160, () => BrowseCheckpoints(directory, page - 5), page > 0);
-        Button("Next", 210, 535, 160, () => BrowseCheckpoints(directory, page + 5), page + 5 < entries.Length);
-        Button("Campaign setup", 410, 535, 200, view.ShowSetup);
+        CompanySaveMenu.Show(view);
     }
     public void Decision()
     {

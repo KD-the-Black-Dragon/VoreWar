@@ -1,9 +1,12 @@
-// Modified for the VoreWar mercenary-company conversion.
+﻿// Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Remove the retired Unit Editor hyperlink from unit inspection (spec 02B).
 // 2026-11-01: Label out-of-fight units as downed in character information (spec 10).
 // 2026-11-01: Use the shared individual display names for retained species (09–10 feedback).
 // 2026-11-01: Show persistent injury penalties in unit inspection, including Pure Tactical (spec 11).
 // 2026-11-02: Show per-level XP and remaining progress consistently in unit details (spec 13 feedback).
+// 2026-11-02: Display tactical weapon/spell slots and reduce only trait text size (spec 16).
+// 2026-11-03: Reduce tactical trait and innate-spell text to 70 percent (spec 16 feedback).
+// 2026-11-03: Keep the final trait line at the same reduced font metrics as its predecessors (spec 16 feedback).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Linq;
@@ -688,27 +691,29 @@ public class InfoPanel
                 else
                     sb.AppendLine($"Special Allegiance: {State.World.GetEmpireOfSide(unit.FixedSide)?.Name ?? "Unkown"}");
             }
-            UnityEngine.Transform EquipRow = UnitInfoPanel.StatBlock.transform.GetChild(5);
-
-            if (unit.GetItem(0)?.Name == null)
-                EquipRow.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = "";
-            else
-                EquipRow.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = unit.GetItem(0)?.Name;
-            if (unit.GetItem(1)?.Name == null)
-                EquipRow.transform.GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>().text = "";
-            else
-                EquipRow.transform.GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>().text = unit.GetItem(1)?.Name;
-            if (unit.HasTrait(Traits.Resourceful))
+            if (!TacticalHudView.FillEquipment(UnitInfoPanel, unit, actor))
             {
-                EquipRow.transform.GetChild(2).gameObject.SetActive(true);
-            if (unit.GetItem(2)?.Name == null)
-                EquipRow.transform.GetChild(2).GetChild(0).GetComponent<TextMeshProUGUI>().text = "";
-            else
-                EquipRow.transform.GetChild(2).GetChild(0).GetComponent<TextMeshProUGUI>().text = unit.GetItem(2)?.Name;
-            }
-            else
-                EquipRow.transform.GetChild(2).gameObject.SetActive(false);
+                UnityEngine.Transform EquipRow = UnitInfoPanel.StatBlock.transform.GetChild(5);
 
+                if (unit.GetItem(0)?.Name == null)
+                    EquipRow.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = "";
+                else
+                    EquipRow.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = unit.GetItem(0)?.Name;
+                if (unit.GetItem(1)?.Name == null)
+                    EquipRow.transform.GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>().text = "";
+                else
+                    EquipRow.transform.GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>().text = unit.GetItem(1)?.Name;
+                if (unit.HasTrait(Traits.Resourceful))
+                {
+                    EquipRow.transform.GetChild(2).gameObject.SetActive(true);
+                    if (unit.GetItem(2)?.Name == null)
+                        EquipRow.transform.GetChild(2).GetChild(0).GetComponent<TextMeshProUGUI>().text = "";
+                    else
+                        EquipRow.transform.GetChild(2).GetChild(0).GetComponent<TextMeshProUGUI>().text = unit.GetItem(2)?.Name;
+                }
+                else
+                    EquipRow.transform.GetChild(2).gameObject.SetActive(false);
+            }
             // Add Equipment
             //for (int i = 0; i < unit.Items.Length; i++)
             //{
@@ -808,7 +813,12 @@ public class InfoPanel
             if (Config.RaceTraitsEnabled == false && (traits == ""))
                 sb.AppendLine("Race Traits disabled");
             if (traits != "")
-                sb.AppendLine("Traits:\n" + traits);
+            {
+                if (TacticalHudView.IsTacticalPanel(UnitInfoPanel))
+                    sb.Append("<size=70%>Traits:\n" + traits + "\n</size>");
+                else
+                    sb.AppendLine("Traits:\n" + traits);
+            }
             if (unit.Injuries.Count > 0) sb.AppendLine("Injuries:\n" + string.Join("\n", unit.Injuries.Select(CompanyInjuries.Description).ToArray()));
             StringBuilder sbSecond = new StringBuilder();
             sbSecond.AppendLine("Status:");
@@ -843,6 +853,7 @@ public class InfoPanel
 
             if ((unit.InnateSpells?.Any() ?? false) || (racePar.InnateSpells?.Any() ?? false))
             {
+                if (TacticalHudView.IsTacticalPanel(UnitInfoPanel)) sb.Append("<size=70%>");
                 sb.AppendLine("Innate Spells:");
                 if (unit.InnateSpells != null)
                 {
@@ -884,6 +895,7 @@ public class InfoPanel
                         sb.AppendLine("Invalid Spell");
                     }
                 }
+                if (TacticalHudView.IsTacticalPanel(UnitInfoPanel)) sb.Append("</size>");
             }
             if (actor != null)
             {

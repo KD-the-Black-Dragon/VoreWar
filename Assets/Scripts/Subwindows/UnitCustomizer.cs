@@ -1,5 +1,6 @@
-// Modified for the VoreWar mercenary-company conversion.
+﻿// Modified for the VoreWar mercenary-company conversion.
 // 2026-11-01: Disconnect rejected graphics instances and their typed rendering hooks (spec 03B4).
+// 2026-11-03: Notify the company-only layout after native customization refreshes (spec 18).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using UnityEngine.UI;
@@ -910,6 +911,7 @@ public class UnitCustomizer
         actor.UpdateBestWeapons();
         CustomizerUI.DisplayedSprite.UpdateSprites(actor);
         CustomizerUI.DisplayedSprite.Name.text = Unit.Name;
+        CustomizerUI.CompanyLayout?.Invoke();
     }
 
     void CreateButtons()

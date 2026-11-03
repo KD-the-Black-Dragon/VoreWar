@@ -2,6 +2,8 @@
 // 2026-11-01: Complete approved ability retirement and close legacy reactivation paths (spec 05A3B17).
 // 2026-11-01: Explain downed status and retained fear/retreat traits without the retired surrender reset (spec 10).
 // 2026-11-02: Use the preferred vore terminology in the downed-unit tooltip (Options feedback).
+// 2026-11-03: Theme shared hover and slider-value tooltips (spec 17).
+// 2026-11-03: Keep hover graphics from intercepting the pointer or blocking slider targeting (spec 17 feedback).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Collections.Generic;
@@ -18,6 +20,8 @@ public class HoveringTooltip : MonoBehaviour
 
     private void Start()
     {
+        UITheme.StylePopup(gameObject);
+        foreach (var graphic in GetComponentsInChildren<Graphic>(true)) graphic.raycastTarget = false;
         rect = GetComponent<RectTransform>();
         text = GetComponentInChildren<TextMeshProUGUI>();
     }

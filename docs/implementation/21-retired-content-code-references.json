@@ -1,0 +1,699 @@
+{
+  "Aabayx": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Modes/TacticalMode.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Modes/Tactical/ScatV2Discard.cs",
+    "Assets/Scripts/Modes/Tactical/Log/LogUtilities.cs",
+    "Assets/Scripts/Entities/Units/Prey.cs"
+  ],
+  "Abakhanskya": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Races/RaceParameters.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Entities/Units/Unit.cs"
+  ],
+  "Alraune": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Modes/Tactical/Log/LogUtilities.cs"
+  ],
+  "Asura": [
+    "Assets/Scripts/AI/TacticalAI.cs",
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Entities/Units/Actor_Unit.cs",
+    "Assets/Scripts/Entities/Units/PredatorComponent.cs",
+    "Assets/Scripts/Entities/Units/Unit.cs"
+  ],
+  "Auri": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Entities/Units/Unit.cs"
+  ],
+  "Bears": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Modes/Tactical/Log/LogUtilities.cs",
+    "Assets/Scripts/Entities/Clothing/MainAccessories.cs"
+  ],
+  "Bella": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Entities/Units/Unit.cs"
+  ],
+  "BoomBunnies": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Modes/StrategyMode.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs"
+  ],
+  "Cake": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Modes/StrategyMode.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Entities/Units/Prey.cs"
+  ],
+  "Cats": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Entities/Village.cs",
+    "Assets/Scripts/Modes/TacticalMode.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Utility/TutorialScript.cs",
+    "Assets/Scripts/Utility/Stored/RaceSettings.cs",
+    "Assets/Scripts/Races/Graphics/DefaultRaceData.cs",
+    "Assets/Scripts/Modes/Tactical/TacticalMapGenerator.cs",
+    "Assets/Scripts/Modes/Tactical/Log/LogUtilities.cs"
+  ],
+  "Centaur": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Races/Graphics/CompleteSprite.cs"
+  ],
+  "Cherub": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Modes/Tactical/ScatV2Discard.cs",
+    "Assets/Scripts/Entities/Units/Unit.cs"
+  ],
+  "Cierihaka": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Entities/Units/Unit.cs"
+  ],
+  "Cockatrice": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs"
+  ],
+  "Collectors": [
+    "Assets/Scripts/Core/ContentSettingsData.cs",
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Modes/Tactical/Log/LogUtilities.cs",
+    "Assets/Scripts/AI/Monsters/MonsterStrategicAI.cs"
+  ],
+  "Compy": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Core/WorldConfig.cs",
+    "Assets/Scripts/Modes/StrategyMode.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Entities/Units/Prey.cs",
+    "Assets/Scripts/AI/Monsters/MonsterStrategicAI.cs"
+  ],
+  "Crux": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Modes/TacticalMode.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Modes/Tactical/TacticalMapGenerator.cs",
+    "Assets/Scripts/Modes/Tactical/Log/LogUtilities.cs"
+  ],
+  "Crypters": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Modes/TacticalMode.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Modes/Tactical/Log/LogUtilities.cs",
+    "Assets/Scripts/Entities/Units/Prey.cs"
+  ],
+  "DRACO": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Entities/Units/Unit.cs"
+  ],
+  "DarkSwallower": [
+    "Assets/Scripts/Core/ContentSettingsData.cs",
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Modes/Tactical/Log/LogUtilities.cs",
+    "Assets/Scripts/Entities/Units/Prey.cs",
+    "Assets/Scripts/AI/Monsters/MonsterStrategicAI.cs"
+  ],
+  "DewSprites": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs"
+  ],
+  "Dogs": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Races/Graphics/DefaultRaceData.cs",
+    "Assets/Scripts/Modes/Tactical/Log/LogUtilities.cs"
+  ],
+  "Driders": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Modes/Tactical/Log/LogUtilities.cs"
+  ],
+  "EarthDryad": [
+    "Assets/Scripts/Core/ContentSettingsData.cs",
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/AI/Monsters/MonsterStrategicAI.cs"
+  ],
+  "Earthworms": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Modes/StrategyMode.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs"
+  ],
+  "Eevee": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs"
+  ],
+  "Equaleon": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Entities/Army.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs"
+  ],
+  "Erin": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Entities/Units/Actor_Unit.cs",
+    "Assets/Scripts/Entities/Units/PredatorComponent.cs",
+    "Assets/Scripts/Entities/Units/Unit.cs"
+  ],
+  "Fairies": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Modes/StrategyMode.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Modes/Strategic/StrategicUtilities.cs",
+    "Assets/Scripts/Entities/Units/Unit.cs"
+  ],
+  "Feit": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Entities/Units/Unit.cs"
+  ],
+  "FeralEevee": [
+    "Assets/Scripts/Core/ContentSettingsData.cs",
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Races/RaceParameters.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/AI/Monsters/MonsterStrategicAI.cs"
+  ],
+  "FeralEqualeon": [
+    "Assets/Scripts/Core/ContentSettingsData.cs",
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Entities/Army.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs"
+  ],
+  "FeralFrogs": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Modes/StrategyMode.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Entities/Units/Actor_Unit.cs",
+    "Assets/Scripts/Entities/Units/PredatorComponent.cs"
+  ],
+  "FeralOrcas": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Modes/StrategyMode.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs"
+  ],
+  "FeralSharks": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Modes/StrategyMode.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Modes/Tactical/Log/LogUtilities.cs",
+    "Assets/Scripts/Entities/Units/Prey.cs",
+    "Assets/Scripts/AI/Monsters/MonsterStrategicAI.cs"
+  ],
+  "Foxes": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Modes/TacticalMode.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Races/Graphics/DefaultRaceData.cs",
+    "Assets/Scripts/Modes/Tactical/TacticalMapGenerator.cs",
+    "Assets/Scripts/Modes/Tactical/Log/LogUtilities.cs"
+  ],
+  "FungalDryad": [
+    "Assets/Scripts/Core/ContentSettingsData.cs",
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/AI/Monsters/MonsterStrategicAI.cs"
+  ],
+  "Ghosts": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Races/Graphics/CompleteSprite.cs",
+    "Assets/Scripts/Entities/Clothing/MainAccessories.cs"
+  ],
+  "Goblins": [
+    "Assets/Scripts/AI/StrategicArmyCommander.cs",
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Entities/Village.cs",
+    "Assets/Scripts/Subwindows/DiplomacyScreen.cs",
+    "Assets/Scripts/Subwindows/EmpireReport.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Utility/RelationsManager.cs",
+    "Assets/Scripts/Modes/Strategic/StrategicUtilities.cs",
+    "Assets/Scripts/Modes/Tactical/Log/LogUtilities.cs",
+    "Assets/Scripts/Entities/Clothing/ClothingTypes.cs",
+    "Assets/Scripts/Entities/Clothing/MainAccessories.cs",
+    "Assets/Scripts/Entities/Units/Prey.cs"
+  ],
+  "Hamsters": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Modes/Tactical/Log/LogUtilities.cs"
+  ],
+  "Harpies": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Modes/Tactical/TacticalMapGenerator.cs",
+    "Assets/Scripts/Modes/Tactical/Log/LogUtilities.cs",
+    "Assets/Scripts/Entities/Clothing/ClothingTypes.cs",
+    "Assets/Scripts/Entities/Units/Actor_Unit.cs"
+  ],
+  "Humans": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs"
+  ],
+  "Iliijiith": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Modes/StrategyMode.cs",
+    "Assets/Scripts/Entities/Units/Actor_Unit.cs",
+    "Assets/Scripts/Entities/Units/PredatorComponent.cs",
+    "Assets/Scripts/Entities/Units/Prey.cs"
+  ],
+  "Imps": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Modes/TacticalMode.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Utility/TutorialScript.cs",
+    "Assets/Scripts/Utility/Stored/CustomizationDataStorer.cs",
+    "Assets/Scripts/Races/Graphics/CompleteSprite.cs",
+    "Assets/Scripts/Modes/Tactical/TacticalUtilities.cs",
+    "Assets/Scripts/Modes/Tactical/Log/LogUtilities.cs",
+    "Assets/Scripts/Entities/Clothing/ClothingTypes.cs",
+    "Assets/Scripts/Entities/Clothing/MainAccessories.cs",
+    "Assets/Scripts/Entities/Units/Actor_Unit.cs",
+    "Assets/Scripts/Entities/Units/Prey.cs"
+  ],
+  "Ki": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Modes/TacticalMode.cs",
+    "Assets/Scripts/UI/RightClickMenu.cs",
+    "Assets/Scripts/Modes/Tactical/Log/LogUtilities.cs",
+    "Assets/Scripts/Entities/Units/Unit.cs"
+  ],
+  "Konane": [
+    "Assets/Scripts/AI/TacticalAI.cs",
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Entities/Units/Unit.cs"
+  ],
+  "Lamia": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Entities/Village.cs",
+    "Assets/Scripts/Modes/TacticalMode.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Utility/Stored/CustomizationDataStorer.cs",
+    "Assets/Scripts/Modes/Tactical/TacticalMapGenerator.cs",
+    "Assets/Scripts/Modes/Tactical/TacticalUtilities.cs",
+    "Assets/Scripts/Entities/Clothing/ClothingTypes.cs"
+  ],
+  "MainlandElves": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs"
+  ],
+  "Merfolk": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Modes/Tactical/Log/LogUtilities.cs",
+    "Assets/Scripts/Entities/Clothing/MainAccessories.cs"
+  ],
+  "Nectar": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Modes/Tactical/Log/LogUtilities.cs",
+    "Assets/Scripts/Entities/Units/Unit.cs"
+  ],
+  "Olivia": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Modes/Tactical/Log/LogUtilities.cs",
+    "Assets/Scripts/Entities/Units/Unit.cs"
+  ],
+  "OoviKat": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Entities/Units/Unit.cs"
+  ],
+  "Puca": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Modes/Tactical/Log/LogUtilities.cs"
+  ],
+  "Pudding": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Modes/StrategyMode.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Races/Graphics/CompleteSprite.cs"
+  ],
+  "Raptor": [
+    "Assets/Scripts/Core/ContentSettingsData.cs",
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/AI/Monsters/MonsterStrategicAI.cs"
+  ],
+  "Renamon": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Modes/Tactical/Log/LogUtilities.cs",
+    "Assets/Scripts/Entities/Clothing/ClothingDiscards.cs",
+    "Assets/Scripts/Entities/Units/NPC_unit.cs",
+    "Assets/Scripts/Entities/Units/Unit.cs"
+  ],
+  "RiverDryad": [
+    "Assets/Scripts/Core/ContentSettingsData.cs",
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/AI/Monsters/MonsterStrategicAI.cs"
+  ],
+  "RwuMercenaries": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Modes/Tactical/Log/LogUtilities.cs"
+  ],
+  "Ryan": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Entities/Units/PredatorComponent.cs",
+    "Assets/Scripts/Entities/Units/Unit.cs"
+  ],
+  "Salix": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Entities/Units/Unit.cs"
+  ],
+  "Schiwardez": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Modes/StrategyMode.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs"
+  ],
+  "Scorch": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Entities/Units/Unit.cs"
+  ],
+  "Scylla": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Modes/TacticalMode.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Modes/Tactical/Log/LogUtilities.cs",
+    "Assets/Scripts/Entities/Units/Actor_Unit.cs"
+  ],
+  "Selicia": [
+    "Assets/Scripts/Core/ContentSettingsData.cs",
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Core/WorldConfig.cs",
+    "Assets/Scripts/Entities/Army.cs",
+    "Assets/Scripts/Entities/Village.cs",
+    "Assets/Scripts/Modes/Recruit_Mode.cs",
+    "Assets/Scripts/Modes/TacticalMode.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/UI/RightClickMenu.cs",
+    "Assets/Scripts/Utility/TagConditionChecker.cs",
+    "Assets/Scripts/Races/Graphics/DefaultRaceData.cs",
+    "Assets/Scripts/Races/Graphics/TaurHumanHalf.cs",
+    "Assets/Scripts/Races/Graphics/MainRaces/AntQueen.cs",
+    "Assets/Scripts/Races/Graphics/MainRaces/Avians.cs",
+    "Assets/Scripts/Races/Graphics/MainRaces/Bees.cs",
+    "Assets/Scripts/Races/Graphics/MainRaces/Deer.cs",
+    "Assets/Scripts/Races/Graphics/MainRaces/Demiants.cs",
+    "Assets/Scripts/Races/Graphics/MainRaces/Demibats.cs",
+    "Assets/Scripts/Races/Graphics/MainRaces/DemiDragons.cs",
+    "Assets/Scripts/Races/Graphics/MainRaces/Demifrogs.cs",
+    "Assets/Scripts/Races/Graphics/MainRaces/Demisharks.cs",
+    "Assets/Scripts/Races/Graphics/MainRaces/Equines.cs",
+    "Assets/Scripts/Races/Graphics/MainRaces/Gnolls.cs",
+    "Assets/Scripts/Races/Graphics/MainRaces/Jackals.cs",
+    "Assets/Scripts/Races/Graphics/MainRaces/Kangaroos.cs",
+    "Assets/Scripts/Races/Graphics/MainRaces/Lizards.cs",
+    "Assets/Scripts/Races/Graphics/MainRaces/Lupine.cs",
+    "Assets/Scripts/Races/Graphics/MainRaces/MatronsMinions.cs",
+    "Assets/Scripts/Races/Graphics/MainRaces/Mice.cs",
+    "Assets/Scripts/Races/Graphics/MainRaces/Panthers.cs",
+    "Assets/Scripts/Races/Graphics/MainRaces/Sergal.cs",
+    "Assets/Scripts/Races/Graphics/Mercs/Badgers.cs",
+    "Assets/Scripts/Races/Graphics/Mercs/Hippos.cs",
+    "Assets/Scripts/Races/Graphics/Mercs/Komodos.cs",
+    "Assets/Scripts/Races/Graphics/Mercs/Vargul.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/Ant.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/Bat.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/BlackWidow.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/Catfish.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/CoralSlug.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/Dragon.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/Dragonfly.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/Dratopyr.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/EasternDragon.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/FeralFox.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/FeralHorses.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/FeralLions.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/FeralLizards.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/FeralSlime.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/FeralUmbreon.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/FeralWolf.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/Gazelle.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/Gryphons.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/Harvester.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/Kobolds.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/Mantis.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/Monitors.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/Otachi.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/Plant.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/Raiju.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/RockSlug.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/Salamanders.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/Smudger.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/SpaceCroach.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/SpitterSlug.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/SpringSlug.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/Terminid.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/Terrorbird.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/Trex.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/Utahraptor.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/WarriorAnt.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/Wyvern.cs",
+    "Assets/Scripts/Races/Graphics/Monsters/WyvernMatron.cs",
+    "Assets/Scripts/Modes/Tactical/ScatInfo.cs",
+    "Assets/Scripts/Modes/Tactical/Log/LogUtilities.cs",
+    "Assets/Scripts/Entities/Units/PredatorComponent.cs",
+    "Assets/Scripts/Entities/Units/Prey.cs",
+    "Assets/Scripts/Entities/Units/Unit.cs"
+  ],
+  "Seraph": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Modes/Tactical/ScatV2Discard.cs",
+    "Assets/Scripts/Entities/Units/Unit.cs",
+    "Assets/Scripts/AI/Monsters/MonsterStrategicAI.cs"
+  ],
+  "Seville": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Entities/Units/Actor_Unit.cs",
+    "Assets/Scripts/Entities/Units/PredatorComponent.cs",
+    "Assets/Scripts/Entities/Units/Unit.cs"
+  ],
+  "Singularity": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Entities/Units/Unit.cs"
+  ],
+  "Skapa": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Entities/Units/Unit.cs"
+  ],
+  "Slimes": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Modes/Recruit_Mode.cs",
+    "Assets/Scripts/Modes/TacticalMode.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Modes/Tactical/ScatInfo.cs",
+    "Assets/Scripts/Modes/Tactical/Log/LogUtilities.cs",
+    "Assets/Scripts/Entities/Units/Actor_Unit.cs",
+    "Assets/Scripts/Entities/Units/Leader.cs",
+    "Assets/Scripts/Entities/Units/NPC_unit.cs",
+    "Assets/Scripts/Entities/Units/PredatorComponent.cs",
+    "Assets/Scripts/Entities/Units/Prey.cs",
+    "Assets/Scripts/Entities/Units/Spawn.cs"
+  ],
+  "SoulSprite": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Modes/StrategyMode.cs",
+    "Assets/Scripts/Modes/Tactical/ScatV2Discard.cs",
+    "Assets/Scripts/Entities/Units/Unit.cs",
+    "Assets/Scripts/AI/Monsters/MonsterStrategicAI.cs"
+  ],
+  "Succubi": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Core/WorldConfig.cs",
+    "Assets/Scripts/Modes/MapEditor.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Subwindows/RaceEditorPanel.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Utility/TagConditionChecker.cs",
+    "Assets/Scripts/Modes/Strategic/StrategicUtilities.cs",
+    "Assets/Scripts/Entities/Clothing/ClothingTypes.cs",
+    "Assets/Scripts/Entities/Clothing/MainClothing.cs",
+    "Assets/Scripts/Entities/Units/Actor_Unit.cs",
+    "Assets/Scripts/Entities/Units/NPC_unit.cs",
+    "Assets/Scripts/Entities/Units/PredatorComponent.cs",
+    "Assets/Scripts/Entities/Units/Unit.cs"
+  ],
+  "Taraluxia": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Entities/Units/Actor_Unit.cs",
+    "Assets/Scripts/Entities/Units/PredatorComponent.cs",
+    "Assets/Scripts/Entities/Units/Unit.cs"
+  ],
+  "Tatltuae": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Modes/TacticalMode.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/UI/RightClickMenu.cs",
+    "Assets/Scripts/UI/Connectors/AdvancedUnitCommands.cs",
+    "Assets/Scripts/Entities/Units/Actor_Unit.cs",
+    "Assets/Scripts/Entities/Units/PredatorComponent.cs",
+    "Assets/Scripts/Entities/Units/Unit.cs"
+  ],
+  "Taurus": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Modes/TacticalMode.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Modes/Tactical/Log/LogUtilities.cs",
+    "Assets/Scripts/Entities/Clothing/MainAccessories.cs"
+  ],
+  "Tigers": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Utility/Stored/CustomizationDataStorer.cs",
+    "Assets/Scripts/Races/Graphics/DefaultRaceData.cs",
+    "Assets/Scripts/Modes/Tactical/TacticalUtilities.cs",
+    "Assets/Scripts/Modes/Tactical/Log/LogUtilities.cs",
+    "Assets/Scripts/Entities/Units/Actor_Unit.cs"
+  ],
+  "Umbreon": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Entities/Army.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Races/Graphics/CompleteSprite.cs",
+    "Assets/Scripts/Modes/Tactical/Log/LogUtilities.cs",
+    "Assets/Scripts/Entities/Clothing/MainClothing.cs"
+  ],
+  "Vagrants": [
+    "Assets/Scripts/Core/ContentSettingsData.cs",
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Core/WorldConfig.cs",
+    "Assets/Scripts/Entities/Army.cs",
+    "Assets/Scripts/Entities/MercenaryHouse.cs",
+    "Assets/Scripts/Entities/Village.cs",
+    "Assets/Scripts/Modes/MapEditor.cs",
+    "Assets/Scripts/Modes/StrategyMode.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Utility/TagConditionChecker.cs",
+    "Assets/Scripts/Modes/MapEditor/MapVillagePoplator.cs",
+    "Assets/Scripts/Modes/Strategic/StrategicUtilities.cs",
+    "Assets/Scripts/Modes/Strategic/WorldGenerator.cs",
+    "Assets/Scripts/Modes/Tactical/Log/LogUtilities.cs",
+    "Assets/Scripts/Entities/Buildings/ConstructableBuilding.cs",
+    "Assets/Scripts/Entities/Units/NPC_unit.cs",
+    "Assets/Scripts/Entities/Units/Prey.cs",
+    "Assets/Scripts/Entities/Units/Unit.cs"
+  ],
+  "Viisels": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Modes/StrategyMode.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs"
+  ],
+  "Vipers": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Modes/Tactical/Log/LogUtilities.cs"
+  ],
+  "ViraeUltimae": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Modes/StrategyMode.cs",
+    "Assets/Scripts/Modes/TacticalMode.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Modes/Tactical/ScatV2Discard.cs",
+    "Assets/Scripts/Entities/Units/Prey.cs"
+  ],
+  "Vision": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Entities/Units/Prey.cs",
+    "Assets/Scripts/Entities/Units/Unit.cs"
+  ],
+  "Voilin": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Modes/StrategyMode.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs"
+  ],
+  "Whisp": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs"
+  ],
+  "Wolves": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Races/Graphics/DefaultRaceData.cs",
+    "Assets/Scripts/Modes/Tactical/Log/LogUtilities.cs"
+  ],
+  "WoodDryad": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Modes/StrategyMode.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/AI/Monsters/MonsterStrategicAI.cs"
+  ],
+  "Xelhilde": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Modes/Tactical/Log/LogUtilities.cs",
+    "Assets/Scripts/Entities/Units/Actor_Unit.cs",
+    "Assets/Scripts/Entities/Units/Unit.cs"
+  ],
+  "Yordles": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs"
+  ],
+  "Youko": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Modes/TacticalMode.cs",
+    "Assets/Scripts/Subwindows/InfoPanel.cs",
+    "Assets/Scripts/Modes/Tactical/TacticalMapGenerator.cs"
+  ],
+  "Zera": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Subwindows/UnitCustomizer.cs",
+    "Assets/Scripts/Entities/Units/Unit.cs"
+  ],
+  "Zoey": [
+    "Assets/Scripts/Core/SpeciesPolicy.cs",
+    "Assets/Scripts/Entities/Units/Actor_Unit.cs",
+    "Assets/Scripts/Entities/Units/Unit.cs"
+  ]
+}

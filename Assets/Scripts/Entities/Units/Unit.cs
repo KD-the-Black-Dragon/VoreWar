@@ -1,4 +1,4 @@
-// Modified for the VoreWar mercenary-company conversion.
+﻿// Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Validate new shape destinations before mutation; leave original-form restoration unrestricted (spec 03A2).
 // 2026-10-31: Exclude retired Resurrection from all assembled usable spell sources (spec 05A3B6).
 // 2026-11-01: Enforce retired ability/status/control policy and remove Leadership effects (spec 05A3B17).
@@ -10,6 +10,7 @@
 // 2026-11-01: Serialize independent injury records and derive combat penalties; roll only on actual lasting combat damage (spec 11).
 // 2026-11-01: Use company-owned exponential XP requirements and weak-enemy scaling instead of retired world level caps (spec 11 feedback).
 // 2026-11-02: Expose per-level XP progress and cost without changing saved totals or level-up rules (spec 13 feedback).
+// 2026-11-03: Persist the attrition injury latch and temporary combat boosts across tactical saves (spec 19).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
 using OdinSerializer.Utilities;
@@ -89,7 +90,7 @@ public class Unit
     [OdinSerialize] internal int TemporaryHealth;
     [OdinSerialize] List<CompanyInjury> injuries;
     [OdinSerialize] internal bool PermanentInjuryImmune;
-    [System.NonSerialized] internal bool AttritionInjuryChecked;
+    [OdinSerialize] internal bool AttritionInjuryChecked;
     internal List<CompanyInjury> Injuries { get { return injuries ?? (injuries = new List<CompanyInjury>()); } }
     internal void ApplyCombatDamage(int amount)
     {
@@ -700,7 +701,7 @@ public class Unit
         }
         set => _traitBoosts = value;
     }
-    private TempBoosts _tempBoosts;
+    [OdinSerialize] private TempBoosts _tempBoosts;
     internal TempBoosts TempBoosts
     {
         get

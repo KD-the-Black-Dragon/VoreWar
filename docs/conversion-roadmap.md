@@ -138,3 +138,28 @@ The user approves the main menu and requests a pause until they report recovery 
 ### 15D resumed: Single Battle setup (2026-11-02)
 
 User reports usage recovered and resumes work. [15D](implementation/15d-single-battle-setup.md) implements the recorded blue top-controls/two-combatant-columns/bottom-watch layout. All fields, original action buttons, species previews and conditional bulk controls retained; columns scroll to fit bounded windows. Compilation/read-only scene passed, focused graphical review pending after scope review. Main menu and Content Settings stay accepted; live battle HUD/Help rewrite/final beautification remain later work.
+
+
+### 16 — Tactical battle interface (2026-11-02)
+
+The Single Battle setup and final 2x sample fit are accepted. The user now authorized the live battle interface update. [Spec 16 implementation](implementation/16-tactical-interface.md) covers blue panels/controls, unified Attack on both existing hotkeys, four weapon/spell readouts, larger log and smaller trait text. Compilation/read-only scene and private Win64 build passed; one combined battle UI/targeting review remains. Help rewriting, broader beautification and larger company/recruitment portrait rows remain deferred.
+
+
+### 17 — Shared popups and Esc overlay (2026-11-03)
+
+[Implementation](implementation/17-shared-popups-and-escape-menu.md) applies the shared blue palette to player-facing popup families and introduces a compact Esc menu. Compile/read-only scene and private Windows build passed; one focused graphical/navigation review remains. HP fix accepted; developer Race Editor styling and Help rewrite remain outside this scope.
+
+
+### 18 — Company leader creator (2026-11-03)
+
+[Implementation](implementation/18-company-leader-creator.md) introduces the one-screen blue creator with species dropdown, two compact appearance columns and center-contained paper doll. All41native appearance labels/controls and gender visibility logic retained. Clean compile/read-only scene and final private Windows build passed; one combined creator interaction/visual review remains. Other accepted UI is unchanged.
+
+
+### 19 — Named Save / Load and exact battle persistence (2026-11-03)
+
+Leader creator accepted. [Implementation](implementation/19-save-load-and-battle-persistence.md) replaces public checkpoints/legacy World saves with named slots, progress previews, confirmed deletion, map/side-turn autosaves and exact company battle resumption. Ironman uses its latest valid autosave, corruption backups and defeat invalidation/removal. Final Unity native-runtime audit passed34 with synthetic data, deletion suppressed and every probe preserved. Final private Windows build passed. On 2026-11-03 the user reports manual test results look good; this milestone is accepted with no issues reported. Help redesign remains deferred.
+
+
+### 20 — Menu cleanup and shared campaign Help (2026-11-03)
+
+[Implementation](implementation/20-menu-cleanup-and-campaign-help.md) removes obsolete Continue/map-preview entries, uses Load Game, silences routine default race-setting status and unifies Help in a compact blue chapter/scroll layout across menu/campaign/battle. Existing articles/references retained. Clean compilation/read-only scene and private Windows build passed; the user explicitly accepted this milestone on 2026-11-03. Broader help prose editing remains separate.

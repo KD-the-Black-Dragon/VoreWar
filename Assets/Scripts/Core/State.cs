@@ -6,6 +6,8 @@
 // 2026-11-01: Keep legacy tactical saves from writing incomplete company campaigns (spec 10).
 // 2026-11-02: Replace obsolete campaign-not-available save/tool messages with current checkpoint guidance (spec 12).
 // 2026-11-02: Clear the routine race-settings success message and match main-menu load/campaign guidance (spec 15C).
+// 2026-11-03: Retire legacy World save writes and route user save/load requests through company slots (spec 19).
+// 2026-11-03: Silence the routine default-race-settings message and match the Load Game label (spec 20).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
 using System;
@@ -19,7 +21,6 @@ using UnityEngine;
 
 public static class State
 {
-    static int saveErrors = 0;
     public const string Version = "45D";
     public static World World;
     public static Rand Rand = new Rand();
@@ -511,7 +512,7 @@ public static class State
             else
             {
                 RaceSettings = new RaceSettings();
-                GameManager.Start_Mode.miscText.text = "No modified race settings found, using default";
+                GameManager.Start_Mode.miscText.text = string.Empty;
             }
         }
         catch
@@ -546,45 +547,10 @@ public static class State
 
     public static void Save(string filename)
     {
-        if (GameManager.CompanyBattle != null) { GameManager.CreateMessageBox("Company battles use the saved prebattle checkpoint. Save again after the results are settled."); return; }
-        try
-        {
-            for (int i = 0; i < 3; i++)
-            {
-                if (filename.EndsWith("/") || filename.EndsWith("\\"))
-                    filename = filename.Remove(filename.Length - 1, 1);
-                else
-                    break;
-            }
-
-            World.SaveVersion = Version;
-            if (GameManager.CurrentScene == GameManager.TacticalMode)
-            {
-                GameManager.CameraController.SaveTacticalCamera();
-                World.TacticalData = GameManager.TacticalMode.Export();
-            }
-            else
-                World.TacticalData = null;
-            byte[] bytes = SerializationUtility.SerializeValue(World, DataFormat.Binary);
-            File.WriteAllBytes(filename, bytes);
-        }
-        catch
-        {
-            saveErrors++;
-            if (saveErrors < 3)
-            {
-                GameManager.CreateMessageBox($"Unable to save properly, {filename} didn't work (will only warn 3 times in a single session)");
-            }
-            else if (saveErrors == 3)
-            {
-                GameManager.CreateMessageBox($"Unable to save properly, {filename} didn't work (will no longer warn you this session)");
-            }
-
-        }
-
+        CompanySaveMenu.QuickSave();
     }
 
-    public const string LegacyLoadUnavailableMessage = "Legacy VoreWar saves cannot be loaded in this conversion. Use Load Saved Game from the main menu to resume a company.";
+    public const string LegacyLoadUnavailableMessage = "Legacy VoreWar saves cannot be loaded in this conversion. Use Load Game from the main menu to resume a company.";
     public const string CampaignUnavailableMessage = "The empire campaign is retired. Choose New Campaign from the main menu.";
 
     public static World PreviewSave(string filename)
@@ -595,7 +561,7 @@ public static class State
 
     public static void Load(string filename, bool tutorial = false)
     {
-        GameManager.CreateMessageBox(LegacyLoadUnavailableMessage);
+        CompanySaveMenu.Show(GameManager.Start_Mode.CompanySaveView);
     }
 }
 

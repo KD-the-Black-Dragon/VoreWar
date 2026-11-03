@@ -1,4 +1,4 @@
-// Added by the VoreWar mercenary-company conversion fork.
+﻿// Added by the VoreWar mercenary-company conversion fork.
 // 2026-11-01: Versioned company checkpoints, validation and corruption recovery (spec 06).
 // 2026-11-01: Rebind nonserialized company item services without re-equipping or changing stats (specs 07–08).
 // 2026-11-01: Verify health and fate values after checkpoint round trips instead of checking only company/day (09–10 feedback).
@@ -7,6 +7,7 @@
 // 2026-11-02: Centralize validated normal/Ironman resumption and verify mana, progression, gear/cooldowns and raw stats on round trips (spec 12).
 // 2026-11-02: Verify event outcome, participants, source, cooldown and committed travel survive save round trips (spec 13).
 // 2026-11-02: Resume all validated company map sizes through the draggable viewport (spec 14 feedback).
+// 2026-11-03: Persist named/autosave generations and complete battlefield snapshots (spec 19).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.IO;
@@ -19,7 +20,26 @@ internal static class CompanyCampaignSave
 {
     const string Magic = "VoreWar.Company.1";
     const int MaximumBytes = 32 * 1024 * 1024;
-    public static string DefaultDirectory { get { return Path.Combine(UnityEngine.Application.persistentDataPath, "CompanyCampaigns"); } }
+#if UNITY_EDITOR
+    // Focused editor checks redirect all save access to preserved synthetic data under Logs.
+    internal static string DiagnosticDirectory;
+#endif
+    public static string DefaultDirectory
+    {
+        get
+        {
+#if UNITY_EDITOR
+            if (DiagnosticDirectory != null)
+            {
+                string root = Path.GetFullPath(Path.Combine(UnityEngine.Application.dataPath, "../Logs")) + Path.DirectorySeparatorChar;
+                string directory = Path.GetFullPath(DiagnosticDirectory);
+                if (!directory.StartsWith(root, StringComparison.OrdinalIgnoreCase)) throw new InvalidOperationException("Save diagnostics must stay inside project Logs.");
+                return directory;
+            }
+#endif
+            return Path.Combine(UnityEngine.Application.persistentDataPath, "CompanyCampaigns");
+        }
+    }
     internal static byte[] Encode(CompanyCampaign state) { return SerializationUtility.SerializeValue(state, DataFormat.Binary); }
     internal static void Restore(CompanyCampaign target, byte[] snapshot)
     {
@@ -31,7 +51,9 @@ internal static class CompanyCampaignSave
         var state = SerializationUtility.DeserializeValue<CompanyCampaign>(payload, DataFormat.Binary);
         if (state == null) throw new InvalidDataException("Empty company checkpoint.");
         CompanyEconomy.Bind(state);
+        CompanyBattleSnapshot.Bind(state);
         state.Validate();
+        CompanyBattleSnapshot.Validate(state);
         return state;
     }
     internal static void RequireHealthPreserved(CompanyCampaign source, CompanyCampaign restored)
@@ -45,6 +67,7 @@ internal static class CompanyCampaignSave
             !CompanyRoadEvents.Same(source.RoadEvent, restored.RoadEvent) ||
             (source.Battle == null ? null : source.Battle.RoadEventId) != (restored.Battle == null ? null : restored.Battle.RoadEventId))
             throw new InvalidDataException("Road-event progress changed during serialization.");
+        CompanyBattleSnapshot.RequirePreserved(source, restored);
         var characters = restored.Characters.ToDictionary(c => c.Id);
         if (characters.Count != source.Characters.Count) throw new InvalidDataException("Character records changed while saving.");
         foreach (var c in source.Characters)
@@ -61,18 +84,20 @@ internal static class CompanyCampaignSave
                 throw new InvalidDataException("Character resources, progression or equipment changed during serialization. The previous checkpoint was preserved.");
         }
     }
-    public static string Save(CompanyCampaign state, string directory)
+    public static string Save(CompanyCampaign state, string directory) { return CompanySaveSlots.Auto(state, directory); }
+    internal static string WriteGeneration(CompanyCampaign state, string directory)
     {
         state.Validate();
-        if (state.InBattle) throw new InvalidOperationException("Live battle checkpoints are not supported yet.");
+        CompanyBattleSnapshot.Validate(state);
+        if (!System.Text.RegularExpressions.Regex.IsMatch(state.SaveSlot ?? "legacy", "^[a-zA-Z0-9-]+$")) throw new InvalidDataException("Invalid save slot identity.");
         Directory.CreateDirectory(directory);
         byte[] bytes = Encode(state), hash;
         if (bytes.Length > MaximumBytes) throw new InvalidDataException("Company checkpoint is too large.");
         RequireHealthPreserved(state, Decode(bytes)); // Reject a lossy payload before publishing any checkpoint file.
         using (var sha = SHA256.Create()) hash = sha.ComputeHash(bytes);
-        string path = Path.Combine(directory, DateTime.UtcNow.Ticks.ToString("D19") + "-" + Guid.NewGuid().ToString("N") + ".company");
+        string path = Path.Combine(directory, DateTime.UtcNow.Ticks.ToString("D19") + "-" + Guid.NewGuid().ToString("N") + "~" + state.SaveSlot + ".company");
         // Immutable generations: interruption leaves an invalid newest file; older generations survive.
-        // No replacement, rotation deletion or destructive cleanup is used.
+        // This writer never replaces/removes paths; verified slot retention is handled separately.
         using (var stream = new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.None))
         {
             using (var writer = new BinaryWriter(stream))
@@ -106,7 +131,7 @@ internal static class CompanyCampaignSave
         // Validate fully before a view installs the prospective state.
         var state = Load(path);
         string directory = Path.GetDirectoryName(Path.GetFullPath(path));
-        if (state.InBattle || Path.GetFileName(directory) != state.Id)
+        if (File.Exists(Path.Combine(directory, "fallen")) || Path.GetFileName(directory) != state.Id)
             throw new InvalidDataException("Unsupported company checkpoint or mismatched company folder.");
         if (state.Ironman)
         {
@@ -128,6 +153,7 @@ internal static class CompanyCampaignSave
     }
     public static CompanyCampaign LoadLatest(string directory, out int skipped, out string selected)
     {
+        if (File.Exists(Path.Combine(directory, "fallen"))) throw new InvalidDataException("This Ironman company has ended.");
         skipped = 0; selected = null;
         foreach (string path in Generations(directory))
         {

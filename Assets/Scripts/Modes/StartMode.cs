@@ -5,6 +5,10 @@
 // 2026-11-01: Open the independent company foundation preview without legacy campaign setup (spec 06).
 // 2026-11-02: Restyle/reorder main-menu buttons, retire presets, display version 1.0 and open company checkpoints (spec 15C).
 // 2026-11-02: Enlarge menu controls, separate Credits/Help and replace title text with the supplied banner logo (spec 15C feedback).
+// 2026-11-02: Add a temporary main-menu portrait comparison entry (spec 15E).
+// 2026-11-02: Retire the temporary portrait-comparison main-menu entry (spec 15D feedback).
+// 2026-11-03: Expose the company load view without reopening campaign setup (spec 19).
+// 2026-11-03: Rename the main-menu load action to Load Game (spec 20).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using UnityEngine;
 using UnityEngine.UI;
@@ -37,6 +41,14 @@ public class StartMode : SceneBase
     }
 
     CompanyCampaignView companyCampaignView;
+    internal CompanyCampaignView CompanySaveView
+    {
+        get
+        {
+            if (companyCampaignView == null) companyCampaignView = gameObject.AddComponent<CompanyCampaignView>();
+            companyCampaignView.PrepareSaveBrowser(this); return companyCampaignView;
+        }
+    }
 
     public CreateStrategicGame CreateStrategicGame;
     public void CreateStrategic()
@@ -81,7 +93,7 @@ public class StartMode : SceneBase
         // These are the existing scene objects and callbacks, including developer access.
         PlaceMainButton("Create Strategic Button", "New Campaign", 420);
         PlaceMainButton("Create Tactical Button", "Single Battle", 328);
-        PlaceMainButton("Load Game Button", "Load Saved Game", 236);
+        PlaceMainButton("Load Game Button", "Load Game", 236);
         PlaceMainButton("Options Button", "Options", 144);
         PlaceCornerButton("Credits Button", 204);
         PlaceCornerButton("Help Button", 120);

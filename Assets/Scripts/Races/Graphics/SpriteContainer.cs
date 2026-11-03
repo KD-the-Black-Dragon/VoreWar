@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-02: Use Simple images for paper-doll layers, preserving source sprite geometry (spec 15E feedback).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+using UnityEngine;
 using UnityEngine.UI;
 
 class SpriteContainer
@@ -98,6 +101,7 @@ class SpriteContainer
             GameObject = spriteRenderer.gameObject;
         }
         image = GameObject.GetComponent<Image>();
+        if (image != null) image.type = Image.Type.Simple;
         if (spriteRenderer != null)
             usingSpriteRenderer = true;
         SetOffSets(xOffset, yOffset);

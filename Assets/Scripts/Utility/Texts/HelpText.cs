@@ -1,6 +1,8 @@
-﻿// Modified for the VoreWar mercenary-company conversion.
+// Modified for the VoreWar mercenary-company conversion.
 // 2026-11-02: Replace retired empire guidance with company gameplay, save boundaries and retained references; correct trait enumeration (spec 12).
 // 2026-11-02: Restore vore terminology in existing help without rewriting its deferred content (Options feedback).
+// 2026-11-03: Describe named saves, exact battle resumption and Ironman recovery (spec 19).
+// 2026-11-03: Match saving help to the renamed Load Game button (spec 20).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Linq;
@@ -103,13 +105,13 @@ These values are provisional and may be tuned after integrated playtesting.";
 
     public static string Controls = @"Controls
 
-Company map: click adjacent tiles to move, use Enter town for services, Company for roster/gear and End day to advance time. Rest buttons support chosen days. Contract book lists work and exact targets. Use the campaign's Save checkpoint/Choose checkpoint controls for company saves.
+Company map: click adjacent tiles to move, use Enter town for services, Company for roster/gear and End day to advance time. Rest buttons support chosen days. Contracts lists work and exact targets. Save / Load opens named company saves and autosaves.
 
 Tactical defaults:1 melee attack,2 ranged attack,3 vore; right click for available actions. Use the movement mode/buttons and existing key bindings to select destinations. N selects a unit that can act; Enter ends the tactical turn. WASD/arrows or dragging move the camera, and the mouse wheel zooms. Bindings can differ in Options.
 
 Use the existing AI action/instant-simulation controls to speed combat. Escape opens/closes the ordinary tactical menu; Pause lets you inspect an AI turn.
 
-Legacy F5/F9 and the old save/load screen do not save/load a live company battle. A company battle resumes from its saved deployment checkpoint if interrupted. See Saving and Ironman for the exact boundary.";
+F5 creates a Quicksave in a normal company battle; F9 opens Save / Load. Escape > Save / Load Game opens the same browser. Save during your own turn when ready to act. See Saving and Ironman for autosave and recovery rules.";
 
     public static string Teams = @"Injuries and recovery
 
@@ -133,15 +135,15 @@ Completion automatically grants the quoted gold and reputation; no return trip i
 
     public static string Saving = @"Saving, recovery and Ironman
 
-Company saves use their own checkpoint list. New campaigns do not import old empire saves. Normal companies can manually save and choose retained checkpoint history. A failed load does not replace the current company.
+Normal companies can create several named saves. Use Save / Load on the map, Load Game on the main menu, or Save / Load Game in the battle menu. Select or hover over a save to see company progress. Saving with an existing name replaces that slot; Delete removes that slot and its backups after confirmation. Old empire saves are not supported.
 
-Automatic checkpoints are written after daily updates and committed company changes, with a deployment checkpoint before combat and saved results/revival phases afterward. Travel within the current day is captured by the next checkpoint; normal mode can use Save checkpoint before stopping. Loading does not advance days, repeat healing, add XP or re-award settled contract rewards.
+Map autosaves capture the beginning of each day and committed company changes. Battle autosaves capture the start of each side's turn after turn effects settle, before actions begin. Normal mode can also save during its own tactical turn while ready to act. Loading restores that battlefield, including spent AP, HP, containment and turn progress; it does not restart deployment, advance campaign time or repeat rewards.
 
-Live tactical-turn saving is not implemented for company battles. Interruption or the company battle menu's return restores deployment, not the last combat turn. This limitation applies to Ironman too.
+Each slot keeps its latest verified save and three older recovery copies. Backups are used automatically when a newer copy is unreadable. Closing a battle from the menu saves the current state when ready to act; during AI processing the last turn autosave is retained.
 
-Ironman is chosen at creation and cannot be toggled later. It resumes only the latest valid checkpoint through the game interface. Older checkpoints are kept as recovery copies; an unreadable newest file can fall back to an earlier valid checkpoint. This is not protection against external file editing.
+Ironman is chosen at creation and cannot be toggled later. It allows autosaves only and resumes the latest valid save, falling back to a backup if needed. When the company ends, its saves are invalidated and removed. Deleting an Ironman entry removes that company and all its backups. This is not protection against external file editing.
 
-If a checkpoint write fails, use Retry checkpoint, available even over pending results or decisions. Existing generations are retained; further changes wait for a successful retry.";
+If a map autosave fails, use Retry save before continuing. A battle autosave failure pauses combat and reports the problem. Previously verified saves remain available. Single Battle has no persistent company to save, but can open the browser to load a campaign.";
 
     public static string Legal = @"Project and license
 

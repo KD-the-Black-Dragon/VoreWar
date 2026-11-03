@@ -1,5 +1,6 @@
 // Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Remove the hidden Unit Editor click route while retaining ordinary inspection (spec 02B).
+// 2026-11-02: Preserve item hover information for four tactical equipment readouts (spec 16).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,7 @@ public class UnitInfoPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public Image UnitTagHoverImage;
     internal Unit Unit;
     internal Actor_Unit Actor;
+    internal TextMeshProUGUI[] TacticalEquipmentLabels;
 
     private int nameInstances;
 
@@ -82,6 +84,10 @@ public class UnitInfoPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
             if (IsMousingOver(UnitTagHoverImage.gameObject))
                 State.GameManager.HoveringTooltip.UpdateInformationTags(Unit);
         }
+
+        if (TacticalEquipmentLabels != null)
+            foreach (var label in TacticalEquipmentLabels)
+                if (RectTransformUtility.RectangleContainsScreenPoint(label.rectTransform, Input.mousePosition, null)) HoverBox = label;
 
         int wordIndex = TMP_TextUtilities.FindIntersectingWord(HoverBox, Input.mousePosition, null);
         //if (wordIndex <= -1 && BasicInfo)

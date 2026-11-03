@@ -1,4 +1,5 @@
 ﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-02: Use the shared distance-selected Attack command in the tactical context menu (spec 16).
 // 2026-11-01: Omit direct attacks against downed targets and label lethal physical previews as downing (spec 10).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
@@ -92,6 +93,7 @@ public class RightClickMenu : MonoBehaviour
             for (int i = 0; i < ButtonCount; i++)
             {
                 Buttons[i] = Instantiate(ButtonPrefab, ButtonFolder).GetComponent<Button>();
+                TacticalHudView.StyleButton(Buttons[i]);
             }
         }
 
@@ -149,6 +151,7 @@ public class RightClickMenu : MonoBehaviour
             for (int i = 0; i < ButtonCount; i++)
             {
                 Buttons[i] = Instantiate(ButtonPrefab, ButtonFolder).GetComponent<Button>();
+                TacticalHudView.StyleButton(Buttons[i]);
             }
         }
         for (int i = 0; i < ButtonCount; i++)
@@ -258,25 +261,14 @@ public class RightClickMenu : MonoBehaviour
         int damage = actor.WeaponDamageAgainstTarget(target, false);
         if (!target.Surrendered && (!TacticalUtilities.IsUnitControlledByPlayer(target.Unit) || Config.AllowInfighting ||  (!State.GameManager.TacticalMode.AIDefender && !State.GameManager.TacticalMode.AIAttacker)))
         {
-            Buttons[currentButton].onClick.AddListener(() => State.GameManager.TacticalMode.MeleeAttack(actor, target));
+            bool ranged;
+            bool legal = TacticalMode.CanUseAttack(actor, target, out ranged);
+            damage = actor.WeaponDamageAgainstTarget(target, ranged);
+            Buttons[currentButton].onClick.AddListener(() => State.GameManager.TacticalMode.AutoAttack(actor, target));
             Buttons[currentButton].onClick.AddListener(FinishAction);
-            Buttons[currentButton].GetComponentInChildren<Text>().text = $"Melee Attack {Math.Round(100 * target.GetAttackChance(actor, false, true))}% {(damage >= target.Unit.Health ? "Down" : $"{damage} dmg")} ";
-            if (range != 1)
-                Buttons[currentButton].interactable = false;
+            Buttons[currentButton].GetComponentInChildren<Text>().text = $"Attack {Math.Round(100 * target.GetAttackChance(actor, ranged, true))}% {(damage >= target.Unit.Health ? "Down" : $"{damage} dmg")} ";
+            Buttons[currentButton].interactable = legal;
             currentButton++;
-
-
-            if (actor.BestRanged != null)
-            {
-                Buttons[currentButton].onClick.AddListener(() => State.GameManager.TacticalMode.RangedAttack(actor, target));
-                Buttons[currentButton].onClick.AddListener(FinishAction);
-                damage = actor.WeaponDamageAgainstTarget(target, true);
-                Buttons[currentButton].GetComponentInChildren<Text>().text = $"Ranged Attack {Math.Round(100 * target.GetAttackChance(actor, true, true))}% {(damage >= target.Unit.Health ? "Down" : $"{damage} dmg")} ";
-                if (actor.BestRanged.Omni == false && (range < 2 || range > actor.BestRanged.Range))
-                    Buttons[currentButton].interactable = false;
-                currentButton++;
-            }
-
 
             if (actor.Unit.UseableSpells != null)
             {
@@ -511,6 +503,7 @@ public class RightClickMenu : MonoBehaviour
             for (int i = 0; i < ButtonCount; i++)
             {
                 PounceButtons[i] = Instantiate(ButtonPrefab, PouncePanel).GetComponent<Button>();
+                TacticalHudView.StyleButton(PounceButtons[i]);
             }
         }
         for (int i = 0; i < ButtonCount; i++)

@@ -1,5 +1,8 @@
 // Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Gate Race Editor sessions and nested tags; retire obsolete menu routes (spec 02B).
+// 2026-11-03: Present Esc menu as a compact overlay; omit Race Editor and shorten Help label (spec 17).
+// 2026-11-03: Replace the legacy save/load entry with the unified company interface (spec 19).
+// 2026-11-03: Open the shared campaign guide from the existing Help callbacks (spec 20).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using TMPro;
@@ -11,6 +14,7 @@ public class GameMenu : MonoBehaviour
     // Convenience gate only; the project owner accepts source discoverability.
     private const string RaceEditorPassword = "214214214";
     private bool raceEditorUnlocked;
+    private bool presentationReady;
     private InputBox raceEditorPrompt;
 
     internal bool HasRaceEditorAccess => raceEditorUnlocked;
@@ -78,17 +82,44 @@ public class GameMenu : MonoBehaviour
         WorldSettingsButton.gameObject.SetActive(false);
         EmpireSettingsButton.gameObject.SetActive(false);
         SaveLoadButton.interactable = State.TutorialMode == false;
+        EnsurePresentation();
+    }
+
+    private void EnsurePresentation()
+    {
+        if (presentationReady) return;
+        presentationReady = true;
+        var buttons = UIPanel.GetComponentsInChildren<Button>(true);
+        // This canvas contains only the menu background/buttons, not Options or Race Editor.
+        foreach (var image in UIPanel.GetComponentsInChildren<Image>(true))
+            if (image.GetComponentInParent<Button>() == null)
+                UITheme.Surface(image.gameObject, new Color(0, 0, 0, .6f));
+        var panel = UITheme.Node("Menu overlay", UIPanel.transform);
+        var rect = panel.GetComponent<RectTransform>();
+        rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(.5f, .5f);
+        rect.sizeDelta = new Vector2(540, 600);
+        UITheme.Surface(panel, UITheme.Panel, true);
+        UITheme.Label(panel.transform, "Menu", 40, 18, 460, 40, 26);
+        string[] order = { "Close Menu", "Options", "Content Settings", "Save / Load Game", "Help Screens", "Main Menu", "Exit Game" };
+        foreach (var button in buttons)
+        {
+            var label = button.GetComponentInChildren<Text>(true);
+            if (label == null) continue;
+            if (label.text.Trim() == "Race Editor") { button.gameObject.SetActive(false); continue; }
+            int index = Array.IndexOf(order, label.text.Trim());
+            if (index < 0) continue;
+            button.transform.SetParent(panel.transform, false);
+            button.transform.localScale = Vector3.one;
+            UITheme.Place(button.GetComponent<RectTransform>(), 40, 74 + index * 70, 460, 54);
+            if (label.text.Trim() == "Help Screens") label.text = "Help";
+            label.fontSize = 24; label.resizeTextForBestFit = false;
+        }
+        UITheme.StylePopup(panel);
     }
 
     public void OpenSaveLoadMenu()
     {
-        if (State.GameManager.CurrentScene == State.GameManager.MapEditor)
-        {
-            State.GameManager.CreateMessageBox("Can't access normal game save/load from within the map editor, use the map editor save/load on the left panel");
-            return;
-        }
-        SaveLoadScreen.gameObject.SetActive(true);
-        SaveLoadScreen.ListSlots();
+        CompanySaveMenu.Show(State.GameManager.Start_Mode.CompanySaveView);
     }
 
     public void OpenCheats()
@@ -145,8 +176,7 @@ public class GameMenu : MonoBehaviour
     }
     public void LoadHelp()
     {
-        HelpUI.GenerateButtonsIfNeeded();
-        HelpScreen.SetActive(true);
+        HelpUI.Open();
     }
 
     public void OpenEmpireTraits()

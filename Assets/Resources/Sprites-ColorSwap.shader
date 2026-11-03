@@ -1,3 +1,6 @@
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-02: Preserve point-sampled pixel art at native/magnified size; smooth decoded colors only during strict minification (spec 15E feedback).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 // Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 
 Shader "Sprites/ColorSwap"
@@ -16,6 +19,7 @@ Shader "Sprites/ColorSwap"
         _StencilReadMask ("Stencil Read Mask", Float) = 255
 
 		_ColorMask ("Color Mask", Float) = 15
+        _SmoothWhenSmall ("Smooth only when smaller than native pixels", Float) = 1
 
 
 	}
@@ -52,7 +56,8 @@ Shader "Sprites/ColorSwap"
 		Pass
 		{
 		CGPROGRAM
-			#pragma vertex vert
+			#pragma target 3.0
+            #pragma vertex vert
 			#pragma fragment frag
 			#pragma multi_compile _ PIXELSNAP_ON
 			#include "UnityCG.cginc"
@@ -68,7 +73,7 @@ Shader "Sprites/ColorSwap"
 			{
 				float4 vertex   : SV_POSITION;
 				fixed4 color    : COLOR;
-				half2 texcoord  : TEXCOORD0;
+				float2 texcoord  : TEXCOORD0;
 			};
 			
 			fixed4 _Color;
@@ -92,24 +97,48 @@ Shader "Sprites/ColorSwap"
 
 			sampler2D _SwapTex;
 
-			fixed4 SampleSpriteTexture (float2 uv)
-			{
-				fixed4 color = tex2D (_MainTex, uv);
-				if (_AlphaSplitEnabled)
-					color.a = tex2D (_AlphaTex, uv).r;
+            float4 _MainTex_TexelSize;
+            float _SmoothWhenSmall;
 
-				return color;
-			}
+            // Never average palette indices or sample their prefiltered mip levels.
+            fixed4 DecodeTexel(float2 uv)
+            {
+                uv = clamp(uv, _MainTex_TexelSize.xy * .5, 1 - _MainTex_TexelSize.xy * .5);
+                fixed4 c = tex2Dlod(_MainTex, float4(uv, 0, 0));
+                if (_AlphaSplitEnabled) c.a = tex2Dlod(_AlphaTex, float4(uv, 0, 0)).r;
+                fixed4 swapCol = tex2D(_SwapTex, float2(c.r, 0));
+                fixed4 result = lerp(c, swapCol, swapCol.a);
+                result.a = c.a;
+                result.rgb *= c.a;
+                return result;
+            }
 
-			fixed4 frag(v2f IN) : SV_Target
-			{
-				fixed4 c = SampleSpriteTexture (IN.texcoord);
-				fixed4 swapCol = tex2D(_SwapTex, float2(c.x, 0));
-				fixed4 final = lerp(c, swapCol, swapCol.a) * IN.color;
-				final.a = c.a;
-				final.rgb *= c.a;
-				return final;
-			}
+            fixed4 frag(v2f IN) : SV_Target
+            {
+                float2 texel = IN.texcoord * _MainTex_TexelSize.zw;
+                float2 dx = ddx(texel), dy = ddy(texel);
+                // Smallest squared singular value: smoothing is allowed only when
+                // BOTH source axes shrink, including rotated/nonuniform sprites.
+                float a = dot(dx, dx), b = dot(dx, dy), c = dot(dy, dy);
+                float smallest = .5 * (a + c - sqrt(max(0, (a - c) * (a - c) + 4 * b * b)));
+                fixed4 result;
+                if (_SmoothWhenSmall < .5 || smallest <= 1.0002)
+                {
+                    result = DecodeTexel((floor(texel) + .5) * _MainTex_TexelSize.xy);
+                }
+                else
+                {
+                    float2 pixel = texel - .5;
+                    float2 baseUV = (floor(pixel) + .5) * _MainTex_TexelSize.xy;
+                    float2 weight = frac(pixel);
+                    fixed4 bottom = lerp(DecodeTexel(baseUV), DecodeTexel(baseUV + float2(_MainTex_TexelSize.x, 0)), weight.x);
+                    fixed4 top = lerp(DecodeTexel(baseUV + float2(0, _MainTex_TexelSize.y)), DecodeTexel(baseUV + _MainTex_TexelSize.xy), weight.x);
+                    result = lerp(bottom, top, weight.y);
+                }
+                result.rgb *= IN.color.rgb;
+                return result;
+            }
+
 		ENDCG
 		}
 	}

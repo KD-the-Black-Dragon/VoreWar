@@ -2,6 +2,10 @@
 // 2026-11-02: Arrange all retained Single Battle controls and previews in a blue two-sided setup screen (spec 15D).
 // 2026-11-02: Enlarge and center paper-doll previews while compensating for their renderer offset (portrait feedback).
 // 2026-11-02: Correct portrait magnification/alignment after visual feedback (spec 15D).
+// 2026-11-02: Hide preview species captions and center sample dolls at 2x UI scale (spec 15D feedback).
+// 2026-11-02: Enlarge 2x preview cards from their lower-left corner and make room in the combatant columns (spec 15D feedback).
+// 2026-11-02: Nudge sample cards down approximately15screen pixels at1080p, preserving size and centered dolls (spec 15D feedback).
+// 2026-11-02: Move only the sample doll upward inside its unchanged card to clear the feet (spec 15D feedback).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System.Collections.Generic;
 using System.Linq;
@@ -205,23 +209,22 @@ internal sealed class SingleBattleSetupView
     RectTransform Side(Transform parent, string title, StartTacticalUI side, UIUnitSprite sprite, float x, out RectTransform viewport)
     {
         var panel = UITheme.Node(title, parent); var rect = panel.GetComponent<RectTransform>();
-        UITheme.Place(rect, x, 162, 584, 440); UITheme.Surface(panel, UITheme.Background, true);
+        UITheme.Place(rect, x, 162, 596, 440); UITheme.Surface(panel, UITheme.Background, true);
         UITheme.Label(panel.transform, title, 16, 4, 552, 32, 24);
-        var race = Row(panel.transform, "Race", 12, 48, 390, 44);
-        Choice(side.Race, race, 100, 3, 278, 38);
-        var enabled = Row(panel.transform, "AI Enabled", 12, 106, 390, 44);
-        Checkbox(side.AIPlayer, enabled, 350, 9);
+        var race = Row(panel.transform, "Race", 12, 48, 374, 44);
+        Choice(side.Race, race, 100, 3, 262, 38);
+        var enabled = Row(panel.transform, "AI Enabled", 12, 106, 374, 44);
+        Checkbox(side.AIPlayer, enabled, 334, 9);
 
         var portrait = UITheme.Node("Species preview", panel.transform);
-        UITheme.Place(portrait.GetComponent<RectTransform>(), 408, 4, 168, 168); UITheme.Surface(portrait, UITheme.Panel, true);
+        UITheme.Place(portrait.GetComponent<RectTransform>(), 408, 3, 180, 180); UITheme.Surface(portrait, UITheme.Panel, true);
         portrait.AddComponent<RectMask2D>();
-        Move(sprite.transform, portrait.transform, 84, 94, 0, 0); sprite.transform.localScale = Vector3.one;
-        // Keep the same name reference used by UpdateSpeciesPreview, outside the sprite scale.
-        Move(sprite.Name.transform, portrait.transform, 4, 140, 160, 26);
-        UITheme.StyleText(sprite.Name, 17); sprite.Name.alignment = TextAnchor.MiddleCenter; sprite.Name.raycastTarget = false;
+        Move(sprite.transform, portrait.transform, 90, 139, 0, 0); sprite.transform.localScale = new Vector3(2, 2, 1);
+        // Keep the label reference for the existing preview callback, but don't display it.
+        sprite.Name.gameObject.SetActive(false);
 
         var viewportObject = UITheme.Node("Combatant options viewport", panel.transform); viewport = viewportObject.GetComponent<RectTransform>();
-        UITheme.Place(viewport, 12, 180, 544, 248); UITheme.Surface(viewportObject, UITheme.Background); viewportObject.AddComponent<RectMask2D>();
+        UITheme.Place(viewport, 12, 196, 544, 232); UITheme.Surface(viewportObject, UITheme.Background); viewportObject.AddComponent<RectMask2D>();
         var scroll = viewportObject.AddComponent<ScrollRect>(); scroll.viewport = viewport; scroll.horizontal = false;
         scroll.movementType = ScrollRect.MovementType.Clamped; scroll.scrollSensitivity = 36;
         var content = UITheme.Node("Combatant options", viewport); var contentRect = content.GetComponent<RectTransform>();
@@ -229,7 +232,7 @@ internal sealed class SingleBattleSetupView
         contentRect.sizeDelta = new Vector2(0, 432); contentRect.anchoredPosition = Vector2.zero; scroll.content = contentRect;
         var bar = UITheme.Node("Options scrollbar", panel.transform);
         var barRect = bar.GetComponent<RectTransform>(); barRect.anchorMin = new Vector2(1, 0); barRect.anchorMax = Vector2.one; barRect.pivot = new Vector2(1, .5f);
-        barRect.offsetMin = new Vector2(-20, 12); barRect.offsetMax = new Vector2(-8, -180);
+        barRect.offsetMin = new Vector2(-20, 12); barRect.offsetMax = new Vector2(-8, -196);
         UITheme.Surface(bar, UITheme.Background);
         var handle = UITheme.Node("Handle", bar.transform); UITheme.Stretch(handle.GetComponent<RectTransform>());
         var scrollbar = bar.AddComponent<Scrollbar>(); scrollbar.direction = Scrollbar.Direction.BottomToTop;
@@ -254,14 +257,13 @@ internal sealed class SingleBattleSetupView
         if (bulkVisible != visible)
         {
             bulkVisible = visible; float height = visible ? 360 : 440;
-            attackers.sizeDelta = defenders.sizeDelta = new Vector2(584, height);
-            attackerViewport.sizeDelta = defenderViewport.sizeDelta = new Vector2(544, height - 192);
+            attackers.sizeDelta = defenders.sizeDelta = new Vector2(596, height);
+            attackerViewport.sizeDelta = defenderViewport.sizeDelta = new Vector2(544, height - 208);
             UITheme.Place(watch, 20, visible ? 536 : 616, 1200, 40);
         }
         bulkValue.text = owner.Bulk.value.ToString("0");
-        owner.AttackerSprite.Name.gameObject.SetActive(owner.AttackerSprite.gameObject.activeSelf);
-        owner.DefenderSprite.Name.gameObject.SetActive(owner.DefenderSprite.gameObject.activeSelf);
-        owner.AttackerSprite.Name.color = owner.DefenderSprite.Name.color = UITheme.Foreground;
+        owner.AttackerSprite.Name.gameObject.SetActive(false);
+        owner.DefenderSprite.Name.gameObject.SetActive(false);
         foreach (var binding in bindings)
         {
             binding.Label.color = binding.Control.interactable ? UITheme.Foreground : UITheme.Muted;

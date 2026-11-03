@@ -1,4 +1,4 @@
-// Modified for the VoreWar mercenary-company conversion.
+﻿// Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Filter trait summons and legacy building reinforcements before constructing units (spec 03A2).
 // 2026-10-31: Reject direct legacy campaign battle setup before tactical state changes (spec 05A3A).
 // 2026-10-31: Retire campaign reincarnation/village-copy returns and post-battle soldier replacement (spec 05A3B1).
@@ -11,6 +11,8 @@
 // 2026-11-01: Retire empire traits and strategic-building combat/result providers (spec 05A4).
 // 2026-11-01: Retire empire-dependent retreat/skip/color setup while preserving skirmish AI defaults (spec 05A6).
 // 2026-11-01: Connect company battles and replace legacy completion with actual survival, downed permanence, captive-safe retreat and stalemate (specs 09–10).
+// 2026-11-02: Unify player Attack targeting/previews and host the blue tactical HUD (spec 16).
+// 2026-11-03: Resume tactical snapshots without replaying setup and autosave settled turn boundaries (spec 19).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using LegacyAI;
 using System;
@@ -135,6 +137,7 @@ public class TacticalMode : SceneBase
     public TacticalStats TacticalStats;
 
     internal InfoPanel InfoPanel;
+    TacticalHudView hudPresentation;
 
     TacticalTileType[,] tiles;
     internal TacticalBuildings.TacticalBuilding[] Buildings;
@@ -257,6 +260,10 @@ public class TacticalMode : SceneBase
                 RemoveHitPercentages();
             switch (value)
             {
+                case 8: // Player Attack command; explicit legacy melee/ranged modes remain available internally.
+                    if (SelectedUnit != null && SelectedUnit.Targetable) ShowAttackHitPercentages(SelectedUnit);
+                    StatusUI.ButtonSelection.transform.position = StatusUI.MeleeButton.transform.position;
+                    break;
                 case 1:
                     if (SelectedUnit != null && SelectedUnit.Targetable)
                         ShowMeleeHitPercentages(SelectedUnit);
@@ -617,7 +624,7 @@ public class TacticalMode : SceneBase
         else
         {
             turboMode = false;
-            if (State.GameManager.CompanyBattle == null) State.Save($"{State.SaveDirectory}Autosave_Battle.sav");
+            // Company battle setup autosaves after the adapter has completed initialization.
             if (summonedUnits > 0 || antSummonedUnits > 0)
             {
                 string message = "";
@@ -901,10 +908,17 @@ Turns: {currentTurn}
 
     internal void LoadData(TacticalData data)
     {
+        battleFinished = false;
+        autoAdvancing = false;
+        foreignAI = null;
+        queuedPath = null;
+        BattleReviewText.gameObject.SetActive(false);
         RetreatedDigestors = new List<Actor_Unit>();
         if (arrowManager == null)
             arrowManager = FindObjectOfType<PathNodeManager>();
         Import(data);
+        if (State.GameManager.CompanyBattle != null)
+        { Config.World.TacticalSizeX = tiles.GetLength(0); Config.World.TacticalSizeY = tiles.GetLength(1); }
         if (Config.AutoScaleTactical)
         {
             Config.World.TacticalSizeX = tiles.GetUpperBound(0) + 1;
@@ -914,7 +928,7 @@ Turns: {currentTurn}
             miscDiscards = new List<MiscDiscard>();
         Unit AttackerLeader = armies[0].LeaderIfInArmy();
         Unit DefenderLeader = null;
-        ItemRepository newRepo = new ItemRepository();
+        ItemRepository newRepo = State.GameManager.CompanyBattle != null ? CompanyEquipment.Repository : new ItemRepository();
         State.World.ItemRepository = newRepo;
         if (armies[1] != null) DefenderLeader = armies[1].LeaderIfInArmy();
         foreach (Actor_Unit actor in units)
@@ -923,7 +937,8 @@ Turns: {currentTurn}
                 actor.Unit.CurrentLeader = DefenderLeader;
             else
                 actor.Unit.CurrentLeader = AttackerLeader;
-            actor.Unit.ReloadTraits();
+            // A company snapshot already owns its trait state; do not regenerate traits on resume.
+            if (State.GameManager.CompanyBattle == null) actor.Unit.ReloadTraits();
 
         }
         foreach (Actor_Unit unit in units)
@@ -1058,6 +1073,7 @@ Turns: {currentTurn}
 
         RebuildInfo();
 
+        if (hudPresentation == null) hudPresentation = new TacticalHudView(this);
         InfoPanel = new InfoPanel(InfoUI);
         Translator = new Translator();
         UpdateEndTurnButtonText();
@@ -2143,6 +2159,36 @@ Turns: {currentTurn}
         }
     }
 
+    internal static bool CanUseAttack(Actor_Unit actor, Actor_Unit target, out bool ranged)
+    {
+        int distance = actor.Position.GetNumberOfMovesDistance(target.Position);
+        ranged = distance > 1;
+        if (distance < 1 || actor.Surrendered || target.Surrendered || !target.Targetable) return false;
+        var weapon = ranged ? actor.BestRanged : actor.BestMelee;
+        return weapon != null && (!ranged || distance <= weapon.Range);
+    }
+
+    internal void AutoAttack(Actor_Unit actor, Actor_Unit target)
+    {
+        bool ranged;
+        if (actor == null || target == null || actor.Movement <= 0 || !CanUseAttack(actor, target, out ranged)) return;
+        actor.Attack(target, ranged);
+        ActionDone();
+    }
+
+    void ShowAttackHitPercentages(Actor_Unit actor)
+    {
+        foreach (Actor_Unit target in units)
+        {
+            if ((TacticalUtilities.IsUnitControlledByPlayer(target.Unit) && !Config.AllowInfighting && !(!AIDefender && !AIAttacker)) || actor == target || !target.Targetable || !target.Visible || target.Surrendered) continue;
+            bool ranged;
+            bool legal = CanUseAttack(actor, target, out ranged);
+            if ((ranged ? actor.BestRanged : actor.BestMelee) == null) continue;
+            target.UnitSprite.DisplayHitPercentage(target.GetAttackChance(actor, ranged, true), legal ? Color.red : Color.black,
+                actor.WeaponDamageAgainstTarget(target, ranged));
+        }
+    }
+
     void ShowMeleeHitPercentages(Actor_Unit actor, float multiplier = 1)
     {
         foreach (Actor_Unit target in units)
@@ -2391,6 +2437,19 @@ Turns: {currentTurn}
         }
     }
 
+    internal bool CanSaveCompanyBattle => !battleFinished && !waitingForDialog && queuedPath == null && IsPlayerTurn &&
+        !PseudoTurn && !RunningFriendlyAI && foreignAI == null && !SpectatorMode && !turboMode;
+    void SaveCompanyTurn()
+    {
+        if (State.GameManager.CompanyBattle == null) return;
+        try { State.GameManager.CompanyBattle.Autosave(); }
+        catch (Exception ex)
+        {
+            paused = true; PausedText.SetActive(true);
+            State.GameManager.CreateMessageBox("Battle autosave failed: " + ex.Message + " Previous saves remain available. Open Save / Load Game to retry.");
+        }
+    }
+
     bool ButtonsInteractable => (IsPlayerTurn || PseudoTurn) == true && (RunningFriendlyAI || foreignAI != null) == false && queuedPath == null && paused == false;
 
 
@@ -2404,18 +2463,10 @@ Turns: {currentTurn}
             switch (ID)
             {
                 case 0:
-                    if (SelectedUnit != null && SelectedUnit.Targetable)
-                        if (SelectedUnit.BestMelee != null && SelectedUnit.Movement > 0)
-                        {
-                            ActionMode = 1;
-                        }
-                    break;
-                case 1:
-                    if (SelectedUnit != null && SelectedUnit.Targetable)
-                        if (SelectedUnit.BestRanged != null && SelectedUnit.Movement > 0)
-                        {
-                            ActionMode = 2;
-                        }
+                case 1: // Both original hotkeys select the same player command.
+                    if (SelectedUnit != null && SelectedUnit.Targetable && SelectedUnit.Movement > 0 &&
+                        (SelectedUnit.BestMelee != null || SelectedUnit.BestRanged != null))
+                        ActionMode = 8;
                     break;
                 case 2:
                     if (SelectedUnit != null && SelectedUnit.Targetable && SelectedUnit.Unit.Predator)
@@ -3025,6 +3076,15 @@ Turns: {currentTurn}
                     //write chance
                     switch (ActionMode)
                     {
+                        case 8:
+                            bool useRanged;
+                            if (CanUseAttack(SelectedUnit, actor, out useRanged))
+                            {
+                                int damage = SelectedUnit.WeaponDamageAgainstTarget(actor, useRanged);
+                                StatusUI.HitRate.text = Math.Round(actor.GetAttackChance(SelectedUnit, useRanged) * 100, 1) + "%\n-" + damage;
+                                actor.UnitSprite.ShowDamagedHealthBar(actor, damage);
+                            }
+                            break;
                         case 1:
 
                             if (actor.Position.GetNumberOfMovesDistance(SelectedUnit.Position) < 2)
@@ -3260,7 +3320,7 @@ Turns: {currentTurn}
             StatusUI.MP.text = "AP:" + SelectedUnit.Movement;
 
             StatusUI.ZeroAPButton.interactable = true;
-            StatusUI.MeleeButton.interactable = SelectedUnit.BestMelee != null;
+            StatusUI.MeleeButton.interactable = SelectedUnit.BestMelee != null || SelectedUnit.BestRanged != null;
             StatusUI.RangedButton.interactable = SelectedUnit.BestRanged != null;
             StatusUI.VoreButton.interactable = SelectedUnit.Unit.Predator;
             StatusUI.UndoMovement.interactable = startingLocation != null && (startingLocation != SelectedUnit.Position || startingMP > SelectedUnit.Movement);
@@ -3390,7 +3450,9 @@ Turns: {currentTurn}
             RebuildInfo();
             if (unit.Movement == 0)
                 ActionMode = 0;
-            if (ActionMode == 1)
+            if (ActionMode == 8)
+                ShowAttackHitPercentages(unit);
+            else if (ActionMode == 1)
                 ShowMeleeHitPercentages(unit);
             else if (ActionMode == 2)
                 ShowRangedHitPercentages(unit);
@@ -3433,6 +3495,15 @@ Turns: {currentTurn}
                 }
                 if (SelectedUnit == null)
                     continue;
+                if (ActionMode == 8)
+                {
+                    if ((!TacticalUtilities.IsUnitControlledByPlayer(unit.Unit) || (Config.AllowInfighting || (!AIDefender && !AIAttacker)) && unit != SelectedUnit) &&
+                        !(!unit.UnitSprite.isActiveAndEnabled && State.World.IsNight))
+                    {
+                        AutoAttack(SelectedUnit, unit);
+                        return;
+                    }
+                }
                 if (ActionMode == 1)
                 {
                     if ((!TacticalUtilities.IsUnitControlledByPlayer(unit.Unit) || (Config.AllowInfighting || (!AIDefender && !AIAttacker)) && unit != SelectedUnit) && !(!unit.UnitSprite.isActiveAndEnabled && State.World.IsNight))
@@ -3809,6 +3880,7 @@ Turns: {currentTurn}
         }
         if (reviewingBattle)
             StatusUI.EndTurn.interactable = true;
+        if (!battleFinished) SaveCompanyTurn();
     }
 
     internal void UpdateEndTurnButtonText()
@@ -4096,7 +4168,7 @@ Turns: {currentTurn}
         }
         if (Input.GetButtonDown("Quicksave"))
         {
-            State.Save($"{State.SaveDirectory}Quicksave.sav");
+            CompanySaveMenu.QuickSave();
         }
         else if (Input.GetButtonDown("Quickload"))
         {

@@ -670,3 +670,315 @@ User finds15Doverall good but dolls too small there and in company/recruitment; 
 ## HANDOFF: portrait visual correction (2026-11-02)
 
 User reports SingleBattle pixelation and company/recruitment dolls too low. SingleBattleSetupView now scale1.0 instead1.4 and anchorY94 instead104, retaining enlarged168card; this reduces magnification without globally altering sprite textures/filtering. CompanyManagementUI shared Portrait anchor moves up18 (y+22+30*scale instead y+40+30*scale), unchanged enlarged scales/x-clearance. Explained tradeoff before edit. Both dated notices/CHANGES exact paths, prior attribution preserved; no external additions or distribution. No compile/tests/Play-mode run for this constants-only correction. Await focused visual feedback: SingleBattle pixelation/size, company/recruitment row alignment. Existing artwork resolution remains a practical limit; do not claim new detail or actual visual verification.
+
+
+## HANDOFF: 15E portrait comparison (2026-11-02)
+
+User accepts company/recruitment alignment; larger/spaced roster deferred. Requests serious render investigation and temporary main-page module. Added main-menu Portrait comparison button via StartMode, new PortraitComparisonPanel.cs/meta, comparison-only Resources/PortraitPaletteSmooth.shader/meta derived from original shader, Editor/PortraitRenderingAudit.cs/meta. Four SAME-appearance cards A current/B simple/C palette-aware base-mip smoothing/D C plus original diskPNG layers when matched (Editor only, explicit count/fallback). Sizes120/180/240; species enabled curated only; New appearance updates allcards; Prefer letter is session-only, Close/Escape. No production portrait/art/texture/import/bundle settings changed. Source paper-doll UI renders directly, no intermediate100px raster stage found. Actual audit Lizards1120×1280RGBA32Point11mips and Avians1–4 1920×1920RGBA32Point1mip,160pxframes, all match disk dimensions. Gnolls asset-name probe empty—not audited. Palette indices make naive filtering suspect; no visual winner/definitive diagnosis yet.
+
+User closed Unity. First compile failed unsupported ShaderUtil.ShaderHasError; fixed audit to report shader-present only. FINAL portrait-compare-final-compile-and-audit.log return0, read-onlybase refs/72terrain and bundle audit portrait-rendering-audit.json. No Play-mode/graphics-device shader validation or live UI pass; these must not be claimed. Need complete scoped hash/notice audit and record before finalhandoff. Source start hashes portrait-compare-start-hashes.json and StartMode before snapshot. Report docs/implementation/15e-portrait-rendering-comparison.md, actualLicense4–5 read, notices/CHANGES exactpaths, no external additions; inherited distribution/provenance gates unchanged. No delete/move/newframework/productiondefault/playerbuild/personalprefs/checkpoint/commit/publication.
+
+Next userreview: open MAIN MENU > Portrait comparison, compareLizard/Avian at180/240, inspectcolors/edges/equipment, tell preferred A/B/C/D+size+D matchedlayercount. ExperimentalC/D mayhaveGPU issues not detectableheadless; awaitfeedback beforeapplying globally. Largercompany/recruitmentlayoutdeferred.
+
+
+15E FINAL scope review completed: Logs/portrait-compare-source-review.json confirms only StartMode modified plus the three intended new source/shader files and their3metas; no missing paths, no new compiler warnings/errors, all dated notices and exact CHANGES paths present; License.txt hash unchanged. No other art/bundle/scene/prefab/package/ProjectSettings change. Unity closed after checks. All original artwork/material/filter settings preserved. Ready for requested user's side-by-side visual review; GUI shader behavior remains unverified and must not be claimed passed. Initial API compile failure is historical and corrected. Await user's A/B/C/D/size judgment before production changes.
+
+
+## HANDOFF: adaptive pixel-art rendering (2026-11-02)
+
+User chooses B at native/upscaled, C/D only shrinking; no smoothing at1×orabove. Implemented shared production Sprites-ColorSwap.shader adaptive gate smallest singular value²>1.0002 (bothaxesminify): point texelcenter mip0 otherwise; palette-decode fourtaps thenpremultblend onlyshrunken. FloatUVs/target3, originalblend/stencil/PixelSnappreserved. ColorSwap.mat references thisshader andColorSwapPaletteclonesit, soUIandtactical paths useadaptive defaultproperty1. SpriteContainer setsUIimagesSimple. PortraitComparisonPanel clones A/Bmaterialsproperty0 andAexplicitSliced,Bsimple; C/Dalwayssmooth unchanged. Cutoff usesnativeSOURCEPIXELvsSCREENPIXEL notTransformscale;160frameat160pxcrisp/80pxsmooth. No camera zoomsteps/portraitsize/acceptedalignment/art/import/material asset/save/gameplay change. Company/recruitmentlargerlayout deferred.
+
+adaptive-portrait-compile-and-audit.log return0; read-onlyscene/existingtextureauditpassed. Need finishscope/noticeswarningaudit beforefinalhandoff; no actualGPU/zoom/threshold/performance/newhardwarecheck claimed. No new tests/framework/playerbuild. Snapshots Logs/adaptive-portrait-start-hashes.json and adaptive-portrait-<source>-before.txt. BothC#andshader datednotices/CHANGES exact3paths, actualLicense4–5read, retainedattribution. No external additions/deletion/move/distribution; inheritedgatesopen. Report15Eupdated. Nextfocusedgraphicalreview tacticalzoomfromsmalltonative/enlarged, crispyatnativeandabove; C/Dcomparisoncardsintentionallyalwayssmooth. Awaitfeedback beforefurtherwork.
+
+
+Adaptive FINAL audit complete: Logs/adaptive-portrait-source-review.json confirms exactly intended3source/shader changes, no added/missing/otherasset/package/ProjectSettings paths, noC#/shader errors logged or new compiler warnings, dated notices/CHANGES exact3paths and rootLicensehash preserved. Unity closed after batch. Compile/read-only audit is not GPU/zoom verification. Ready for focused user tacticalzoom/portrait review; no new framework/playerbuild or settings/save operations performed. Await feedback.
+
+
+## ACTIVE: current standalone Windows build (2026-11-02)
+
+User asks to play a proper standalone build rather than tiny Unity Game view and cannot find output. Found oldBuilds/MVP-Review-20261102-e350dc13/Win64/VoreWar.exe predatesUI/rendering; savedMultiBuildoutput points originaldeveloperDesktop. Started EXISTING MultiBuild.Builder.BuildCommandLine with explicit uniqueproject output Builds/Warband-Review-20261102-63c65e66 false Win64. Unity was closed onentry. Build invocation Logs/standalone-current-build.json, log standalone-current-build.log; execsession41893stillrunning (PID30024). No project source/settings change intended; taskstart hashes standalone-current-start-hashes.json.
+
+Need awaitcompletedbuild actualexit/log, inspectexe/data/shadererrors, copyexistinglegalnotices into uniqueWin64folderonly (no overwriteoldbuild). Add projectlocal shortcut launchingthisexe with -screen-width1600 -screen-height900 -screen-fullscreen0 and WorkingDirectoryWin64, not desktop. Record result/hash/scope and final location for user. Do not launchgraphicalgame withoutneed; do not claim playtested. Userrequestedlocaltestingbuildonly, no distribution/publication/commit. Existinglegal/provenancegates includinglogo remainunresolvedbeforerelease. No sourcechanges/CHANGESgameplayentryneeded forartifact/docwork. CompanyCampaignSave usesApplication.persistentDataPath/CompanyCampaigns; noautomaticsavemigration/reset. PNGcomparisonD isEditor-onlyandwillreportmissingrawsourcesinplayer; otherproductionrenderingworksascompiled. Current build notyetpassed atcheckpoint.
+
+
+## HANDOFF: current standalone Windows build ready (2026-11-02)
+
+Buildcompleted return0 Logs/standalone-current-build.log, no loggedC#/shader errors. Current exe Builds/Warband-Review-20261102-63c65e66/Win64/VoreWar.exe; shortcut Play Vore Warband (1600x900).lnk args -screen-width1600 -screen-height900 -screen-fullscreen0 with properworkingfolder. Keepentirefolder includingdata/native/runtime. Existing MultiBuild CLI usedexplicitoutput; savedMultiBuildsettings stillolddeveloperdesktop anduntouched. OldMVPbuildretained. CopiedLicense/CHANGES/7retainednoticefiles asrecorded result(noticeslist7totalincludesrootlegalfiles); START-HERE.txt included. ScopedhashesconfirmNOAssets/Packages/ProjectSettings changes or added/missingpaths. Actualmanagedassemblyhash/exe/logresult in standalone-current-build-result.json (exe isgenericengine stubandcanmatcholdbuild). No actualplayerlaunch/GUI/startup/gameplaytest claimed. No sourcechanges/CHANGESgameplayentry/newsourceheaders/testsframework/delete/move/commit/publication. README standalonebuild/runinstructions and release-readiness currentartifactrecord updated. Private testingbuildonly; inheriteddistribution/provenancegatesopen. DcomparisonoriginalPNGsourcepathisEditoronly playerreports0matches; normalgamebundleartunaffected. UsercancloseUnityanddoubleclickshortcut/exe. Awaituserfeedback, nofurtherUI/renderingchangesyet.
+
+
+## ACTIVE: remove comparison entry; 2x Single Battle samples (2026-11-02)
+
+User confirms standalone presentation much better than shrunken Unityview. Wants PortraitComparison removed from MAINMENU, SingleBattle cards no species name and unit2xnormalcentered. ChangedONLY StartMode.cs removeAttach hook and SingleBattleSetupView.cs scale2/anchor84,144 accountingrenderer+60Y, hide Name component while retainingcallbackreference and forcehiddenRefresh. Card168square/speciesdropdowns unchanged. Toolsourcefilesretained pernoDeletepolicy. Shader/sampling, company/recruitment alignment/gameplay unchanged. Bothdatednotices andCHANGES exact2paths/localLicense4–5review preserved.
+
+FreshstandaloneBuild running execsession6704, Logs/preview2x-build.log; output Builds/Warband-Review-20261102-f5d988ca/Win64. UsesexistingMultiBuild CLI, noUnityrunningonentry, oldbuildsretained/notouched. Needconfirmactualexit/buildlog, scopedhashaudit Logs/preview2x-start-hashes.json (sourcebeforefilesalsoLogs), copylegalnotices andcreate1600x900shortcut innewbuild, updateREADME/currentartifactdocs andhandoffnewlink. Do notclaimvisualtest/playerlaunch. Needonefocusedreview samplecentering/2x/noName/noComparisonbutton usingNEWbuild. No broadtests/framework/playerstartup/saveoperations/delete/move/commit/publication; inheriteddistribution/provenancegatesopen.
+
+
+## HANDOFF: 2x Single Battle standalone ready (2026-11-02)
+
+Buildreturn0 Logs/preview2x-build.log; no loggedC#/shadererrors. Logs/preview2x-source-build-review.json exact2intendedsources/nootherAssets/Packages/ProjectSettings/additions/missingpaths, dated notices retained; currentassemblyhash recorded. Source diffs inLogs. Freshexe Builds/Warband-Review-20261102-f5d988ca/Win64/VoreWar.exe and1600x900shortcut ready. CopiedLicense/CHANGES/retaineddependency notices verifieddestinationinsideproject; nooldbuildoverwrite. READMEcurrentpathupdated. UsermustlaunchNEWbuild ratherthanpreviousprocess/exe. No playerlaunch/visualfit/startup/gameplaytest or newframework; nosourceart/savesettings/scene/prefab/shaderchanges. SourceGPLnotice/changelogcheckdone/priorattributionpreserved; releaseprovenancegatesunchanged. UserreviewonlyComparisonentryabsent andSingleBattle2xdollscentered/noName; no broaderacceptedmenutest.
+
+
+## ACTIVE: larger Single Battle preview cards (2026-11-02)
+
+User accepts2x appearance but asks biggerboxabout15screenpixels at1080p; growfromlowerleft, narrowerRace/AIEnabled, AITypeotherfieldsdown. ONLY SingleBattleSetupView.cs changed: card168to180 reference (about16.2screenpx at1080p), x408 unchanged/top4to-8 gives same lowerleft/bottom172, dollcenter90,150 atscale2 includes60nativeoffset. Panelbackground584to596toholdcard, Race/AIEnabled390to374 andcontrols16narrower; scrolltop180to196, contentheightheight-208 vs-192, scrollbaroffsetmatches. Allfieldsretained/noart/render/gameplaychange. Datednotice/CHANGES exactpath/actualLicense4–5 reviewed, priorattributionretained.
+
+Standalonebuildrunning execsession91324, infoLogs/preview-box-build.json/log. SnapshotLogs/preview-box-start-hashes.json/sourcebefore preview-box-before.txt. Needcompletedbuildexit/error/scopeaudit, legalnoticecopy/new1600x900shortcut, updateREADME/latestartifactrecords anddeliverNEWbuildlink. No priorbuildsoverwritten or playerlaunched. No testsframework/deletion/move/publication. Focusedreviewboxfit/2xcenter/narrowcontrols/scrollreach; otheracceptedmenusnotestneeded.
+
+
+## HANDOFF: enlarged preview-card build ready (2026-11-02)
+
+Buildreturn0 Logs/preview-box-build.log; no loggedC#/shadererrors. Logs/preview-box-source-build-review.json only SingleBattleSetupView.cs changed, no added/missing/othergamefiles/settings; assemblyhash/source diff recorded. LatestBuilds/Warband-Review-20261102-3679f353/Win64/VoreWar.exe and1600x900shortcut, oldbuildsuntouched. License/CHANGES/retaineddependencynoticescopied with verifiedprojectdestinations. READMElatestpathupdated. Datedsource/changelog/actualLicense4–5check/priorlicensingpreserved; releasegatesunchanged. No playerlaunch/visualcheck/newtestsframework/deletion/move/publication. FocusedusercheckNEWbuildpreviewfit at2x, narrowedRace/AIEnabled and scrollfieldsdown; allunchangedroutesnoretest. Awaitfeedback.
+
+
+## ACTIVE: preview boxes nudged down (2026-11-02)
+
+User requests simply move cardsdown15screenpx at1080 afterlargerboxlookincorrect. SingleBattleSetupView cardtop-8to3:11referenceunits about14.85screenpx, completecardandchilddollmove together. Box180square/2xcentering/othercontrols untouched. Sourcebefore/hash snapshots Logs/preview-nudge-before.txt andpreview-nudge-start-hashes.json. Datednotice/CHANGES exactsourcepath; actualLicense4–5read priorattributionpreserved. Newstandalonebuildrunning execsession95543, infoLogs/preview-nudge-build.json/log. Needactualexit/errorcheck/scopereview, copyretainedlegalnotices, newshortcut, updatecurrentartifactlinks anddelivernewexe. Noactualplayerlaunch/visualtest/newframework/delete/move/publication. Existingreleasegatesunchanged. NextonlyusercheckverticalpositionNEWbuild, noothermenu/combatchecks.
+
+
+## HANDOFF: preview downward-nudge build ready (2026-11-02)
+
+Buildreturn0/no loggedC#/shadererrors Logs/preview-nudge-build.log; Logs/preview-nudge-source-build-review.json confirms onlySingleBattleSetupView sourcechanged, noothergamefiles/settings/additions/missingpaths. Source diff/assemblyhash recorded. LatestBuilds/Warband-Review-20261102-15c68eeb/Win64/VoreWar.exe plus1600x900shortcut ready, oldbuildsretained; legalnoticescopied/projectdestinationsverified. READMEcurrentpathupdated. Datedsource/CHANGES/localLicense4–5review/priorlicensingpreserved, inheritedreleasegatesopen. No playerlaunch/visualtest/newframework/delete/move/publication. OnlyusercheckNEWbuildcardverticalpositionabout15pxdown; boxes180square/2xdollscenteredandothercontrolsunchanged. Awaitfeedback.
+
+
+## ACTIVE: feet clearance relative to preview card (2026-11-02)
+
+User reports prior nudge moved dolls and card together; feet still overrunbottom~15px. Acknowledged parentingmistake. ONLY SingleBattleSetupView.cs: childdollanchorY150to139, movesdollUP11referenceunits (~14.85px1080) relative to card; parentcardstays408,3/180square andscale2unchanged. Thus acceptedcardlocationretained andunitabsoluteheightrestoredwhilecreatingbottomclearance. Sourcebefore/hash Logs/preview-feet-before.txt andpreview-feet-start-hashes.json; datednotice/exactCHANGES/localLicense4–5/priorattribution done.
+
+NewprivateWindowsbuild execsession69813, info/log Logs/preview-feet-build.json/log. Needcompleteactualexit/error/scopeaudit, legalnoticescopy/newshortcut/currentREADMEpath, handoffNEWexe. No playerlaunch/visualtest/newtestsframework/delete/move/publication; existingreleasegatesunchanged. Focuseduserreviewfeetclearanceonly. Don'trepeatwholecardtranslation asfix forchildclearance.
+
+
+## HANDOFF: corrected relative feet clearance build (2026-11-02)
+
+Buildreturn0/no loggedC#/shadererrors Logs/preview-feet-build.log. Logs/preview-feet-source-build-review.json confirms ONLY SingleBattleSetupView source changed, noothergamefiles/settings/additions/missingpaths; sourcediff/assemblyhash recorded. FreshBuilds/Warband-Review-20261102-d70f6b12/Win64/VoreWar.exe plus1600x900shortcut, oldbuildsretained. Noticescopied; READMEcurrentpathupdated. RelativechildY139 now movesunitup~15screenpxinsideUNCHANGEDcard; doNOTrepeatparenttranslation asclearancefix. Actualvisualclearanceuntested/no playerlaunch. Datednotices/CHANGES/actualLicense4–5/priorlicensing preserved; releasegatesunchanged. No newtestsframework/delete/move/commit/publication. UsercheckNEWbuildfeetclearanceonly, awaitfeedback.
+
+
+## ACCEPTED: final Single Battle sample fit (2026-11-02)
+
+User: “Okay, I approve, we got it exactly right.” Final card180square at408,3, dollscale2/childanchor90,139, speciesNamehidden ACCEPTED. Preserve these values; no more centering/box changes or repeated tests. Latest accepted standalone build remains Builds/Warband-Review-20261102-d70f6b12/Win64/VoreWar.exe. This turn documentation-only approval record (15Dreport/checkpoint); no source/assets/settings/build/tests or sourceGPLnotice/CHANGESgameplayentry. Existing legal/provenance gates unchanged. No next work authorized by this approval alone; await user's direction. Larger company/recruitment portrait layout remains deferred; alignment already accepted.
+
+
+## ACTIVE: Spec 16 tactical battle interface (2026-11-02)
+
+User requested dark blue tactical chrome, hidden bottom faction/controller labels, unified Attack choosing melee at distance1/ranged beyond1, both1/2 hotkeys, smaller log with8+lines, four weapon/spell readouts, Auto-resolve Battle and AI: Finish Turn captions, smaller traits only. All core AP/HP/stats/name/species/command fonts and accepted setup portraits remain. New TacticalHudView hosts runtime palette/readouts; TacticalMode action8 uses shared legality for previews/clicks/context menu; native Attack/AI/special attacks remain. InfoPanel scopes equipment/trait changes to registered tactical panel; UnitInfoPanel keeps hover lookup. MessageLogPanel compact260/font22. Dynamic context/ability buttons use blue palette with subtle category tint. All existing files retained; new TacticalHudView.cs/.meta.
+
+Source snapshots/task-start game-file hashes in Logs/tactical16-*. First compile-and-scene.log had an initial new-file import ordering CS0246 despite exit0; NOT passed. Need clean fresh compile/read-only scene run, scoped diff/header/GPL check and unique fresh standalone build, retained notices copy/README path update. No player/visual/attack playtest yet; one combined user workflow review at handoff. No new framework, deletion/move, commit/publication. Prior scene/art/prefab/settings and portrait/card geometry must stay unchanged. Previous latest accepted build d70f6b12. GPL License.txt4-5 actually read this task; finish CHANGES/spec16 and reports. Existing release provenance gates remain open.
+
+
+## HANDOFF: Spec 16 tactical interface build ready (2026-11-02)
+
+Fresh private player: Builds/Warband-Review-20261102-67891352/Win64/VoreWar.exe, plus optional1600x900shortcut. Prior artifacts retained. Unity clean network-enabled compile/read-only scene and fresh Win64 build both return0 without logged C#/shader errors or exceptions; initial import-order and restricted-license attempts are not counted as passed. Logs/tactical16-network-compile-and-scene.log, tactical16-build.log, tactical16-build-result.json. Current player assembly contains TacticalHudView/AutoAttack/CanUseAttack/equipment labels; managed build hash recorded. No player launch or visual/combat playtest claimed.
+
+Final post-build hashes: only six intended existing sources changed, new TacticalHudView.cs/.meta added, no other Assets/Packages/ProjectSettings changes or missing paths. Dated source notices, retained earlier notices, exact CHANGES paths and local License4–5 reviewed; seven existing license/dependency notices packaged. No external additions, deletion/move, commit/publication. Existing release provenance/distribution gates remain open.
+
+Implemented unified Attack (adjacent melee/distant ranged) on both1/2 bindings and right-click; shared preview legality, native AP/damage/AI/special paths preserved. Dark blue tactical panels/controls including dynamic abilities/context buttons; redundant bottom side labels hidden; Auto-resolve Battle and AI: Finish Turn captions; tactical-only smaller traits; four slot labels with hover; compact log260/font22 and retained expand/restore. Core HP/AP/stat/name/species/button sizes untouched. Accepted setup card180 at408,3/doll2x90,139 untouched; company/recruitment larger portraits and Help deferred. Docs16/roadmap/README/release-readiness updated.
+
+Await ONE combined manual review in NEWbuild: Attack1/2 adjacent/distant/invalid/downed and matching previews/context; equipment/spells, blue chrome,8+loglines and expand/restore, trait-only text reduction, AI turn handoff/auto-resolve prompt. Do not restart accepted menus/setup or create another small packet before feedback.
+
+
+## ACTIVE: Spec 16 player feedback fixes (2026-11-02)
+
+User wants four old-style item boxes (empty slots truly blank), padded command layout with Attack/Move/Vore/End Turn in one row and doubled End Turn width, separated utility and same-width AI/auto-resolve pairs. Reports blank battle log/missing size controls. Traced log root scene instance: horizontally stretched anchors0..1 with original sizeDelta.x0. Last packet set sizeDelta.x1920, doubling width/pushing controls offscreen. Fix MessageLogPanel compact anchor0..1/sizeDelta(0,260)/bottom110; fullscreen uses0..1 anchors/zero offsets; filter/resize mark normal next-frame log scroll dirty. Four bordered2x2slots with headings outside boxes, no natural-weapon/placeholder fill if no equipped item. New HUD file saved UTF8 BOM; blank ASCII strings avoid legacy compiler misreading emdash. Main controls x660,792,924,1056(width160); utility1248; auto/AI1432(width280); collapse-log restore1744. Core font sizes intact.
+
+Only TacticalHudView.cs and MessageLogPanel.cs changed so far; before snapshots and task-start hashes Logs/tactical16b-*. Dated notices added, actual License4–5 read. Compile/read-only scene running session55019/logtactical16b-compile-and-scene.log. Need final source/scope review and CHANGES/spec16 records, fresh unique standalone build+notices/links. Intend actual UI inspection through computer-use skill (read skill+guidance/api/confirmation; sky initialized in node_repl, list_windows shows no running Unity/player); no UI/playtest claimed yet. Use @oai/sky only for Windows UI automation. Preserve prior builds and all accepted setup portraits. No external additions/deletion/move/publication.
+
+
+## HANDOFF: Spec 16 feedback correction ready (2026-11-02)
+
+New private artifact Builds/Warband-Review-20261102-256f9809/Win64/VoreWar.exe, optional1600x900shortcut. Earlier builds retained. Only TacticalHudView.cs and MessageLogPanel.cs changed relative to this task's start; final hashes show no added/missing/other Assets/Packages/ProjectSettings paths. Log compact width is now0 relative to horizontal stretch (was wrongly adding1920), height260/bottom110, normalized full view and shared compact restore. Filter/resize mark existing native latest-message scroll dirty. Four bordered2x2item boxes/headings outside, blanks for no equipped item (no natural-weapon/Unicode fallback). Primary row Attack/Move/Vore/End Turn at660/792/924/1056, EndTurn160wide; utility1248, equal280wideauto/AI1432, restore1744. Other fonts unchanged.
+
+Unity C# compile/read-only scene completed no errors, Unity logexit0. Its Start-Process -Wait wrapper hung after Unity had exited and was interrupted (shell1, NOT a claimed shell0). Fresh build used process.WaitForExit and exited0, no loggedC#/shadererrors/exceptions. Logs/tactical16b-build-result.json and scope-review/source diffs record evidence. GPL actualLicense4–5 read, datedheaders/exactCHANGES/priornotices checked;7retainedlicense/dependency notices copied, currentREADME/spec16/release-readiness updated. No outside additions/deletion/move/publication; releaseprovenance gates unchanged.
+
+Attempted GUI inspection via computer-use @oai/sky: opened newartifact's1920x1080launcher only. Capture failed twice FrameArrived/window capture timedout; text-only accessibility works, clicking Play failed coordinate input geometry unavailable. Reobserved launcher, closed withAltF4, list_windows confirms no review window remains. NO battle entered, NO visual/log/functional test pass claimed, no user preferences changed. Compilewrapper session55019 cancelled after Unity exited; buildsession93794 returned0. One focused user check remains: boxed/blank slots and padded controls, battle log actualmessages/Expand/Reduce/hide/OpenLog. Do not repeat accepted setup/portrait/menu tours or change Attack mechanics from this feedback alone.
+
+
+2026-11-02 alignment correction: selector pivot now matches the top-left command origins; equipment boxes/details moved60reference units down to clear stats. Only TacticalHudView.cs changed; dated notice/CHANGES and retained attribution reviewed. Fresh build exited0 without logged C#/shader errors; no visual test claimed. New private artifact: `Builds/Warband-Review-20261102-df20ed48/Win64/VoreWar.exe`. Existing notices packaged; prior builds retained. Please confirm outline alignment for Attack/Move/Vore and equipment headings clear VOR/STM. Existing release provenance gates remain open.
+
+
+## ACTIVE 2026-11-03: resumed six tactical fixes
+
+Implemented HP fill restoration/slider-style exclusion; equipment318 (halfway between288and348), details offset112; tactical trait/innate spell70%; shared bright checkmarks preserving checkbox geometry; compact log257height/bottom100 joins bar. Three source files only: TacticalHudView, InfoPanel, MessageLogPanel. Dated notices/CHANGES/localLicense4–5 reviewed. Fresh standalone build running session53150, Logs/tactical16d-build.log/json. Need actual completion/error/scope review, notices copy/current links and one combined user review. No graphical test claimed; prior capture tool failed repeatedly so do not repeat it. Preserve all prior work/builds.
+
+
+## 2026-11-03: six resumed tactical UI corrections ready
+
+Restored red HP fill and excluded sliders from generic control styling. Equipment headings/boxes moved halfway back up (318), with matching details clearance112. Tactical traits and innate spells use70%text; core stats/commands unchanged. Expanded-log toggles use the existing bright vector checkmarks with their original geometry. Compact log height257/bottom100 joins the bottom bar with no gap.
+
+Fresh private build: `Builds/Warband-Review-20261103-1db4b742/Win64/VoreWar.exe`. Unity build exited0, no logged C#/shader errors/exceptions. Scoped hashes confirm exactly TacticalHudView.cs, MessageLogPanel.cs and InfoPanel.cs changed; no other game files/settings/additions/missing paths. No actual visual playtest claimed. Please confirm red HP bar, equipment placement/text readability, bright log checkmarks and clean log/bar join in one focused review. Previous accepted controls/setup portraits retained.
+
+Dated notices and exact CHANGES paths checked, actual License4–5 reviewed, inherited attribution/licensing retained; existing7license/dependency notices copied to the unique artifact. No external assets/dependencies, deletion/move or publication. Existing release provenance gates remain open.
+
+
+## ACTIVE 2026-11-03: solid HP / trait spacing / edge seams
+
+Only TacticalHudView and InfoPanel changed: HP explicitly Simple/fillCentertrue/override cleared; trait newline before closing70% span prevents final-line font metric jump; left inspector-1, right commands+1, bottomwidth+2. Dated notices/CHANGES/actualLicense4–5 reviewed, no outside additions. Fresh build running session40228, Logs/tactical16e-build.log/json. Need actual completion/error/scoped review, notices package/current links, one focused visual review. No visual test claimed; capture tool previously unavailable. Preserve prior accepted UI/builds.
+
+
+## 2026-11-03: solid HP, equal trait spacing and edge coverage
+
+HP image now explicitly uses Simple rendering/filled center and clears sprite overrides, rather than inheriting sliced rendering. The trait block places its final newline before closing the70%size span so the last trait retains the same line metrics. Left inspector moves one reference pixel left, right commands one right; bottom bar gains two reference pixels, one per edge. No other layout, font sizes, artwork or gameplay changed.
+
+Fresh private build: `Builds/Warband-Review-20261103-0551cd32/Win64/VoreWar.exe`. Unity build exited0 without logged C#/shader errors or exceptions. Scoped hashes show only TacticalHudView.cs and InfoPanel.cs changed; no other game files/settings/additions/missing paths. Dated notices and CHANGES exact paths reviewed against the diff, actual License4–5 read, inherited notices/licensing/attribution retained; seven existing license/change/dependency notices included. No outside additions, file deletion/move, publication or release approval. Existing provenance gates remain open.
+
+No visual playtest claimed. Please check a filled red HP bar (including partial HP), equal trait spacing through the final trait, and covered left/bottom/right screen-edge seams. All prior accepted menus/portraits need no repeat review.
+
+
+## ACTIVE 2026-11-03: actual HP occlusion fix
+
+User confirms trait spacing and edges accepted, HP still hollow. Traced prefab: BarrierBar rootorder2 overlays HealthBar rootorder1 at identical5,-84/height26. Barrier Background alpha0 becameopaque through general theme background recolor, covering HP. ONLY TacticalHudView changed: skip all slider-descendant images in general background recolor. Do not change accepted traits/edges. Snapshot/hash Logs/tactical16f-*. Dated notice/CHANGES/localLicense4–5 reviewed. Need build completion/scope/errors, legalnoticecopy/newartifactlinks and HP-only user review; no visual test claimed.
+
+
+## 2026-11-03: HP fill occluded by barrier background — corrected
+
+User confirms trait spacing and edge seams fixed; preserve them. Actual HP cause identified in prefab: BarrierBar overlays HealthBar at the same rectangle, with a transparent Background (alpha0). Generic background theme recoloring made that background opaque, masking the HP fill. TacticalHudView now skips slider-descendant images in that pass, preserving native status-bar transparency. This is the only source change, plus its dated notice; no scene/prefab changes or outside additions.
+
+New private build: `Builds/Warband-Review-20261103-470fab48/Win64/VoreWar.exe`. Build exited0 with no logged C#/shader errors/exceptions; scoped hashes confirm only TacticalHudView.cs changed, no other game files/settings/additions/missing paths. Logs/tactical16f-build.log/scope.json/source diff record evidence. No actual visual playtest claimed. Only player check: full HP shows a solid red bar; taking damage shortens it normally, with barrier behavior retained. Previously accepted traits/edges do not need another review.
+
+Actual local License4–5 reviewed, dated source notice and exact CHANGES path checked, inherited notices/licensing/attribution preserved; seven existing license/change/dependency notices included with unique artifact. Earlier builds retained, no deletion/move/publication; existing release provenance gates remain open.
+
+
+## ACTIVE 2026-11-03: Spec17 shared popup palette / Esc overlay
+
+HP accepted. Nine existing C# sources changed (CHANGES/spec17 exact paths); no new source. Shared StylePopup used only in popup hierarchies, skips slider images/preserves alpha, themes common confirmations/messages/input/multichoice/tooltip/save-load/auto-resolve. GameMenu constructs540x600blue centered overlay; keeps native callbacks, seven spaced retained buttons, hides Race Editor, Help renamed. Scene ancestry proves sibling Options/SaveLoad/RaceEditor excluded from menu canvas. No developer-editor restyling or accepted tactical layout changes except SkipUI colors. Task-start hashes/before snapshots Logs/popup17-*. Need compile/read-only scene, fresh build/error/scope/GPL review, legalnoticecopy/newlinks and focused user review. No actual visual test claimed; prior Windows capture failed so do not repeat. No new framework/deletion/move/publication.
+
+
+## HANDOFF 2026-11-03 — Spec17 shared popups and Esc overlay
+
+HP accepted. Shared confirmations/messages/input/multi-choice boxes, hover/slider tooltips, generated save/load panels and auto-resolve options now use the blue palette. Dialog callbacks/content/font sizes retained; dimmer alpha and slider graphics preserved. Esc menu is a centered540x600blue panel over a dimmed game, with seven spaced native buttons; Race Editor entry hidden and Help renamed. Developer editor itself and gate code untouched. Original menu canvas contains no Options/SaveLoad/RaceEditor subtrees (scene ancestry checked), so their layouts are unaffected.
+
+Fresh private Windows artifact: `Builds/Warband-Review-20261103-ee41877e/Win64/VoreWar.exe`. Unity compile/read-only base scene and Windows build both exited0 without logged C#/shader errors/exceptions. Logs/popup17-scene.log, popup17-build.log and popup17-result.json; task-start/post-build hashes show exactly nine intended existing sources changed, no other game files/settings/additions/missing paths. Source diffs and dated notice/changelog/prior-notice checks recorded. No GUI/actual interaction playtest claimed; previous screenshot helper failed, so no repeated attempt or new test framework.
+
+Seven retained license/change/dependency notices included in the unique artifact; prior builds retained. Actual local License4–5 reviewed, exact source paths/dated notices and inherited licensing/attribution preserved. No external additions, scene/prefab edits, deletion/move or publication. Existing release provenance/distribution gates remain open.
+
+One focused player review: Esc overlay/navigation/close and Help label/Race Editor absence; end-turn and Load saved confirmations blue; Options slider hover plus right-click number-entry popup readable; auto-resolve and ordinary messages use blue. Preserve accepted HP/traits/edges/portraits, no repeated full battle/menu tour. Help content rewrite remains deferred.
+
+
+## ACTIVE 2026-11-03 slider targeting regression
+
+Options/Content slider hover stale flags and held-button loop could open multiple dialogs. SliderRevealer now uses current top UI raycast Slider ownership (once/frame), IPointerClickHandler right-click and ActiveInput gate; shared tooltip graphics raycastfalse. Only SliderRevealer/HoveringTooltip changed, snapshots/hash Logs/slider17b-*. Dated notices/CHANGES/localLicense4–5 reviewed. Need build/error/scope review, notices/currentlinks, one focused slider interaction check; no actual graphical test claimed. Preserve accepted popup/Esc styling.
+
+
+## HANDOFF 2026-11-03: slider hover / value-entry correction
+
+Only SliderRevealer.cs and HoveringTooltip.cs changed: replace stale hover state with cached current UI raycast ownership plus slider rectangle check; right-button down edge opens one dialog only when ActiveInputfalse; tooltip graphics no longer intercept raycasts. Revealers are Handle Slide Area children, so event-only click handlers were discarded in source review in favor of a press-edge check compatible with Slider pointer handling. Preserve accepted popup/Esc colors and all other UI/gameplay.
+
+Final private artifact: `Builds/Warband-Review-20261103-2171adf4/Win64/VoreWar.exe`. Logs/slider17b-review-build.log completed actual exit0 with no logged C#/shader errors or exceptions; player assembly verified to contain PointerInsideSlider. Two earlier internal artifacts preceded the final bounds/press-edge implementation and are NOT the handed-off build. Task-start hashes/source diffs/dated notices/CHANGES paths and inherited notices checked; only the two intended sources, no added/missing/other game files/settings. Logs/slider17b-scope.json/result.json record evidence. No actual GUI/playtest claimed and no new tests/framework.
+
+Existing seven license/change/dependency notices packaged in the unique artifact, old builds retained. Actual License4–5 read; dated source notices and exact CHANGES paths reviewed, licensing/attribution preserved. No outside additions/deletion/move/publication; existing release provenance gates remain open. README points to this final build.
+
+One focused player check in Options and Content Settings: outside sliders no slider-value tooltip; hover/right-click one slider opens only its dialog; cancel once dismisses it; holding right button does not stack entries; typing a value affects only that slider. No need to repeat wider accepted menu/battle/portrait checks.
+
+
+## ACTIVE 2026-11-03 popup input contrast
+
+Only InputBox.cs changed: after StylePopup, entered text and caret black, placeholder opaque#808080. Before/hash snapshots Logs/input17c-*. Dated notice/CHANGES/localLicense4–5 checked; no other styling/behavior changes. Need fresh build completion/errors/scope, notices/currentlinks and narrow text-color review. No visual test claimed.
+
+
+## HANDOFF 2026-11-03: popup input contrast
+
+Only InputBox.cs changed: after shared popup styling, text and caret are black, placeholder opaque#808080. Surrounding white dialog text/blue palette and all slider value-entry behavior are unchanged. Dated notice/CHANGES exact path and actual License4–5 reviewed, original notices/licensing/attribution preserved. No outside additions or release approval; existing provenance gates remain open.
+
+Fresh private artifact: `Builds/Warband-Review-20261103-d62b53b1/Win64/VoreWar.exe`. Unity Windows build exited0 without logged C#/shader errors/exceptions. Source hashes/diff confirm only InputBox.cs changed, no other game files/settings/additions/missing paths. Seven existing license/change/dependency notices packaged; earlier artifacts retained. Logs/input17c-build.log, scope.json/result.json record evidence. No visual playtest claimed. Focused user check: empty field shows medium-grey Enter Text placeholder; typed numbers are black, with readable black caret. No repeated menu or slider targeting test needed.
+
+
+## ACTIVE 2026-11-03: Spec18 company leader creator
+
+User requests one-screen blue creator, all options/no renames, species dropdown, center portrait, left/right compact controls and native gender visibility. Modified CompanyManagementUI, CustomizerPanel, UnitCustomizer; added CompanyLeaderCreatorView.cs/.meta. All41native rows reused, optional CompanyLayout callback afterRefreshView; controls moved out of legacy clone (oldemptychildren/chrome disabled), two adaptive columns y264..698, identityleft, focusright, paperdoll center440x464/2x at220,292; namecenterbottom and confirm/cancel. Pagebackground covers only0..744 leaving existingfooter. Species dropdown nativeGender template cloned with replaced species entries/listener. Oldobsolete scrolling instruction removed; no actual optionlabel changes. Dated notices/CHANGES/License4–5 review done. Snapshots/hash Logs/creator18-*. Need compile/read-only scene/newsource import, scope/inventory/GPL review, fresh standalone build+notices/currentlinks and one combined creator review. No visual/interaction playtest claimed; no newtestframework/delete/move/publication. Preserve all accepted tactical/popups/othercustomizers.
+
+
+## HANDOFF 2026-11-03 — Spec18 leader creator redesign
+
+New blue one-screen creator: approved species dropdown, existing gender/five pronoun fields/quantification on left, existing focus buttons on right, all41native appearance rows distributed into compact adaptive left/right columns with unchanged labels/callbacks/visibility rules. Center paper doll is2x in a440x464clipped card compensating renderer offset. Name/confirm/cancel stay at center bottom, global Main menu/Help/Options footer remains uncovered. Legacy clone chrome/empty parents inactive; no original control files or art deleted. Only obsolete scroll instruction removed; no option wording changes. Optional company-only layout refresh runs after native customization updates; all original UnitCustomizer logic otherwise byte-identical after removing notice/hook. Source inventory confirmed all41CreateNewButton labels retained.
+
+Fresh private review artifact: `Builds/Warband-Review-20261103-eda57af8/Win64/VoreWar.exe`. Clean Unity compile/read-only scene and final Windows build exited0 with no logged C#/shader errors or exceptions. Initial creator18-scene.log had the known new-source import-order CS0246 and is NOT counted as a clean pass; creator18-clean-scene.log is clean. Earlier internal build preceded final dropdown-template color styling; handed-off artifact is creator18-final-build.json/log. Player assembly includes CompanyLeaderCreatorView. Task-start/post-build scope: only CompanyManagementUI, UnitCustomizer, CustomizerPanel modified; CompanyLeaderCreatorView.cs/.meta added; no other game files/settings/additions/missing paths. Source diffs/inventory/scope Logs/creator18-*.
+
+No actual visual/interaction playtest claimed; no new test framework or repeat failed Windows-capture attempt. One combined creator review remains: select each species/gender and focus; all available original controls fit without scrolling and reflow; paper doll contained/centered; dropdowns and pronouns/name editable; Cancel and Confirm function, chosen appearance/name/focus persist into campaign. No unrelated accepted UI/battle/portrait tests needed.
+
+Actual local License4–5 read; all four C# dated notices, new-source attribution and exact CHANGES source/meta paths checked, inherited notices/licensing/attribution preserved. Seven existing license/change/dependency notices packaged in unique artifact; prior builds retained. No outside assets/dependencies, source art/import/scene/prefab changes, file deletion/move or publication. Existing release provenance/distribution gates remain open. README points to final artifact.
+
+
+## ACTIVE 2026-11-03: Spec19 Save/Load milestone
+
+Leader creator accepted. User authorizes named multiple company saves, deletion, map-day/battle-turn autosaves, hover/selection progress metadata, exact mid-battle saves, replacement of legacy UI, Ironman autosave/backups plus save removal on loss. User clarified agent MUST NOT delete any files/directories; game runtime may delete owned saves. No actual agent deletion/testing of deletion permitted. Plan docs/implementation/19-save-load-and-battle-persistence.md. Start hashes/before source snapshots Logs/save19-*. Not implemented/checked yet; preserve all prior work. Next implement logical slots/retention and battle snapshot as one serialized company graph, battle-turn stable boundary integration, unified browser and legacy routes. Three older backup generations provisional. Must verify before promising resumable battles (canonical unit identity, containment/summons/temporaryHP/reserves/RNG/AP/effects). No new test framework or personal-save access. No Unity editor currently running. No agents delegated. Finish GPL actualLicense4–5/source notices/CHANGES/fresh build+notices/currentlinks; one meaningful combined review, do not stop after small storage batches.
+
+
+## ACTIVE Spec19 implementation progress — 2026-11-03
+
+Storage/slots/browser and battle integration sources written, NOT compiled or verified. New CompanySaveSlots.cs/.meta (normal named logical slots, map/battle autosaves, latest+3backup pruning, owned directory validated runtime File.Delete, durable fallen marker), CompanyBattleSnapshot.cs/.meta (canonical graph/containment/position/AP/HP/RNG preservation guards), CompanySaveMenu.cs/.meta (normal named saves/overwrite/load/delete confirmations, hover/selection five-stat preview, Ironman autosave-only; canvas200 confirmationsraised1000). Modified CompanyCampaign/Save/Battle, Rand (reflect fixedMonoSystem.Random int/array fields, samealgorithm), TacticalMode (LoadData reset/dimensions and endturn autosave), CompanyCampaignView load/resume/browser routing, StartMode lazyview, GameMenu/State/SaveLoad oldfacade forwarding, CompanyManagementUI prototype browser forwarding, Actor_Unit pending animation/stance and Unit attritionlatch serialization. Headers dated; CHANGES not yet updated. Taskbefore files Logs/save19-*; new sources may import-order CS0246 on first Unity pass.
+
+Current limitations to audit before handoff: compile errors likely (new method/API contracts), live snapshot actor health/containment and canonical refs/RNG validation, safe turn/camera/AI recovery, frozen save UI/Confirm sorting, corrupt backup grouping and deletion corrupt generations, public checkpoint words and old hotkey routes, Ironman marker during loss/cleanup. No test/build or actual midbattle restore success claimed. Agent must NOT execute File.Delete paths or deletion tests; game runtime deletion is authorized. Never open personal saves; any probes in memory or preserved Logs only. No Unity currently running. Need compile/read-only scene, complete meaningful in-memory preservation coverage using existing checks/workflow, clean fresh build/scoped GPL review/CHANGES/notices+links, one combined normal/battle/Ironman user review. Continue task, do not mark complete early or stop at small partial stage.
+
+
+## HANDOFF 2026-11-03 — Spec19 named saves and exact battle restoration
+
+Leader creator accepted. Save/load milestone implemented: unified blue named slot browser from map/main/battle; five-stat previews; manual overwrite and confirmed runtime deletion; map/day/committed-action autosaves, settled side-turn battle autosaves, latest+3 valid backups; exact native battle restore without NewTurn/species-trait regeneration. Ironman latest-valid/autosaves-only, normal and Ironman corruption fallback, durable fallen marker before removal on defeat. Original World serialization/public checkpoint list retired, serialized scene callbacks retained as forwarders. Single Battle remains nonpersistent, can load campaigns. Broad help rewrite deferred; obsolete saving guidance updated. User runtime file-deletion authorization recorded in AGENTS; agent filesystem deletion remains forbidden.
+
+Final real Unity Play-mode synthetic audit passed34, exit0: Logs/save19-runtime-review.log, runtime-result.json. Canonical company/enemy actors, reserves/downed/containment, summons, AP/HP/tempHP/barrier/mana/cooldowns/temporary boosts, exact acquired traits, status/tile effects, log, RNGs, enemy-turn resume, slot-scoped/ironman corruption, manual/olderIronman rejection, retention/deletion plans and defeat marker validated. Deletion suppression preserved ALL probe files under unique Logs roots; no personal saves accessed. Earlier fixture-assumption failures retained, superseded by final34pass. Clean compile/read-only scene exit0 Logs/save19-compile3.log. No actual graphical/interaction playtest claimed.
+
+Final private artifact: `Builds/Warband-Review-20261103-1710002a/Win64/VoreWar.exe`. Logs/save19-final-build.log actualexit0 with no logged C#/shader errors/exceptions; result.json records assembly markers and editor diagnostics absent from player. Seven existing notices packaged. Task-start/final hashes:17intendedexistingC#changed +4newC#/4meta, no other gamefiles/settings/scene/art/package changes or missing paths. 21source dated notices/exactCHANGESsource/metapaths and meaningful prior notices checked; actualLicense4–5 reviewed, inherited attribution/licensing retained, no outside additions. Existing distribution/provenance gates remain open. Earlier builds preserved; no agent deletion/move/publication. README points to final build.
+
+NEXT: wait for one combined normal named-save/preview/disposable-slot-delete, exact midbattle resume/autosave and disposableIronmanUI/loss review. Do not start another phase or request repeated accepted menu/portrait tours. If interrupted, read spec19 and Logs/save19-result.json; do not repeat passed34checks unless code changes/failures justify it.
+
+
+## Accepted — 2026-11-03
+
+The user reports that manual test results look good. Spec19 Save / Load is accepted with no issues reported. This records user feedback, not a new agent playtest or a claim that every optional scenario was individually exercised. Preserve the accepted implementation and build. No source changes or new checks were made for this acknowledgment.
+
+Current state: no active implementation packet. Await the user’s next requested work; do not repeat the accepted save/load review. Current private build remains `Builds/Warband-Review-20261103-1710002a/Win64/VoreWar.exe`. Broad Help rewrite remains deferred.
+
+
+## ACTIVE 2026-11-03 — Spec20 menu cleanup and shared Help
+
+Save/load accepted. Eight existing C# files changed (CHANGES/spec20 lists exact paths): remove NewCampaignContinue/map-preview entry+handlers, compact retained LoadGame; silence routine fallback-settings message; mainLoadGame caption; sharedHelpPanel blue1160x744centered, 15chapters/18ptTMP/scrollbar/ExitHelp, original scene children inactive; allmain/campaign/creator/tacticalHelp routes share it, GM modalEscape/input gate preserves underlying screen. Text articles otherwise retained (only LoadGame guidance caption). No new source/framework or scene/prefab changes. Taskstart hashes/before snapshots Logs/menu20-*. Need compile/read-only scene/freshbuild/scopedGPLnotice review, notices/currentartifactlinks and one combined UIreview. No actual visual playtest claimed. Unity was closed; do not ask again without evidence it reopened. No deletion/move/personal saves/publication; all earlier work preserved.
+
+
+## HANDOFF 2026-11-03 — Spec20 menu cleanup and shared campaign Help
+
+New Campaign no longer creates Continue or Map-only preview buttons; their unused handlers and obsolete instruction retired. Load Game retained beside Create company; Ironman setup preserved. Main-menu load label and associated save guidance now Load Game. Routine default-race-settings message empty; actual load errors/fallback behavior unchanged.
+
+HelpPanel is one shared blue campaign guide from main menu, company/setup/creator and tactical menu: 1160x744 centered reference frame, 15 compact chapter buttons, 18-point native TMP text, wrapped/clipped scroll area with visible scrollbar, Exit Help. Existing twelve campaign chapters and stats/traits/spells references retained; long references evaluated lazily. Underlying UI preserved; GM routes Escape only to Help and suspends tactical input/AI while open. Original help child objects retained inactive, no scene/prefab rewrite. Full editorial Help rewrite still separate; article text preserved except requested Load Game guidance label.
+
+Private build: `Builds/Warband-Review-20261103-edb0c0f0/Win64/VoreWar.exe`. Clean Unity compile/read-only scene and Windows build exited 0 with no logged C#/shader errors/exceptions. Initial name-collision compile failure corrected; only menu20-clean-scene.log counts as clean compilation. Logs/menu20-result.json, scope.json, notice-review.json and source diffs record evidence. Scope: exactly eight intended existing C# files, no other game files/settings/art/scenes/prefabs/packages/additions/missing paths. No new test framework or repeat save audit; no actual visual/interaction playtest claimed.
+
+Actual local License.txt sections 4–5 reviewed; eight dated notices/exact CHANGES paths/prior notices checked. Seven retained license/change/dependency notices packaged; no outside code/assets/dependencies. Existing provenance/distribution gates remain open. All earlier builds/user work preserved; no deletion/move/personal-save access/publication. README points to this build.
+
+NEXT: one combined user review of main-menu Load Game/no routine settings message, New Campaign button cleanup, and shared Help layout/chapter scrolling/Exit Help/Escape return from menu/company/creator/battle. Wait for feedback before another phase; do not repeat accepted save/portrait/combat UI tours.
+
+
+## Accepted — Spec20, 2026-11-03
+
+The user explicitly accepts the menu cleanup and shared campaign Help: “Looks good. Accepted.” Preserve the accepted implementation and `Builds/Warband-Review-20261103-edb0c0f0/Win64/VoreWar.exe`. This is user acceptance, not an additional agent playtest. Documentation only for this acknowledgment; no source changes or new checks.
+
+Current state: no active implementation packet. Await the next requested work; do not repeat the accepted menu/Help or save/load review. Broader help prose editing remains separate and unstarted.
+
+
+## PLANNING ONLY — 2026-11-03, Spec21 physical content retirement
+
+User requests a removal list/plan before approval, then eventual moves into project Recycle Bin. No code/assets changed or moved. Draft: docs/implementation/21-retired-content-removal-plan.md, candidate-path CSV and explicit Race reference JSON. Scope: 90 permanently rejected identities/all previously rejected named uniques; preserve four curated species and do not infer rejection of other pending-curation species. Mixed StreamingAssets bundles contain embedded payloads, so raw-file relocation alone is insufficient. Candidate names are not an approved manifest; alias/shared/GUID/bundle ownership audit and concrete manifest approval precede any move. Await user review of scope/plan; do not implement or move assets. Prior builds/saves untouched. Documentation only; no compile/playtest run.
+
+
+## Spec21 plan approved; static ownership audit — 2026-11-03
+
+Exact manifest and ownership-review documents now present. 890 source/meta rows, 178 proposed comment-only stub moves, 6 retain overrides, 706 holds. No code/assets moved/changed; documentation only. Cockatrice3 is used by curated Gnolls, Avian sheets were borrowed by rejected species, Asura sheet used by Sergal accessory, Tatltuae by EntropicChaos. Need user policy decisions on retaining/separating generic shared parts versus replacement, and retiring OC-specific borrowed presentations. Then resolve remaining holds and seek final manifest approval before any moves. Do not mistake filename candidates or plan approval for move authorization. No personal saves/builds touched; no Unity tests run.
+
+
+## User scope clarification — 2026-11-03 (supersedes earlier recommendations)
+
+Preserve generic/shared assets and non-rejected unreleased species for future curation. A retired consumer does not establish exclusive ownership or justify archiving a shared sheet. Remove permanently rejected character/species-specific depictions and dead exclusive code; Selicia is an explicit OC-removal example. Preserve the Sergal accessory and reusable Tatltuae animation, subject to separating their required frames from unrelated OC portraits/body artwork. Do not remove these borrowed presentations as previously recommended.
+
+Current wiring was inspected: Sergal's BaseOutfit uses Asura frame39 as a discard sprite; MainAccessories.AsuraMask uses frame40 and CompleteSprite can display it via EarnedMask. EntropicChaos uses Tatltuae frames130–143. Its current attack caller is explicitly gated by Unit.Race == Race.Tatltuae in Actor_Unit; it is NOT currently a generic Avian animation. Preserve the reusable effect as requested, but do not silently add an Avian attack ability/animation to make it live. Visual frame ownership still requires review before extraction; retaining the effect is not approval to retain the entire OC sheet.
+
+Manifest status PRESERVE_PARTS_HOLD_ORIGINAL marks Asura/Tatltuae source atlases and metadata. Generic mixed sheets remain held/protected until relevant ownership is established; filenames alone cannot select removal. No source/assets edited or moved. Next: frame-level separation/extraction manifest, retained generic ownership audit, and final physical move approval. Existing license/artist attribution follows retained derived assets; no claim about open-species status or asset redistribution rights is inferred from popularity or technical reuse.
+
+
+## Latest decision and audit continuation — 2026-11-03
+
+The user now explicitly retires Tatltuae's OC-only attack animation. This supersedes the earlier effect-preservation instruction. Proposed archival includes EntropicChaos.cs/.meta and Tatltuae.png/.meta after removing the Actor_Unit Tatltuae-only ranged-attack gate, TacticalGraphicalEffects.EntropicChaosEffect helper and obsolete sprite loader/dictionary bindings. No generic Avian gameplay or attack effect is added. Sergal accessory/discard parts from Asura indices39/40 remain protected, with runtime index-to-sprite mapping/visual ownership to be verified before separation.
+
+The expanded audit found Selicia-specific rendering conditions inside retained graphics code, including Avians and Sergal. Exact conditions, source line numbers and direct sprite expressions are recorded in 21-selicia-shared-frame-review.json. These branches must be retired without discarding the whole retained sheets. Their conditions alone do not prove that each referenced frame depicts an OC; generic shape frames also require reuse checks before archival. Shared assets and generic color palettes/building art are now explicitly protected in the manifest. Unreleased non-rejected species remain protected.
+
+The move manifest is versioned by status rather than pretending all rows are cleared. PROPOSED_MOVE is comment-only source stubs; other proposed groups explicitly require code/seed cleanup. HOLD, PRESERVE_PARTS and RETAIN statuses are not approved move operations. The summary JSON records current counts; earlier reports' totals are historical. There is no final complete artwork clearance yet. Next: finish the shared-frame/alias/seed and GUID/bundle-order review, then present the full actionable move manifest for approval. No source edits, image extraction, moves, deletion, Unity build/playtest or personal-save access occurred in this documentation audit.
+
+
+## Spec21 consolidated manifest prepared — 2026-11-03
+
+Latest user retires Tatltuae animation; preserve Sergal parts. Consolidated approval document: docs/implementation/21-retired-content-final-manifest-review.md; exact CSV894source/meta rows. Remaining static holds converted to explicit conditional archive proposals or generic retention, not proof of clearance. FairyUtil external call confirmed retired-Fairies-only, so archive after branch removal rather than relocate. Shared-frame review lists598Selicia conditions in63graphics sources; generic frame shapes must not be presumed OC depictions. No source/art edits, extraction or moves. NEXT obtain final approval for consolidated implementation/move manifest (including stop conditions, limited Asura reusable-part separation and replacement bundles). No more policy questions needed unless new genuine ownership/format conflicts arise. Do not claim runtime/pixel/bundle clearance or start moving before approval.

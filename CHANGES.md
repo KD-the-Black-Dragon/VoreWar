@@ -8,6 +8,121 @@ The covered derivative work continues under the applicable GNU GPL version 3 ter
 
 Record completed source changes by actual date, affected paths, and a short description, with a related spec where useful. Modified source files also receive dated notices under the workflow in [AGENTS.md](AGENTS.md). Mark additions as this fork's additions. Preserve previous entries and do not describe planned removals or features as implemented.
 
+## 2026-11-03 — Spec20: menu cleanup and shared campaign Help
+
+- Modified `Assets/Scripts/Subwindows/CompanyCampaignView.cs`: remove Continue and Map-only preview creation buttons and their unused handlers; remove the obsolete preview instruction; move the retained Load Game beside Create company. Existing campaign/leader creation, Ironman setup and save loading remain intact.
+- Modified `Assets/Scripts/Modes/StartMode.cs`, `Assets/Scripts/Core/State.cs`, `Assets/Scripts/Utility/Texts/HelpText.cs`: rename the main-menu caption and corresponding save guidance to Load Game; suppress the routine default-race-settings message while preserving actual error reporting and race-setting fallback behavior.
+- Modified `Assets/Scripts/UI/HelpPanel.cs`, `Assets/Scripts/Subwindows/GameMenu.cs`, `Assets/Scripts/Subwindows/CompanyMissionsUI.cs`, `Assets/Scripts/Core/GameManager.cs`: use one shared campaign Help presentation from main menu, company/creator and tactical menu. Restrained blue surfaces/borders, compact chapter list, 18-point reading text, permanent visible scrollbar, bounded centered layout and Escape/Exit Help. Opening the guide preserves its underlying screen and stops tactical input/AI until closed. All existing campaign chapters and character-stat/trait/spell references remain available, with long references generated only on selection. Original scene objects/bindings are retained inactive; no scene/prefab rewrite or asset deletion. Broader help prose rewrite remains separate.
+- GPL workflow: actual License.txt sections 4–5 reviewed; dated conversion notices on all eight changed source files, exact paths recorded here, existing notices/licensing/attribution preserved. No new source files or outside code/assets/dependencies. Existing provenance and distribution gates remain open. Verification and player-review status are recorded in `docs/implementation/20-menu-cleanup-and-campaign-help.md`.
+
+## 2026-11-03 — Spec19: named Save / Load and exact battle persistence
+
+- Added fork sources `Assets/Scripts/Core/CompanySaveSlots.cs`, `Assets/Scripts/Core/CompanyBattleSnapshot.cs`, `Assets/Scripts/UI/CompanySaveMenu.cs` and their associated `.cs.meta` files: named logical slots, map/battle autosaves, selected/hovered company summaries, overwrite/load/delete confirmations, verified latest-plus-three-backup retention and complete battle graph guards. Runtime deletion is confined to owned company saves; Ironman defeat first publishes a durable invalidation marker. Original source and assets are retained.
+- Modified `Assets/Scripts/Core/CompanyCampaign.cs`, `Assets/Scripts/Core/CompanyCampaignSave.cs`, `Assets/Scripts/Core/CompanyBattle.cs`, `Assets/Scripts/Utility/Rand.cs`: slot metadata; checked immutable generations and corruption fallback; canonical company/actor identity; resume HP/AP/containment/turns/camera and the pinned Mono/Unity random state. Results/revival remain transactional. No old empire saves are imported.
+- Modified `Assets/Scripts/Entities/Units/Unit.cs`, `Assets/Scripts/Entities/Units/Actor_Unit.cs`, `Assets/Scripts/Entities/Units/TempBoosts.cs`, `Assets/Scripts/Modes/Tactical/TileEffect.cs`, `Assets/Scripts/Modes/TacticalMode.cs`: persist attrition latch, temporary combat boosts, animation/stance and tile effects; reuse native tactical reconstruction without starting another turn; settled side-turn autosaves and safe player-turn manual saving. Company item services remain bound; summons, effects and reserves keep their distinct identities.
+- Modified `Assets/Scripts/Core/GameManager.cs`, `Assets/Scripts/Core/State.cs`, `Assets/Scripts/Modes/StartMode.cs`, `Assets/Scripts/Subwindows/CompanyCampaignView.cs`, `Assets/Scripts/Subwindows/CompanyManagementUI.cs`, `Assets/Scripts/Subwindows/GameMenu.cs`, `Assets/Scripts/Subwindows/SaveLoad.cs`: route main menu, map, battle menu and quicksave/load through the unified blue browser; retire original World serialization and public checkpoint browsing. Old serialized scene bindings are retained as forwarding callbacks, without scene/prefab rewrites.
+- Modified `Assets/Scripts/Utility/Texts/HelpText.cs`: update saving/controls guidance for this feature only; broader help rewrite remains deferred.
+- Added fork editor check `Assets/Editor/CompanySavePersistenceAudit.cs` and `Assets/Editor/CompanySavePersistenceAudit.cs.meta`, explicitly authorized by the user: synthetic map/native-battle restore, canonical containment/summons/resources/effects/RNG, autosaves, corruption recovery, Ironman restrictions and retention/deletion targeting. Editor-only redirection stays under project Logs and suppresses every actual removal, preserving all probes and never accessing personal saves. No new framework or external dependencies.
+- Associated new serialized metadata paths: `Assets/Editor/CompanySavePersistenceAudit.cs.meta`, `Assets/Scripts/Core/CompanyBattleSnapshot.cs.meta`, `Assets/Scripts/Core/CompanySaveSlots.cs.meta`, `Assets/Scripts/UI/CompanySaveMenu.cs.meta`. These metadata files are recorded here because their format has no source-comment header.
+- GPL workflow check: actual License.txt sections 4–5 reviewed, dated source modification/addition notices and exact paths recorded; prior notices, licensing and attribution preserved. Associated metadata notices are covered by this record. No outside code/art/assets introduced. Existing release provenance and binary/source distribution gates remain open; checks do not declare complete distribution compliance. See `docs/implementation/19-save-load-and-battle-persistence.md` for actual verification and remaining player review.
+
+## 2026-11-03 — Spec18: one-screen company leader creator
+
+- Modified `Assets/Scripts/Subwindows/CompanyManagementUI.cs`: replace species buttons with a dropdown host, use compact top controls, remove the old scroll viewport and its obsolete scroll instruction, retain focus/name/confirm/cancel wording and behavior, and host the new presentation. Cover unused campaign heading area only while creating; global bottom navigation remains available.
+- Added fork source `Assets/Scripts/Subwindows/CompanyLeaderCreatorView.cs` and associated `Assets/Scripts/Subwindows/CompanyLeaderCreatorView.cs.meta`: blue single-screen layout, all native appearance rows distributed between two compact columns; existing gender/pronoun/quantification controls retained; species dropdown uses the approved list and native template. Centered2x paper doll in a clipped dedicated card; original art/rendering unchanged. No original option labels renamed.
+- Modified `Assets/Scripts/UI/Connectors/CustomizerPanel.cs` and `Assets/Scripts/Subwindows/UnitCustomizer.cs`: optional nonserialized company-only refresh callback keeps layout synchronized with native gender/species conditional visibility and appearance updates. Other customizer users unchanged.
+- Actual License.txt sections4–5 reviewed; dated notices/exact source/meta paths recorded, new source identified as this fork's addition, inherited licensing/attribution retained. No outside assets/dependencies introduced; existing release provenance gates remain open. Build/scope/manual review evidence in spec18 implementation report.
+
+## 2026-11-03 — Popup input contrast
+
+- Modified `Assets/Scripts/UI/InputBox.cs`: after shared dialog styling, set entered text/caret black and empty-input placeholder opaque medium grey (#808080). Light input background and surrounding blue dialog/foreground labels remain unchanged; no value-entry behavior changed.
+- Actual License.txt sections4–5 reviewed; dated notice/exact path recorded and inherited notices/licensing/attribution preserved. No outside additions; existing release provenance gates remain open. Visual confirmation pending.
+
+## 2026-11-03 — Slider hover and single-dialog value entry
+
+- Modified `Assets/Scripts/UI/Connectors/SliderRevealer.cs`: replace persistent hover flags and held-button polling with current topmost UI raycast ownership and right-button press-edge detection. Cache raycast results once per frame; only the targeted slider with the pointer inside its rectangle may display its tooltip or open an entry dialog, and ActiveInput blocks further requests until closure. Existing parsing/range behavior retained.
+- Modified `Assets/Scripts/Utility/Texts/HoveringTooltip.cs`: shared tooltip graphics are non-raycast targets, preventing the displayed tooltip from capturing pointer events from underlying controls.
+- Actual License.txt sections4–5 reviewed, dated notices/exact paths recorded and inherited attribution/licensing preserved. No outside additions; existing release provenance gates remain open. Visual interaction review pending.
+
+## 2026-11-03 — Spec 17: shared blue popups and compact Esc menu
+
+- Modified `Assets/Scripts/UI/UITheme.cs`, `Assets/Scripts/Subwindows/GameMenu.cs`, `Assets/Scripts/UI/DialogBox.cs`, `Assets/Scripts/UI/MessageBox.cs`, `Assets/Scripts/UI/InputBox.cs`, `Assets/Scripts/UI/OptionsBox.cs`, `Assets/Scripts/Utility/Texts/HoveringTooltip.cs`, `Assets/Scripts/Subwindows/SaveLoad.cs`, `Assets/Scripts/UI/TacticalHudView.cs`: share popup palette across confirmations, messages, input/multi-choice boxes, hover/slider tooltips, save/load and auto-resolve options. Dialog actions, content and font sizes retained.
+- Esc menu becomes a centered blue overlay with dim background and spaced buttons; remove its Race Editor entry and rename Help Screens to Help. Developer editor itself and its gate code are unchanged.
+- Actual License.txt sections4–5 reviewed; dated notices/exact source paths recorded and earlier attribution/licensing preserved. No outside code/assets/dependencies added; existing release provenance gates remain open. Build/visual review status recorded in spec17 report.
+
+## 2026-11-03 — Preserve transparency of the barrier overlay above HP
+
+- Modified `Assets/Scripts/UI/TacticalHudView.cs`: exclude images belonging to sliders from general panel recoloring. The barrier slider occupies the same rectangle above HP and its Background has original alpha0; recoloring it opaque concealed the HP fill. Native bar backgrounds/fills now keep their original transparency. Accepted trait spacing/edge layout unchanged.
+- Actual License.txt sections4–5 reviewed; dated notice/exact source path recorded and prior notices/licensing/attribution retained. No outside additions; existing release provenance gates remain open. Visual confirmation pending.
+
+## 2026-11-03 — Solid HP fill, uniform trait spacing and screen-edge seams
+
+- Modified `Assets/Scripts/UI/TacticalHudView.cs`: explicitly use Simple/filled-center HP image and clear sprite overrides; move left inspector one reference pixel left and right command sidebar one right, widen bottom bar by two. Core controls/fonts remain unchanged.
+- Modified `Assets/Scripts/Subwindows/InfoPanel.cs`: put the final trait's newline inside the reduced-size span, preventing restored larger font metrics from changing that line's spacing. Non-tactical trait output remains unchanged.
+- Actual License.txt sections4–5 reviewed; dated notices/exact paths recorded and prior notices/licensing/attribution retained. No external additions; existing release provenance gates remain open. Visual review pending.
+
+## 2026-11-03 — Tactical readability and status-bar follow-up
+
+- Modified `Assets/Scripts/UI/TacticalHudView.cs`: preserve slider styling, explicitly restore red HP fill, use shared bright vector checkmarks at existing checkbox positions, move equipment boxes/headings halfway back up and shift details equally.
+- Modified `Assets/Scripts/Subwindows/InfoPanel.cs`: tactical traits and innate spells use70%text; other core text remains unchanged.
+- Modified `Assets/Scripts/UI/MessageLogPanel.cs`: compact height257 (three fewer reference pixels), bottom100 aligns with the status bar's top; no gap. Expand/collapse behavior retained.
+- Actual License.txt4–5 reviewed; dated notices/exact source paths recorded, earlier attribution/licensing preserved. No external additions; existing release provenance gates remain open. Visual review pending.
+
+## 2026-11-02 — Tactical selection and equipment clearance
+
+- Modified `Assets/Scripts/UI/TacticalHudView.cs`: match selection-outline pivot to the relocated command buttons so their transform origins align; retain120x50 outline size. Move equipment headings/boxes60reference units down and shift the detail viewport equally, clearing VOR/STM and the final stat row. No command behavior or fonts changed.
+- Actual License.txt sections4–5 reviewed; dated notice and exact path recorded, earlier notices/licensing/attribution preserved. No external additions; existing release provenance gates remain open. Visual confirmation remains pending.
+
+## 2026-11-02 — Spec 16 feedback: item boxes, command spacing and battle log repair
+
+- Modified `Assets/Scripts/UI/TacticalHudView.cs`: four bordered item boxes in two rows, with headings outside the boxes and truly empty strings for unequipped slots. Removed placeholder/natural-weapon fallback text from those equipment slots. Saved the source with a UTF-8 BOM to avoid the older compiler's misreading of unmarked Unicode. Attack/Move/Vore/End Turn now share a padded row; End Turn is twice its original width. Separate utility and equal-width Auto-resolve Battle/AI: Finish Turn groups, with gaps between them. Core command/stat text fonts remain unchanged.
+- Modified `Assets/Scripts/UI/MessageLogPanel.cs`: correct compact log width to match its horizontal stretch anchors, retaining height 260/font 22. The previous width 1920 added to the parent width, moving content/size controls offscreen. Fullscreen uses normalized stretch offsets; returning to compact/collapsed/restored view uses one shared layout. Resizing and filter changes request the existing next-frame scroll refresh.
+- Actual License.txt sections4–5 reviewed; both dated source notices and exact paths recorded, earlier notices/licensing/attribution preserved. No outside code/assets/dependencies introduced. Compilation/read-only scene check passed; fresh private Windows build passed exit 0 with no logged C#/shader errors. Graphical review was attempted but blocked by screenshot/input geometry errors; no battle playtest is claimed. See [spec 16](docs/implementation/16-tactical-interface.md). Existing release/provenance gates remain open.
+
+## 2026-11-02 — Spec 16: tactical battle interface and unified Attack
+
+- Modified `Assets/Scripts/Modes/TacticalMode.cs`: host the runtime blue HUD; both existing Attack hotkeys/buttons select one distance-based command, with matching weapon/range checks, target odds and damage previews. Adjacent targets use melee; farther targets require a valid ranged weapon. Native damage/AP, AI and special-attack implementations remain.
+- Added fork source `Assets/Scripts/UI/TacticalHudView.cs` and associated `Assets/Scripts/UI/TacticalHudView.cs.meta`: shared dark blue tactical panels/buttons, light labels, hidden redundant faction/controller labels, Attack/Auto-resolve Battle/AI: Finish Turn captions, four melee/ranged/spell equipment readouts for company and legacy skirmish inventories. Core command/stat/name/species font sizes and accepted setup portraits remain unchanged.
+- Modified `Assets/Scripts/Subwindows/InfoPanel.cs` and `Assets/Scripts/UI/UnitInfoPanel.cs`: populate the tactical readout, retain item hover lookup and use 85% trait text only in the tactical inspection panel. Other unit details remain full size.
+- Modified `Assets/Scripts/UI/MessageLogPanel.cs`: font 28 to 22, compact height 160 to 260, retained after full-view restore, to provide at least 8 ordinary lines. Modified `Assets/Scripts/UI/RightClickMenu.cs`: shared Attack selection/previews and styled dynamic buttons. Modified `Assets/Scripts/UI/Connectors/AdvancedUnitCommands.cs`: shared blue dynamic ability buttons with subtle category tint, preserving their fonts/sizes/callbacks.
+- See [implementation and combined review](docs/implementation/16-tactical-interface.md). Unity 2018.3.12f1 clean compile/read-only base scene check passed; no actual visual/attack playtest claimed. Fresh private Win64 build passed return 0 without logged C#/shader errors; scoped hashes confirm only the intended six existing sources plus the new source/meta, no missing or other game files/settings changed.
+- GPL source-change review: actual License.txt sections 4–5 read; dated notices on all 7 source files, new fork addition identified and exact source/meta paths recorded here. Earlier notices/licensing/attribution preserved. No copied external code, assets or dependencies; no source-art/scene/prefab/settings edits. Existing distribution/provenance gates remain open; this local review build is not release certification.
+
+## 2026-11-02 — Correct sample-unit clearance inside its box
+
+- Modified `Assets/Scripts/Subwindows/SingleBattleSetupView.cs`: move the doll's local top offset150to139, upward11reference units (about14.85screen pixels at1080p), while keeping the card position/dimensions and2xscale unchanged. The previous whole-card nudge moved its child unit too and did not change feet clearance; this change adjusts the unit relative to the box.
+- ActualLicense.txt4–5 reviewed; dated notice/exact path recorded, earlier notices/licensing/attribution preserved. No external additions or distribution; existing provenance gates remain open. Standalone build passed return0/no logged C# or shader errors; scoped review confirms only the intended source changed, no added/missing/other game files/settings. Feet clearance still needs visual confirmation.
+
+## 2026-11-02 — Nudge Single Battle sample boxes downward
+
+- Modified `Assets/Scripts/Subwindows/SingleBattleSetupView.cs`: card top offset-8to3, moving both complete preview cards11reference units downward (about14.85screen pixels at1080p). Size180square,2xscale and doll centering within each card remain unchanged. No other layout/behavior changes.
+- ActualLicense.txt4–5 reviewed; dated source notice/exact path recorded, prior notices/licensing/attribution preserved. No external additions or distribution; existing provenance gates remain open. Standalone build passed return0 without logged C#/shader errors; scoped review confirms only the intended source change, no other game files/settings or missing paths. Actual visual position remains for user review.
+
+## 2026-11-02 — More room for 2x Single Battle samples
+
+- Modified `Assets/Scripts/Subwindows/SingleBattleSetupView.cs`: increase cards168to180reference pixels while preserving lower-left location; approximately16extra screen pixels at1080p with the existing Expand scaler. Recenter the2x doll, narrow Race/AIEnabled rows, move the options viewport/scrollbar16reference pixels down, and widen panel backgrounds12to contain the expanded cards. All fields and scroll access retained; no rendering/artwork/gameplay changes.
+- ActualLicense.txt4–5 reviewed; dated notice/exact source path recorded, earlier notices/licensing/attribution preserved. No external additions or distribution; inherited provenance gates remain open. Current standalone build completed return0, no logged C#/shader errors; scoped review confirms the single intended source change and no other asset/settings/additions/missing paths. Visual fit remains pending.
+
+## 2026-11-02 — Single Battle caption-free 2x previews
+
+- Modified `Assets/Scripts/Modes/StartMode.cs` to remove the temporary Portrait Comparison main-menu hook; tool source is retained, no files deleted.
+- Modified `Assets/Scripts/Subwindows/SingleBattleSetupView.cs` to hide species captions, retain their callback references, and set both sample dolls to2x UI scale centered at84,144 in the168square card (includes the renderer's60pixel scaled upward offset). Existing species dropdowns, artwork and adaptive sampling remain; roster alignment is unchanged.
+- GPL source-change review: actual License.txt4–5 reviewed, dated notices and exact paths here, earlier attribution/notices/licensing retained. No external additions or distribution; existing provenance/distribution gates remain open. Fresh private Windows build completed return0 without logged C#/shader errors; scoped review confirms only the two intended source changes, no other asset/settings or missing paths. Actual portrait fit remains for visual review.
+
+## 2026-11-02 — Pixel-art preference: crisp magnification, smoothing only when shrinking
+
+- Modified `Assets/Resources/Sprites-ColorSwap.shader` to point-sample full-resolution texel centers at native/larger screen size and smooth decoded colors only when both axes strictly minify. Uses screen derivatives with a conservative native-size cutoff, explicit base mip and palette-aware premultiplied interpolation; preserves original blend/stencil/PixelSnap behavior. Shader target3.0 required. No source art or import-setting changes.
+- Modified `Assets/Scripts/Races/Graphics/SpriteContainer.cs` to use Simple UI paper-doll images (user's B preference). Modified `Assets/Scripts/Subwindows/PortraitComparisonPanel.cs` to keep A/B fixed crisp references, with A legacy Sliced and B Simple; C/D remain always-smoothed comparisons. No roster alignment/size, camera zoom-step, save or gameplay changes.
+- Unity2018.3.12f1 compile/read-only scene/texture audit passed; no headless check is claimed as GPU visual/performance verification. See [15E user choice and adaptive rendering](docs/implementation/15e-portrait-rendering-comparison.md). No new tests/framework or player build.
+- GPL source-change review: actual License.txt4–5 reviewed; dated notices and exact source paths here, original notices/licensing/attribution preserved. No external additions, deletion/move or publication; existing provenance/distribution gates remain open.
+
+## 2026-11-02 — Spec15E: portrait rendering investigation and comparison
+
+- Modified `Assets/Scripts/Modes/StartMode.cs` to add a temporary Portrait comparison entry. Added `Assets/Scripts/Subwindows/PortraitComparisonPanel.cs` and `Assets/Scripts/Subwindows/PortraitComparisonPanel.cs.meta` for matched-appearance A/B/C/D cards, species/size controls, raw-source matching and session-only preference marking.
+- Added `Assets/Resources/PortraitPaletteSmooth.shader` and `Assets/Resources/PortraitPaletteSmooth.shader.meta`, derived from retained Sprites-ColorSwap.shader with its original upgrade notice preserved, for experimental palette-aware/base-mip interpolation. No shared materials/textures, original artwork or production rendering changed.
+- Added `Assets/Editor/PortraitRenderingAudit.cs` and `Assets/Editor/PortraitRenderingAudit.cs.meta` for read-only bundle/source dimensions inspection. Final Unity2018compile/scene/bundle audit passed after correcting an editor API mismatch; no actual GPU/Play-mode comparison claimed. See [evidence, options and review](docs/implementation/15e-portrait-rendering-comparison.md). Company/recruitment alignment accepted; larger row layout deferred.
+- GPL source review: actual License.txt4–5 reviewed; dated source/shader notices, new fork additions/derivation identified, exact paths/meta associations above. Existing notices/attribution/licensing retained; no third-party additions. Existing provenance/distribution gates remain open. No file deletion/move or publication.
+
 ## 2026-11-02 — Portrait alignment and magnification feedback
 
 - Modified `Assets/Scripts/Subwindows/SingleBattleSetupView.cs`: reduce preview magnification1.4to1.0 and recenter its anchor104to94, preserving the enlarged card and original sprite assets/filtering. This reduces enlargement of existing pixels; it does not increase source-art resolution.

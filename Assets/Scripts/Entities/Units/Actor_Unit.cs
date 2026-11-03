@@ -1,4 +1,4 @@
-// Modified for the VoreWar mercenary-company conversion.
+﻿// Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Reject disallowed disguise templates before appearance, trait or side changes (spec 03A2).
 // 2026-10-30: 04B2: Replace callback prose with neutral action and status notices.
 // 2026-10-31: Retire Respawns grants/death triggers and CloseCall casualty presentation (spec 05A3B7).
@@ -13,6 +13,7 @@
 // 2026-11-01: Apply persistent weapon/movement penalties and route damage through the single lasting-injury check (spec 11).
 // 2026-11-01: Use the actual caster-target level difference for spell XP challenge scaling (spec 11 feedback).
 // 2026-11-02: Dismiss magical summons instead of placing them in a persistent downed state through fear/nonlethal damage (spec 12).
+// 2026-11-03: Persist pending animation progress and tactical stance for battle saves (spec 19).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
 using System;
@@ -55,9 +56,9 @@ public class Actor_Unit
 
     }
 
-    int animationStep = 4;
-    float animationUpdateTime;
-    DisplayMode mode;
+    [OdinSerialize] int animationStep = 4;
+    [OdinSerialize] float animationUpdateTime;
+    [OdinSerialize] DisplayMode mode;
     [OdinSerialize]
     public List<KeyValuePair<int, float>> modeQueue;
 
@@ -116,11 +117,11 @@ public class Actor_Unit
     [OdinSerialize]
     public bool WasJustFreed;
 
-    public bool SurrenderedThisTurn = false; //Deliberately not saved
+    [OdinSerialize] public bool SurrenderedThisTurn = false;
 
     internal bool Intimidated;
 
-    internal bool IsAllIn = false;
+    [OdinSerialize] internal bool IsAllIn = false;
 
     [OdinSerialize]
     public Weapon BestMelee;
@@ -216,7 +217,7 @@ public class Actor_Unit
     [OdinSerialize]
     public PredatorComponent PredatorComponent;
 
-    Race animationControllerRace;
+    [OdinSerialize] Race animationControllerRace;
 
     [OdinSerialize]
     private AnimationController animationController = new AnimationController();

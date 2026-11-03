@@ -5,6 +5,8 @@
 // 2026-10-31: Retire campaign battle and loaded-world tactical transitions (spec 05A3A).
 // 2026-11-01: Enter/return company battles explicitly and route deliberate battle exit to its prebattle checkpoint (spec 10).
 // 2026-11-01: Label the tactical enemy side as Enemy forces, keeping contract ratings in mission views (09–10 feedback).
+// 2026-11-03: Route save/load to the company browser and pause input while it is open (spec 19).
+// 2026-11-03: Keep Help input modal and close it with Escape without advancing the underlying battle (spec 20).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System.Linq;
 using UnityEngine;
@@ -246,8 +248,13 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (ActiveInput)
+        if (ActiveInput || CompanySaveMenu.IsVisible)
             return;
+        if (Menu.HelpScreen.activeSelf)
+        {
+            Menu.HelpUI.ReceiveInput();
+            return;
+        }
         if (remainingCameraTime > 0)
             remainingCameraTime -= Time.deltaTime;
         if (remainingCameraTime <= 0)
@@ -313,6 +320,11 @@ public class GameManager : MonoBehaviour
         TacticalMode.Begin(terrain, null, attacker, defender, TacticalAIType.None, TacticalAIType.Full);
         CenterCameraOnTile(Config.TacticalSizeX / 2, Config.TacticalSizeY / 2);
         CameraController.SetZoom(Config.TacticalSizeX * .5f);
+    }
+    internal void ResumeCompanyBattle(TacticalData data)
+    {
+        CurrentScene = TacticalMode; PureTactical = false;
+        TacticalMode.LoadData(data);
     }
     internal void ReturnFromCompanyBattle()
     {
@@ -399,12 +411,7 @@ public class GameManager : MonoBehaviour
 
     public void AskQuickLoad()
     {
-        CreateMessageBox(State.LegacyLoadUnavailableMessage);
-    }
-
-    void DoQuickLoad()
-    {
-        State.Load($"{State.SaveDirectory}Quicksave.sav");
+        CompanySaveMenu.Show(Start_Mode.CompanySaveView);
     }
 
     public void ClearPureTactical() => PureTactical = false;

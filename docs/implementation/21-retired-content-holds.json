@@ -1,0 +1,3561 @@
+[
+  {
+    "path": "Assets/Bestiary/AabayxHunter.png",
+    "owners": [
+      "Aabayx"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Bestiary/Abakhanskya Grand Catch.png",
+    "owners": [
+      "Abakhanskya"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Prefabs/Tactical/Specific Effects/Asura Special 1.prefab",
+    "owners": [
+      "Asura"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Resources/ColorPalettes/AabayxPalette.png",
+    "owners": [
+      "Aabayx"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Resources/ColorPalettes/AlrauneFoliage.png",
+    "owners": [
+      "Alraune"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Resources/ColorPalettes/AlrauneHair.png",
+    "owners": [
+      "Alraune"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Resources/ColorPalettes/AlrauneSkin.png",
+    "owners": [
+      "Alraune"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Resources/ColorPalettes/CockatriceSkin.png",
+    "owners": [
+      "Cockatrice"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Resources/ColorPalettes/CruxPalette.png",
+    "owners": [
+      "Crux"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Resources/ColorPalettes/DriderSkin.png",
+    "owners": [
+      "Driders"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Resources/ColorPalettes/EarthwormSkin.png",
+    "owners": [
+      "Earthworms"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Resources/ColorPalettes/EeveeEqualeonClothing.png",
+    "owners": [
+      "Eevee"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Resources/ColorPalettes/EeveeEqualeonExt.png",
+    "owners": [
+      "Eevee"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Resources/ColorPalettes/EeveeEqualeonSkin.png",
+    "owners": [
+      "Eevee"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Resources/ColorPalettes/EqualeonEyes.png",
+    "owners": [
+      "Equaleon"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Resources/ColorPalettes/GhostSkin.png",
+    "owners": [
+      "Ghosts"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Resources/ColorPalettes/Hamsters.png",
+    "owners": [
+      "Hamsters"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Resources/ColorPalettes/IliijiithAttackPalette.png",
+    "owners": [
+      "Iliijiith"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Resources/ColorPalettes/IliijiithIdlePalette.png",
+    "owners": [
+      "Iliijiith"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Resources/ColorPalettes/Imps.png",
+    "owners": [
+      "Imps"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Resources/ColorPalettes/ImpsDark.png",
+    "owners": [
+      "Imps"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Resources/ColorPalettes/OoviKatBright.png",
+    "owners": [
+      "OoviKat"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Resources/ColorPalettes/OoviKatMain.png",
+    "owners": [
+      "OoviKat"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Resources/ColorPalettes/PuddingSkin.png",
+    "owners": [
+      "Pudding"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Resources/ColorPalettes/RenamonSkin.png",
+    "owners": [
+      "Renamon"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Resources/ColorPalettes/SoulSpriteSkin.png",
+    "owners": [
+      "SoulSprite"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Resources/ColorPalettes/UmbreonArmor.png",
+    "owners": [
+      "Umbreon"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Resources/ColorPalettes/UmbreonClothing.png",
+    "owners": [
+      "Umbreon"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Resources/ColorPalettes/UmbreonExt.png",
+    "owners": [
+      "Umbreon"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Resources/ColorPalettes/UmbreonSkin.png",
+    "owners": [
+      "Umbreon"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Resources/ColorPalettes/ViiselSkin.png",
+    "owners": [
+      "Viisels"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Resources/ColorPalettes/ViperSkin.png",
+    "owners": [
+      "Vipers"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Resources/ColorPalettes/YordleSkin.png",
+    "owners": [
+      "Yordles"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Resources/ColorPalettes/goblins.png",
+    "owners": [
+      "Goblins"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/Scripts/Utility/PaletteDictionary.cs.meta",
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Resources/ColorPalettes/puca.png",
+    "owners": [
+      "Puca"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Scripts/Entities/Clothing/CruxClothing.cs",
+    "owners": [
+      "Crux"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Scripts/Races/Graphics/Monsters/Fairy.cs",
+    "owners": [
+      "Fairies"
+    ],
+    "reason": "Contains live FairyUtil/FairyType helper; separate remaining callers first.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/TacticalBuildings/LamiaTemple.png",
+    "owners": [
+      "Lamia"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/Aabayx.png",
+    "owners": [
+      "Aabayx"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/AabayxFacePaint.png",
+    "owners": [
+      "Aabayx"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/AabayxHighPriest.png",
+    "owners": [
+      "Aabayx"
+    ],
+    "reason": "Current source consumers require shared-sheet/feature separation. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [
+      "Assets/Scripts/Entities/Clothing/RaceSpecificClothing.cs"
+    ],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/Abakhanskya.png",
+    "owners": [
+      "Abakhanskya"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Alraune.png",
+    "owners": [
+      "Alraune"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Asura.png",
+    "owners": [
+      "Asura"
+    ],
+    "reason": "Current source consumers require shared-sheet/feature separation. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [
+      "Assets/Scripts/Entities/Clothing/MainAccessories.cs",
+      "Assets/Scripts/Races/Graphics/MainRaces/Sergal.cs"
+    ],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab",
+      "Assets/Prefabs/Tactical/Specific Effects/Slash Effect.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/AsuraHoliday.png",
+    "owners": [
+      "Asura"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Auri.png",
+    "owners": [
+      "Auri"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/AuriVore.png",
+    "owners": [
+      "Auri"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/AuriXmasAddSheet.png",
+    "owners": [
+      "Auri"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Avians3.png",
+    "owners": [
+      "Cockatrice",
+      "Yordles"
+    ],
+    "reason": "Current source consumers require shared-sheet/feature separation. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [
+      "Assets/Scripts/Races/Graphics/MainRaces/Avians.cs",
+      "Assets/Scripts/Races/Graphics/MainRaces/Bees.cs",
+      "Assets/Scripts/Races/Graphics/MainRaces/Deer.cs",
+      "Assets/Scripts/Races/Graphics/MainRaces/DemiDragons.cs",
+      "Assets/Scripts/Races/Graphics/MainRaces/Demiants.cs",
+      "Assets/Scripts/Races/Graphics/MainRaces/Demibats.cs",
+      "Assets/Scripts/Races/Graphics/MainRaces/Demifrogs.cs",
+      "Assets/Scripts/Races/Graphics/MainRaces/Demisharks.cs",
+      "Assets/Scripts/Races/Graphics/MainRaces/Gnolls.cs",
+      "Assets/Scripts/Races/Graphics/MainRaces/Lupine.cs",
+      "Assets/Scripts/Races/Graphics/MainRaces/Mice.cs"
+    ],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/Avians4.png",
+    "owners": [
+      "Cockatrice",
+      "Yordles"
+    ],
+    "reason": "Current source consumers require shared-sheet/feature separation. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [
+      "Assets/Scripts/Races/Graphics/MainRaces/Avians.cs",
+      "Assets/Scripts/Races/Graphics/MainRaces/Bees.cs",
+      "Assets/Scripts/Races/Graphics/MainRaces/Deer.cs",
+      "Assets/Scripts/Races/Graphics/MainRaces/DemiDragons.cs",
+      "Assets/Scripts/Races/Graphics/MainRaces/Demiants.cs",
+      "Assets/Scripts/Races/Graphics/MainRaces/Demibats.cs",
+      "Assets/Scripts/Races/Graphics/MainRaces/Demifrogs.cs",
+      "Assets/Scripts/Races/Graphics/MainRaces/Demisharks.cs",
+      "Assets/Scripts/Races/Graphics/MainRaces/Gnolls.cs",
+      "Assets/Scripts/Races/Graphics/MainRaces/Lupine.cs",
+      "Assets/Scripts/Races/Graphics/MainRaces/Mice.cs"
+    ],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/Bears.png",
+    "owners": [
+      "Bears"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/BearsClothes.png",
+    "owners": [
+      "Bears"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Bella/BellaArm1.png",
+    "owners": [
+      "Bella"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Bella/BellaArm2.png",
+    "owners": [
+      "Bella"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Bella/BellaBody1.png",
+    "owners": [
+      "Bella"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Bella/BellaBody2.png",
+    "owners": [
+      "Bella"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Bella/BellaHead1.png",
+    "owners": [
+      "Bella"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Bella/BellaHead2.png",
+    "owners": [
+      "Bella"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Bella/BellaRobes1.png",
+    "owners": [
+      "Bella"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Bella/BellaRobes2.png",
+    "owners": [
+      "Bella"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Boom_Bunnies.png",
+    "owners": [
+      "BoomBunnies"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Cake.png",
+    "owners": [
+      "Cake"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/CentaurParts.png",
+    "owners": [
+      "Centaur"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/CentaurTorsoAddOns.png",
+    "owners": [
+      "Centaur"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Cherub/Cherub.png",
+    "owners": [
+      "Cherub"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Cierihaka.png",
+    "owners": [
+      "Cierihaka"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Cockatrice1.png",
+    "owners": [
+      "Cockatrice"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Cockatrice2.png",
+    "owners": [
+      "Cockatrice"
+    ],
+    "reason": "Current source consumers require shared-sheet/feature separation. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [
+      "Assets/Scripts/Races/Graphics/MainRaces/Deer.cs"
+    ],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/Cockatrice3.png",
+    "owners": [
+      "Cockatrice"
+    ],
+    "reason": "Current source consumers require shared-sheet/feature separation. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [
+      "Assets/Scripts/Races/Graphics/MainRaces/Deer.cs",
+      "Assets/Scripts/Races/Graphics/MainRaces/Gnolls.cs",
+      "Assets/Scripts/Races/Graphics/MainRaces/Mice.cs"
+    ],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/Collector.png",
+    "owners": [
+      "Collectors"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Compy.png",
+    "owners": [
+      "Compy"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/CruxBodySprites1.png",
+    "owners": [
+      "Crux"
+    ],
+    "reason": "Current source consumers require shared-sheet/feature separation. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [
+      "Assets/Scripts/Entities/Clothing/CruxClothing.cs"
+    ],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/CruxBodySprites2.png",
+    "owners": [
+      "Crux"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/CruxGear.png",
+    "owners": [
+      "Crux"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/CruxMisc.png",
+    "owners": [
+      "Crux"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/DRACO.png",
+    "owners": [
+      "DRACO"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/DarkSwallower.png",
+    "owners": [
+      "DarkSwallower"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Drider.png",
+    "owners": [
+      "Driders"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Dryad/Dryad1.png",
+    "owners": [
+      "EarthDryad",
+      "FungalDryad",
+      "RiverDryad",
+      "WoodDryad"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Dryad/Dryad2.png",
+    "owners": [
+      "EarthDryad",
+      "FungalDryad",
+      "RiverDryad",
+      "WoodDryad"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Dryad/Dryad3.png",
+    "owners": [
+      "EarthDryad",
+      "FungalDryad",
+      "RiverDryad",
+      "WoodDryad"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/Dryad/Dryad4.png",
+    "owners": [
+      "EarthDryad",
+      "FungalDryad",
+      "RiverDryad",
+      "WoodDryad"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Dryad/Dryad5.png",
+    "owners": [
+      "EarthDryad",
+      "FungalDryad",
+      "RiverDryad",
+      "WoodDryad"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/Earthworms.png",
+    "owners": [
+      "Earthworms"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Eeveelution/AnthroEevee.png",
+    "owners": [
+      "Eevee",
+      "Equaleon"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Eeveelution/AnthroEqualeon.png",
+    "owners": [
+      "Equaleon"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/Eeveelution/AnthroUmbreon.png",
+    "owners": [
+      "Umbreon"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Eeveelution/AnthroUmbreon2.png",
+    "owners": [
+      "Eevee",
+      "Equaleon",
+      "Umbreon"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Eeveelution/AnthroUmbreon3.png",
+    "owners": [
+      "Umbreon"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Eeveelution/FeralEevee.png",
+    "owners": [
+      "FeralEevee"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Eeveelution/FeralEqualeon.png",
+    "owners": [
+      "FeralEqualeon"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Elves/elven_armor.png",
+    "owners": [
+      "MainlandElves"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Erin.png",
+    "owners": [
+      "Erin"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Feit.png",
+    "owners": [
+      "Feit"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Feral_Orcas.png",
+    "owners": [
+      "FeralOrcas"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Frog.png",
+    "owners": [
+      "FeralFrogs"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Hamsters.png",
+    "owners": [
+      "Hamsters"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Iliijiith.png",
+    "owners": [
+      "Iliijiith"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Ki.png",
+    "owners": [
+      "Ki"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Konane.png",
+    "owners": [
+      "Konane"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Lamia.png",
+    "owners": [
+      "Lamia"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/LamiaNaga.png",
+    "owners": [
+      "Lamia"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/LamiaNagaBits.png",
+    "owners": [
+      "Lamia"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/MainlandElves.png",
+    "owners": [
+      "MainlandElves"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Mermen.png",
+    "owners": [
+      "Merfolk"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Mermen2.png",
+    "owners": [
+      "Merfolk"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Nectar.png",
+    "owners": [
+      "Nectar"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Olivia.png",
+    "owners": [
+      "Olivia"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/OliviaVoreSprites.png",
+    "owners": [
+      "Olivia"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/OoviKatCustom.png",
+    "owners": [
+      "OoviKat"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/OoviKatFemale.png",
+    "owners": [
+      "OoviKat"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/OoviKatMale.png",
+    "owners": [
+      "OoviKat"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Panther/panther hats.png",
+    "owners": [
+      "Auri"
+    ],
+    "reason": "Current source consumers require shared-sheet/feature separation. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [
+      "Assets/Scripts/Races/Graphics/MainRaces/Panthers.cs"
+    ],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/Pudding.png",
+    "owners": [
+      "Pudding"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/RaptorSprites.png",
+    "owners": [
+      "Raptor"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/RenamonBodies.png",
+    "owners": [
+      "Renamon"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/Prefabs/Tactical/Specific Effects/DiamondStorm.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/RenamonClothes1.png",
+    "owners": [
+      "Renamon"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/RenamonClothes2.png",
+    "owners": [
+      "Renamon"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/RenamonClothes3.png",
+    "owners": [
+      "Renamon"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/RenamonVore.png",
+    "owners": [
+      "Renamon"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/RwuMercenaries/RwuMercenariesLizard.png",
+    "owners": [
+      "RwuMercenaries"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/RwuMercenaries/RwuMercenariesLizardArmor1.png",
+    "owners": [
+      "RwuMercenaries"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/RwuMercenaries/RwuMercenariesMice.png",
+    "owners": [
+      "RwuMercenaries"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/RwuMercenaries/RwuMercenariesMiceArmor1.png",
+    "owners": [
+      "RwuMercenaries"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/RwuMercenaries/RwuMercenariesShark.png",
+    "owners": [
+      "RwuMercenaries"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/RwuMercenaries/RwuMercenariesSharkArmor1.png",
+    "owners": [
+      "RwuMercenaries"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/RwuMercenaries/RwuMercenariesSharkArmor2.png",
+    "owners": [
+      "RwuMercenaries"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/RwuMercenaries/RwuMercenariesStandard.png",
+    "owners": [
+      "RwuMercenaries"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/RwuMercenaries/RwuMercenariesStandardArmor1.png",
+    "owners": [
+      "RwuMercenaries"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Ryan.png",
+    "owners": [
+      "Ryan"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/RyanVore.png",
+    "owners": [
+      "Ryan"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Salix.png",
+    "owners": [
+      "Salix"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/SalixGen.png",
+    "owners": [
+      "Salix"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/SalixVore.png",
+    "owners": [
+      "Salix"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Schiwardez.png",
+    "owners": [
+      "Schiwardez"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Scorch.png",
+    "owners": [
+      "Scorch"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Scylla.png",
+    "owners": [
+      "Lamia",
+      "Scylla"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/Selicia.png",
+    "owners": [
+      "Selicia"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Seraph/Seraph.png",
+    "owners": [
+      "Seraph"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Seville.png",
+    "owners": [
+      "Seville"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Seville_VenomBite.png",
+    "owners": [
+      "Seville"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/Sharks3.png",
+    "owners": [
+      "Cockatrice"
+    ],
+    "reason": "Current source consumers require shared-sheet/feature separation. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [
+      "Assets/Scripts/Races/Graphics/MainRaces/Demisharks.cs"
+    ],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/Sharks5.png",
+    "owners": [
+      "Cockatrice"
+    ],
+    "reason": "Current source consumers require shared-sheet/feature separation. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [
+      "Assets/Scripts/Races/Graphics/MainRaces/Deer.cs",
+      "Assets/Scripts/Races/Graphics/MainRaces/Demisharks.cs",
+      "Assets/Scripts/Races/Graphics/MainRaces/Mice.cs"
+    ],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/Singularity1.png",
+    "owners": [
+      "Singularity"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Singularity2.png",
+    "owners": [
+      "Singularity"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Skapa.png",
+    "owners": [
+      "Skapa"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/SkyShark.png",
+    "owners": [
+      "FeralSharks"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Slimes.png",
+    "owners": [
+      "Slimes"
+    ],
+    "reason": "Current source consumers require shared-sheet/feature separation. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [
+      "Assets/Scripts/Modes/Tactical/TacticalGraphicalEffects.cs"
+    ],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/SoulSprite/AngelProjectile.png",
+    "owners": [
+      "SoulSprite"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/SoulSprite/SoulSprite.png",
+    "owners": [
+      "SoulSprite"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/TaraTailStrikes.png",
+    "owners": [
+      "Taraluxia"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Taraluxia.png",
+    "owners": [
+      "Taraluxia"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Tatltuae.png",
+    "owners": [
+      "Tatltuae"
+    ],
+    "reason": "Current source consumers require shared-sheet/feature separation. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [
+      "Assets/Scripts/Entities/Animations/EntropicChaos.cs"
+    ],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/TatltuaeHackleVore.png",
+    "owners": [
+      "Tatltuae"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/TaurTorso.png",
+    "owners": [
+      "Centaur"
+    ],
+    "reason": "Current source consumers require shared-sheet/feature separation. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [
+      "Assets/Scripts/Races/Graphics/TaurHumanHalf.cs"
+    ],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/Vagrants.png",
+    "owners": [
+      "Vagrants"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Viisels.png",
+    "owners": [
+      "Viisels"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Vipers1.png",
+    "owners": [
+      "Vipers"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/Vipers2.png",
+    "owners": [
+      "Vipers"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Vipers3.png",
+    "owners": [
+      "Vipers"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Vipers4.png",
+    "owners": [
+      "Vipers"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/ViraeUltimae.png",
+    "owners": [
+      "ViraeUltimae"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Vision.png",
+    "owners": [
+      "Vision"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab",
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/Voilin.png",
+    "owners": [
+      "Voilin"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Whisp.png",
+    "owners": [
+      "Whisp"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Whisp.xcf",
+    "owners": [
+      "Whisp"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Xelhilde1.png",
+    "owners": [
+      "Xelhilde"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Yordles/YordleBodies.png",
+    "owners": [
+      "Yordles"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Yordles/YordleClothes1.png",
+    "owners": [
+      "Yordles"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Yordles/YordleClothes2.png",
+    "owners": [
+      "Yordles"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Yordles/YordleCustomization1.png",
+    "owners": [
+      "Yordles"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Yordles/YordleCustomization2.png",
+    "owners": [
+      "Yordles"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/Yordles/YordleVoreFur.png",
+    "owners": [
+      "Yordles"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/Yordles/YordleVoreSkin.png",
+    "owners": [
+      "Yordles"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/YoukoTails.png",
+    "owners": [
+      "Youko"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/alraunechristmas.png",
+    "owners": [
+      "Alraune"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/cows.png",
+    "owners": [
+      "Taurus"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/crypters.png",
+    "owners": [
+      "Crypters"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/dew.png",
+    "owners": [
+      "DewSprites"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/fairy240.png",
+    "owners": [
+      "Fairies"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/fairySmall.png",
+    "owners": [
+      "Fairies"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/fairy_addsheet.png",
+    "owners": [
+      "Fairies"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/ghosts1.png",
+    "owners": [
+      "Ghosts"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/ghosts2.png",
+    "owners": [
+      "Ghosts"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/ghosts3.png",
+    "owners": [
+      "Ghosts"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/ghostvorebits.png",
+    "owners": [
+      "Ghosts"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/goblins/gobbglove.png",
+    "owners": [
+      "Goblins"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/goblins/gobbo.png",
+    "owners": [
+      "Goblins"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/goblins/gobbohat.png",
+    "owners": [
+      "Goblins"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/goblins/gobboverbottoms.png",
+    "owners": [
+      "Goblins"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/goblins/gobboveronepieces.png",
+    "owners": [
+      "Goblins"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/goblins/gobbovertops.png",
+    "owners": [
+      "Goblins"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/goblins/gobbovore.png",
+    "owners": [
+      "Goblins"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/goblins/gobbunderbottoms.png",
+    "owners": [
+      "Goblins"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/goblins/gobbunderonepieces.png",
+    "owners": [
+      "Goblins"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/goblins/gobleggo.png",
+    "owners": [
+      "Goblins"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/goblins/gobundertops.png",
+    "owners": [
+      "Goblins"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/harpies.png",
+    "owners": [
+      "Harpies"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/humanrework/Hu_men_uniform_1.png",
+    "owners": [
+      "Humans",
+      "MainlandElves",
+      "OoviKat",
+      "Youko"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/humanrework/HumanRags.png",
+    "owners": [
+      "Humans"
+    ],
+    "reason": "Current source consumers require shared-sheet/feature separation.",
+    "source_consumers": [
+      "Assets/Scripts/Races/Graphics/MainRaces/DemiDragons.cs"
+    ],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/humanrework/hu_men_F_undertops.png",
+    "owners": [
+      "Centaur",
+      "Humans",
+      "MainlandElves",
+      "OoviKat",
+      "Youko"
+    ],
+    "reason": "Current source consumers require shared-sheet/feature separation. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [
+      "Assets/Scripts/Races/Graphics/MainRaces/DemiDragons.cs",
+      "Assets/Scripts/Races/Graphics/MainRaces/Jackals.cs"
+    ],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/humanrework/hu_men_M_undertops.png",
+    "owners": [
+      "Centaur",
+      "Humans",
+      "MainlandElves",
+      "OoviKat",
+      "Youko"
+    ],
+    "reason": "Current source consumers require shared-sheet/feature separation. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [
+      "Assets/Scripts/Races/Graphics/MainRaces/DemiDragons.cs",
+      "Assets/Scripts/Races/Graphics/MainRaces/Jackals.cs"
+    ],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/humanrework/hu_men_bigloin.png",
+    "owners": [
+      "Humans",
+      "MainlandElves",
+      "OoviKat"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/humanrework/hu_men_one_pieces.png",
+    "owners": [
+      "Humans",
+      "MainlandElves",
+      "OoviKat",
+      "Youko"
+    ],
+    "reason": "Current source consumers require shared-sheet/feature separation. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [
+      "Assets/Scripts/Races/Graphics/MainRaces/Jackals.cs"
+    ],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/humanrework/hu_men_pants.png",
+    "owners": [
+      "Humans",
+      "MainlandElves",
+      "OoviKat"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/humanrework/hu_men_skirt.png",
+    "owners": [
+      "Humans",
+      "MainlandElves",
+      "OoviKat"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/humanrework/hu_men_underbottoms.png",
+    "owners": [
+      "Humans",
+      "MainlandElves",
+      "OoviKat"
+    ],
+    "reason": "Current source consumers require shared-sheet/feature separation. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [
+      "Assets/Scripts/Races/Graphics/MainRaces/DemiDragons.cs",
+      "Assets/Scripts/Races/Graphics/MainRaces/Jackals.cs"
+    ],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/humanrework/hu_men_uniform_2.png",
+    "owners": [
+      "Humans",
+      "OoviKat",
+      "Youko"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/humanrework/humansBodySprites1.png",
+    "owners": [
+      "Humans",
+      "MainlandElves",
+      "OoviKat"
+    ],
+    "reason": "Current source consumers require shared-sheet/feature separation. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [
+      "Assets/Scripts/Races/Graphics/MainRaces/DemiDragons.cs",
+      "Assets/Scripts/Races/Graphics/MainRaces/Jackals.cs"
+    ],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/humanrework/humansBodySprites2.png",
+    "owners": [
+      "EarthDryad",
+      "Humans",
+      "MainlandElves",
+      "OoviKat",
+      "RiverDryad",
+      "WoodDryad",
+      "Youko"
+    ],
+    "reason": "Current source consumers require shared-sheet/feature separation. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [
+      "Assets/Scripts/Races/Graphics/MainRaces/DemiDragons.cs",
+      "Assets/Scripts/Races/Graphics/MainRaces/Jackals.cs",
+      "Assets/Scripts/Races/Graphics/TaurHumanHalf.cs"
+    ],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/humanrework/humansBodySprites3.png",
+    "owners": [
+      "EarthDryad",
+      "FungalDryad",
+      "Humans",
+      "MainlandElves",
+      "OoviKat",
+      "RiverDryad",
+      "WoodDryad",
+      "Youko"
+    ],
+    "reason": "Current source consumers require shared-sheet/feature separation. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [
+      "Assets/Scripts/Races/Graphics/MainRaces/DemiDragons.cs",
+      "Assets/Scripts/Races/Graphics/MainRaces/Jackals.cs",
+      "Assets/Scripts/Races/Graphics/MainRaces/Mice.cs",
+      "Assets/Scripts/Races/Graphics/TaurHumanHalf.cs"
+    ],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/humanrework/humansBodySprites4.png",
+    "owners": [
+      "Aabayx",
+      "Ghosts",
+      "Humans",
+      "MainlandElves",
+      "OoviKat"
+    ],
+    "reason": "Current source consumers require shared-sheet/feature separation. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [
+      "Assets/Scripts/Races/Graphics/MainRaces/DemiDragons.cs",
+      "Assets/Scripts/Races/Graphics/MainRaces/Jackals.cs"
+    ],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/humanrework/humansBodySprites5.png",
+    "owners": [
+      "Humans"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/humanrework/humansVoreSprites.png",
+    "owners": [
+      "Aabayx",
+      "Centaur",
+      "EarthDryad",
+      "Eevee",
+      "Equaleon",
+      "Humans",
+      "MainlandElves",
+      "OoviKat",
+      "RiverDryad",
+      "Umbreon",
+      "WoodDryad",
+      "Youko"
+    ],
+    "reason": "Current source consumers require shared-sheet/feature separation. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [
+      "Assets/Scripts/Races/Graphics/MainRaces/DemiDragons.cs",
+      "Assets/Scripts/Races/Graphics/MainRaces/Jackals.cs",
+      "Assets/Scripts/Races/Graphics/TaurHumanHalf.cs"
+    ],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/imps/Impfinished.png",
+    "owners": [
+      "Imps"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/imps/impfinishedvore.png",
+    "owners": [
+      "Imps"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/imps/impgloves.png",
+    "owners": [
+      "Imps"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/imps/imphood.png",
+    "owners": [
+      "Imps"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/imps/implegg.png",
+    "owners": [
+      "Imps"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/imps/impoverbottoms.png",
+    "owners": [
+      "Imps"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/imps/impoveronepiece.png",
+    "owners": [
+      "Imps"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/imps/impovertops.png",
+    "owners": [
+      "Imps"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/imps/impunderbottoms.png",
+    "owners": [
+      "Imps"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/imps/impunderonepieces.png",
+    "owners": [
+      "Imps"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/imps/impundertops.png",
+    "owners": [
+      "Imps"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/puca.png",
+    "owners": [
+      "Puca"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/selicia_in_taurus.png",
+    "owners": [
+      "Selicia"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/succubus.png",
+    "owners": [
+      "Succubi"
+    ],
+    "reason": "Current source consumers require shared-sheet/feature separation. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [
+      "Assets/Scripts/Entities/Animations/SuccubusSword.cs"
+    ],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/vagrants2.png",
+    "owners": [
+      "Vagrants"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/vagrants3.png",
+    "owners": [
+      "Vagrants"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/zera/1x1_bols.png",
+    "owners": [
+      "Zera"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/zera/1x2_bols.png",
+    "owners": [
+      "Zera"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/zera/2x2_bols.png",
+    "owners": [
+      "Zera"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/zera/2x3_bols.png",
+    "owners": [
+      "Zera"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/zera/Front Belly 2x1.png",
+    "owners": [
+      "Zera"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/zera/Front Belly 3x2.png",
+    "owners": [
+      "Zera"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/Prefabs/Sprite Dictionary.prefab"
+    ]
+  },
+  {
+    "path": "Assets/Sprites/Units/zera/zera240.png",
+    "owners": [
+      "Zera"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/zera/zerabel.png",
+    "owners": [
+      "Zera"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/zoey.png",
+    "owners": [
+      "Zoey"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/zoey_addsheet.png",
+    "owners": [
+      "Zoey"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/Sprites/Units/zoey_sel.png",
+    "owners": [
+      "Zoey"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/Cake.txt",
+    "owners": [
+      "Cake"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/Collectors.txt",
+    "owners": [
+      "Collectors"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/Compy.txt",
+    "owners": [
+      "Compy"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/DarkSwallower.txt",
+    "owners": [
+      "DarkSwallower"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/EarthDryad.txt",
+    "owners": [
+      "EarthDryad"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/Earthworms.txt",
+    "owners": [
+      "Earthworms"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/FeralFrogs.txt",
+    "owners": [
+      "FeralFrogs"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/FeralSharks.txt",
+    "owners": [
+      "FeralSharks"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/FungalDryad.txt",
+    "owners": [
+      "FungalDryad"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/Iliijiith.txt",
+    "owners": [
+      "Iliijiith"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/Pudding.txt",
+    "owners": [
+      "Pudding"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/Raptor.txt",
+    "owners": [
+      "Raptor"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/RiverDryad.txt",
+    "owners": [
+      "RiverDryad"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/Schiwardez.txt",
+    "owners": [
+      "Schiwardez"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/Vagrants.txt",
+    "owners": [
+      "Vagrants"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/Voilin.txt",
+    "owners": [
+      "Voilin"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/Whisp.txt",
+    "owners": [
+      "Whisp"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/WoodDryad.txt",
+    "owners": [
+      "WoodDryad"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleAabayx.txt",
+    "owners": [
+      "Aabayx"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleAlraune.txt",
+    "owners": [
+      "Alraune"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleBears.txt",
+    "owners": [
+      "Bears"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleBoomBunnies.txt",
+    "owners": [
+      "BoomBunnies"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleCats.txt",
+    "owners": [
+      "Cats"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleCentaur.txt",
+    "owners": [
+      "Centaur"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleCockatrice.txt",
+    "owners": [
+      "Cockatrice"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleCrux.txt",
+    "owners": [
+      "Crux"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleCrypters.txt",
+    "owners": [
+      "Crypters"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleDewSprites.txt",
+    "owners": [
+      "DewSprites"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleDogs.txt",
+    "owners": [
+      "Dogs"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleDriders.txt",
+    "owners": [
+      "Driders"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleEevee.txt",
+    "owners": [
+      "Eevee"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleEqualeon.txt",
+    "owners": [
+      "Equaleon"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleFairies.txt",
+    "owners": [
+      "Fairies"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleFeralEevee.txt",
+    "owners": [
+      "FeralEevee"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleFeralEqualeon.txt",
+    "owners": [
+      "FeralEqualeon"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleFeralOrcas.txt",
+    "owners": [
+      "FeralOrcas"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleFoxes.txt",
+    "owners": [
+      "Foxes"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleGhosts.txt",
+    "owners": [
+      "Ghosts"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleGoblins.txt",
+    "owners": [
+      "Goblins"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleHamsters.txt",
+    "owners": [
+      "Hamsters"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleHarpies.txt",
+    "owners": [
+      "Harpies"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleHumans.txt",
+    "owners": [
+      "Humans"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleImps.txt",
+    "owners": [
+      "Imps"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleLamia.txt",
+    "owners": [
+      "Lamia"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleMainlandElves.txt",
+    "owners": [
+      "MainlandElves"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleMerfolk.txt",
+    "owners": [
+      "Merfolk"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleOoviKat.txt",
+    "owners": [
+      "OoviKat"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femalePuca.txt",
+    "owners": [
+      "Puca"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleRenamon.txt",
+    "owners": [
+      "Renamon"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleRwuMercenaries.txt",
+    "owners": [
+      "RwuMercenaries"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleScylla.txt",
+    "owners": [
+      "Scylla"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleSlimes.txt",
+    "owners": [
+      "Slimes"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleSuccubi.txt",
+    "owners": [
+      "Succubi"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleTaurus.txt",
+    "owners": [
+      "Taurus"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleTigers.txt",
+    "owners": [
+      "Tigers"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleUmbreon.txt",
+    "owners": [
+      "Umbreon"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleViisels.txt",
+    "owners": [
+      "Viisels"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleVipers.txt",
+    "owners": [
+      "Vipers"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleWolves.txt",
+    "owners": [
+      "Wolves"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleYordles.txt",
+    "owners": [
+      "Yordles"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/femaleYouko.txt",
+    "owners": [
+      "Youko"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleAabayx.txt",
+    "owners": [
+      "Aabayx"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleAlraune.txt",
+    "owners": [
+      "Alraune"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleBears.txt",
+    "owners": [
+      "Bears"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleBoomBunnies.txt",
+    "owners": [
+      "BoomBunnies"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleCats.txt",
+    "owners": [
+      "Cats"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleCentaur.txt",
+    "owners": [
+      "Centaur"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleCockatrice.txt",
+    "owners": [
+      "Cockatrice"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleCrux.txt",
+    "owners": [
+      "Crux"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleCrypters.txt",
+    "owners": [
+      "Crypters"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleDogs.txt",
+    "owners": [
+      "Dogs"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleDriders.txt",
+    "owners": [
+      "Driders"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleEevee.txt",
+    "owners": [
+      "Eevee"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleEqualeon.txt",
+    "owners": [
+      "Equaleon"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleFairies.txt",
+    "owners": [
+      "Fairies"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleFeralEevee.txt",
+    "owners": [
+      "FeralEevee"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleFeralEqualeon.txt",
+    "owners": [
+      "FeralEqualeon"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleFeralOrcas.txt",
+    "owners": [
+      "FeralOrcas"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleFoxes.txt",
+    "owners": [
+      "Foxes"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleGhosts.txt",
+    "owners": [
+      "Ghosts"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleGoblins.txt",
+    "owners": [
+      "Goblins"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleHamsters.txt",
+    "owners": [
+      "Hamsters"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleHarpies.txt",
+    "owners": [
+      "Harpies"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleHumans.txt",
+    "owners": [
+      "Humans"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleImps.txt",
+    "owners": [
+      "Imps"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleLamia.txt",
+    "owners": [
+      "Lamia"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleMainlandElves.txt",
+    "owners": [
+      "MainlandElves"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleMerfolk.txt",
+    "owners": [
+      "Merfolk"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleOoviKat.txt",
+    "owners": [
+      "OoviKat"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/malePuca.txt",
+    "owners": [
+      "Puca"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleRenamon.txt",
+    "owners": [
+      "Renamon"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleRwuMercenaries.txt",
+    "owners": [
+      "RwuMercenaries"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleScylla.txt",
+    "owners": [
+      "Scylla"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleSlimes.txt",
+    "owners": [
+      "Slimes"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleSuccubi.txt",
+    "owners": [
+      "Succubi"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleTaurus.txt",
+    "owners": [
+      "Taurus"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleTigers.txt",
+    "owners": [
+      "Tigers"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleUmbreon.txt",
+    "owners": [
+      "Umbreon"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleViisels.txt",
+    "owners": [
+      "Viisels"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleVipers.txt",
+    "owners": [
+      "Vipers"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleWolves.txt",
+    "owners": [
+      "Wolves"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleYordles.txt",
+    "owners": [
+      "Yordles"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/StreamingAssets/maleYouko.txt",
+    "owners": [
+      "Youko"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move.",
+    "source_consumers": [],
+    "serialized_inbound": []
+  },
+  {
+    "path": "Assets/TilePalettes/Doodads/SpawnerFlag/BoomBunnies.asset",
+    "owners": [
+      "BoomBunnies"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/TilePalettes/Doodads/SpawnerFlag/Cake.asset",
+    "owners": [
+      "Cake"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/TilePalettes/Doodads/SpawnerFlag/Compy.asset",
+    "owners": [
+      "Compy"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/TilePalettes/Doodads/SpawnerFlag/FeralOrcas.asset",
+    "owners": [
+      "FeralOrcas"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/TilePalettes/Doodads/SpawnerFlag/Iliijiith.asset",
+    "owners": [
+      "Iliijiith"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/TilePalettes/Doodads/SpawnerFlag/Pudding.asset",
+    "owners": [
+      "Pudding"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/TilePalettes/Doodads/SpawnerFlag/Schiwardez.asset",
+    "owners": [
+      "Schiwardez"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/TilePalettes/Doodads/SpawnerFlag/SoulSprite.asset",
+    "owners": [
+      "SoulSprite"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/TilePalettes/Doodads/SpawnerFlag/Umbreon.asset",
+    "owners": [
+      "Umbreon"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/TilePalettes/Doodads/SpawnerFlag/Viisels.asset",
+    "owners": [
+      "Viisels"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/TilePalettes/Doodads/SpawnerFlag/ViraeUltimae.asset",
+    "owners": [
+      "ViraeUltimae"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  },
+  {
+    "path": "Assets/TilePalettes/Doodads/SpawnerFlag/Voilin.asset",
+    "owners": [
+      "Voilin"
+    ],
+    "reason": "Ownership/dependency clearance required before physical move. Serialized GUID references must be detached or classified before move.",
+    "source_consumers": [],
+    "serialized_inbound": [
+      "Assets/base.unity"
+    ]
+  }
+]
