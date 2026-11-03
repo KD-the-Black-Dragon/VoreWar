@@ -14,6 +14,6 @@ Company Save / Load supports named manual slots, progress previews, confirmed de
 
 ## Standalone Windows testing
 
-The current local build is in `Builds/Warband-Review-20261103-edb0c0f0/Win64/`. Open **VoreWar.exe** to launch normally. Unity Editor is not required. Keep the whole folder together, including VoreWar_Data, UnityPlayer.dll and MonoBleedingEdge. The older MVP-Review build predates the current UI/rendering changes.
+The current local build is in `Builds/Warband-Review-20261103-9c7ed1a4/Win64/`. Open **VoreWar.exe** to launch normally. Unity Editor is not required. Keep the whole folder together, including VoreWar_Data, UnityPlayer.dll and MonoBleedingEdge. The older MVP-Review build predates the current UI/rendering changes.
 
 To make a later build yourself in Unity2018: stop Play mode, choose **File > Build Settings**, select **PC, Mac & Linux Standalone**, **Windows**, **x86_64**, and ensure **Assets/base.unity** is checked in Scenes In Build. Choose **Build** (or **Build And Run**) and select a new folder under this project's Builds directory. The saved MultiBuild output path still refers to the original developer's desktop; the current agent build overrides it explicitly. Building does not publish the game. The current private build includes license/notices; release/distribution reviews remain separate.

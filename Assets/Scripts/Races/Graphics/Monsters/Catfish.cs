@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System.Collections.Generic;
 using UnityEngine;
 
 class Catfish : BlankSlate
@@ -49,49 +52,7 @@ class Catfish : BlankSlate
 
     internal override void SetBaseOffsets(Actor_Unit actor)
     {
-        if (actor.Unit.Predator && actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach) && actor.GetStomachSize(20) == 20)
-        {
-            AddOffset(Body, 0, 10 * .625f);
-            AddOffset(Head, 0, 10 * .625f);
-            AddOffset(BodyAccessory, 0, 10 * .625f);
-            AddOffset(BodyAccent, 0, 10 * .625f);
-            AddOffset(BodyAccent2, 0, 10 * .625f);
-            AddOffset(BodyAccent3, 60 * .625f, 10 * .625f);
-            AddOffset(BodyAccent4, 0, 8 * .625f);
-            AddOffset(BodyAccent5, 0, 8 * .625f);
-            AddOffset(Mouth, 0, 10 * .625f);
-            AddOffset(Eyes, 0, 10 * .625f);
-            AddOffset(SecondaryEyes, 0, 10 * .625f);
-        }
-        else if (actor.Unit.Predator && actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach) && actor.GetStomachSize(20, .8f) == 20)
-        {
-            AddOffset(Body, 0, 6 * .625f);
-            AddOffset(Head, 0, 6 * .625f);
-            AddOffset(BodyAccessory, 0, 6 * .625f);
-            AddOffset(BodyAccent, 0, 6 * .625f);
-            AddOffset(BodyAccent2, 0, 6 * .625f);
-            AddOffset(BodyAccent3, 60 * .625f, 6 * .625f);
-            AddOffset(BodyAccent4, 0, 4 * .625f);
-            AddOffset(BodyAccent5, 0, 4 * .625f);
-            AddOffset(Mouth, 0, 6 * .625f);
-            AddOffset(Eyes, 0, 6 * .625f);
-            AddOffset(SecondaryEyes, 0, 6 * .625f);
-        }
-        else if (actor.Unit.Predator && actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach) && actor.GetStomachSize(20, .9f) == 20)
-        {
-            AddOffset(Body, 0, 3 * .625f);
-            AddOffset(Head, 0, 3 * .625f);
-            AddOffset(BodyAccessory, 0, 3 * .625f);
-            AddOffset(BodyAccent, 0, 3 * .625f);
-            AddOffset(BodyAccent2, 0, 3 * .625f);
-            AddOffset(BodyAccent3, 60 * .625f, 3 * .625f);
-            AddOffset(BodyAccent4, 0, 1 * .625f);
-            AddOffset(BodyAccent5, 0, 1 * .625f);
-            AddOffset(Mouth, 0, 3 * .625f);
-            AddOffset(Eyes, 0, 3 * .625f);
-            AddOffset(SecondaryEyes, 0, 3 * .625f);
-        }
-        else if (actor.GetStomachSize(20) > 11)
+        if (actor.GetStomachSize(20) > 11)
         {
             AddOffset(BodyAccent3, 60 * .625f, 0);
             AddOffset(BodyAccent4, 1 * .625f, -2 * .625f);
@@ -121,15 +82,6 @@ class Catfish : BlankSlate
 
         if (actor.HasBelly == false)
             return Sprites[0];
-        if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach))
-            return Sprites[80];
-        if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach))
-        {
-            if (actor.GetStomachSize(20, .8f) == 20)
-                return Sprites[80];
-            else if (actor.GetStomachSize(20, .9f) == 20)
-                return Sprites[80];
-        }
         return Sprites[60 + actor.GetStomachSize(20)];
     }
 
@@ -245,15 +197,6 @@ class Catfish : BlankSlate
     {
         if (actor.HasBelly == false)
             return null;
-        if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach))
-            return Sprites[59];
-        if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach))
-        {
-            if (actor.GetStomachSize(20, .8f) == 20)
-                return Sprites[58];
-            else if (actor.GetStomachSize(20, .9f) == 20)
-                return Sprites[57];
-        }
         return Sprites[36 + actor.GetStomachSize(20)];
     }
 

@@ -1,4 +1,7 @@
-﻿// Modified for the VoreWar mercenary-company conversion.
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove obsolete OC tooltip example (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+// Modified for the VoreWar mercenary-company conversion.
 // 2026-11-02: Use the preferred herm terminology and correct outright tooltip typos (spec 15B feedback).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 static class DefaultTooltips
@@ -538,7 +541,7 @@ It should be fairly stable though.  There are a few places that are still keyed 
             case 204:
                 return "Enables the Eastern Dragon monster packs";
             case 205:
-                return "When enabled, all prey will show as the the standard round bulges, and race-specific bulges (e.g. Selicia prey graphics) will not be used.";
+                return "When enabled, all prey will show as the standard round bulges, and race-specific bulges will not be used.";
             case 206:
                 return "Herms will only use female hair, instead of picking randomly from all possible hair types (has no effect if the race isn't divided into male/female hair)";
             case 207:

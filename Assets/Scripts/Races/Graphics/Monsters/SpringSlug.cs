@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System.Collections.Generic;
 using UnityEngine;
 
 class SpringSlug : BlankSlate
@@ -24,10 +27,6 @@ class SpringSlug : BlankSlate
     {
         if (actor.HasBelly == false)
             return Sprites[2];
-        if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach))
-            return Sprites[15];
-        if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach))
-            return Sprites[5 + actor.GetStomachSize(9)];
         return Sprites[5 + actor.GetStomachSize(9)];
     }
 
@@ -44,10 +43,6 @@ class SpringSlug : BlankSlate
     {
         if (actor.HasBelly == false)
             return null;
-        if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach))
-            return Sprites[26];
-        if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach))
-            return Sprites[16 + actor.GetStomachSize(9)];
         return Sprites[16 + actor.GetStomachSize(9)];
     }
 

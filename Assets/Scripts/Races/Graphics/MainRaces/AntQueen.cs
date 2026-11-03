@@ -1,4 +1,7 @@
-﻿using System;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -141,26 +144,6 @@ class AntQueen : DefaultRaceData
             belly.transform.localScale = new Vector3(1, 1, 1);
             belly.SetActive(true);
             int size = actor.GetStomachSize(29, 0.8f);
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb) && size == 29)
-            {
-                AddOffset(Belly, 0, -26 * .625f);
-                return Sprites2[95];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 29)
-            {
-                AddOffset(Belly, 0, -26 * .625f);
-                return Sprites2[94];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 28)
-            {
-                AddOffset(Belly, 0, -26 * .625f);
-                return Sprites2[93];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 27)
-            {
-                AddOffset(Belly, 0, -26 * .625f);
-                return Sprites2[92];
-            }
             switch (size)
             {
                 case 24:
@@ -233,18 +216,6 @@ class AntQueen : DefaultRaceData
             int leftSize = (int)Math.Sqrt((actor.Unit.DefaultBreastSize * actor.Unit.DefaultBreastSize) + actor.GetLeftBreastSize(31 * 31, 1f));
             if (leftSize > actor.Unit.DefaultBreastSize)
                 oversize = true;
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.leftBreast) && leftSize >= 31)
-            {
-                return Sprites2[30];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.leftBreast) && leftSize >= 29)
-            {
-                return Sprites2[29];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.leftBreast) && leftSize >= 27)
-            {
-                return Sprites2[28];
-            }
 
             if (leftSize > 27)
                 leftSize = 27;
@@ -266,18 +237,6 @@ class AntQueen : DefaultRaceData
             int rightSize = (int)Math.Sqrt((actor.Unit.DefaultBreastSize * actor.Unit.DefaultBreastSize) + actor.GetRightBreastSize(31 * 31, 1f));
             if (rightSize > actor.Unit.DefaultBreastSize)
                 oversize = true;
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.rightBreast) && rightSize >= 31)
-            {
-                return Sprites2[61];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.rightBreast) && rightSize >= 29)
-            {
-                return Sprites2[60];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.rightBreast) && rightSize >= 27)
-            {
-                return Sprites2[59];
-            }
 
             if (rightSize > 27)
                 rightSize = 27;
@@ -341,22 +300,7 @@ class AntQueen : DefaultRaceData
         }
         int size = actor.Unit.DickSize;
         int offset = actor.GetBallSize(27, .8f);
-        if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.balls) ?? false) && offset == 27)
-        {
-            AddOffset(Balls, 0, -17 * .625f);
-            return Sprites2[132];
-        }
-        else if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false) && offset == 27)
-        {
-            AddOffset(Balls, 0, -15 * .625f);
-            return Sprites2[131];
-        }
-        else if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false) && offset == 26)
-        {
-            AddOffset(Balls, 0, -13 * .625f);
-            return Sprites2[130];
-        }
-        else if (offset >= 25)
+        if (offset >= 25)
         {
             AddOffset(Balls, 0, -11 * .625f);
         }

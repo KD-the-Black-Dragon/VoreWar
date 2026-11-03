@@ -1,4 +1,7 @@
-﻿using System;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -161,18 +164,6 @@ class Equines : DefaultRaceData
             belly.transform.localScale = new Vector3(1, 1, 1);
             belly.SetActive(true);
             int size = actor.GetStomachSize(29, 1.2f);
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb) && size == 29)
-            {
-                return SpritesBase[89];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 29)
-            {
-                return SpritesBase[88];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size >= 27)
-            {
-                return SpritesBase[87];
-            }
 
             int combined = Math.Min(size, 26);
             return SpritesBase[60 + combined];
@@ -302,18 +293,6 @@ class Equines : DefaultRaceData
             int leftSize = (int)Math.Sqrt((actor.Unit.DefaultBreastSize * actor.Unit.DefaultBreastSize) + actor.GetLeftBreastSize(29 * 29, 1f));
             if (leftSize > actor.Unit.DefaultBreastSize)
                 oversize = true;
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.leftBreast) && leftSize >= 29)
-            {
-                return SpritesBase[119];
-            }
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.leftBreast) && leftSize >= 29)
-            {
-                return SpritesBase[118];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.leftBreast) && leftSize >= 27)
-            {
-                return SpritesBase[117];
-            }
 
 
             if (leftSize > 26)
@@ -339,18 +318,6 @@ class Equines : DefaultRaceData
             int rightSize = (int)Math.Sqrt((actor.Unit.DefaultBreastSize * actor.Unit.DefaultBreastSize) + actor.GetRightBreastSize(29 * 29, 1f));
             if (rightSize > actor.Unit.DefaultBreastSize)
                 oversize = true;
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.rightBreast) && rightSize >= 29)
-            {
-                return SpritesBase[149];
-            }
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.rightBreast) && rightSize >= 29)
-            {
-                return SpritesBase[148];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.rightBreast) && rightSize >= 27)
-            {
-                return SpritesBase[147];
-            }
 
 
             if (rightSize > 26)
@@ -423,19 +390,6 @@ class Equines : DefaultRaceData
 
         int size = actor.GetBallSize(29, .8f);
         int baseSize = (actor.Unit.DickSize + 1) / 3;
-
-        if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.balls) ?? false) && size == 29)
-        {
-            return SpritesBase[59];
-        }
-        else if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false) && size >= 29)
-        {
-            return SpritesBase[58];
-        }
-        else if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false) && size >= 27)
-        {
-            return SpritesBase[57];
-        }
         int combined = Math.Min(baseSize + size + 2, 26);
         if (size > 0)
         {

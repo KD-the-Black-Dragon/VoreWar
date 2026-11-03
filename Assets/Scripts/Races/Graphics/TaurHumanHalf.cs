@@ -1,4 +1,7 @@
-﻿using System;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +10,6 @@ using UnityEngine;
 
 class TaurHumanHalf : BlankSlate
 {
-    //readonly Sprite[] Sprites = SpriteDictionary.CentaurParts;
     internal bool oversize = false;
     public TaurHumanHalf()
     {
@@ -320,26 +322,6 @@ class TaurHumanHalf : BlankSlate
             belly.transform.localScale = new Vector3(1, 1, 1);
             belly.SetActive(true);
             int size = actor.GetStomachSize(31, 0.7f);
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb) && size == 31)
-            {
-                AddOffset(Belly, 0, -33 * .625f);
-                return SpriteDictionary.HumansVoreSprites[105];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 31)
-            {
-                AddOffset(Belly, 0, -33 * .625f);
-                return SpriteDictionary.HumansVoreSprites[104];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 30)
-            {
-                AddOffset(Belly, 0, -33 * .625f);
-                return SpriteDictionary.HumansVoreSprites[103];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 29)
-            {
-                AddOffset(Belly, 0, -33 * .625f);
-                return SpriteDictionary.HumansVoreSprites[102];
-            }
             switch (size)
             {
                 case 26:
@@ -380,18 +362,6 @@ class TaurHumanHalf : BlankSlate
             int leftSize = (int)Math.Sqrt((actor.Unit.DefaultBreastSize * actor.Unit.DefaultBreastSize) + actor.GetLeftBreastSize(32 * 32, 1f));
             if (leftSize > actor.Unit.DefaultBreastSize)
                 oversize = true;
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.leftBreast) && leftSize >= 32)
-            {
-                return SpriteDictionary.HumansVoreSprites[31];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.leftBreast) && leftSize >= 30)
-            {
-                return SpriteDictionary.HumansVoreSprites[30];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.leftBreast) && leftSize >= 28)
-            {
-                return SpriteDictionary.HumansVoreSprites[29];
-            }
 
             if (leftSize > 28)
                 leftSize = 28;
@@ -413,18 +383,6 @@ class TaurHumanHalf : BlankSlate
             int rightSize = (int)Math.Sqrt((actor.Unit.DefaultBreastSize * actor.Unit.DefaultBreastSize) + actor.GetRightBreastSize(32 * 32, 1f));
             if (rightSize > actor.Unit.DefaultBreastSize)
                 oversize = true;
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.rightBreast) && rightSize >= 32)
-            {
-                return SpriteDictionary.HumansVoreSprites[63];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.rightBreast) && rightSize >= 30)
-            {
-                return SpriteDictionary.HumansVoreSprites[62];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.rightBreast) && rightSize >= 28)
-            {
-                return SpriteDictionary.HumansVoreSprites[61];
-            }
 
             if (rightSize > 28)
                 rightSize = 28;

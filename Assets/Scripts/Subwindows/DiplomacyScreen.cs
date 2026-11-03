@@ -1,4 +1,7 @@
-﻿using System;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -51,9 +54,9 @@ public class DiplomacyScreen : MonoBehaviour
         if (Config.Diplomacy == false)
         {
             Updates.text = "Diplomacy is turned off, you can only negotiate with the goblins";
-            DeclareWarButton.gameObject.SetActive(Other.Race == Race.Goblins);
-            AskAllyButton.gameObject.SetActive(Other.Race == Race.Goblins);
-            AskPeaceButton.gameObject.SetActive(Other.Race == Race.Goblins);
+            DeclareWarButton.gameObject.SetActive(false);
+            AskAllyButton.gameObject.SetActive(false);
+            AskPeaceButton.gameObject.SetActive(false);
         }
         else
         {
@@ -61,7 +64,7 @@ public class DiplomacyScreen : MonoBehaviour
             AskAllyButton.gameObject.SetActive(true);
             AskPeaceButton.gameObject.SetActive(true);
         }
-        if (Config.Diplomacy == false && Other.Race != Race.Goblins)
+        if (Config.Diplomacy == false)
         {
             DeclareWarButton.interactable = false;
             AskAllyButton.interactable = false;

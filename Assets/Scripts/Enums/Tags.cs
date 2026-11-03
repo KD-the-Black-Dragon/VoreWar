@@ -1,5 +1,6 @@
-﻿// Modified for the VoreWar mercenary-company conversion.
+// Modified for the VoreWar mercenary-company conversion.
 // 2026-11-01: Complete approved ability retirement and close legacy reactivation paths (spec 05A3B17).
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 /// <summary>
 /// The list of possible unit traits
@@ -340,7 +341,7 @@ public enum Traits
     /// <summary>While digesting, Predator is able to use prey's normal traits</summary>
     TraitBorrower = 170,
     /// <summary>Unit heals after not taking damage for a bit, scaling higer with each turn without damage.</summary>
-	Perseverance = 171, //
+	Perseverance = 171,
     /// <summary>Unit thrives on mana, uses a bit of their mana every turn. Becomes shaken every turn they don't have any.</summary>
 	ManaAttuned = 172,
     /// <summary>Unit heals after not taking damage for a bit, scaling higer with each turn without damage.</summary>
@@ -371,8 +372,6 @@ public enum Traits
     ManaBarrier = 185,
     /// <summary>Unit's BladeDance, Tenacity, and Focus stack loss is reduced by if stacks are below 10% current HP.</summary>
     Unflinching = 186,
-    /// <summary></summary>
-    TheMatron = 187,
     /// <summary>Unit takes extra damage from all sources of fire. (150%)</summary>
     FireVulnerable = 188,
     /// <summary>Unit's stats are boosted by 220% But needs twice as much EXP to level</summary>
@@ -393,11 +392,6 @@ public enum Traits
     Friendosoma = 196,
     /// <summary>Unit deals bonus ranged and melee damage to members of the same race.</summary>
     Competitive = 197,
-    /// <summary></summary>
-    QueenOfFrost = 198,
-    /// <summary>Seraph's Unique trait, made to adjust stats and reduce clutter.</summary>
-    DestroyingAngel = 199,
-
     /// <summary>Melee damage is increased by 100%. Damage is divided by the amount of adjacent enemy units.</summary>
     Duelist = 500,
     /// <summary>Melee damage is reduced to 12.5%. Damage is multiplied by the amount of adjacent enemy units.</summary>
@@ -486,7 +480,7 @@ public enum Traits
     /// <summary>This Unit restores 50% of its MP when defeating a unit with an attack.</summary>
     KillingMomentum = 542,
     /// <summary>This Unit has a chance to inflict the sleep status on its prey for 1 to 4 turns plus the units level difference.</summary>
-    SedativeStomach = 543,   
+    SedativeStomach = 543,
     /// <summary>At the start of battle, this Unit recives bonus health equal to the current health of every ally with this trait. All allies with this trait take damage and are healed when this unit is.</summary>
     MutualBiology = 544,
     /// <summary>Unit gains a stacking effect each time they swallow a unit. This effect increases their stomach capacity, but puts the unit to sleep if it expires and they are overcapacity.</summary>
@@ -495,7 +489,6 @@ public enum Traits
     SweepingStrikes = 546,
     /// <summary>Unit does not suffer AP reduction when escaping.</summary>
     InvigoratingEscape = 547,
-
 
 
 
@@ -520,7 +513,6 @@ public enum Traits
     /// <summary>Unit changes Race and side upon digestion</summary>
     MetamorphicConversion = 208,
 
-
     //Hidden Cheat Traits
     /// <summary>If a currupted unit is digested, the pred will build up corruption as a hidden status. Once corrupted prey with a stat total equal to that of the pred has been digested, they are under control of the side of the last-digested corrupted.</summary>
     Corruption = 350,
@@ -535,10 +527,8 @@ public enum Traits
     /// <summary>Units soul continues to possess pred after death</summary>
     SpiritPossession = 355,
 
-
     /// <summary>Unit can only cock vore or unbirth pery if the prey is 1/3 the size of this unit, but Diminishment does not fade while prey is inside this unit's cock or womb.</summary>
     TightNethers,
-
 
     //Everything after this is a cheat trait
     /// <summary>Cheat Trait: Unit gains +10 movement and +5 attacks of any type.</summary>
@@ -596,7 +586,7 @@ public enum Traits
     /// <summary>Can emit Gas that turns foes into subservient non-combatants once per battle.</summary>
     HypnoticGas = 295,
     /// <summary>Every time digestion progresses, this unit steals one trait from each prey inside them, if only duplicates (or non-assimilable traits) remain, they are turned into exp. Absorbtion steals any that are left.</summary>
-    Extraction = 296,    
+    Extraction = 296,
     /// <summary>Every time digestion progresses, this unit digests one level from each prey inside them, gaining its experience value. If a unit hits level 0 this way, it dies if it was stil alive and cannot be revived.</summary>
     Annihilation = 297,
     /// <summary>Shares generic traits with pred</summary>
@@ -648,7 +638,6 @@ public enum Traits
     /// <summary>Allows usage of a strong attack that can stun an enemy. </summary>
     StunningStrike = 321,
 
-
     // Growth-related section
     /// <summary>Unit increases in size when absorbing prey.</summary>
 	Growth = 267,
@@ -689,6 +678,8 @@ static class TraitsMethods
     // Retain serialized IDs; this list controls active conversion abilities.
     public static bool IsRetired(Traits trait)
     {
+        if ((int)trait < 1000 && !System.Enum.IsDefined(typeof(Traits), trait))
+            return true;
         switch (trait)
         {
             case Traits.Eternal:

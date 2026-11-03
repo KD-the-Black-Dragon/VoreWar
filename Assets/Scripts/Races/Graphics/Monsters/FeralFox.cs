@@ -1,4 +1,7 @@
-﻿using System;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -316,41 +319,6 @@ class FeralFox : BlankSlate
 
         int size = actor.GetStomachSize(52);
 
-        if ( size >= 52 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true) ?? false))
-        {
-            return SpriteDictionary.FeralFox[96];
-        }
-
-        if (size >= 49 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false) ?? false))
-        {
-            return SpriteDictionary.FeralFox[95];
-        }
-
-        if (size >= 46 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false) ?? false))
-        {
-            return SpriteDictionary.FeralFox[94];
-        }
-
-        if (size >= 43 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false) ?? false))
-        {
-            return SpriteDictionary.FeralFox[93];
-        }
-
-        if (size >= 40 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false) ?? false))
-        {
-            return SpriteDictionary.FeralFox[92];
-        }
-		
-		if (size >= 37 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false) ?? false))
-        {
-            return SpriteDictionary.FeralFox[91];
-        }
-		
-		if (size >= 34 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false) ?? false))
-        {
-            return SpriteDictionary.FeralFox[90];
-        }
-
         if (size > 29) size = 29;
 
         return SpriteDictionary.FeralFox[60 + size];
@@ -376,41 +344,6 @@ class FeralFox : BlankSlate
         }
 
         int size = actor.GetBallSize(52);
-
-        if (size >= 52 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.balls) ?? false))
-        {
-            return SpriteDictionary.FeralFox[139];
-        }
-
-        if (size >= 49 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false))
-        {
-            return SpriteDictionary.FeralFox[138];
-        }
-
-        if (size >= 46 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false))
-        {
-            return SpriteDictionary.FeralFox[137];
-        }
-
-        if (size >= 43 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false))
-        {
-            return SpriteDictionary.FeralFox[136];
-        }
-
-        if (size >= 40 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false))
-        {
-            return SpriteDictionary.FeralFox[135];
-        }
-
-        if (size >= 37 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false))
-        {
-            return SpriteDictionary.FeralFox[134];
-        }
-		
-		if (size >= 34 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false))
-        {
-            return SpriteDictionary.FeralFox[133];
-        }
 
         if (size > 29) size = 29;
         return SpriteDictionary.FeralFox[103 + size];

@@ -2,6 +2,7 @@
 // 2026-10-30: Use approved sapient recruit pools and stop named-unique generation (spec 03A1).
 // 2026-10-30: Retire the uncalled named-unique factory; preserve existing stock and individuals (spec 03B1).
 // 2026-11-01: Separate stored species reads from intentional override creation (spec 03B3C).
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
 using System.Collections.Generic;
@@ -80,7 +81,7 @@ public class MercenaryHouse
 
         int exp = (int)(highestExp * .8f) + State.Rand.Next(10);
         merc.Unit = new Unit((int)race, race, exp, true, UnitType.Mercenary, true);
-        if (race < Race.Vagrants && merc.Unit.FixedGear == false)
+        if (race < (Race)100 && merc.Unit.FixedGear == false)
         {
             if (merc.Unit.Items[0] == null)
             {

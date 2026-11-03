@@ -1,4 +1,7 @@
-﻿using System;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -157,8 +160,6 @@ class Otachi : BlankSlate
             if (standing)
             {
                 Belly.layer = 11;
-                if (size >= 30 && actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach)) return OtachiSprites[148];
-                if (size >= 30 && actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach)) return OtachiSprites[111 + size];
                 if (size > 30) size = 29;
                 return OtachiSprites[111 + size];
             }
@@ -214,8 +215,6 @@ class Otachi : BlankSlate
         if (ballsSize >= 20) AddOffset(Balls, 0, -63);
         if (standing)
         {
-            if (ballsSize >= 30 && actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.balls)) return OtachiSprites[95];
-            if (ballsSize >= 30 && actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls)) return OtachiSprites[58 + ballsSize];
             if (ballsSize >= 30) ballsSize = 29;
             return OtachiSprites[58 + ballsSize];
         }

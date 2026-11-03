@@ -1,4 +1,7 @@
-﻿using System;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -494,91 +497,11 @@ class Utahraptor : BlankSlate
         }
         if (SkapaFrontDirect)  // DirectFront
         {
-            if (size >= 59 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb) ?? false))
-            {
-            return Utahraptor240BSprites[80];
-            }
-            else if (size >= 56 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-            {
-            return Utahraptor240BSprites[79];
-            }
-            else if (size >= 53 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-            {
-            return Utahraptor240BSprites[78];
-            }
-            else if (size >= 50 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-            {
-            return Utahraptor240BSprites[77];
-            }
-            else if (size >= 47 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-            {
-            return Utahraptor240BSprites[76];
-            }
-            else if (size >= 44 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-            {
-            return Utahraptor240BSprites[75];
-            }
-            else if (size >= 41 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-            {
-            return Utahraptor240BSprites[74];
-            }
-            else if (size >= 38 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-            {
-            return Utahraptor240BSprites[73];
-            }
-            else if (size >= 35 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-            {
-            return Utahraptor240BSprites[72];
-            }
-            else if (size >= 32 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-            {
-            return Utahraptor240BSprites[71];
-            }
 			if (size >= 29) size = 29;
             return Utahraptor240BSprites[41 + size];
         }
         else // BackView
         {
-            if (size >= 59 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb) ?? false))
-            {
-            return Utahraptor240BSprites[120];
-            }
-            else if (size >= 56 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-            {
-            return Utahraptor240BSprites[119];
-            }
-            else if (size >= 53 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-            {
-            return Utahraptor240BSprites[118];
-            }
-            else if (size >= 50 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-            {
-            return Utahraptor240BSprites[117];
-            }
-            else if (size >= 47 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-            {
-            return Utahraptor240BSprites[116];
-            }
-            else if (size >= 44 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-            {
-            return Utahraptor240BSprites[115];
-            }
-            else if (size >= 41 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-            {
-            return Utahraptor240BSprites[114];
-            }
-            else if (size >= 38 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-            {
-            return Utahraptor240BSprites[113];
-            }
-            else if (size >= 35 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-            {
-            return Utahraptor240BSprites[112];
-            }
-            else if (size >= 32 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-            {
-            return Utahraptor240BSprites[111];
-            }
             if (size >= 29) size = 29;
             return Utahraptor240BSprites[81 + size];
         }
@@ -633,46 +556,6 @@ class Utahraptor : BlankSlate
 			Balls.layer = 15;
             if (ballsSize > 0)
             {
-                if (ballsSize >= 59 && actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.balls))
-                {
-                    return Utahraptor240BSprites[40];
-                }
-                else if (ballsSize >= 56 && actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls))
-                {
-                    return Utahraptor240BSprites[39];
-                }
-                else if (ballsSize >= 53 && actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls))
-                {
-                    return Utahraptor240BSprites[38];
-                }
-                else if (ballsSize >= 50 && actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls))
-                {
-                    return Utahraptor240BSprites[37];
-                }
-                else if (ballsSize >= 47 && actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls))
-                {
-                    return Utahraptor240BSprites[36];
-                }
-                else if (ballsSize >= 44 && actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls))
-                {
-                    return Utahraptor240BSprites[35];
-                }
-                else if (ballsSize >= 41 && actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls))
-                {
-                    return Utahraptor240BSprites[34];
-                }
-                else if (ballsSize >= 38 && actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls))
-                {
-                    return Utahraptor240BSprites[33];
-                }
-                else if (ballsSize >= 35 && actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls))
-                {
-                    return Utahraptor240BSprites[32];
-                }
-                else if (ballsSize >= 32 && actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls))
-                {
-                    return Utahraptor240BSprites[31];
-                }
                 if (ballsSize > 29) ballsSize = 29;
                 return Utahraptor240BSprites[1 + ballsSize];
             }

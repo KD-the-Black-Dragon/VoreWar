@@ -1,5 +1,6 @@
 // Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Do not default legacy species availability to true (spec 03A1).
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
 using System;
@@ -356,7 +357,7 @@ public class WorldConfig
         SpawnerInfo = new Dictionary<Race, SpawnerInfo>();
         foreach (Race race in (Race[])Enum.GetValues(typeof(Race)))
         {
-            if (race >= Race.Vagrants && race < Race.Selicia)
+            if (race >= (Race)100 && race < (Race)170)
             {
                 SpawnerInfo[race] = SpecifySpawnerDefaults(race);
             }
@@ -368,9 +369,6 @@ public class WorldConfig
         SpawnerInfo ret_value;
         switch (race)
         {
-            case Race.Compy:
-                ret_value = new SpawnerInfo(false, 4, .15f, 40, 900 + (int)race, 1, true, 6f, 12, 18, 40, false);
-                break;
             case Race.Gryphons:
                 ret_value = new SpawnerInfo(false, 4, .15f, 40, 900 + (int)race, 1, true, 6f, 4, 8, 40, false);
                 break;
@@ -524,7 +522,6 @@ public class WorldConfig
             Toggles[$"Merc {race}"] = SpeciesPolicy.IsEnabled(race);
         }
         //Disable any not-implemented races
-        //Toggles[$"Merc {Race.Succubi}"] = false;
     }
 }
 

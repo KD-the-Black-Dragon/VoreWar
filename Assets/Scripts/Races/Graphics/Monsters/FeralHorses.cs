@@ -1,4 +1,7 @@
-﻿using System;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -123,36 +126,6 @@ class FeralHorses : BlankSlate
 
         int size = actor.GetStomachSize(31);
 
-        if ( size >= 31 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true) ?? false))
-        {
-			AddOffset(Belly, -23 * .625f, -7 * .625f);
-            return SpriteDictionary.FeralHorses[54];
-        }
-
-        if (size >= 29 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false) ?? false))
-        {
-			AddOffset(Belly, -23 * .625f, -7 * .625f);
-            return SpriteDictionary.FeralHorses[53];
-        }
-
-        if (size >= 27 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false) ?? false))
-        {
-			AddOffset(Belly, -23 * .625f, -7 * .625f);
-            return SpriteDictionary.FeralHorses[52];
-        }
-
-        if (size >= 25 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false) ?? false))
-        {
-			AddOffset(Belly, -23 * .625f, -7 * .625f);
-            return SpriteDictionary.FeralHorses[51];
-        }
-
-        if (size >= 23 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false) ?? false))
-        {
-			AddOffset(Belly, -23 * .625f, -7 * .625f);
-            return SpriteDictionary.FeralHorses[50];
-        }
-
         if (size > 19) size = 19;
 
         return SpriteDictionary.FeralHorses[30 + size];
@@ -178,36 +151,6 @@ class FeralHorses : BlankSlate
 		else return null;
 
         int size = actor.GetBallSize(30);
-
-        if (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.balls) ?? false)
-        {
-            return SpriteDictionary.FeralHorses[79];
-        }
-
-        else if (size >= 29 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false))
-        {
-            return SpriteDictionary.FeralHorses[78];
-        }
-
-        else if (size >= 27 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false))
-        {
-            return SpriteDictionary.FeralHorses[77];
-        }
-
-        else if (size >= 25 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false))
-        {
-            return SpriteDictionary.FeralHorses[76];
-        }
-
-        else if (size >= 23 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false))
-        {
-            return SpriteDictionary.FeralHorses[75];
-        }
-
-        else if (size >= 21 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false))
-        {
-            return SpriteDictionary.FeralHorses[74];
-        }
 
         if (size > 19) size = 19;
         return SpriteDictionary.FeralHorses[55 + size];

@@ -1,4 +1,7 @@
-﻿using System;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -212,26 +215,6 @@ class Badgers : DefaultRaceData
             belly.transform.localScale = new Vector3(1, 1, 1);
             belly.SetActive(true);
             int size = actor.GetStomachSize(26, 0.7f);
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb) && size == 26)
-            {
-                AddOffset(Belly, 0, -12 * .625f);
-                return bellyPat[90];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 26)
-            {
-                AddOffset(Belly, 0, -12 * .625f);
-                return bellyPat[89];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 25)
-            {
-                AddOffset(Belly, 0, -12 * .625f);
-                return bellyPat[88];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 24)
-            {
-                AddOffset(Belly, 0, -12 * .625f);
-                return bellyPat[87];
-            }
             switch (size)
             {
                 case 24:
@@ -294,18 +277,6 @@ class Badgers : DefaultRaceData
             int leftSize = (int)Math.Sqrt((actor.Unit.DefaultBreastSize * actor.Unit.DefaultBreastSize) + actor.GetLeftBreastSize(30 * 30, 1f));
             if (leftSize > actor.Unit.DefaultBreastSize)
                 oversize = true;
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.leftBreast) && leftSize >= 30)
-            {
-                return breastPat[29];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.leftBreast) && leftSize >= 28)
-            {
-                return breastPat[28];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.leftBreast) && leftSize >= 26)
-            {
-                return breastPat[27];
-            }
 
             if (leftSize > 26)
                 leftSize = 26;
@@ -334,18 +305,6 @@ class Badgers : DefaultRaceData
             int rightSize = (int)Math.Sqrt((actor.Unit.DefaultBreastSize * actor.Unit.DefaultBreastSize) + actor.GetRightBreastSize(30 * 30, 1f));
             if (rightSize > actor.Unit.DefaultBreastSize)
                 oversize = true;
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.rightBreast) && rightSize >= 30)
-            {
-                return breastPat[59];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.rightBreast) && rightSize >= 28)
-            {
-                return breastPat[58];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.rightBreast) && rightSize >= 26)
-            {
-                return breastPat[57];
-            }
 
             if (rightSize > 26)
                 rightSize = 26;
@@ -416,22 +375,7 @@ class Badgers : DefaultRaceData
         }
         int size = actor.Unit.DickSize;
         int offset = actor.GetBallSize(27, .8f);
-        if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.balls) ?? false) && offset == 27)
-        {
-            AddOffset(Balls, 0, -27 * .625f);
-            return ballPat[127];
-        }
-        else if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false) && offset == 27)
-        {
-            AddOffset(Balls, 0, -22 * .625f);
-            return ballPat[126];
-        }
-        else if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false) && offset == 26)
-        {
-            AddOffset(Balls, 0, -18 * .625f);
-            return ballPat[125];
-        }
-        else if (offset >= 25)
+        if (offset >= 25)
         {
             AddOffset(Balls, 0, -13 * .625f);
         }

@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -10,7 +13,6 @@ static class RelationsManager
     static internal void ResetRelations()
     {
         var sides = State.World.MainEmpires.Select(s => s.Side).ToList();
-        sides.Add((int)Race.Goblins);
         State.World.Relations = new Dictionary<int, Dictionary<int, Relationship>>();
         foreach (int side in sides)
         {

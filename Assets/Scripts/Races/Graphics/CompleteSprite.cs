@@ -1,4 +1,7 @@
-﻿using System;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System;
 using System.Linq;
 using TacticalBuildings;
 using UnityEngine;
@@ -109,23 +112,6 @@ class CompleteSprite
     /// </summary>
     public void AdjustSpriteScale()
     {
-        if (actor.Unit.Race == Race.Centaur ||
-            actor.Unit.Race == Race.Ghosts)
-        {
-            foreach (var sprite in sprites)
-            {
-                if (sprite != null)
-                {
-                    if (sprite.Sprite != null)
-                    {
-                        var bodyres = sprite.Sprite.pixelsPerUnit;
-                        var bodywidth = sprite.Sprite.rect.width;
-                        float mult = bodywidth / bodyres;
-                        sprite.GameObject.transform.localScale = new Vector3(mult, mult, sprite.GameObject.transform.localScale.z);
-                    }
-                }
-            }
-        }
 
     }
 
@@ -344,10 +330,6 @@ class CompleteSprite
         belly = race.Belly; //This is done because of the belly sprite affecting the scale
         if (belly != null)
             belly.GetSprite = (s) => race.BellySprite(actor, sprites[(int)SpriteType.Belly].GameObject);
-        if (actor.Unit.Race == Race.Umbreon && sprites[(int)SpriteType.BodyAccent5] != null)
-            sprites[(int)SpriteType.BodyAccent5].GameObject.transform.SetParent(sprites[(int)SpriteType.Belly].GameObject.transform.parent, false);
-        if (actor.Unit.Race == Race.Imps && sprites[(int)SpriteType.BodyAccent6] != null)
-            sprites[(int)SpriteType.BodyAccent6].GameObject.transform.SetParent(sprites[(int)SpriteType.Belly].GameObject.transform.parent, false);
         if (actor.Unit.Race == Race.Draconians && sprites[(int)SpriteType.Beard] != null)
             sprites[(int)SpriteType.Beard].GameObject.transform.SetParent(sprites[(int)SpriteType.SecondaryBreasts].GameObject.transform.parent, false);
         if (actor.Unit.Race == Race.Draconians && sprites[(int)SpriteType.BodyAccent15] != null)
@@ -360,25 +342,6 @@ class CompleteSprite
         SetSprite(SpriteType.BodySize, race.BodySize);
         SetSprite(SpriteType.Mouth, race.Mouth);
         SetSprite(SpriteType.SecondaryEyes, race.SecondaryEyes);
-        if (actor.Unit.Race == Race.Pudding)
-        {
-            if (sprites[(int)SpriteType.BodyAccessory] != null)
-                sprites[(int)SpriteType.BodyAccessory].GameObject.transform.SetParent(sprites[(int)SpriteType.Belly].GameObject.transform.parent, false);
-            if (sprites[(int)SpriteType.BodyAccent] != null)
-                sprites[(int)SpriteType.BodyAccent].GameObject.transform.SetParent(sprites[(int)SpriteType.Belly].GameObject.transform.parent, false);
-            if (sprites[(int)SpriteType.BodyAccent2] != null)
-                sprites[(int)SpriteType.BodyAccent2].GameObject.transform.SetParent(sprites[(int)SpriteType.Belly].GameObject.transform.parent, false);
-            if (sprites[(int)SpriteType.BodyAccent3] != null)
-                sprites[(int)SpriteType.BodyAccent3].GameObject.transform.SetParent(sprites[(int)SpriteType.Belly].GameObject.transform.parent, false);
-            if (sprites[(int)SpriteType.BodyAccent4] != null)
-                sprites[(int)SpriteType.BodyAccent4].GameObject.transform.SetParent(sprites[(int)SpriteType.Belly].GameObject.transform.parent, false);
-            if (sprites[(int)SpriteType.BodyAccent5] != null)
-                sprites[(int)SpriteType.BodyAccent5].GameObject.transform.SetParent(sprites[(int)SpriteType.Belly].GameObject.transform.parent, false);
-            if (sprites[(int)SpriteType.Mouth] != null)
-                sprites[(int)SpriteType.Mouth].GameObject.transform.SetParent(sprites[(int)SpriteType.Belly].GameObject.transform.parent, false);
-            if (sprites[(int)SpriteType.Eyes] != null)
-                sprites[(int)SpriteType.Eyes].GameObject.transform.SetParent(sprites[(int)SpriteType.Belly].GameObject.transform.parent, false);
-        }
         //Test Code
         //var bodyres = race.Body.GetSprite(actor).pixelsPerUnit;
         //var bodywidth = race.Body.GetSprite(actor).rect.width;
@@ -400,12 +363,8 @@ class CompleteSprite
         if (Config.HideBreasts == false)
         {
             SetSprite(SpriteType.Breasts, race.Breasts);
-        if (actor.Unit.Race == Race.Umbreon && sprites[(int)SpriteType.BodyAccent3] != null && actor.Unit.HasBreasts)
-            sprites[(int)SpriteType.BodyAccent3].GameObject.transform.SetParent(sprites[(int)SpriteType.Breasts].GameObject.transform.parent, false);
             SetSprite(SpriteType.BreastShadow, race.BreastShadow);
             SetSprite(SpriteType.SecondaryBreasts, race.SecondaryBreasts);
-        if (actor.Unit.Race == Race.Umbreon && sprites[(int)SpriteType.BodyAccent4] != null && actor.Unit.HasBreasts)
-            sprites[(int)SpriteType.BodyAccent4].GameObject.transform.SetParent(sprites[(int)SpriteType.SecondaryBreasts].GameObject.transform.parent, false);
         }
         else
         {
@@ -549,7 +508,7 @@ class CompleteSprite
         }
         else if (actor.Unit.EarnedMask && actor.Unit.ClothingAccessoryType > 0 && actor.Unit.ClothingAccessoryType - 1 == race.AllowedClothingAccessoryTypes.Count)
         {
-            MainAccessories.AsuraMask.Configure(this, actor);
+            MainAccessories.SharedMask.Configure(this, actor);
         }
 
         if (sprites[0] != null && sprites[0].IsImage) //Manual sort for Images

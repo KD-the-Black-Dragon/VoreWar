@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using UnityEngine;
 
 class Gazelle : BlankSlate
 {
@@ -123,15 +126,6 @@ class Gazelle : BlankSlate
 
         if (actor.HasBelly == false)
             return null;
-        if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb))
-            return Sprites2[30];
-        if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb))
-        {
-            if (actor.GetStomachSize(27, .8f) == 27)
-                return Sprites2[29];
-            else if (actor.GetStomachSize(27, .9f) == 27)
-                return Sprites2[28];
-        }
         return Sprites2[0 + actor.GetStomachSize(27)];
     }
 
@@ -152,15 +146,6 @@ class Gazelle : BlankSlate
             return null;
         if (actor.PredatorComponent?.BallsFullness > 0)
         {
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.balls))
-                return Sprites2[66];
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls))
-            {
-                if (actor.GetBallSize(30, .8f) == 30)
-                    return Sprites2[65];
-                else if (actor.GetBallSize(30, .9f) == 30)
-                    return Sprites2[64];
-            }
             return Sprites2[33 + actor.GetBallSize(30)];
         }
         return Sprites2[33];

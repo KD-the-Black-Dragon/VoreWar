@@ -1,5 +1,6 @@
-﻿// Modified for the VoreWar mercenary-company conversion.
+// Modified for the VoreWar mercenary-company conversion.
 // 2026-11-01: Disconnect rejected graphics instances and their typed rendering hooks (spec 03B4).
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
 using System.Collections.Generic;
@@ -45,8 +46,6 @@ internal class ClothingDiscards
             AllClothes = new List<MainClothing>();
             AllClothes.AddRange(ClothingTypes.All);
             AllClothes.AddRange(RaceSpecificClothing.All);
-            AllClothes.AddRange(TaurusClothes.TaurusClothingTypes.All);
-            AllClothes.AddRange(CruxClothing.CruxClothingTypes.All);
             AllClothes.Add(new KangarooClothes.Loincloth1());
             AllClothes.Add(new KangarooClothes.Loincloth2()); //3 and 4 are unneeded because they share with 2
             AllClothes.AddRange(Races.Bees.DiscardData);
@@ -85,10 +84,7 @@ internal class ClothingDiscards
                 sprite.GetComponentInChildren<SpriteRenderer>().material = ColorPaletteMap.GetPalette(ColorPaletteMap.SwapType.Clothing, color).colorSwapMaterial;
             else if (clothingType.DiscardUsesAltPalettes)
             {
-                if (this.race == Race.Renamon)
-                    sprite.GetComponentInChildren<SpriteRenderer>().material = ColorPaletteMap.GetPalette(ColorPaletteMap.SwapType.RenamonSkin, clothingType.AltPaletteColor).colorSwapMaterial;
-                else
-                    sprite.color = ColorMap.GetClothingColor(color);
+                sprite.color = ColorMap.GetClothingColor(color);
             }
             else
                 sprite.color = ColorMap.GetClothingColor(color);

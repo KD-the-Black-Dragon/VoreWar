@@ -1,5 +1,6 @@
-﻿// Modified for the VoreWar mercenary-company conversion.
+// Modified for the VoreWar mercenary-company conversion.
 // 2026-11-01: Remove the voluntary surrender action from both tactical modes (spec 10).
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Collections.Generic;
@@ -251,26 +252,6 @@ static class TacticalActionList
           onExecute: (a, t) => a.TailStrike(t),
           minimumMp: 1));
         TargetedDictionary[SpecialAction.TailStrike] = TargetedActions.Last();
-
-        TargetedActions.Add(new TargetedTacticalAction(
-          name: "Giant Sweep",
-          requiresPred: false,
-          conditional: (a) => a.Unit.HasTrait(Traits.TheMatron),
-          onClicked: () => State.GameManager.TacticalMode.TrySetSpecialMode(SpecialAction.GiantSweep),
-          onExecute: (a, t) => a.SweepAttack(true),
-          manaCost: 40,
-          minimumMp: 1));
-        TargetedDictionary[SpecialAction.GiantSweep] = TargetedActions.Last();
-
-        TargetedActions.Add(new TargetedTacticalAction(
-          name: "SweepingSwallow",
-          requiresPred: true,
-          conditional: (a) => a.Unit.HasTrait(Traits.TheMatron),
-          onClicked: () => State.GameManager.TacticalMode.TrySetSpecialMode(SpecialAction.SweepingSwallow),
-          onExecute: (a, t) => a.SweepAttack(false),
-          manaCost: 40,
-          minimumMp: 1));
-        TargetedDictionary[SpecialAction.SweepingSwallow] = TargetedActions.Last();
 
         TargetedActions.Add(new TargetedTacticalAction(
             name: "All-In Vore",

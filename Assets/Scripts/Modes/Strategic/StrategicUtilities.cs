@@ -1,6 +1,7 @@
-﻿// Modified for the VoreWar mercenary-company conversion.
+// Modified for the VoreWar mercenary-company conversion.
 // 2026-11-01: Complete approved ability retirement and close legacy reactivation paths (spec 05A3B17).
 // 2026-11-01: Separate stored species reads from intentional override creation (spec 03B3C).
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Collections.Generic;
@@ -206,13 +207,11 @@ static class StrategicUtilities
 
     public static void TryClaim(Vec2i location, Empire empire)
     {
-        if (empire.Race == Race.Goblins)
-            return;
 
         ClaimableBuilding claimable = GetClaimableAt(location);
         if (claimable != null)
         {
-            if (empire.Race >= Race.Vagrants)
+            if (empire.Race >= (Race)100)
             {
 
                 claimable.Owner = null;
@@ -239,7 +238,7 @@ static class StrategicUtilities
         {
             if ((construct.Owner != empire && (construct.CaptureTime <= 0 || construct.Owner == null)) || Config.BuildConfig.BuildingCaptureTurns == 0)
             {
-                if (empire.Race >= Race.Vagrants)
+                if (empire.Race >= (Race)100)
                 {
                     if (construct.Owner == null)
                     {
@@ -642,9 +641,7 @@ static class StrategicUtilities
 
     internal static void SetAIClass(Unit unit, float magicChance = 0)
     {
-        if (unit.Race == Race.Fairies)
-            unit.AIClass = AIClass.MagicRanged;
-        else if ((unit.Race == Race.Succubi || unit.FixedGear == false) && unit.BestSuitedForRanged() ||
+        if ((unit.FixedGear == false) && unit.BestSuitedForRanged() ||
             (unit.FixedGear && unit.GetBestRanged() != null))
         {
             if (unit.Items[1] is SpellBook || State.Rand.NextDouble() < magicChance)

@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using UnityEngine;
 
 class Dragon : BlankSlate
 {
@@ -259,16 +262,6 @@ class Dragon : BlankSlate
         if (position == Position.Standing || position == Position.StandingCrouch)
         {
             Belly.layer = 16;
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb))
-                return Sprites[69];
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb))
-            {
-                if (actor.GetStomachSize(17, 1.4f) == 17)
-                    return Sprites[68];
-                else if (actor.GetStomachSize(17, 1.6f) == 17)
-                    return Sprites[67];
-            }
-            else
             {
                 if (position == Position.StandingCrouch && actor.GetStomachSize(16, 1.75f) >= 12)
                 {
@@ -307,16 +300,6 @@ class Dragon : BlankSlate
             return null;
         if (actor.PredatorComponent?.BallsFullness > 0)
         {
-            //AddOffset(Balls, 0, 21 * .625f);
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.balls))
-                return Sprites[91];
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls))
-            {
-                if (actor.GetBallSize(14, 1.4f) == 14)
-                    return Sprites[90];
-                else if (actor.GetBallSize(14, 1.6f) == 14)
-                    return Sprites[89];
-            }
             return Sprites[75 + actor.GetBallSize(13, 1.75f)];
         }
         return Sprites[75];

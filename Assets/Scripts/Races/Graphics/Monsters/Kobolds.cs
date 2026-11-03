@@ -1,4 +1,7 @@
-﻿using System;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -70,16 +73,12 @@ class Kobolds : BlankSlate
             if (ballSize == 14) ballsYOffset = 16;
             if (ballSize == 15) ballsYOffset = 24;
             if (ballSize == 16) ballsYOffset = 30;
-            if (ballSize == 16 && actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls)) ballsYOffset = 30;
-            if (ballSize == 16 && actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.balls)) ballsYOffset = 30;
             bool OnBalls = ballsYOffset > 0;
             float stomachYOffset = 0;
             int stomachSize = actor.GetStomachSize(12);
             if (stomachSize == 10) stomachYOffset = 6;
             if (stomachSize == 11) stomachYOffset = 10;
             if (stomachSize == 12) stomachYOffset = 20;
-            if (stomachSize == 12 && actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb)) stomachYOffset = 20;
-            if (stomachSize == 12 && actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb)) stomachYOffset = 20;
             ballsYOffset *= .625f; //Change from pixels to units
             stomachYOffset *= .625f; //Change from pixels to units
             AddOffset(Balls, 0, -ballsYOffset);
@@ -221,17 +220,6 @@ class Kobolds : BlankSlate
         Balls.layer = facingFront ? 8 : 18;
         if (actor.PredatorComponent?.BallsFullness > 0)
         {
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.balls) && actor.GetBallSize(16) == 16)
-                return Sprites[62];
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls))
-            {
-                if (actor.GetBallSize(16, 0.7f) == 16)
-                    return Sprites[113];
-                else if (actor.GetBallSize(16, 0.8f) == 16)
-                    return Sprites[112];
-                else if (actor.GetBallSize(16, 0.9f) == 16)
-                    return Sprites[111];
-            }
             return Sprites[45 + baseSize + actor.GetBallSize(16 - baseSize)];
         }
         return Sprites[45 + baseSize];
@@ -244,33 +232,11 @@ class Kobolds : BlankSlate
         if (facingFront)
         {
             Belly.layer = 15;
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb) && actor.GetStomachSize(12) == 12)
-                return Sprites[84];
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb))
-            {
-                if (actor.GetStomachSize(12, 0.7f) == 12)
-                    return Sprites[110];
-                else if (actor.GetStomachSize(12, 0.8f) == 12)
-                    return Sprites[109];
-                else if (actor.GetStomachSize(12, 0.9f) == 12)
-                    return Sprites[108];
-            }
             return Sprites[71 + actor.GetStomachSize(12)];
         }
         else
         {
             Belly.layer = 2;
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb) && actor.GetStomachSize(12) == 12)
-                return Sprites[102];
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb))
-            {
-                if (actor.GetStomachSize(12, 0.7f) == 12)
-                    return Sprites[116];
-                else if (actor.GetStomachSize(12, 0.8f) == 12)
-                    return Sprites[115];
-                else if (actor.GetStomachSize(12, 0.9f) == 12)
-                    return Sprites[114];
-            }
             return Sprites[89 + actor.GetStomachSize(12)];
         }
 

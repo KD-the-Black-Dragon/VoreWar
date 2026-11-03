@@ -1,4 +1,7 @@
-﻿using System;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -182,66 +185,6 @@ class Harvester : BlankSlate
             return null;
 
         int size = actor.GetStomachSize(52);
-
-        if (size >= 52 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.Harvester[49];
-        }
-
-        else if (size >= 49 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.Harvester[48];
-        }
-
-        else if (size >= 46 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.Harvester[47];
-        }
-
-        else if (size >= 43 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.Harvester[46];
-        }
-
-        else if (size >= 40 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.Harvester[45];
-        }
-
-        else if (size >= 37 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.Harvester[44];
-        }
-
-        else if (size >= 34 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.Harvester[43];
-        }
-
-        else if (size >= 30 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.Harvester[42];
-        }
-
-        else if (size >= 28 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.Harvester[41];
-        }
-
-        else if (size >= 26 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.Harvester[40];
-        }
-
-        else if (size >= 24 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.Harvester[39];
-        }
-
-        else if (size >= 22 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.Harvester[38];
-        }
 
         if (size > 17) size = 17;
 

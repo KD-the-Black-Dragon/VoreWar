@@ -2,6 +2,7 @@
 // 2026-10-31: Retire Goddess Pendant respawn grant; retain its battle-start effect (spec 05A3B7).
 // 2026-11-01: Exclude retired ability books from random generation (spec 05A3B17).
 // 2026-11-01: Provisional weak ranged attack for curated SpitterSlugs (spec 07).
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
 using System;
@@ -83,53 +84,10 @@ public enum ItemType
 }
 
 
-public enum SpecialItems
-{
-    SeliciaWeapon,
-    SuccubusWeapon,
-    VisionWeapon,
-    KiWeapon,
-    ScorchWeapon,
-    DRACOWeapon,
-    ZoeyWeapon,
-    ZeraWeapon,
-    CierihakaWeapon,
-    AurilikaWeapon,
-    SalixWeapon,
-    ErinWeapon,
-    ErinWings,
-    AbaWeapon,
-    AbaArmor,
-    BellaWeapon,
-    SingularityWeapon,
-    SingularityArmor,
-    FeitWeapon,
-    FeitArmor,
-    OmniBuster,
-    OmniLauncher,
-    TaraWeapon,
-    XelhildeWeapon,
-    SkapaWeapon,
-    TatltuaeWeapon,
-    SevilleMelee,
-    SevilleArmor,
-    NectarWeapon,
-    RyanWeapon,
-    KonaneWeapon,
-    OoviKatWeapon,
-    CherubWeapon,
-    SeraphWeapon,
-    RenamonWeapon,
-    OliviaWeapon,
-}
-
-
 public class ItemRepository
 {
     [OdinSerialize]
     List<Item> items;
-    [OdinSerialize]
-    List<Item> specialItems;
     [OdinSerialize]
     List<Item> monsterItems;
     [OdinSerialize]
@@ -248,24 +206,24 @@ public class ItemRepository
         };
         monsterItems = new List<Item>()
         {
-            new Weapon(name:"Vagrant Stinger", description:"Jellyfish stinger", cost:4, graphic:0, damage:3, range:1),
+            null,
             new Weapon(name:"Serpent Fangs", description:"Fangs", cost:4, graphic:0, damage:3, range:1),
             new Weapon(name:"Wyvern Claws", description:"Claws", cost:4, graphic:0, damage:5, range:1),
             new Weapon(name:"Wyvern Matron Claws", description:"Claws", cost:4, graphic:0, damage:6, range:1),
-            new Weapon(name:"Puny Claws", description:"Puny Claws", cost:4, graphic:0, damage:2, range:1),
-            new Weapon(name:"Shark Jaws", description:"Shark Jaws", cost:4, graphic:0, damage:4, range:1),
+            null,
+            null,
             new Weapon(name:"Wolf Claws", description:"Fearsome claws upon massive paws", cost:4, graphic:0, damage:5, range:1),
-            new Weapon(name:"Dark Swallower Jaws", description:"Dark Swallower Jaws", cost:4, graphic:0, damage:2, range:1),
-            new Weapon(name:"Pointy Teeth", description:"Cake Jaws", cost:4, graphic:0, damage:6, range:1),
+            null,
+            null,
             new Weapon(name:"Harvester Scythes", description:"Scythes", cost:4, graphic:0, damage:6, range:1),
-            new Weapon(name:"Collector Maw", description:"Maw", cost:4, graphic:0, damage:4, range:1),
-            new Weapon(name:"Voilin Jaws", description:"Jaws", cost:4, graphic:0, damage:3, range:1),
+            null,
+            null,
             new Weapon(name:"Bat Jaws", description:"Jaws", cost:4, graphic:0, damage:3, range:1),
-            new Weapon(name:"Frog Tongue", description:"Tongue", cost:4, graphic:0, damage:6, range:1),
+            null,
             new Weapon(name:"Dragon Claws", description:"Claws", cost:4, graphic:0, damage:8, range:1),
             new Weapon(name:"Dragonfly Mandibles", description:"Mandibles", cost:4, graphic:0, damage:3, range:1),
             new Weapon(name:"Plant Bite", description:"Bite", cost:4, graphic:0, damage:5, range:1),
-            new Weapon(name:"Fairy Spark", description:"Magical Attack", cost:4, graphic:0, damage:5, range:5, omniWeapon: true, magicWeapon: true),
+            null,
             new Weapon(name:"Ant Mandibles", description:"Mandibles", cost:4, graphic:0, damage:3, range:1),
             new Weapon(name:"Gryphon Claws", description:"Gryphon Claws", cost:4, graphic:0, damage:6, range:1),
             new Weapon(name:"Slug Slime", description:"Slug Slime", cost:2, graphic:0, damage:2, range:5, omniWeapon: true),
@@ -276,90 +234,48 @@ public class ItemRepository
             new Weapon(name:"Mantis Scythes", description:"Mantis Scythes", cost:4, graphic:0, damage:6, range:1),
             new Weapon(name:"Eastern Dragon Jaws", description:"Eastern Jaws", cost:4, graphic:0, damage:5, range:1),
             new Weapon(name:"Catfish Jaws", description:"Catfish Jaws", cost:4, graphic:0, damage:3, range:1),
-            new Weapon(name:"Raptor Jaws", description:"Raptor Jaws", cost:4, graphic:0, damage:3, range:1),
+            null,
             new Weapon(name:"Warrior Ant Mandibles", description:"Warrior Ant Mandibles", cost:4, graphic:0, damage:3, range:1),
             new Weapon(name:"Gazelle Headbash", description:"Gazelle Headbash", cost:4, graphic:0, damage:4, range:1),
-            new Weapon(name:"Earthworm Maw", description:"Earthworm Maw", cost:4, graphic:0, damage:4, range:1),
+            null,
             new Weapon(name:"Lizard Jaws", description:"Lizard Jaws", cost:4, graphic:0, damage:6, range:1),
             new Weapon(name:"Monitor Lizard Claws", description:"Monitor Lizard Claws", cost:4, graphic:0, damage:5, range:1),
-            new Weapon(name:"Schiwardez Jaws", description:"Schiwardez Jaws", cost:4, graphic:0, damage:4, range:1),
+            null,
             new Weapon(name:"Terrorbird Beak", description:"Terrorbird Beak", cost:4, graphic:0, damage:5, range:1),
             new Weapon(name:"Dratopyr Jaws", description:"Dratopyr Jaws", cost:4, graphic:0, damage:4, range:1),
             new Weapon(name:"Lion Fangs", description:"Serrated and pointy (Feline) Canines", cost:4, graphic:0, damage:6, range:1),
             new Weapon(name:"Goodra Slug Antenna", description:"Goodra's Power Whip", cost:4, graphic:0, damage:5, range:1),
-            new Weapon(name:"Whisp fire", description:"Whisp's FoxFire", cost:4, graphic:0, damage:5, range:5, omniWeapon: true, magicWeapon: true),
+            null,
             new Weapon(name:"Horse Hooves", description:"A terribly painful kick to the gut!", cost:4, graphic:0, damage:4, range:1),
             new Weapon(name:"Fox Claws", description:"While smaller than say a wolf,\n these claws are equally as painful.", cost:4, graphic:0, damage:4, range:1),
             new Weapon(name:"Bladed Appendage", description:"The Terminids' armored exoskeleton is both sturdy and sharp enough to pierce through most contemporary armor.  And when four or five of them strike you at once.... ^v><^ ", cost:4, graphic:0, damage:4, range:1),
-            new Weapon(name:"Orca Jaws", description:"The fearsome jaws of a killer whale", cost:4, graphic:0, damage:5, range:1),
-            new Weapon(name:"Exploding Paw", description:"Normaly a bunny's punch would be a laughable attack, but this bunny's paws seem to explode on contact. So...", cost:4, graphic:0, damage:5, range:1),
+            null,
+            null,
             new Weapon(name:"Otachi Claws", description:"The all-powerful claws of the Otachi.", cost:4, graphic:0, damage:6, range:1),
             new Weapon(name:"Slime Tackle", description:"Slime attack.", cost:4, graphic:0, damage:4, range:1),
-            new Weapon(name:"Viral Stinger", description:"A viral stinger laced with Virae Ultimae cells to infect prey.", cost:4, graphic:0, damage:5, range:1),
-            new Weapon(name:"Viisel Claw", description:"Claw Attack", cost:4, graphic:0, damage:4, range:1),
-            new Weapon(name:"Eevee Paw", description:"Paw Attack", cost:4, graphic:0, damage:4, range:1),
+            null,
+            null,
+            null,
             new Weapon(name:"Umbreon Paw", description:"Paw Attack", cost:4, graphic:0, damage:4, range:1),
-            new Weapon(name:"Equaleon Paw", description:"Paw Attack", cost:4, graphic:0, damage:4, range:1),
+            null,
             new Weapon(name:"Raiju Jaws", description:"The crushing jaws of the Raiju.", cost:4, graphic:0, damage:6, range:1),
             new Weapon(name:"Smudger Claws", description:"Smudger Claws", cost:4, graphic:0, damage:5, range:1),
             new Weapon(name:"Space Roach Mandibles", description:"Space Roach Mandibles", cost:4, graphic:0, damage:6, range:1),
-            new Weapon(name:"Dryad Punch", description:"Both Bark and Bite", cost:4, graphic:0, damage:4, range:1),
-            new Weapon(name:"Earth Spike", description:"A heavy spike made of packed dirt", cost:4, graphic:0, damage:4, range:3, omniWeapon: true),
-            new Weapon(name:"Torrent", description:"Raw element of water right in your face", cost:4, graphic:0, damage:4, range:5, omniWeapon: true, magicWeapon: true),
-            new Weapon(name:"Fungal Claw", description:"Sharp claws of a fungal dryad", cost:4, graphic:0, damage:4, range:1),
+            null,
+            null,
+            null,
+            null,
             new Weapon(name:"Rex Jaws", description:"Chomp!", cost:4, graphic:0, damage:15, range:1),
             new Weapon(name:"Utahraptor Claws", description:"Utahraptor Claws", cost:4, graphic:0, damage:6, range:1),
-            new Weapon(name:"Exomatter Pulse", description:"A destructive pulse of theoretical particles that sit on the border between being real and not. Harmless if you aren't the target... Very harmful if you are.", cost:4, graphic:0, damage:5, range:1),
-            new Weapon(name:"Pudding Jaws", description:"Slimy and Sweet", cost:4, graphic:0, damage:3, range:1),
-            new Weapon(name:"Soul Spark", description:"Magical energy drawn from the soul, capable of being fired at range in relatively weak bursts.", cost:4, graphic:0, damage:5, range:5, omniWeapon:true, magicWeapon: true, lockedItem:true),
-            new Weapon(name:"Venomous Fangs", description:"Carry a deadly venom", cost:4, graphic:0, damage:6, range:1),
+            null,
+            null,
+            null,
+            new Weapon(name:"Venomous Fangs", description:"Carry a deadly venom", cost:4, graphic:0, damage:6, range:1)
         };
-
-        specialItems = new List<Item>()
-        {
-            new Weapon(name:"Selicia's Bite", description:"Bite attack", cost:4, graphic:0, damage:10, range:1),
-            new Weapon(name:"Summoned Sword", description:"Imp that drops a sword on target", cost:4, graphic:0, damage:4, range:3, omniWeapon:true, lockedItem:true),
-            new Weapon(name:"Vision's Bite", description:"Bite Attack", cost:4, graphic:0, damage:12, range:1),
-            new Weapon(name:"Ki's Bite", description:"Bite Attack", cost:4, graphic:0, damage:8, range:1),
-            new Weapon(name:"Scorch's Bite", description:"Bite Attack", cost:4, graphic:0, damage:10, range:1),
-            new Weapon(name:"DRACO's Bite", description:"Bite Attack", cost:4, graphic:0, damage:12, range:1),
-            new Weapon(name:"Zoey's Limbs", description:"Fist / Tail Attack", cost:4, graphic:0, damage:8, range:1),
-            new Weapon(name:"Zera's Claws", description:"Claw Attack", cost:4, graphic:0, damage:12, range:1),
-            new Weapon(name:"Cierihaka's Bite", description:"Bite Attack", cost:4, graphic:0, damage:15, range:1, accuracyModifier: 1.2f),
-            new Weapon(name:"Aurilika's Gohei", description:"A sacred talisman", cost:4, graphic:0, damage:4, range:1, accuracyModifier: 5f, lockedItem:true),
-            new Weapon(name:"Salix's Staff", description:"A weighty magic staff", cost:4, graphic:0, damage:6, range:1, lockedItem:true),
-            new Weapon(name:"Nyangel Claws", description:"Near-useless cat scratch!", cost:4, graphic:0, damage:8, range:1),
-            new Accessory(name:"Nyangel Wings", description:"The softest, most delicious looking pair of wings you ever did see!\n+5 Willpower", cost:6, changedStat:(int)Stat.Will, statBonus:5 ),
-            new Weapon(name:"Grand Talons", description:"All the better to grasp you with, my dear.", cost:4, graphic:0, damage:16, range:1, lockedItem:true),
-            new Accessory(name:"Grand Plating", description:"Abakhanskya is covered from head to toe in highly durable composite armor plating\n+10 Endurance", cost:6, changedStat:(int)Stat.Endurance, statBonus:10 ),
-            new Weapon(name:"Bella's Staff", description:"A Shepherd's Staff", cost:4, graphic:0, damage:10, range:1, lockedItem:true, accuracyModifier:.75f),
-            new Weapon(name:"Voidshift Antlers", description:"With power over dark energy, Singularity can shape the void matter of her antlers to any shape in order to attack.", cost:4, graphic:0, damage:8, range:2, lockedItem:true),
-            new Accessory(name:"Comfy Sweater", description:"Singularity's favorite sweater.", cost:0, changedStat:(int)Stat.Endurance, statBonus:10 ),
-            new Weapon(name:"Feit's Claws", description:"The deadly claws upon Feit's forelimbs synergize well with the wing-like feathers, allowing her to effectively glide and pin down her enemies.", cost:4, graphic:0, damage:8, range:1),
-            new Accessory(name:"Feit's Talons", description:"A Draco-Raptor's talons are quite powerful, enabling these predators to quickly pounce upon distant prey.", cost:6, changedStat:(int)Stat.Endurance, statBonus:10 ),
-            new Weapon(name:"Omni Buster", description:"A melee weapon made from a semi-morphic material that takes on a form best suited to it's wielder. (Dissapates upon separation from it's wielder.)", cost:4, graphic:2, damage:9, range:1, accuracyModifier:1.35f),
-            new Weapon(name:"Omni Launcher", description:"A ranged weapon made from a semi-morphic material that takes on a form best suited to it's wielder. (Dissapates upon separation from it's wielder.)", cost:4, graphic:6, damage:8, range:6, accuracyModifier:.75f),
-            new Weapon(name:"Tara's Claws", description:"A fearsome set of claws attatched to an equally fearsome dragon.", cost:4, graphic:0, damage:8, range:1, lockedItem:true),
-            new Weapon(name:"Xelhilde's Zweihänder", description:"A cobalt zweihänder forged in Mondfeld. It's blade seems to shimer like the moon.", cost:4, graphic:0, damage:9, range:1, accuracyModifier: 1.4f, lockedItem:true),
-            new Weapon(name:"Skapa's Wingtalons", description:"Skapa go pounce.", cost:4, graphic:0, damage:8, range:1, lockedItem:true),
-            new Weapon(name:"Entropic Chaos", description:"Cantrip Tatltuae learned some time ago that creates pockets of intense chaotic entropy, ripping the very matter of his foes apart.", cost:4, graphic:0, damage:7, range:8, accuracyModifier: 1f, omniWeapon:true, magicWeapon: true, lockedItem:true),
-            new Weapon(name:"Witch's fangs", description:"Imbued with malice, coursing with vile venom, would make for great daggers~", cost:4, graphic:0, damage:8, range:1, lockedItem:true),
-            new Accessory(name:"Pendant of vicious spirit", description:"Imbued with resentment, coursing with visceral curses bound over years of careful weaving and knotting.", cost:6, changedStat:(int)Stat.Voracity, statBonus:10 ),
-            new Weapon(name:"Nectar's Claws", description:"Large razor sharp sphinx claws, more than capable of leaving deep gashes in most foes.", cost:4, graphic:0, damage:10, range:1, accuracyModifier: 1.1f, lockedItem:true),
-            new Weapon(name:"Captain's Polearm", description:"A trusty polearm that has seen many battles, and slain many more.", cost:4, graphic:0, damage:10, range:1, accuracyModifier: 1.1f, lockedItem:true),
-            new Weapon(name:"Konane's Talons", description:"Strong enough to sunder armor.", cost:4, graphic:0, damage:6, range:1, accuracyModifier: 1.1f, lockedItem:true),
-            new Weapon(name:"Magic Blossom", description:"A magic seed that pops violently on impact.", cost:4, graphic:0, damage:4, range:3, omniWeapon:true, lockedItem:true),
-            new Weapon(name:"Cherubic Light", description:"The magical energy that forms Cherub's halo can be compressed into powerful beams of light.", cost:4, graphic:0, damage:7, range:8, accuracyModifier: 1f, omniWeapon:true, magicWeapon: true, lockedItem:true),
-            new Weapon(name:"Seraphim Soulflame", description:"Seraph is capable of shaping magical energy into a flame that burns both body and soul.", cost:4, graphic:0, damage:9, range:8, accuracyModifier: 1f, omniWeapon:true, magicWeapon: true, lockedItem:true),
-            new Weapon(name:"Digi-Palm", description:"Palms capable of delivering deadly strikes when empowered with spiritual energy.", cost:4, graphic:0, damage:4, range:1, lockedItem:true),
-            new Weapon(name:"Electro Saber", description:"An unique electricity weapon summoned by the user that scales off of mind instead of strength.", cost:4, graphic:0, damage:5, range:1, lockedItem:true),
-        };
-
 
         AllItems = new List<Item>();
         AllItems.AddRange(items);
-        AllItems.AddRange(monsterItems);
-        AllItems.AddRange(specialItems);
+        AllItems.AddRange(monsterItems.Where(item => item != null));
 
 
     }
@@ -370,7 +286,6 @@ public class ItemRepository
 
     public Item GetMonsterItem(int i) => monsterItems[i];
 
-    public Item GetSpecialItem(SpecialItems i) => specialItems[(int)i];
 
     public Item GetItem(ItemType i) => items[(int)i];
 
@@ -454,7 +369,7 @@ public class ItemRepository
 
     internal bool ItemIsUnique(Item item)
     {
-        return monsterItems.Contains(item) || specialItems.Contains(item);
+        return monsterItems.Contains(item);
     }
 
     public bool ItemIsRangedWeapon(int i)
@@ -510,11 +425,9 @@ public class ItemRepository
     {
         var ret = items.Where(s => s.Name == item.Name).FirstOrDefault();
         if (ret == null)
-            ret = monsterItems.Where(s => s.Name == item.Name).FirstOrDefault();
-        if (ret == null)
-            ret = specialItems.Where(s => s.Name == item.Name).FirstOrDefault();
+            ret = monsterItems.Where(s => s != null && s.Name == item.Name).FirstOrDefault();
         if (item.Name.Contains("Frog ???"))
-            ret = monsterItems.Where(s => s.Name.Contains("Frog Tongue")).FirstOrDefault();
+            ret = monsterItems.Where(s => s != null && s.Name.Contains("Frog Tongue")).FirstOrDefault();
         if (ret == null)
         {
             if (item is Weapon weap)

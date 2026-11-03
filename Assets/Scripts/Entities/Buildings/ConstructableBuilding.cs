@@ -1,4 +1,7 @@
-﻿using OdinSerializer;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using OdinSerializer;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -88,7 +91,7 @@ public abstract class ConstructibleBuilding
             CaptureTime--;
             if (CaptureTime <= 0)
             {
-                if (StrategicUtilities.GetEnemyArmyWithinXTiles(this, 0).First().Empire.Race >= Race.Vagrants)
+                if (StrategicUtilities.GetEnemyArmyWithinXTiles(this, 0).First().Empire.Race >= (Race)100)
                 {
                     switch (Config.BuildConfig.MonsterBuildingCapture)
                     {

@@ -1,4 +1,7 @@
-﻿using System;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -274,18 +277,6 @@ class Lizards : DefaultRaceData
             if (actor.HasBelly)
             {
                 belly.SetActive(true);
-                if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb) && actor.GetStomachSize() == 15)
-                {
-                    belly.transform.localScale = new Vector3(1, 1, 1);
-                    AddOffset(Belly, 0, -30 * .625f);
-                    return State.GameManager.SpriteDictionary.Bellies[17];
-                }
-                else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && actor.GetStomachSize() == 15)
-                {
-                    belly.transform.localScale = new Vector3(1, 1, 1);
-                    AddOffset(Belly, 0, -30 * .625f);
-                    return State.GameManager.SpriteDictionary.Bellies[16];
-                }
                 if (actor.PredatorComponent.VisibleFullness > 4)
                 {
                     float extraCap = actor.PredatorComponent.VisibleFullness - 4;
@@ -302,18 +293,6 @@ class Lizards : DefaultRaceData
         else {if (actor.HasBelly)
             {
                 belly.SetActive(true);
-                if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb) && actor.GetStomachSize() == 15)
-                {
-                    belly.transform.localScale = new Vector3(1, 1, 1);
-                    AddOffset(Belly, 0, -30 * .625f);
-                    return State.GameManager.SpriteDictionary.Bellies[17];
-                }
-                else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && actor.GetStomachSize() == 15)
-                {
-                    belly.transform.localScale = new Vector3(1, 1, 1);
-                    AddOffset(Belly, 0, -30 * .625f);
-                    return State.GameManager.SpriteDictionary.Bellies[16];
-                }
                 if (actor.PredatorComponent.VisibleFullness > 4)
                 {
                     float extraCap = actor.PredatorComponent.VisibleFullness - 4;
@@ -471,26 +450,6 @@ protected override Sprite DickSprite(Actor_Unit actor)
         
         int baseSize = actor.Unit.DickSize / 3;
         int ballOffset = actor.GetBallSize(21, 1);
-        if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.balls) ?? false) && actor.GetBallSize(21, .9f) == 21)
-        {
-            AddOffset(Balls, 0, -18 * .625f);
-            return State.GameManager.SpriteDictionary.Balls[24];
-        }
-        else if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, PreyLocation.balls) ?? false) && actor.GetBallSize(21, .9f) == 21)
-        {
-            AddOffset(Balls, 0, -18 * .625f);
-            return State.GameManager.SpriteDictionary.Balls[23];
-        }
-        else if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, PreyLocation.balls) ?? false) && actor.GetBallSize(21, .9f) == 20)
-        {
-            AddOffset(Balls, 0, -15 * .625f);
-            return State.GameManager.SpriteDictionary.Balls[22];
-        }
-        else if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, PreyLocation.balls) ?? false) && actor.GetBallSize(21, .9f) == 19)
-        {
-            AddOffset(Balls, 0, -14 * .625f);
-            return State.GameManager.SpriteDictionary.Balls[21];
-        }
         int combined = Math.Min(baseSize + ballOffset + 3, 20);
         if (combined == 21)
             AddOffset(Balls, 0, -14 * .625f);
@@ -514,26 +473,6 @@ protected override Sprite DickSprite(Actor_Unit actor)
         AddOffset(Balls, 0, 0);
         int baseSize = actor.Unit.DickSize / 3;
         int ballOffset = actor.GetBallSize(21, 1);
-        if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.balls) ?? false) && actor.GetBallSize(21, .9f) == 21)
-        {
-            AddOffset(Balls, 0, -18 * .625f);
-            return SpriteDictionary.LizardsBooty[42];
-        }
-        else if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, PreyLocation.balls) ?? false) && actor.GetBallSize(21, .9f) == 21)
-        {
-            AddOffset(Balls, 0, -18 * .625f);
-            return SpriteDictionary.LizardsBooty[41];
-        }
-        else if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, PreyLocation.balls) ?? false) && actor.GetBallSize(21, .9f) == 20)
-        {
-            AddOffset(Balls, 0, -15 * .625f);
-            return SpriteDictionary.LizardsBooty[40];
-        }
-        else if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, PreyLocation.balls) ?? false) && actor.GetBallSize(21, .9f) == 19)
-        {
-            AddOffset(Balls, 0, -14 * .625f);
-            return SpriteDictionary.LizardsBooty[39];
-        }
         int combined = Math.Min(baseSize + ballOffset + 3, 20);
         if (combined == 21)
             AddOffset(Balls, 0, -14 * .625f);

@@ -1,3 +1,6 @@
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
 public class NPC_unit : Unit
 {
 
@@ -5,9 +8,9 @@ public class NPC_unit : Unit
     {
         if (race == Race.Alligators || race == Race.Komodos || race == Race.Badgers)
             GenMelee(level - 1, advancedWeapons);
-        else if (race >= Race.Vagrants)
+        else if (race >= (Race)100)
             GenMonster(level - 1);
-        else if (FixedGear || race == Race.Succubi || race == Race.Renamon)
+        else if (FixedGear)
             StrategicUtilities.CheatForceLevelUps(this, level - 1);
         else
         {
@@ -114,25 +117,6 @@ public class NPC_unit : Unit
         if (Config.LetterBeforeLeaderNames != "")
             Name = Config.LetterBeforeLeaderNames + Name.ToLower();
         ExpMultiplier = 2;
-        if (race == Race.Slimes)
-        {
-            if (Config.HermFraction >= 0.05)
-            {
-                DickSize = 0;
-            }
-            else
-            {
-                DickSize = -1;
-            }
-            ClothingType = 1;
-            SetDefaultBreastSize(1);
-            HairStyle = 1;
-            ClothingColor = 0;
-            ClothingColor2 = 0;
-            ClothingColor3 = 0;
-            ReloadTraits();
-            InitializeTraits();
-        }
         if (Ranged)
             Stats[(int)Stat.Dexterity] += levels;
         else

@@ -1,4 +1,7 @@
-﻿using System;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -131,56 +134,6 @@ class BlackWidow : BlankSlate
             return Sprites[14];
 
         int size = actor.GetStomachSize(59);
-
-        if (size >= 59 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.BlackWidow[54];
-        }
-
-        else if (size >= 56 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.BlackWidow[53];
-        }
-
-        else if (size >= 53 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.BlackWidow[52];
-        }
-
-        else if (size >= 50 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.BlackWidow[51];
-        }
-
-        else if (size >= 47 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.BlackWidow[50];
-        }
-
-        else if (size >= 44 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.BlackWidow[49];
-        }
-
-        else if (size >= 41 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.BlackWidow[48];
-        }
-
-        else if (size >= 38 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.BlackWidow[47];
-        }
-
-        else if (size >= 35 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.BlackWidow[46];
-        }
-
-        else if (size >= 32 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.BlackWidow[45];
-        }
 
         if (size > 29) size = 29;
 

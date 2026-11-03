@@ -1,5 +1,6 @@
 // Modified for the VoreWar mercenary-company conversion.
 // 2026-11-01: Separate stored species reads from intentional override creation (spec 03B3C).
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
 using System;
@@ -380,7 +381,7 @@ public class Village
                 return 1;
             return 0;
         }
-        if (Race >= Race.Vagrants && Race < Race.Selicia)
+        if (Race >= (Race)100 && Race < (Race)170)
         {
             int image = 4;
             if (buildings.Contains(VillageBuilding.wall))
@@ -401,7 +402,7 @@ public class Village
         {
             return 0;
         }
-        if (Race >= Race.Vagrants && Race < Race.Selicia)
+        if (Race >= (Race)100 && Race < (Race)170)
         {
             return 0;
         }
@@ -593,7 +594,7 @@ public class Village
                 foreach (Unit unit in army.Units)
                 {
                   
-                    if (unit.Race >= Race.Selicia && Empire.ReplacedRace != unit.Race)
+                    if (unit.Race >= (Race)170 && Empire.ReplacedRace != unit.Race)
                         continue;
                     if (State.RaceSettings.GetRaceTraits(unit.Race).Contains(Traits.Infertile))
                         continue;
@@ -950,7 +951,7 @@ public class Village
 
     internal List<Unit> PrepareAndReturnGarrison()
     {
-        if (State.World.GetEmpireOfSide(Side) is MonsterEmpire && Race >= Race.Vagrants && Race < Race.Selicia)
+        if (State.World.GetEmpireOfSide(Side) is MonsterEmpire && Race >= (Race)100 && Race < (Race)170)
         {
             return PrepareAndReturnMonsterGarrison();
         }
@@ -987,7 +988,7 @@ public class Village
                 else
                 {
                     Race nextRace = VillagePopulation.RandomRaceByWeight();
-                    if (Weapons.Count == 0 && State.RaceSettings.GetRaceTraits(nextRace).Contains(Traits.Feral) == false && (nextRace >= Race.Vagrants && nextRace < Race.Selicia) == false)
+                    if (Weapons.Count == 0 && State.RaceSettings.GetRaceTraits(nextRace).Contains(Traits.Feral) == false && (nextRace >= (Race)100 && nextRace < (Race)170) == false)
                         continue;
                     bool found = false;
                     for (int j = 0; j < 15; j++)
@@ -1002,7 +1003,7 @@ public class Village
                     if (found == false)
                         continue;
 
-                    if (nextRace >= Race.Vagrants && nextRace < Race.Selicia)
+                    if (nextRace >= (Race)100 && nextRace < (Race)170)
                     {
                         CreateMonster(startingExp, ActiveGarrison);
                         continue;
@@ -1022,13 +1023,7 @@ public class Village
                         if (race.AllowedMainClothingTypes.Contains(RaceSpecificClothing.LizardPeasant))
                             unit.ClothingType = 1 + race.AllowedMainClothingTypes.IndexOf(RaceSpecificClothing.LizardPeasant);
                     }
-                    else if (unit.Race == Race.Lamia)
-                    {
-                        if (race.AllowedMainClothingTypes.Contains(RaceSpecificClothing.Toga))
-                            unit.ClothingType = 1 + race.AllowedMainClothingTypes.IndexOf(RaceSpecificClothing.Toga);
-                    }
-                    else
-                    {
+                    else {
                         if (unit.HasBreasts)
                         {
                             if (race.AllowedMainClothingTypes.Contains(ClothingTypes.FemaleVillager))
@@ -1328,7 +1323,7 @@ public class Village
             AvailableRaces = new List<Race>();
             foreach (Race race in ((Race[])Enum.GetValues(typeof(Race))).Where(s => (int)s >= 0))
             {
-                if (race < Race.Selicia && Config.World.GetValue($"Merc {race}"))
+                if (race < (Race)170 && Config.World.GetValue($"Merc {race}"))
                     AvailableRaces.Add(race);
             }
         }
@@ -1389,7 +1384,7 @@ public class Village
     MercenaryContainer CreateAdventurer(int highestExp)
     {
         MercenaryContainer merc = new MercenaryContainer();
-        Race race = Race.Cats;
+        Race race = Race.none;
 
         if (Side >= 700)
         {
@@ -1406,7 +1401,7 @@ public class Village
             }
             else
             {
-                var emps = State.World.AllActiveEmpires.Where(s => s.IsAlly(Empire) && s.Race < Race.Selicia && s.Race != Race.Goblins).ToArray();
+                var emps = State.World.AllActiveEmpires.Where(s => s.IsAlly(Empire) && s.Race < (Race)170).ToArray();
 
                 if (emps.Length > 0)
                 {
@@ -1419,7 +1414,7 @@ public class Village
         }
         else
         {
-            var possibleRaces = AvailableRaces.Where((s) => s < Race.Vagrants).Concat(State.World.MainEmpires.Where(t => t.KnockedOut == false).Select((i) => i.CapitalCity?.OriginalRace ?? i.Race)).ToArray();
+            var possibleRaces = AvailableRaces.Where((s) => s < (Race)100).Concat(State.World.MainEmpires.Where(t => t.KnockedOut == false).Select((i) => i.CapitalCity?.OriginalRace ?? i.Race)).ToArray();
             race = possibleRaces[State.Rand.Next(possibleRaces.Count())];
         }
 
@@ -1429,7 +1424,7 @@ public class Village
         int extraCost = 0;
         int exp = GetStartingXp() + (int)(highestExp * .3f) + State.Rand.Next(10);
         merc.Unit = new Unit((int)race, race, exp, canVore, UnitType.Adventurer, true);
-        if (race < Race.Vagrants && merc.Unit.FixedGear == false)
+        if (race < (Race)100 && merc.Unit.FixedGear == false)
         {
             if (merc.Unit.Items[0] == null)
             {
@@ -1465,7 +1460,7 @@ public class Village
         int extraCost = 0;
         int exp = (int)(highestExp * .8f) + State.Rand.Next(10);
         merc.Unit = new Unit((int)race, race, exp, true, UnitType.Mercenary, true);
-        if (race < Race.Vagrants && merc.Unit.FixedGear == false)
+        if (race < (Race)100 && merc.Unit.FixedGear == false)
         {
             if (merc.Unit.Items[0] == null)
             {

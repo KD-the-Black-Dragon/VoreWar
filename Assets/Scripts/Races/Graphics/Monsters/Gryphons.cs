@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using UnityEngine;
 
 class Gryphon : BlankSlate
 {
@@ -46,52 +49,6 @@ class Gryphon : BlankSlate
 
     internal override void SetBaseOffsets(Actor_Unit actor)
     {
-        if (actor.Unit.Predator && actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb) && actor.GetStomachSize(16) == 16)
-        {
-            AddOffset(Body, 0, 30 * .625f);
-            AddOffset(Head, 0, 30 * .625f);
-            AddOffset(BodyAccent, 0, 30 * .625f);
-            AddOffset(BodyAccent2, 0, 30 * .625f);
-            AddOffset(BodyAccent3, 0, 30 * .625f);
-            AddOffset(BodyAccent4, 0, 30 * .625f);
-            AddOffset(BodyAccent5, 0, 30 * .625f);
-            AddOffset(BodyAccent6, 15 * .625f, 12 * .625f);
-            AddOffset(BodyAccent7, 0, 30 * .625f);
-            AddOffset(BodyAccent8, 0, 30 * .625f);
-            AddOffset(Dick, 0, 30 * .625f);
-            AddOffset(Balls, 20 * .625f, 10 * .625f);
-        }
-        else if (actor.Unit.Predator && actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && actor.GetStomachSize(16, .8f) == 16)
-        {
-            AddOffset(Body, 0, 20 * .625f);
-            AddOffset(Head, 0, 20 * .625f);
-            AddOffset(BodyAccent, 0, 20 * .625f);
-            AddOffset(BodyAccent2, 0, 20 * .625f);
-            AddOffset(BodyAccent3, 0, 20 * .625f);
-            AddOffset(BodyAccent4, 0, 20 * .625f);
-            AddOffset(BodyAccent5, 0, 20 * .625f);
-            AddOffset(BodyAccent6, 15 * .625f, 2 * .625f);
-            AddOffset(BodyAccent7, 0, 20 * .625f);
-            AddOffset(BodyAccent8, 0, 20 * .625f);
-            AddOffset(Dick, 0, 20 * .625f);
-            AddOffset(Balls, 20 * .625f, 0);
-        }
-        else if (actor.Unit.Predator && actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && actor.GetStomachSize(16, .9f) == 16)
-        {
-            AddOffset(Body, 0, 10 * .625f);
-            AddOffset(Head, 0, 10 * .625f);
-            AddOffset(BodyAccent, 0, 10 * .625f);
-            AddOffset(BodyAccent2, 0, 10 * .625f);
-            AddOffset(BodyAccent3, 0, 10 * .625f);
-            AddOffset(BodyAccent4, 0, 10 * .625f);
-            AddOffset(BodyAccent5, 0, 10 * .625f);
-            AddOffset(BodyAccent6, 15 * .625f, -8 * .625f);
-            AddOffset(BodyAccent7, 0, 10 * .625f);
-            AddOffset(BodyAccent8, 0, 10 * .625f);
-            AddOffset(Dick, 0, 10 * .625f);
-            AddOffset(Balls, 20 * .625f, -10 * .625f);
-        }
-        else
         {
             AddOffset(Balls, 20 * .625f, -20 * .625f);
             AddOffset(BodyAccent6, 15 * .625f, -18 * .625f);
@@ -299,8 +256,6 @@ class Gryphon : BlankSlate
             BodyAccent6.layer = 1;
             if (actor.PredatorComponent?.BallsFullness > 0)
             {
-                if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.balls))
-                    return Sprites[47];
                 return Sprites[36 + actor.GetBallSize(10, 1.5f)];
             }
             return Sprites[36];
@@ -310,8 +265,6 @@ class Gryphon : BlankSlate
             BodyAccent6.layer = 10;
             if (actor.PredatorComponent?.BallsFullness > 0)
             {
-                if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.balls))
-                    return Sprites[47];
                 return Sprites[36 + actor.GetBallSize(10, 1.5f)];
             }
             return Sprites[36];
@@ -321,8 +274,6 @@ class Gryphon : BlankSlate
             BodyAccent6.layer = 5;
             if (actor.PredatorComponent?.BallsFullness > 0)
             {
-                if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.balls))
-                    return Sprites[47];
                 return Sprites[36 + actor.GetBallSize(10, 1.5f)];
             }
             return Sprites[36];
@@ -389,15 +340,6 @@ class Gryphon : BlankSlate
             return null;
         if (position == Position.Sitting)
         {
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb) && actor.GetStomachSize(16, 1) == 16)
-                return Sprites[35];
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb))
-            {
-                if (actor.GetStomachSize(16, .8f) == 16)
-                    return Sprites[61];
-                else if (actor.GetStomachSize(16, .9f) == 16)
-                    return Sprites[60];
-            }
             return Sprites[18 + actor.GetStomachSize(16)];
         }
         return null;
@@ -421,8 +363,6 @@ class Gryphon : BlankSlate
             Balls.layer = 13;
             if (actor.PredatorComponent?.BallsFullness > 0)
             {
-                if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.balls))
-                    return Sprites[47];
                 return Sprites[36 + actor.GetBallSize(10, 1.5f)];
             }
             return Sprites[36];
@@ -432,8 +372,6 @@ class Gryphon : BlankSlate
             Balls.layer = 8;
             if (actor.PredatorComponent?.BallsFullness > 0)
             {
-                if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.balls))
-                    return Sprites[47];
                 return Sprites[36 + actor.GetBallSize(10, 1.5f)];
             }
             return Sprites[36];

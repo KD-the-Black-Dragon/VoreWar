@@ -1,4 +1,7 @@
-﻿public class Leader : Unit
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+public class Leader : Unit
 {
 
     public Leader(int side, Race race, int startingXP) : base(side, race, startingXP, true, UnitType.Leader)
@@ -22,25 +25,6 @@
             Name = Config.LetterBeforeLeaderNames + Name.ToLower();
         ExpMultiplier = 2;
         Type = UnitType.Leader;
-        if (Race == Race.Slimes)
-        {
-            if (Config.HermFraction >= 0.05)
-            {
-                DickSize = 0;
-            }
-            else
-            {
-                DickSize = -1;
-            }
-            ClothingType = 1;
-            SetDefaultBreastSize(1);
-            HairStyle = 1;
-            ClothingColor = 0;
-            ClothingColor2 = 0;
-            ClothingColor3 = 0;
-            ReloadTraits();
-            InitializeTraits();
-        }
         if (Config.LeadersUseCustomizations)
         {
             var list = CustomizationDataStorer.GetCompatibleCustomizations(race, UnitType.Leader, false);

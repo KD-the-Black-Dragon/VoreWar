@@ -6,6 +6,7 @@
 // 2026-10-31: Retire digestion/absorption allegiance conversion and species rebirth branches (spec 05A3B8).
 // 2026-11-01: Separate stored species reads from intentional override creation (spec 03B3C).
 // 2026-11-01: Mark actual digestion death explicitly and preserve lasting vore recovery through temporary HP (specs 09–10).
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
 using System;
@@ -806,7 +807,6 @@ public class PredatorComponent
 	///example usage (20 non-special states, 8 special states):
 	///
 	///int size = actor.GetStomachSize(27);
-	///size = actor.PredatorComponent.GetSpecialPreySize(Race.Selicia, size, 19, 27, PreyLocation.stomach);
 	///
 	///return myBellySprites[size];
     public int GetSpecialPreySize(Race race, bool forceTopSpriteIfAlive, int size, int maxNoSpecial, int maxSpecial, params PreyLocation[] locations)
@@ -1272,7 +1272,7 @@ public class PredatorComponent
                 preyDamage /= 2;
             if (preyUnit.TurnsDigested < preyUnit.Unit.TraitBoosts.DigestionImmunityTurns)
                 preyDamage = 0;
-            if (tail.Contains(preyUnit) && (unit.Race == Race.Succubi || unit.Race == Race.Terrorbird))//Moves prey in tail to stomach after a turn
+            if (tail.Contains(preyUnit) && (unit.Race == Race.Terrorbird))//Moves prey in tail to stomach after a turn
             {
                 if (preyUnit.TurnsBeingSwallowed >= 1)
                 {
@@ -1668,7 +1668,7 @@ public class PredatorComponent
         if (unit.HasTrait(Traits.Annihilation) && !TacticalUtilities.IsPreyEndoTargetForUnit(preyUnit, unit))
         {
             int prevLevelExp = preyUnit.Unit.GetExperienceRequiredForLevel(preyUnit.Unit.Level - 2);
-            if (preyUnit.Unit.Level == 1 && preyUnit.Unit.Race != Race.Erin)
+            if (preyUnit.Unit.Level == 1)
             {
                 preyUnit.Unit.SetLevel(0);
                 preyUnit.Unit.SetStatBaseAll(1);
@@ -1727,8 +1727,6 @@ public class PredatorComponent
             unit.DigestedUnits++;
             if (unit.HasTrait(Traits.EssenceAbsorption) && unit.DigestedUnits % 4 == 0)
                 unit.GeneralStatIncrease(1);
-            if (preyUnit.Unit.Race == Race.Asura)
-                unit.EarnedMask = true;
             if (unit.HasTrait(Traits.TasteForBlood))
                 actor.GiveRandomBoost();
             unit.EnemiesKilledThisBattle++;
@@ -2154,14 +2152,6 @@ public class PredatorComponent
             {
                 if (State.Rand.NextDouble() < Config.BurpFraction)
                 {
-                    if (actor.Unit.Race == Race.Taraluxia && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true) ?? false))
-                    {State.GameManager.SoundManager.PlayDigest(Location(preyUnit), actor);}
-                    else if (actor.Unit.Race == Race.Taraluxia)
-                    {
-                        actor.SetBurpMode();
-                        State.GameManager.SoundManager.PlayBurp(actor);
-                    }
-                    else
                     {
                         actor.SetBurpMode();
                         State.GameManager.SoundManager.PlayBurp(actor);
@@ -2276,17 +2266,14 @@ public class PredatorComponent
                 State.GameManager.SoundManager.PlayFart(actor);
             }
 
-            if (actor.Unit.HasTrait(Traits.TotalAbsorption) || preyUnit.Unit.Race == Race.Iliijiith) {}
-            else if (Config.Scat && preyUnit.ScatDisabled == false)
+            if (Config.Scat && preyUnit.ScatDisabled == false)
             {
                 State.GameManager.SoundManager.PlayAbsorb(location, actor);
-                if ((preyUnit.Unit.Race == Race.Slimes || preyUnit.Unit.Race == Race.FeralSlime) && Config.CleanDisposal == false)
+                if ((preyUnit.Unit.Race == Race.FeralSlime) && Config.CleanDisposal == false)
                 {
                     State.GameManager.TacticalMode.CreateMiscDiscard(GetCurrentLocation(), BoneTypes.SlimePile, preyUnit.Unit.Name, preyUnit.Unit.AccessoryColor);
                 }
-                else if (Config.CleanDisposal == true && actor.Unit.Race == Race.Tatltuae) {}
-                else
-                    State.GameManager.TacticalMode.CreateScat(GetCurrentLocation(), new ScatInfo(unit, preyUnit));
+                else State.GameManager.TacticalMode.CreateScat(GetCurrentLocation(), new ScatInfo(unit, preyUnit));
             }
             else
             {
@@ -2296,12 +2283,9 @@ public class PredatorComponent
         else if (location == PreyLocation.balls)
         {
             State.GameManager.SoundManager.PlayAbsorb(location, actor);
-            if (actor.Unit.HasTrait(Traits.TotalAbsorption) || preyUnit.Unit.Race == Race.Iliijiith) {}
-            else if (Config.Cumstains)
+            if (Config.Cumstains)
             {
-                if (unit.Race == Race.Selicia)
-                    State.GameManager.TacticalMode.CreateMiscDiscard(GetCurrentLocation(), BoneTypes.CumPuddle, preyUnit.Unit.Name, 0);
-                else if (Config.CondomsForCV)
+                if (Config.CondomsForCV)
                     State.GameManager.TacticalMode.CreateMiscDiscard(GetCurrentLocation(), BoneTypes.DisposedCondom, preyUnit.Unit.Name);
                 else 
                     State.GameManager.TacticalMode.CreateMiscDiscard(GetCurrentLocation(), BoneTypes.CumPuddle, preyUnit.Unit.Name);
@@ -2310,12 +2294,9 @@ public class PredatorComponent
         else if (location == PreyLocation.womb || (location == PreyLocation.breasts && unit.Race != Race.Kangaroos) || location == PreyLocation.leftBreast || location == PreyLocation.rightBreast)
         {
             State.GameManager.SoundManager.PlayAbsorb(location, actor);
-            if (actor.Unit.HasTrait(Traits.TotalAbsorption) || preyUnit.Unit.Race == Race.Iliijiith) {}
-            else if (Config.Cumstains)
+            if (Config.Cumstains)
             {
-                if (unit.Race == Race.Selicia)
-                    State.GameManager.TacticalMode.CreateMiscDiscard(GetCurrentLocation(), BoneTypes.CumPuddle, preyUnit.Unit.Name, 0);
-                else if (unit.Race == Race.Bees)
+                if (unit.Race == Race.Bees)
                     State.GameManager.TacticalMode.CreateMiscDiscard(GetCurrentLocation(), BoneTypes.HoneyPuddle, preyUnit.Unit.Name);
                 else
                     State.GameManager.TacticalMode.CreateMiscDiscard(GetCurrentLocation(), BoneTypes.CumPuddle, preyUnit.Unit.Name);
@@ -2324,16 +2305,12 @@ public class PredatorComponent
         else if (location == PreyLocation.tail && unit.Race == Race.Bees && Config.Cumstains)
         {
             State.GameManager.SoundManager.PlayAbsorb(location, actor);
-            if (actor.Unit.HasTrait(Traits.TotalAbsorption) || preyUnit.Unit.Race == Race.Iliijiith) {}
-            else
-                State.GameManager.TacticalMode.CreateMiscDiscard(GetCurrentLocation(), BoneTypes.HoneyPuddle, preyUnit.Unit.Name);
+            State.GameManager.TacticalMode.CreateMiscDiscard(GetCurrentLocation(), BoneTypes.HoneyPuddle, preyUnit.Unit.Name);
         }
         else if (location == PreyLocation.bladder && Config.Cumstains)
         {
             State.GameManager.SoundManager.PlayAbsorb(location, actor);
-            if (actor.Unit.HasTrait(Traits.TotalAbsorption) || preyUnit.Unit.Race == Race.Iliijiith) {}
-            else
-                State.GameManager.TacticalMode.CreateMiscDiscard(GetCurrentLocation(), BoneTypes.UrinePuddle, preyUnit.Unit.Name);
+            State.GameManager.TacticalMode.CreateMiscDiscard(GetCurrentLocation(), BoneTypes.UrinePuddle, preyUnit.Unit.Name);
         }
     }
 
@@ -2353,8 +2330,6 @@ public class PredatorComponent
     {
         if (StomachTransition.transitionTime < StomachTransition.transitionLength)
         {
-            if (unit.Race == Race.FeralFrogs && actor.IsOralVoring && actor.IsOralVoringHalfOver == false)
-                return;
             StomachTransition.transitionTime += Time.deltaTime;
             VisibleFullness = Mathf.Lerp(StomachTransition.transitionStart, StomachTransition.transitionEnd, StomachTransition.transitionTime / StomachTransition.transitionLength);
         }
@@ -2549,8 +2524,6 @@ public class PredatorComponent
         var loc = prey.Location.ToString();
         if (unit.Race == Race.Terrorbird && prey.Location == PreyLocation.tail)
             loc = "crop";
-        if (unit.Race == Race.Tatltuae && prey.Location == PreyLocation.tail)
-            loc = "hackle";
         if (unit.Race == Race.Kangaroos && prey.Location == PreyLocation.breasts)
             loc = "pouch";
         if (prey.Unit.IsDead == false && unit.HasTrait(Traits.DualStomach) && stomach.Contains(prey))
@@ -2881,10 +2854,7 @@ public class PredatorComponent
                 }
                 if (!State.GameManager.TacticalMode.turboMode)
                 {
-                    if (preyType == PreyLocation.stomach && (actor.Unit.Race == Race.Ryan || actor.Unit.Race == Race.Seville))
-                        actor.SetVoreSuccessMode();
-                    if (actor.Unit.Race != Race.Ryan && actor.Unit.Race != Race.Seville)
-                        actor.SetVoreSuccessMode();
+                    actor.SetVoreSuccessMode();
                 }
                 if (unit.HasTrait(Traits.Tenacious))
                     unit.RemoveTenacious();
@@ -4047,8 +4017,7 @@ public class PredatorComponent
         {
             return false;
         }
-        if (!KissTransfer(target, transfer))
-        {};
+;
         int thirdMovement = (int)Math.Ceiling(actor.MaxMovement() / 3.0f);
         if (actor.Movement > thirdMovement)
             actor.Movement -= thirdMovement;
@@ -4250,9 +4219,6 @@ public class PredatorComponent
             case PreyLocation.tail:
                 State.GameManager.SoundManager.PlaySwallow(PreyLocation.tail, actor);
                 tail.Add(preyref);
-                if (unit.Race == Race.Tatltuae)
-                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{actor.Unit.Name} consumed {forcePrey.Unit.Name} via {PreyLocStrings.ToSyn(preyLocation)}.");
-                else
                 State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{actor.Unit.Name} consumed {forcePrey.Unit.Name} via {PreyLocStrings.ToSyn(preyLocation)}.");
                 break;
             case PreyLocation.bladder:
@@ -4263,18 +4229,12 @@ public class PredatorComponent
             default:
                 State.GameManager.SoundManager.PlaySwallow(PreyLocation.stomach, actor);
                 AddToStomach(preyref, 1f);
-                if (unit.Race == Race.Iliijiith)
-                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{actor.Unit.Name} consumed {forcePrey.Unit.Name} via {PreyLocStrings.ToSyn(preyLocation)}.");
-                else
                 State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{actor.Unit.Name} consumed {forcePrey.Unit.Name} via {PreyLocStrings.ToSyn(preyLocation)}.");
                 break;
         }
         AddPrey(preyref);
         actor.SetPredMode(preyLocation);
-        if (preyLocation == PreyLocation.stomach && (actor.Unit.Race == Race.Ryan || actor.Unit.Race == Race.Seville))
-            actor.SetVoreSuccessMode();
-        if (actor.Unit.Race != Race.Ryan && actor.Unit.Race != Race.Seville)
-            actor.SetVoreSuccessMode();
+        actor.SetVoreSuccessMode();
         UpdateFullness();
     }
 
@@ -4379,9 +4339,6 @@ public class PredatorComponent
                 State.GameManager.SoundManager.PlaySwallow(PreyLocation.tail, actor);
                 loc = PreyLocation.tail;
                 tail.Add(preyref);
-                if (unit.Race == Race.Tatltuae)
-                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{actor.Unit.Name} consumed {forcePrey.Unit.Name} via {PreyLocStrings.ToSyn(loc)}.");
-                else
                 State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{actor.Unit.Name} consumed {forcePrey.Unit.Name} via {PreyLocStrings.ToSyn(loc)}.");
                 break;
             case VoreType.BladderVore:
@@ -4393,18 +4350,12 @@ public class PredatorComponent
             default:
                 State.GameManager.SoundManager.PlaySwallow(PreyLocation.stomach, actor);
                 AddToStomach(preyref, 1f);
-                if (unit.Race == Race.Iliijiith)
-                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{actor.Unit.Name} consumed {forcePrey.Unit.Name} via {PreyLocStrings.ToSyn(loc)}.");
-                else
                 State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{actor.Unit.Name} consumed {forcePrey.Unit.Name} via {PreyLocStrings.ToSyn(loc)}.");
                 break;
         }
         AddPrey(preyref);
         actor.SetPredMode(loc);
-        if (loc == PreyLocation.stomach && (actor.Unit.Race == Race.Ryan || actor.Unit.Race == Race.Seville))
-            actor.SetVoreSuccessMode();
-        if (actor.Unit.Race != Race.Ryan && actor.Unit.Race != Race.Seville)
-            actor.SetVoreSuccessMode();
+        actor.SetVoreSuccessMode();
         UpdateFullness();
     }
 }

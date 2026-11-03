@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System.Collections.Generic;
 using UnityEngine;
 
 class Mantis : BlankSlate
@@ -355,15 +358,6 @@ class Mantis : BlankSlate
             return null;
         if (position == Position.Eating)
         {
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb) && actor.GetStomachSize(17, 1) == 17)
-                return Sprites[107];
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb))
-            {
-                if (actor.GetStomachSize(17, .8f) == 17)
-                    return Sprites[106];
-                else if (actor.GetStomachSize(17, .9f) == 17)
-                    return Sprites[105];
-            }
             return Sprites[87 + actor.GetStomachSize(17)];
         }
         return null;

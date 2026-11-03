@@ -1,4 +1,4 @@
-﻿// Modified for the VoreWar mercenary-company conversion.
+// Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Filter trait summons and legacy building reinforcements before constructing units (spec 03A2).
 // 2026-10-31: Reject direct legacy campaign battle setup before tactical state changes (spec 05A3A).
 // 2026-10-31: Retire campaign reincarnation/village-copy returns and post-battle soldier replacement (spec 05A3B1).
@@ -13,6 +13,7 @@
 // 2026-11-01: Connect company battles and replace legacy completion with actual survival, downed permanence, captive-safe retreat and stalemate (specs 09–10).
 // 2026-11-02: Unify player Attack targeting/previews and host the blue tactical HUD (spec 16).
 // 2026-11-03: Resume tactical snapshots without replaying setup and autosave settled turn boundaries (spec 19).
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using LegacyAI;
 using System;
@@ -1024,46 +1025,17 @@ Turns: {currentTurn}
         {
             switch (village.Race)
             {
-                case Race.Taurus:
                 case Race.Kangaroos:
                     wallType = WallType.WoodenPallisade;
-                    break;
-                case Race.Cats:
-                    wallType = WallType.Cat;
                     break;
                 case Race.Lizards:
                     wallType = WallType.Lizard;
                     break;
-                case Race.Scylla:
-                    wallType = WallType.Scylla;
-                    break;
                 case Race.Bunnies:
                     wallType = WallType.Bunny;
                     break;
-                case Race.Crux:
-                    wallType = WallType.Crux;
-                    break;
-                case Race.Crypters:
-                    wallType = WallType.Crypter;
-                    break;
-                case Race.Lamia:
-                    wallType = WallType.Lamia;
-                    break;
-                case Race.Youko:
-                case Race.Foxes:
-                    wallType = WallType.Fox;
-                    break;
-                case Race.Imps:
-                    wallType = WallType.Imp;
-                    break;
-                case Race.Slimes:
-                    wallType = WallType.Slime;
-                    break;
                 case Race.Gnolls:
                     wallType = WallType.WoodenPallisade;
-                    break;
-                case Race.Aabayx:
-                    wallType = WallType.Aabayx;
                     break;
                 default:
                     wallType = WallType.Stone;
@@ -1740,11 +1712,6 @@ Turns: {currentTurn}
         {
             int spriteNum;
             int offset;
-            if (scatInfo.predRace == Race.Slimes)
-            {offset = 2;}
-            else if (scatInfo.predRace == Race.Aabayx || scatInfo.predRace == Race.ViraeUltimae)
-            {offset = 4;}
-            else
             {offset = 0;}
 
             if (Config.ScatBones == false)
@@ -1753,10 +1720,7 @@ Turns: {currentTurn}
             }
             else
             {
-                if (scatInfo.preyRace == Race.Slimes)
-                    spriteNum = 0 + offset;
-                else
-                    spriteNum = offset + State.Rand.Next(2);
+                spriteNum = offset + State.Rand.Next(2);
             }
             miscDiscards.Add(new MiscDiscard(location, MiscDiscardType.Scat, spriteNum, sortOrder, scatInfo.color, scatInfo.GetDescription()));
         }
@@ -1849,12 +1813,6 @@ Turns: {currentTurn}
                 return actor.VorePounce(target, lastSpecial);
         }
 
-        if (actor.Unit.Race == Race.Ki && type == SpecialAction.CockVore && target.Unit.Race != Race.Selicia)
-        {
-            State.GameManager.CreateMessageBox("Ki will only acccept Selicia into his cock, and nothing else");
-            return false;
-        }
-
         if (TacticalActionList.TargetedDictionary.TryGetValue(type, out var targetedAction))
         {
             if (targetedAction.RequiresPred && actor.Unit.Predator == false)
@@ -1941,14 +1899,6 @@ Turns: {currentTurn}
                 break;
             case SpecialAction.TailStrike:
                 ShowMeleeHitPercentages(actor, .66f);
-                break;
-            case SpecialAction.SweepingSwallow:
-                ShowVoreHitPercentages(actor, PreyLocation.stomach);
-                UpdateOTargetGrid(actor.Position);
-                break;
-            case SpecialAction.GiantSweep:
-                ShowMeleeHitPercentages(actor, .66f);
-                UpdateOTargetGrid(actor.Position);
                 break;
             case SpecialAction.AllInVore:
                 ShowBoostedVoreHitPercentages(actor, 50);
@@ -2887,10 +2837,6 @@ Turns: {currentTurn}
                 {
                     unit.UnitSprite.AnimateSecondBelly(unit.PredatorComponent.PreyNearLocation(PreyLocation.stomach2, true) * 0.0022f);
                 }
-                if (unit.PredatorComponent?.TailFullness > 0 && unit.PredatorComponent?.AlivePrey > 0 && unit.Unit.Race == Race.Tatltuae)//Wiggle the hackles
-                {
-                    unit.UnitSprite.AnimateSecondBelly(unit.PredatorComponent.PreyNearLocation(PreyLocation.tail, true) * 0.0022f);
-                }
                 if (unit.PredatorComponent?.BallsFullness > 0 && unit.PredatorComponent?.AlivePrey > 0)
                 {
                     unit.UnitSprite.AnimateBalls(unit.PredatorComponent.PreyNearLocation(PreyLocation.balls, true) * 0.0022f);
@@ -3764,7 +3710,7 @@ Turns: {currentTurn}
 
     internal void DefenderConvert(Actor_Unit actor)
     {
-        if (armies[1]?.Units.Contains(actor.Unit) ?? false || extraDefenders.Contains(actor))
+        if (armies[1]?.Units.Contains(actor.Unit) ?? extraDefenders.Contains(actor))
             return;
         armies[0].Units.Remove(actor.Unit);
         extraAttackers.Remove(actor);

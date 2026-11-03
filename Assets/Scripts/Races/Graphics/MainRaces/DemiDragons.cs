@@ -1,4 +1,7 @@
-﻿using Newtonsoft.Json.Linq;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -1101,18 +1104,6 @@ class DemiDragons : DefaultRaceData
                 int leftSize = (int)Math.Sqrt((actor.Unit.DefaultBreastSize * actor.Unit.DefaultBreastSize) + actor.GetLeftBreastSize(32 * 32, 1f));
                 if (leftSize > actor.Unit.DefaultBreastSize)
                     oversize = true;
-                if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.leftBreast) && leftSize >= 32)
-                {
-                    return SpritesBreasts[95];
-                }
-                else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.leftBreast) && leftSize >= 30)
-                {
-                    return SpritesBreasts[94];
-                }
-                else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.leftBreast) && leftSize >= 28)
-                {
-                    return SpritesBreasts[93];
-                }
 
                 if (leftSize > 28)
                     leftSize = 28;
@@ -1138,18 +1129,6 @@ class DemiDragons : DefaultRaceData
                 int rightSize = (int)Math.Sqrt((actor.Unit.DefaultBreastSize * actor.Unit.DefaultBreastSize) + actor.GetRightBreastSize(32 * 32, 1f));
                 if (rightSize > actor.Unit.DefaultBreastSize)
                     oversize = true;
-                if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.rightBreast) && rightSize >= 32)
-                {
-                    return SpritesBreasts[127];
-                }
-                else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.rightBreast) && rightSize >= 30)
-                {
-                    return SpritesBreasts[126];
-                }
-                else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.rightBreast) && rightSize >= 28)
-                {
-                    return SpritesBreasts[125];
-                }
 
                 if (rightSize > 28)
                     rightSize = 28;
@@ -1276,26 +1255,6 @@ class DemiDragons : DefaultRaceData
                     belly.transform.localScale = new Vector3(1, 1, 1);
                     belly.SetActive(true);
                     int size = actor.GetStomachSize(31, 0.7f);
-                    if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb) && size == 31)
-                    {
-                        AddOffset(Belly, 0, -29 * .625f);
-                        return SpritesBelliesBalls[75];
-                    }
-                    else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 31)
-                    {
-                        AddOffset(Belly, 0, -29 * .625f);
-                        return SpritesBelliesBalls[74];
-                    }
-                    else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 30)
-                    {
-                        AddOffset(Belly, 0, -29 * .625f);
-                        return SpritesBelliesBalls[73];
-                    }
-                    else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 29)
-                    {
-                        AddOffset(Belly, 0, -29 * .625f);
-                        return SpritesBelliesBalls[72];
-                    }
                     switch (size)
                     {
                         case 25:
@@ -1328,26 +1287,6 @@ class DemiDragons : DefaultRaceData
                     belly.transform.localScale = new Vector3(1, 1, 1);
                     belly.SetActive(true);
                     int size = actor.GetStomachSize(31, 0.7f);
-                    if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb) && size == 31)
-                    {
-                        AddOffset(Belly, 0, -29 * .625f);
-                        return SpritesBelliesBalls[111];
-                    }
-                    else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 31)
-                    {
-                        AddOffset(Belly, 0, -29 * .625f);
-                        return SpritesBelliesBalls[110];
-                    }
-                    else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 30)
-                    {
-                        AddOffset(Belly, 0, -29 * .625f);
-                        return SpritesBelliesBalls[109];
-                    }
-                    else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 29)
-                    {
-                        AddOffset(Belly, 0, -29 * .625f);
-                        return SpritesBelliesBalls[108];
-                    }
                     switch (size)
                     {
                         case 25:
@@ -1386,26 +1325,6 @@ class DemiDragons : DefaultRaceData
             belly.transform.localScale = new Vector3(1, 1, 1);
             belly.SetActive(true);
             int size = actor.GetStomachSize(31, 0.7f);
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb) && size == 31)
-            {
-                AddOffset(Belly, 0, -33 * .625f);
-                return SpriteDictionary.HumansVoreSprites[105];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 31)
-            {
-                AddOffset(Belly, 0, -33 * .625f);
-                return SpriteDictionary.HumansVoreSprites[104];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 30)
-            {
-                AddOffset(Belly, 0, -33 * .625f);
-                return SpriteDictionary.HumansVoreSprites[103];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 29)
-            {
-                AddOffset(Belly, 0, -33 * .625f);
-                return SpriteDictionary.HumansVoreSprites[102];
-            }
             switch (size)
             {
                 case 26:
@@ -1443,26 +1362,6 @@ class DemiDragons : DefaultRaceData
             belly.transform.localScale = new Vector3(1, 1, 1);
             belly.SetActive(true);
             int size = actor.GetStomachSize(31, 0.7f);
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb) && size == 31)
-            {
-                AddOffset(Belly, 0, -29 * .625f);
-                return SpritesBelliesBalls[75];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 31)
-            {
-                AddOffset(Belly, 0, -29 * .625f);
-                return SpritesBelliesBalls[74];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 30)
-            {
-                AddOffset(Belly, 0, -29 * .625f);
-                return SpritesBelliesBalls[73];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 29)
-            {
-                AddOffset(Belly, 0, -29 * .625f);
-                return SpritesBelliesBalls[72];
-            }
             switch (size)
             {
                 case 25:
@@ -1612,18 +1511,6 @@ class DemiDragons : DefaultRaceData
                 int leftSize = (int)Math.Sqrt((actor.Unit.DefaultBreastSize * actor.Unit.DefaultBreastSize) + actor.GetLeftBreastSize(32 * 32, 1f));
                 if (leftSize > actor.Unit.DefaultBreastSize)
                     oversize = true;
-                if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.leftBreast) && leftSize >= 32)
-                {
-                    return SpritesBreasts[31];
-                }
-                else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.leftBreast) && leftSize >= 30)
-                {
-                    return SpritesBreasts[30];
-                }
-                else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.leftBreast) && leftSize >= 28)
-                {
-                    return SpritesBreasts[29];
-                }
 
                 if (leftSize > 28)
                     leftSize = 28;
@@ -1640,18 +1527,6 @@ class DemiDragons : DefaultRaceData
             int leftSize = (int)Math.Sqrt((actor.Unit.DefaultBreastSize * actor.Unit.DefaultBreastSize) + actor.GetLeftBreastSize(32 * 32, 1f));
             if (leftSize > actor.Unit.DefaultBreastSize)
                 oversize = true;
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.leftBreast) && leftSize >= 32)
-            {
-                return SpriteDictionary.HumansVoreSprites[31];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.leftBreast) && leftSize >= 30)
-            {
-                return SpriteDictionary.HumansVoreSprites[30];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.leftBreast) && leftSize >= 28)
-            {
-                return SpriteDictionary.HumansVoreSprites[29];
-            }
 
             if (leftSize > 28)
                 leftSize = 28;
@@ -1676,18 +1551,6 @@ class DemiDragons : DefaultRaceData
                 int rightSize = (int)Math.Sqrt((actor.Unit.DefaultBreastSize * actor.Unit.DefaultBreastSize) + actor.GetRightBreastSize(32 * 32, 1f));
                 if (rightSize > actor.Unit.DefaultBreastSize)
                     oversize = true;
-                if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.rightBreast) && rightSize >= 32)
-                {
-                    return SpritesBreasts[63];
-                }
-                else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.rightBreast) && rightSize >= 30)
-                {
-                    return SpritesBreasts[62];
-                }
-                else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.rightBreast) && rightSize >= 28)
-                {
-                    return SpritesBreasts[61];
-                }
 
                 if (rightSize > 28)
                     rightSize = 28;
@@ -1704,18 +1567,6 @@ class DemiDragons : DefaultRaceData
             int rightSize = (int)Math.Sqrt((actor.Unit.DefaultBreastSize * actor.Unit.DefaultBreastSize) + actor.GetRightBreastSize(32 * 32, 1f));
             if (rightSize > actor.Unit.DefaultBreastSize)
                 oversize = true;
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.rightBreast) && rightSize >= 32)
-            {
-                return SpriteDictionary.HumansVoreSprites[63];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.rightBreast) && rightSize >= 30)
-            {
-                return SpriteDictionary.HumansVoreSprites[62];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.rightBreast) && rightSize >= 28)
-            {
-                return SpriteDictionary.HumansVoreSprites[61];
-            }
 
             if (rightSize > 28)
                 rightSize = 28;
@@ -1799,22 +1650,7 @@ class DemiDragons : DefaultRaceData
         int offset = actor.GetBallSize(30, .8f);
         if (actor.Unit.Furry) 
         {
-            if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.balls) ?? false) && offset == 30)
-            {
-                AddOffset(Balls, 0, -38 * .625f);
-                return SpritesBelliesBalls[39];
-            }
-            else if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false) && offset == 30)
-            {
-                AddOffset(Balls, 0, -32 * .625f);
-                return SpritesBelliesBalls[38];
-            }
-            else if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false) && offset == 29)
-            {
-                AddOffset(Balls, 0, -28 * .625f);
-                return SpritesBelliesBalls[37];
-            }
-            else if (offset >= 28)
+            if (offset >= 28)
             {
                 AddOffset(Balls, 0, -24 * .625f);
             }
@@ -1845,22 +1681,7 @@ class DemiDragons : DefaultRaceData
         }
 
         offset = actor.GetBallSize(28, .8f);
-        if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.balls) ?? false) && offset == 28)
-        {
-            AddOffset(Balls, 0, -22 * .625f);
-            return SpriteDictionary.HumansVoreSprites[141];
-        }
-        else if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false) && offset == 28)
-        {
-            AddOffset(Balls, 0, -22 * .625f);
-            return SpriteDictionary.HumansVoreSprites[140];
-        }
-        else if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false) && offset == 27)
-        {
-            AddOffset(Balls, 0, -22 * .625f);
-            return SpriteDictionary.HumansVoreSprites[139];
-        }
-        else if (offset >= 26)
+        if (offset >= 26)
         {
             AddOffset(Balls, 0, -22 * .625f);
         }

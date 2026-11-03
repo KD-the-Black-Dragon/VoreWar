@@ -1,4 +1,4 @@
-﻿// Modified for the VoreWar mercenary-company conversion.
+// Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Reject disallowed disguise templates before appearance, trait or side changes (spec 03A2).
 // 2026-10-30: 04B2: Replace callback prose with neutral action and status notices.
 // 2026-10-31: Retire Respawns grants/death triggers and CloseCall casualty presentation (spec 05A3B7).
@@ -14,6 +14,7 @@
 // 2026-11-01: Use the actual caster-target level difference for spell XP challenge scaling (spec 11 feedback).
 // 2026-11-02: Dismiss magical summons instead of placing them in a persistent downed state through fear/nonlethal damage (spec 12).
 // 2026-11-03: Persist pending animation progress and tactical stance for battle saves (spec 19).
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
 using System;
@@ -343,8 +344,6 @@ public class Actor_Unit
 
     public int CurrentMaxMovement()
     {
-        if (Unit.Race == Race.Seville && !State.GameManager.TacticalMode.turboMode && TacticalUtilities.IsUnitControlledByPlayer(Unit) && (State.GameManager.TacticalMode.currentTurn == 1) && State.GameManager.TacticalMode.attackersTurnCheck == true && State.Rand.Next(20) == 1)
-            MiscUtilities.DelayedInvoke(() => State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{Unit.Name} prepared for battle."), .2f); //Delayed to let the game fully load before executing
         int sizePenalty = (int)(PredatorComponent?.Fullness ?? 0);
         sizePenalty = (int)(sizePenalty * Unit.TraitBoosts.SpeedLossFromWeightMultiplier);
         int bonus = 0;
@@ -787,7 +786,7 @@ public class Actor_Unit
     public bool HasBelly => ((Config.LamiaUseTailAsSecondBelly || Unit.HasTrait(Traits.DualStomach) == false) && (PredatorComponent?.VisibleFullness ?? 0) > 0) || (!Config.LamiaUseTailAsSecondBelly && (PredatorComponent?.CombinedStomachFullness ?? 0) > 0);
 
     public bool HasPreyInBreasts => (PredatorComponent?.BreastFullness > 0 || PredatorComponent?.LeftBreastFullness > 0 || PredatorComponent?.RightBreastFullness > 0);
-    public bool HasBodyWeight => Unit.Race != Race.Lizards && Unit.Race != Race.Slimes && Unit.Race != Race.Scylla && Unit.Race != Race.Harpies && Unit.Race != Race.Imps;
+    public bool HasBodyWeight => Unit.Race != Race.Lizards;
 
     public int GetBodyWeight() => (Config.WeightGain || Unit.BodySizeManuallyChanged) ? Unit.BodySize : Mathf.Min(Config.DefaultStartingWeight, Races.GetRace(Unit).BodySizes);
     public int GetWeaponSprite()
@@ -1407,8 +1406,6 @@ public class Actor_Unit
             }
 
             Attack(target, false, damageMultiplier: multiplier);
-            if (Unit.Race == Race.FeralFrogs)
-                Mode = DisplayMode.FrogPouncing;
             return true;
         }
         return false;
@@ -1467,8 +1464,6 @@ public class Actor_Unit
             }
             State.GameManager.TacticalMode.Translator.SetTranslator(UnitSprite.transform, originalLoc, pounceLandingZone, 0.5f, State.GameManager.TacticalMode.IsPlayerTurn);
             State.GameManager.TacticalMode.DirtyPack = true;
-            if (Unit.Race == Race.FeralFrogs)
-                Mode = DisplayMode.FrogPouncing;
             return true;
         }
         return false;
@@ -1579,16 +1574,6 @@ public class Actor_Unit
         if (target.Position.GetNumberOfMovesDistance(Position) != 1)
             return false;
 
-        if (Unit.Race == Race.Zoey && animationController?.frameLists != null && animationController.frameLists.Count() > 0)
-        {
-            animationController.frameLists[0].currentlyActive = true;
-        }
-
-        if (Unit.Race == Race.Taraluxia && animationController?.frameLists != null && animationController.frameLists.Count() > 0)
-        {
-            animationController.frameLists[0].currentlyActive = true;
-        }
-
         Attack(target, false, damageMultiplier: .66f);
         Actor_Unit tempTarget = TacticalUtilities.GetActorAt(target.Position + new Vec2(1, 0));
         TestAttack(tempTarget);
@@ -1610,98 +1595,6 @@ public class Actor_Unit
             {
                 Movement = 1;
                 Attack(sideTarget, false, damageMultiplier: .66f);
-            }
-        }
-    }
-
-    public bool AiSweepAttack(Actor_Unit mainTarget, Actor_Unit self, bool attack_ver)
-    {
-        if (Movement < 1 || Unit.HasTrait(Traits.TheMatron) == false)
-            return false;
-        if (Unit.Mana >= 40)
-        {
-            Unit.SpendMana(40);
-        }
-        else
-            return false;
-        List<Actor_Unit> targets = TacticalUtilities.UnitsWithinPattern(self.Position, new int[3, 3] { { 1, 1, 1 }, { 1, 0, 1 }, { 1, 1, 1 } });
-        List<AbilityTargets> targetTypes = new List<AbilityTargets>();
-        targetTypes.Add(AbilityTargets.Enemy);
-
-        foreach (var target in targets)
-        {
-            if (!TacticalUtilities.MeetsQualifier(targetTypes, this, target))
-                return false;
-            if (attack_ver)
-                TestAttack(target);
-            else
-                TestSwallow(target);
-        }
-
-        Movement = 0;
-
-        return true;
-
-        void TestAttack(Actor_Unit sideTarget)
-        {
-            if (sideTarget != null && sideTarget.Position.GetNumberOfMovesDistance(Position) == 1)
-            {
-                Movement = 1;
-                Attack(sideTarget, false, damageMultiplier: .66f);
-            }
-        }
-        void TestSwallow(Actor_Unit sideTarget)
-        {
-            if (sideTarget != null && sideTarget.Position.GetNumberOfMovesDistance(Position) == 1)
-            {
-                Movement = 1;
-                PredatorComponent.Devour(sideTarget);
-
-            }
-        }
-    }
-
-    public bool SweepAttack(bool attack_ver)
-    {
-        if (Movement < 1 || Unit.HasTrait(Traits.TheMatron) == false)
-            return false;
-        if (!Unit.SpendMana(40))
-        {
-            return false;
-        }
-        List<Actor_Unit> targets = TacticalUtilities.UnitsWithinPattern(Position, new int[3, 3] { { 1, 1, 1 }, { 1, 0, 1 }, { 1, 1, 1 } });
-        List<AbilityTargets> targetTypes = new List<AbilityTargets>();
-        targetTypes.Add(AbilityTargets.Enemy);
-
-        foreach (var target in targets)
-        {
-            if (!TacticalUtilities.MeetsQualifier(targetTypes, this, target))
-                return false;
-            if (attack_ver)
-                TestAttack(target);
-            else
-                TestSwallow(target);
-        }
-
-        Movement = 0;
-
-        return true;
-
-        void TestAttack(Actor_Unit sideTarget)
-        {
-            if (sideTarget != null && sideTarget.Position.GetNumberOfMovesDistance(Position) == 1)
-            {
-                Movement = 1;
-                Attack(sideTarget, false, damageMultiplier: .66f);
-            }
-        }
-        void TestSwallow(Actor_Unit sideTarget)
-        {
-            if (sideTarget != null && sideTarget.Position.GetNumberOfMovesDistance(Position) == 1)
-            {
-                Movement = 1;
-                PredatorComponent.Devour(sideTarget);
-
             }
         }
     }
@@ -1878,14 +1771,7 @@ public class Actor_Unit
             if ((targetRange >= 2 || (targetRange >= 1 && weapon.Omni)) && targetRange <= weapon.Range)
             {
                 animationUpdateTime = 1.0F;
-                if (Unit.Race == Race.Succubi)
-                    TacticalGraphicalEffects.SuccubusSwordEffect(target.Position);
-                if (Unit.Race == Race.Tatltuae)
-                    TacticalGraphicalEffects.EntropicChaosEffect(target.Position);
-                //if (Unit.Race == Race.Tigers)//Use to specify races that can use differint attacks with the same weapon depending on range (Currently unused)
-                //    Mode = DisplayMode.RangeAttacking;
-                else
-                    Mode = DisplayMode.Attacking;
+                Mode = DisplayMode.Attacking;
 
                 if (Unit.HasTrait(Traits.AwfulAim))
                 {
@@ -1985,15 +1871,7 @@ public class Actor_Unit
             if (targetRange < 2)
             {
                 animationUpdateTime = 1.0F;
-                if (Unit.Race == Race.Seville)
-                {
-                    TacticalGraphicalEffects.VenomBiteEffect(target.Position);
-                    Mode = DisplayMode.Attacking;
-                }
-                //if (Unit.Race == Race.Tigers)//Use to specify races that can use differint attacks with the same weapon depending on range (Currently unused)
-                //    Mode = DisplayMode.MeleeAttacking;
-                else
-                    Mode = DisplayMode.Attacking;
+                Mode = DisplayMode.Attacking;
                 int meleeAttacks = Unit.TraitBoosts.MeleeAttacks;
                 meleeAttacks += extraAttacks + Unit.TempBoosts.ExtraAttacks;
                 if (Unit.HasTrait(Traits.LightFrame) && PredatorComponent?.PreyCount == 0)
@@ -2120,13 +1998,6 @@ public class Actor_Unit
                     State.GameManager.SoundManager.PlaySwing(this);
                     if (Unit.HasTrait(Traits.Tenacious))
                         Unit.AddTenacious();
-                    if (Unit.Race == Race.Xelhilde) // Used to cycle between attack poses
-                    {
-                        if (Unit.BodyAccentType2 >= 2)
-                            Unit.BodyAccentType2 = 0;
-                        else
-                            Unit.BodyAccentType2++;
-                    }
 
                     EquipmentFunctions.CheckEquipment(Unit, EquipmentActivator.OnMeleeMiss, new object[] { this, target, damage });
                    
@@ -2140,15 +2011,6 @@ public class Actor_Unit
     void CreateHitEffects(Actor_Unit target)
     {
         State.GameManager.TacticalMode.CreateBloodHitEffect(target.Position);
-        if (Unit.Race == Race.Asura)
-            State.GameManager.TacticalMode.CreateSwipeHitEffect(target.Position);
-        if (Unit.Race == Race.Xelhilde) // Used to cycle between attack poses
-        {
-            if (Unit.BodyAccentType2 >= 2)
-                Unit.BodyAccentType2 = 0;
-            else
-                Unit.BodyAccentType2++;
-        }
     }
 
     private void KillUnit(Actor_Unit target, Weapon weapon)
@@ -2156,8 +2018,6 @@ public class Actor_Unit
         TacticalUtilities.Log.RegisterKill(Unit, target.Unit, weapon);
         Unit.KilledUnits++;
         target.KilledByDigestion = false;
-        if (target.Unit.Race == Race.Asura)
-            Unit.EarnedMask = true;
         Unit.EnemiesKilledThisBattle++;
         target.Unit.KilledBy = Unit;
         target.Unit.Kill();
@@ -2203,8 +2063,6 @@ public class Actor_Unit
         TacticalUtilities.Log.RegisterSpellKill(Unit, target.Unit, spell.SpellType);
         Unit.KilledUnits++;
         target.KilledByDigestion = false;
-        if (target.Unit.Race == Race.Asura)
-            Unit.EarnedMask = true;
         Unit.EnemiesKilledThisBattle++;
         target.Unit.KilledBy = Unit;
         target.Unit.Kill();
@@ -3248,7 +3106,6 @@ public class Actor_Unit
         }
         if (Unit.HasTrait(Traits.CurseOfPhasing))
         {
-            if (true)
             {
                 var teleport_tiles = TacticalUtilities.TilesWithinRange(Position, 3).Where(t => TacticalUtilities.IsWalkable(t.x, t.y, this)).ToList();
                 var target_tile = teleport_tiles[State.Rand.Next(0, teleport_tiles.Count())];
@@ -3295,7 +3152,7 @@ public class Actor_Unit
             State.GameManager.TacticalMode.DirtyPack = true;
             Targetable = false;
             Surrendered = true;
-            if (Config.VisibleCorpses && Unit.Race != Race.Erin && Unit.Race != Race.Iliijiith)
+            if (Config.VisibleCorpses)
             {
                 float angle = 40 + State.Rand.Next(280);
                 UnitSprite.transform.rotation = Quaternion.Euler(0, 0, angle);

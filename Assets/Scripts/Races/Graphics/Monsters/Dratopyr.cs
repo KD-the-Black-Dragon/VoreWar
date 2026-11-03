@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System.Collections.Generic;
 using UnityEngine;
 
 class Dratopyr : BlankSlate
@@ -258,20 +261,6 @@ class Dratopyr : BlankSlate
 
         if (!actor.Targetable) shake = 0;
 
-        if (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.balls) ?? false)
-        {
-            return SpriteDictionary.Dratopyr[99 + shake];
-        }
-
-        else if (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false)
-        {
-
-            if (ballSize > 19) return SpriteDictionary.Dratopyr[96 + shake];
-            if (ballSize > 17) return SpriteDictionary.Dratopyr[93 + shake];
-            if (ballSize > 15) return SpriteDictionary.Dratopyr[90 + shake];
-            if (ballSize > 13) return SpriteDictionary.Dratopyr[87 + shake];
-        }
-
         if (ballSize > 13) ballSize = 13;
 
         return SpriteDictionary.Dratopyr[45 + (ballSize * 3) + shake];
@@ -356,34 +345,6 @@ class Dratopyr : BlankSlate
         int shake = frameListShake.frames[actor.AnimationController.frameLists[2].currentFrame];
 
         if (!actor.Targetable) shake = 0;
-
-        if (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach) ?? false)
-        {
-            return SpriteDictionary.Dratopyr[168 + shake];
-        }
-
-        else if (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach) ?? false)
-        {
-
-            if (bellySize > 22) return SpriteDictionary.Dratopyr[165 + shake];
-            if (bellySize > 21) return SpriteDictionary.Dratopyr[162 + shake];
-            if (bellySize > 20) return SpriteDictionary.Dratopyr[159 + shake];
-            if (bellySize > 19) return SpriteDictionary.Dratopyr[156 + shake];
-        }
-
-        if (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.womb) ?? false)
-        {
-            return SpriteDictionary.Dratopyr[168 + shake];
-        }
-
-        else if (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.womb) ?? false)
-        {
-
-            if (bellySize > 22) return SpriteDictionary.Dratopyr[165 + shake];
-            if (bellySize > 21) return SpriteDictionary.Dratopyr[162 + shake];
-            if (bellySize > 20) return SpriteDictionary.Dratopyr[159 + shake];
-            if (bellySize > 19) return SpriteDictionary.Dratopyr[156 + shake];
-        }
 
         if (bellySize > 18) bellySize = 18;
 

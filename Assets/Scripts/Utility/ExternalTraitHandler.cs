@@ -1,4 +1,7 @@
-﻿using Newtonsoft.Json;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Tolerate retired trait metadata and preserve developer Unit Tag identity/save paths (spec 22).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -33,111 +36,68 @@ public class TaggedTrait
 
 public class ExternalTraitHandler
 {
-    // Loads current Tagged Trait File
-    public static Dictionary<Traits, TaggedTrait> TaggedTraitParser()
+    // Obsolete names are ignored per row, including in existing local metadata files.
+    static Dictionary<Traits, TaggedTrait> ReadTaggedTraits(string path)
     {
-        string readContents;
-        FileStream traitJson = File.OpenRead(State.StorageDirectory + "\\taggedTraits.json");
-        using (StreamReader streamReader = new StreamReader(traitJson))
+        var traits = new Dictionary<Traits, TaggedTrait>();
+        if (!File.Exists(path)) return traits;
+        JArray rows;
+        try { rows = JObject.Parse(File.ReadAllText(path))["traits"] as JArray; }
+        catch (Exception ex)
         {
-            readContents = streamReader.ReadToEnd();
+            Debug.LogWarning("Could not read trait categories from " + path + ": " + ex.Message);
+            return traits;
         }
-        Dictionary<Traits, TaggedTrait> taggedTraitsList = new Dictionary<Traits, TaggedTrait>();
-        JObject results = JObject.Parse(readContents);
-        IList<JToken> traitList = results["traits"].Children().ToList();
-        try
+        if (rows == null) return traits;
+        foreach (JToken row in rows)
         {
-            foreach (JToken t in traitList)
+            string name = null;
+            try
             {
-                TaggedTrait trait = new TaggedTrait();
-                trait.name = t["name"].ToString();
-                trait.tier = t["tier"].ToString();
-                trait.tags = t["tags"].ToObject<List<string>>();
-                trait.tierValue = (TraitTier)Enum.Parse(typeof(TraitTier), trait.tier);
-                trait.traitEnum = (Traits)Enum.Parse(typeof(Traits), trait.name);
-                taggedTraitsList.Add(trait.traitEnum, trait);
-                //Debug.Log(taggedTraitsList.Count);
+                if (!(row is JObject)) continue;
+                name = (string)row["name"];
+                Traits id;
+                TraitTier tier;
+                if (!Enum.TryParse(name, out id) || !Enum.IsDefined(typeof(Traits), id))
+                    continue; // Retired names must not abort later valid entries.
+                if (!Enum.TryParse((string)row["tier"], out tier) || !Enum.IsDefined(typeof(TraitTier), tier))
+                    tier = TraitTier.Neutral;
+                traits[id] = new TaggedTrait
+                {
+                    name = id.ToString(), traitEnum = id, tierValue = tier, tier = tier.ToString(),
+                    tags = row["tags"] is JArray ? row["tags"].ToObject<List<string>>() : new List<string>()
+                };
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning("Could not read categories for " + name + ": " + ex.Message);
             }
         }
-        catch (Exception e)
-        {
-            Debug.LogError(e.Message + "you may have edited or removed the trait in the Enum file. The entry has been removed from the file. " +
-                "If this error still appears for this trait, navigate and fix the entry in ./VoreWar/UserData/taggedTraits.json or delete the file so it refreshes." +
-                "Cheers! ~CSC");
-        }
-        traitJson.Close();
-        return taggedTraitsList;
+        return traits;
     }
 
-    // Loads Tagged Trait File from shared assets and updates current file with any trait additions.
-    // Also deletes traits from the current file that no longer exist for whatever reason.
+    public static Dictionary<Traits, TaggedTrait> TaggedTraitParser()
+    {
+        return ReadTaggedTraits(Path.Combine(State.StorageDirectory, "taggedTraits.json"));
+    }
+
+    // Keep valid local edits; fill missing metadata from the shipped catalog.
     public static Dictionary<Traits, TaggedTrait> TaggedTraitUpdater()
     {
-        // Loads Contents from Streaming Assets same as parser.
-        string readContents;
-        FileStream traitJson = File.OpenRead($"{Application.streamingAssetsPath}{Path.DirectorySeparatorChar}taggedTraits.json");
-        using (StreamReader streamReader = new StreamReader(traitJson))
-        {
-            readContents = streamReader.ReadToEnd();
-        }
-        Dictionary<Traits, TaggedTrait> updatedTaggedTraitsList = new Dictionary<Traits, TaggedTrait>(State.TieredTraitsList);
-        JObject results = JObject.Parse(readContents);
-        IList<JToken> traitList = results["traits"].Children().ToList();
-        try
-        {
-            foreach (JToken t in traitList)
+        var updated = new Dictionary<Traits, TaggedTrait>(State.TieredTraitsList);
+        foreach (var pair in ReadTaggedTraits(Path.Combine(Application.streamingAssetsPath, "taggedTraits.json")))
+            if (!updated.ContainsKey(pair.Key)) updated.Add(pair.Key, pair.Value);
+        string path = Path.Combine(State.StorageDirectory, "taggedTraits.json");
+        if (File.Exists(path)) File.Copy(path, path + ".bak", true);
+        var root = new RootObject { traits = new List<TaggedTraitTempClass>() };
+        foreach (TaggedTrait trait in updated.Values)
+            root.traits.Add(new TaggedTraitTempClass
             {
-                TaggedTrait trait = new TaggedTrait();
-                trait.name = t["name"].ToString();
-                trait.tier = t["tier"].ToString();
-                trait.tags = t["tags"].ToObject<List<string>>();
-                trait.tierValue = (TraitTier)Enum.Parse(typeof(TraitTier), trait.tier);
-                trait.traitEnum = (Traits)Enum.Parse(typeof(Traits), trait.name);
-                // Add anything that is not in current list
-                if (!updatedTaggedTraitsList.ContainsKey(trait.traitEnum))
-                {
-                    updatedTaggedTraitsList.Add(trait.traitEnum, trait);
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            Debug.LogError(e.Message + "There was an issue while updating tagged traits.");
-        }
-        traitJson.Close();
-        // Check if tagged trait file exists
-        if (File.Exists($"{State.StorageDirectory}taggedTraits.json"))
-        {
-            //Create a backup
-            File.Copy($"{State.StorageDirectory}taggedTraits.json", $"{State.StorageDirectory}taggedTraits.json.bak", true);
-            //Delete current
-            File.Delete($"{State.StorageDirectory}taggedTraits.json");
-        }
-
-        List<TaggedTrait> newTraitList = new List<TaggedTrait>();
-        var rootObject = new RootObject();
-        rootObject.traits = new List<TaggedTraitTempClass>();
-
-        // load up list to be writen
-        foreach (TaggedTrait trait in updatedTaggedTraitsList.Values)
-        {
-            TaggedTraitTempClass toBeAdded = new TaggedTraitTempClass();
-            toBeAdded.name = trait.name;
-            toBeAdded.tier = trait.tier;
-            toBeAdded.tier = trait.tier.ToString();
-            toBeAdded.tags = trait.tags;  
-            toBeAdded.traitEnum = trait.traitEnum;
-            toBeAdded.tierValue = trait.tierValue;
-            rootObject.traits.Add(toBeAdded);
-        }
-
-        // Write new file
-        using (StreamWriter file = File.CreateText(State.StorageDirectory + "\\taggedTraits.json"))
-        {
-            JsonSerializer serializer = new JsonSerializer();
-            serializer.Serialize(file, rootObject);
-        }
-        return updatedTaggedTraitsList;
+                name = trait.name, tier = trait.tier, tags = trait.tags,
+                traitEnum = trait.traitEnum, tierValue = trait.tierValue
+            });
+        File.WriteAllText(path, JsonConvert.SerializeObject(root));
+        return updated;
     }
 
     public static void AppendTaggedTrait(List<TaggedTrait> newTrait)
@@ -303,66 +263,54 @@ public class ExternalTraitHandler
             File.Delete($"{State.ConditionalTraitDirectory}{trait.name}.json");
     }
 
+    static readonly Dictionary<int, string> unitTagPaths = new Dictionary<int, string>();
+
     public static bool UnitTagSaver(UnitTag tag)
     {
-        UnitTagRemover(tag);
-
-        var rootObject = new UnitTagTempClass();
-        rootObject.id = tag.id;
-        rootObject.name = tag.name;
-        rootObject.modifiers = new List<UnitTagModifierTempClass>();
-        foreach (var item in tag.modifiers)
+        string path;
+        if (!unitTagPaths.TryGetValue(tag.id, out path))
         {
-            var modifier = new UnitTagModifierTempClass();
-            modifier.id = item.id;
-            modifier.tagEffect = item.tagEffect;
-            modifier.tagCase = item.tagCase;
-            modifier.target = item.target;
-            modifier.modifierValue = item.modifierValue;
-            modifier.targetValue = item.targetValue;
-            rootObject.modifiers.Add(modifier);
+            string filename = string.Concat(tag.name.Select(c => Path.GetInvalidFileNameChars().Contains(c) ? '_' : c));
+            if (string.IsNullOrWhiteSpace(filename)) filename = "UnitTag";
+            path = Path.Combine(State.UnitTagDirectory, filename + "-" + tag.id + ".json");
         }
-        using (StreamWriter sw = new StreamWriter($"{State.UnitTagDirectory} {tag.name}.json"))
-        {
-            sw.WriteLine(JsonConvert.SerializeObject(tag));
-
-        }
+        File.WriteAllText(path, JsonConvert.SerializeObject(tag));
+        unitTagPaths[tag.id] = path;
+        TagConditionChecker.CompileTraitTagAssociateDict();
         return true;
     }
 
     public static void UnitTagRemover(UnitTag tag)
     {
-        if (File.Exists($"{State.UnitTagDirectory}{tag.name}.json"))
-            File.Delete($"{State.UnitTagDirectory}{tag.name}.json");
+        string path;
+        if (!unitTagPaths.TryGetValue(tag.id, out path))
+            path = Path.Combine(State.UnitTagDirectory, tag.name + ".json");
+        if (File.Exists(path)) File.Delete(path);
+        unitTagPaths.Remove(tag.id);
     }
 
     public static void UnitTagParser()
     {
-        try
+        unitTagPaths.Clear();
+        if (!Directory.Exists(State.UnitTagDirectory)) return;
+        foreach (string file in Directory.GetFiles(State.UnitTagDirectory, "*.json", SearchOption.AllDirectories).OrderBy(f => f))
         {
-            string readContents;
-            string[] files = Directory.GetFiles(State.UnitTagDirectory, "*.json", SearchOption.AllDirectories);
-            foreach (string file in files)
+            try
             {
-                using (StreamReader streamReader = new StreamReader(file))
-                {
-                    readContents = streamReader.ReadToEnd();
-                }
-                JObject results = JObject.Parse(readContents);
-
-                UnitTag loadedTag = new UnitTag();
-                loadedTag.AssociatedTraits = new List<Traits>();
-                loadedTag.id = results["id"].ToObject<int>();
-                loadedTag.name = results["name"].ToString();
-                loadedTag.modifiers = results["modifiers"].ToObject<List<UnitTagModifier>>();
-                loadedTag.AssociatedTraits = results["AssociatedTraits"].ToObject<List<Traits>>();
-                State.UnitTagList.Add(loadedTag);
-
+                UnitTag tag = JsonConvert.DeserializeObject<UnitTag>(File.ReadAllText(file));
+                if (tag == null || tag.id < 0 || string.IsNullOrWhiteSpace(tag.name))
+                    throw new FormatException("Missing tag name or valid ID.");
+                if (State.UnitTagList.Any(t => t.id == tag.id))
+                    throw new FormatException("Duplicate tag ID " + tag.id + ".");
+                if (tag.modifiers == null) tag.modifiers = new List<UnitTagModifier>();
+                if (tag.AssociatedTraits == null) tag.AssociatedTraits = new List<Traits>();
+                State.UnitTagList.Add(tag);
+                unitTagPaths[tag.id] = file;
             }
-        }
-        catch (Exception ex) 
-        { 
-        
+            catch (Exception ex)
+            {
+                Debug.LogWarning("Could not load Unit Tag " + Path.GetFileName(file) + ": " + ex.Message);
+            }
         }
     }
 

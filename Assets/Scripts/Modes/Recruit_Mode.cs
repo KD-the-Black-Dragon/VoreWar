@@ -1,5 +1,6 @@
 // Modified for the VoreWar mercenary-company conversion.
 // 2026-11-01: Complete approved ability retirement and close legacy reactivation paths (spec 05A3B17).
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Collections.Generic;
@@ -1183,7 +1184,7 @@ public class Recruit_Mode : SceneBase
     {
         Unit source = Customizer.Unit;
         foreach (Unit unit in army.Units.Where(s => s.Race == source.Race &&
-        (s.Type == source.Type || (source.Race != Race.Slimes && source.Type == UnitType.Leader && (s.Type == UnitType.Soldier || s.Type == UnitType.Mercenary || s.Type == UnitType.Adventurer)))))
+        (s.Type == source.Type || (source.Type == UnitType.Leader && (s.Type == UnitType.Soldier || s.Type == UnitType.Mercenary || s.Type == UnitType.Adventurer)))))
         {
             unit.ClothingType = source.ClothingType;
             unit.ClothingType2 = source.ClothingType2;
@@ -1712,11 +1713,11 @@ public class Recruit_Mode : SceneBase
                 UpdateActorList();
                 if (village != null)
                 {
-                    if (unit.Race < Race.Selicia)
+                    if (unit.Race < (Race)170)
                     {
                         if (village.GetTotalPop() == 0)
                         {
-                            if (unit.Race >= Race.Selicia)
+                            if (unit.Race >= (Race)170)
                                 village.Race = State.World.GetEmpireOfSide(army.Side).ReplacedRace;
                             else
                                 village.Race = unit.Race;

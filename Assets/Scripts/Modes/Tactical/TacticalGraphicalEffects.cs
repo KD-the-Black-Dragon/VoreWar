@@ -1,6 +1,7 @@
-﻿// Modified for the VoreWar mercenary-company conversion.
+// Modified for the VoreWar mercenary-company conversion.
 // 2026-11-01: Disconnect rejected graphics instances and their typed rendering hooks (spec 03B4).
 // 2026-11-01: Retire rejected-only projectile branches and setup helpers (spec 03B8).
+// 2026-11-03: Remove exclusive retired code and preserve retained dependencies (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using UnityEngine;
 
@@ -117,37 +118,11 @@ static class TacticalGraphicalEffects
         return null;
     }
 
-    internal static void SuccubusSwordEffect(Vector2 location)
-    {
-        if (State.GameManager.TacticalMode.turboMode)
-            return;
-        var obj = Object.Instantiate(State.GameManager.SpriteRendererPrefab);
-        obj.transform.position = location;
-        obj.AddComponent<Assets.Scripts.Entities.Animations.SuccubusSword>();
 
-    }
 
-    internal static void EntropicChaosEffect(Vector2 location)
-    {
-        if (State.GameManager.TacticalMode.turboMode)
-            return;
-        var obj = Object.Instantiate(State.GameManager.SpriteRendererPrefab);
-        obj.transform.position = location;
-        obj.transform.localScale = new Vector3(2, 2, 1);
-        obj.AddComponent<Assets.Scripts.Entities.Animations.EntropicChaos>();
 
-    }
 
-    internal static void VenomBiteEffect(Vector2 location)
-    {
-        if (State.GameManager.TacticalMode.turboMode)
-            return;
-        var obj = Object.Instantiate(State.GameManager.SpriteRendererPrefab);
-        obj.transform.position = location;
-        obj.transform.localScale = new Vector3(3, 3, 1);
-        obj.AddComponent<Assets.Scripts.Entities.Animations.VenomBite>();
 
-    }
 
     internal static void CreateIceBlast(Vec2 location)
     {

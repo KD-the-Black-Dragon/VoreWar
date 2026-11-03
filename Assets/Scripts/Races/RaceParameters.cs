@@ -1,7 +1,8 @@
-﻿// Modified for the VoreWar mercenary-company conversion.
+// Modified for the VoreWar mercenary-company conversion.
 // 2026-11-01: Resolve species metadata directly without constructing a randomized dummy Unit (spec 05A7).
 // 2026-11-01: Retire all 90 rejected stat prototypes and reject retired metadata lookups (spec 03B3D).
 // 2026-11-01: Provisional approved species specialties and weak SpitterSlug support profile (spec 07).
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
 using System.Collections.Generic;
@@ -508,26 +509,6 @@ static class RaceParameters
                 Traits.Clever,
         },
             RaceDescription = "Originally ordinary lab mice, tucked away in a secret laboratory, the gift of sentience and a heightened sense of intellect was suddenly bestowed upon them. No mouse knows the identity of this mysterious actor or the reason they were given such a boon, but all are grateful for their improved status.",
-        };
-
-
-        MatronsMinions = new RaceTraits()
-        {
-            BodySize = 8,
-            StomachSize = 12,
-            HasTail = true,
-            FavoredStat = Stat.Agility,
-            DeployCost = 1,
-            Upkeep = 2f,
-			PowerAdjustment = 0.9f,
-            RacialTraits = new List<Traits>()
-            {
-                Traits.ProlificBreeder,
-                Traits.EasyToVore,
-            },
-            LeaderRace = Race.Abakhanskya,
-            RaceDescription = "A tribe of kobolds who are faithfully serving their goddess, Abakhanskya.",
-            RaceAI = RaceAI.ServantRace
         };
 
         Gnolls = new RaceTraits()
@@ -1768,41 +1749,6 @@ static class RaceParameters
             Traits.HardSkin
         },
             RaceDescription = "Goodra, the Slug Dragon Pokemon. Goodra are large soft dragon type pokemon coated in slime. They love to give hugs and often confuse friends from food.",
-        };
-
-
-        FeralUmbreon = new RaceTraits()
-        {
-            BodySize = 6,
-            StomachSize = 12,
-            HasTail = true,
-            FavoredStat = Stat.Strength,
-            AllowedVoreTypes = new List<VoreType> { VoreType.Oral, VoreType.Anal, VoreType.Unbirth },
-            ExpMultiplier = 1f,
-            PowerAdjustment = .75f,
-            DeployCost = 1,
-            Upkeep = 2f,
-            RaceStats = new RaceStats()
-            {
-                Strength = new RaceStats.StatRange(6, 10),
-                Dexterity = new RaceStats.StatRange(2, 4),
-                Endurance = new RaceStats.StatRange(5, 8),
-                Mind = new RaceStats.StatRange(6, 8),
-                Will = new RaceStats.StatRange(4, 8),
-                Agility = new RaceStats.StatRange(10, 18),
-                Voracity = new RaceStats.StatRange(10, 18),
-                Stomach = new RaceStats.StatRange(8, 15),
-            },
-            RacialTraits = new List<Traits>()
-        {
-                Traits.Intimidating,
-                Traits.NightEye,
-                Traits.Pounce,
-                Traits.PackStrength,
-        },
-            ConversionRace = Race.FeralEevee,
-            RaceDescription = "Umbreon, the Moonlight Pokémon. A medium sized canine, Feral Umbreons also seemed to come from the same place as Feral Eevees, Also gaining the same hunger Feral Eevees acquired. They will mostly live in packs with other Feral Umbreons and some Feral Eevees. Some claim they have even seen them adopting the Feral Eevees anthro counter part, mistaking it as one of their own. But this has yet to be proven true. Feral Umbreons, like their anthro counter part, share their hatred for Sylveons. Fights between Feral Umbreons and Feral Sylveons have been recorded several times.",
-
         };
 
 

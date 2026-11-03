@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System.Collections.Generic;
 using UnityEngine;
 
 class Salamander : BlankSlate
@@ -146,15 +149,6 @@ class Salamander : BlankSlate
     {
         if (actor.HasBelly == false)
             return null;
-        if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach))
-            return Sprites[72];
-        if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach))
-        {
-            if (actor.GetStomachSize(16, .8f) == 16)
-                return Sprites[71];
-            else if (actor.GetStomachSize(16, .9f) == 16)
-                return Sprites[70];
-        }
         return Sprites[53 + actor.GetStomachSize(16)];
     }
 

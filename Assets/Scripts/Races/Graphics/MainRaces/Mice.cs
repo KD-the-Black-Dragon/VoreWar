@@ -1,4 +1,7 @@
-﻿using System;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.UI.CanvasScaler;
@@ -452,42 +455,6 @@ protected override Sprite EyesSprite(Actor_Unit actor)
             belly.transform.localScale = new Vector3(1, 1, 1);
             belly.SetActive(true);
             int size = actor.GetStomachSize(31, 0.7f);
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb) && size == 31)
-            {
-                AddOffset(Belly, 0, -29 * .625f);
-                if (actor.Unit.BodyAccentType2 == 1 || !actor.Unit.Furry)
-                {
-                    return Sprites8[105];
-                }
-                return Sprites9[105];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 31)
-            {
-                AddOffset(Belly, 0, -29 * .625f);
-                if (actor.Unit.BodyAccentType2 == 1 || !actor.Unit.Furry)
-                {
-                    return Sprites8[104];
-                }
-                return Sprites9[104];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 30)
-            {
-                AddOffset(Belly, 0, -29 * .625f);
-                if (actor.Unit.BodyAccentType2 == 1 || !actor.Unit.Furry)
-                {
-                    return Sprites8[103];
-                }
-                return Sprites9[103];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 29)
-            {
-                AddOffset(Belly, 0, -29 * .625f);
-                if (actor.Unit.BodyAccentType2 == 1 || !actor.Unit.Furry)
-                {
-                    return Sprites8[102];
-                }
-                return Sprites9[102];
-            }
             switch (size)
             {
                 case 26:
@@ -543,30 +510,6 @@ protected override Sprite EyesSprite(Actor_Unit actor)
             int leftSize = (int)Math.Sqrt((actor.Unit.DefaultBreastSize * actor.Unit.DefaultBreastSize) + actor.GetLeftBreastSize(32 * 32, 1f));
             if (leftSize > actor.Unit.DefaultBreastSize)
                 oversize = true;
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.leftBreast) && leftSize >= 32)
-            {
-                if (actor.Unit.BodyAccentType2 == 1 || !actor.Unit.Furry)
-                {
-                    return Sprites8[31];
-                }
-                return Sprites9[31];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.leftBreast) && leftSize >= 30)
-            {
-                if (actor.Unit.BodyAccentType2 == 1 || !actor.Unit.Furry)
-                {
-                    return Sprites8[30];
-                }
-                return Sprites9[30];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.leftBreast) && leftSize >= 28)
-            {
-                if (actor.Unit.BodyAccentType2 == 1 || !actor.Unit.Furry)
-                {
-                    return Sprites8[29];
-                }
-                return Sprites9[29];
-            }
 
             if (leftSize > 28)
                 leftSize = 28;
@@ -596,30 +539,6 @@ protected override Sprite EyesSprite(Actor_Unit actor)
             int rightSize = (int)Math.Sqrt((actor.Unit.DefaultBreastSize * actor.Unit.DefaultBreastSize) + actor.GetRightBreastSize(32 * 32, 1f));
             if (rightSize > actor.Unit.DefaultBreastSize)
                 oversize = true;
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.rightBreast) && rightSize >= 32)
-            {
-                if (actor.Unit.BodyAccentType2 == 1 || !actor.Unit.Furry)
-                {
-                    return Sprites8[63];
-                }
-                return Sprites9[63];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.rightBreast) && rightSize >= 30)
-            {
-                if (actor.Unit.BodyAccentType2 == 1 || !actor.Unit.Furry)
-                {
-                    return Sprites8[62];
-                }
-                return Sprites9[62];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.rightBreast) && rightSize >= 28)
-            {
-                if (actor.Unit.BodyAccentType2 == 1 || !actor.Unit.Furry)
-                {
-                    return Sprites8[61];
-                }
-                return Sprites9[61];
-            }
 
             if (rightSize > 28)
                 rightSize = 28;
@@ -734,28 +653,7 @@ protected override Sprite EyesSprite(Actor_Unit actor)
         }
         int size = actor.Unit.DickSize;
         int offset = actor.GetBallSize(28, .8f);
-        if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.balls) ?? false) && offset == 28)
-        {
-            AddOffset(Balls, 0, -20 * .625f);
-            if (actor.Unit.BodyAccentType2 == 1 && actor.Unit.Furry)
-                return Sprites7[176];
-            return Sprites7[139 - ((actor.Unit.Furry && Config.FurryGenitals) ? 102 : 0)];
-        }
-        else if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false) && offset == 28)
-        {
-            AddOffset(Balls, 0, -20 * .625f);
-            if (actor.Unit.BodyAccentType2 == 1 && actor.Unit.Furry)
-                return Sprites7[175];
-            return Sprites7[138 - ((actor.Unit.Furry && Config.FurryGenitals) ? 102 : 0)];
-        }
-        else if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false) && offset == 27)
-        {
-            AddOffset(Balls, 0, -20 * .625f);
-            if (actor.Unit.BodyAccentType2 == 1 && actor.Unit.Furry)
-                return Sprites7[174];
-            return Sprites7[137 - ((actor.Unit.Furry && Config.FurryGenitals) ? 102 : 0)];
-        }
-        else if (offset >= 26)
+        if (offset >= 26)
         {
             AddOffset(Balls, 0, -20 * .625f);
         }

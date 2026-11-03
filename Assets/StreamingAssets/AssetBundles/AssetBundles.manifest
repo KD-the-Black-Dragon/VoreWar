@@ -1,5 +1,5 @@
 ManifestFileVersion: 0
-CRC: 2326906175
+CRC: 2959294752
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
@@ -10,7 +10,4 @@ AssetBundleManifest:
       Dependencies: {}
     Info_2:
       Name: monster
-      Dependencies: {}
-    Info_3:
-      Name: specialmerc
       Dependencies: {}

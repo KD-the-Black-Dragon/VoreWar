@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// 2026-11-03: Correct legacy category conditions and retain trait-derived tags without species overrides (spec 22).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
@@ -125,18 +129,18 @@ public class TagConditionChecker
             case UnitTagModifierTarget.HasSpells:
                 return target.UseableSpells != null;
             case UnitTagModifierTarget.IsEmpireRace:
-                return target.Race < Race.none && target.Race > Race.Succubi;
+                return (int)target.Race >= 0 && (int)target.Race < 50;
             case UnitTagModifierTarget.IsMercenaryRace:
-                return target.Race <= Race.Succubi && target.Race > Race.Vagrants;
+                return (int)target.Race >= 50 && (int)target.Race < 100;
             case UnitTagModifierTarget.IsMonsterRace:
-                return target.Race <= Race.Vagrants && target.Race > Race.Selicia;
+                return (int)target.Race >= 100 && (int)target.Race < 170;
             case UnitTagModifierTarget.IsSpecialMercenaryRace:
-                return target.Race <= Race.Selicia;
+                return (int)target.Race >= 170;
             case UnitTagModifierTarget.IsPredator:
                 return target.Predator;
             case UnitTagModifierTarget.IsFull:
                 var actor = TacticalUtilities.Units.FirstOrDefault(s => s.Unit == target);
-                if (actor.PredatorComponent != null)
+                if (actor != null && actor.PredatorComponent != null)
                 {
                     if (actor.PredatorComponent.PreyCount >= 1)
                         return true;
@@ -144,7 +148,7 @@ public class TagConditionChecker
                 break;
             case UnitTagModifierTarget.IsDigesting:
                 actor = TacticalUtilities.Units.FirstOrDefault(s => s.Unit == target);
-                if (actor.PredatorComponent != null)
+                if (actor != null && actor.PredatorComponent != null)
                 {
                     if (actor.PredatorComponent.AlivePrey >= 1)
                         return true;
@@ -152,7 +156,7 @@ public class TagConditionChecker
                 break;
             case UnitTagModifierTarget.IsAbsorbing:
                 actor = TacticalUtilities.Units.FirstOrDefault(s => s.Unit == target);
-                if (actor.PredatorComponent != null)
+                if (actor != null && actor.PredatorComponent != null)
                 {
                     if (actor.PredatorComponent.PreyCount > actor.PredatorComponent.AlivePrey)
                         return true;
@@ -188,10 +192,7 @@ public class TagConditionChecker
 
         //Get tags from race editor IDs
         List<int> editorTags = State.RaceSettings.GetRaceTags(unit.Race);
-        if (editorTags == null)
-        {
-            return combinedTagLsit;
-        }
+        if (editorTags == null) editorTags = new List<int>();
 
         foreach (int tagID in editorTags)
         {

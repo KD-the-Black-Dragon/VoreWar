@@ -1,4 +1,7 @@
-﻿using OdinSerializer;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using OdinSerializer;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -23,16 +26,6 @@ class ScatInfo
         predRace = pred.Race;
         preyRace = preyUnit.Unit.Race;
         preySize = Mathf.RoundToInt(preyUnit.Actor.BodySize());
-
-        if (pred.Race == Race.Slimes)
-        {
-            color = pred.AccessoryColor;
-        }
-
-        if (pred.Race == Race.Selicia || preyUnit.Unit.Race == Race.Selicia)
-        {
-            color = 3;
-        }
 
         bonesInfos = preyUnit.GetBoneTypes();
         if (Config.ScatBones == false)

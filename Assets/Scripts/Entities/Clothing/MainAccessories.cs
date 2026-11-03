@@ -1,22 +1,18 @@
-﻿class AsuraMask : ClothingAccessory
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+class SharedMask : ClothingAccessory
 {
-    public AsuraMask()
+    public SharedMask()
     {
         clothing1 = new SpriteExtraInfo(19, null, null);
     }
 
     public override void Configure(CompleteSprite sprite, Actor_Unit actor)
     {
-        clothing1.GetSprite = (s) => SpriteDictionary.Asura[40];
+        clothing1.GetSprite = (s) => SpriteDictionary.SharedMaskParts[1];
         switch (actor.Unit.Race)
         {
-            case Race.Imps:
-            case Race.Goblins:
-                clothing1.YOffset = -22 * .625f;
-                break;
-            case Race.Taurus:
-                clothing1.YOffset = 12 * .625f;
-                break;
             default:
                 clothing1.YOffset = 0;
                 break;
@@ -38,33 +34,17 @@ class SantaHat : ClothingAccessory
         clothing1.GetSprite = (s) => SpriteDictionary.SantaHat;
         switch (actor.Unit.Race)
         {
-            case Race.Imps:
-            case Race.Goblins:
-                clothing1.YOffset = -22 * .625f;
-                break;
-            case Race.Taurus:
-                clothing1.YOffset = 12 * .625f;
-                break;
             case Race.Frogs:
                 clothing1.YOffset = 9 * .625f;
                 break;
             case Race.Bees:
                 clothing1.YOffset = 26 * .625f;
                 break;
-            case Race.Merfolk:
-                clothing1.YOffset = 14 * .625f;
-                break;
             case Race.Kangaroos:
                 clothing1.YOffset = -3 * .625f;
                 break;
             case Race.Sergal:
                 clothing1.YOffset = 26 * .625f;
-                break;
-            case Race.Bears:
-                clothing1.YOffset = 12 * .625f;
-                break;
-            case Race.Ghosts:
-                clothing1.YOffset = 12 * .625f;
                 break;
             default:
                 clothing1.YOffset = 0;
@@ -75,7 +55,7 @@ class SantaHat : ClothingAccessory
 }
 static class MainAccessories
 {
-    internal static AsuraMask AsuraMask = new AsuraMask();
+    internal static SharedMask SharedMask = new SharedMask();
     internal static SantaHat SantaHat = new SantaHat();
 
 }

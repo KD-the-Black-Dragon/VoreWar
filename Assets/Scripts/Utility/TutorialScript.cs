@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -51,10 +54,6 @@ public class TutorialScript
         tacticalUnits[0].Unit.SetDefaultBreastSize(2);
         tacticalUnits[0].Unit.DickSize = -1;
         State.GameManager.TacticalMode.TacticalStats.SetInitialUnits(3, 1, 0, 0, 9);
-        State.World.MainEmpires[(int)Race.Imps].MaxGarrisonSize = 4;
-        State.World.MainEmpires[(int)Race.Cats].Armies[0].SetEmpire(State.World.MainEmpires[(int)Race.Cats]);
-        State.World.MainEmpires[(int)Race.Cats].AddGold(1000);
-        State.World.MainEmpires[(int)Race.Imps].Armies[0].SetEmpire(State.World.MainEmpires[(int)Race.Imps]);
         State.World.Villages[0].UpdateNetBoosts();
         State.World.Villages[1].UpdateNetBoosts();
         State.World.Villages[0].AddPopulation(60);

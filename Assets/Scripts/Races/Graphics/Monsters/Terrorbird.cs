@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using UnityEngine;
 
 class Terrorbird : BlankSlate
 {
@@ -114,17 +117,6 @@ class Terrorbird : BlankSlate
 
         if (actor.HasBelly == false)
             return null;
-        if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb))
-            return Sprites[65];
-        if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb))
-        {
-            if (actor.GetStomachSize(29, .75f) == 29)
-                return Sprites[64];
-            else if (actor.GetStomachSize(29, .8275f) == 29)
-                return Sprites[63];
-            else if (actor.GetStomachSize(29, .9f) == 29)
-                return Sprites[62];
-        }
         return Sprites[32 + actor.GetStomachSize(29)];
     }
 

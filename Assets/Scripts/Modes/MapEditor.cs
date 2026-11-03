@@ -1,4 +1,7 @@
-﻿using MapObjects;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using MapObjects;
 using OdinSerializer;
 using System;
 using System.Collections.Generic;
@@ -488,10 +491,7 @@ public class MapEditor : SceneBase
     internal void SetVillageTooltip(Race race)
     {
         Tooltip.gameObject.SetActive(true);
-        if (race == Race.Vagrants)
-            Tooltip.text = $"Place abandoned Village";
-        else
-            Tooltip.text = $"Place {race} Village";
+        Tooltip.text = $"Place {race} Village";
     }
 
     internal void SetDoodadType(StrategicDoodadType type, Transform location)
@@ -1428,8 +1428,6 @@ public class MapEditor : SceneBase
                     if (empire.Race == villageRace)
                         activeRace = true;
                 }
-                if (villageRace == Race.Vagrants)
-                    activeRace = true;
                 if (activeRace == false)
                     return;
                 Village newVillage;
@@ -1451,7 +1449,7 @@ public class MapEditor : SceneBase
                 }
 
                 var curVillages = State.World.Villages.Where(s => s.Side == (int)villageRace);
-                if (curVillages.Where(s => s.Capital || s.Race == Race.Vagrants).Any() == false)
+                if (curVillages.Where(s => s.Capital).Any() == false)
                 {
                     newVillage = new Village(State.NameGen.GetTownName(villageRace, 0), clickLocation, 8, villageRace, true);
                 }
@@ -1478,8 +1476,6 @@ public class MapEditor : SceneBase
                 LastActionBuilder.Add(() => DestroyVillagesAtTile(new Vec2i(x, y)));
                 var villages = State.World.Villages.ToList();
                 villages.Add(newVillage);
-                if (newVillage.Race == Race.Vagrants)
-                    newVillage.SubtractPopulation(99999);
                 State.World.Villages = villages.ToArray();
                 RefreshVillageCounts();
                 RedrawVillages();
@@ -1868,8 +1864,6 @@ public class MapEditor : SceneBase
         for (int i = 0; i < map.storedVillages.Length; i++)
         {
             newVillages.Add(new Village("None", map.storedVillages[i].Position, 8, map.storedVillages[i].Race, map.storedVillages[i].Capital));
-            if (newVillages.Last().Race == Race.Vagrants)
-                newVillages.Last().SubtractPopulation(99999);
         }
         State.World.Villages = newVillages.ToArray();
         if (map.mercLocations != null)
@@ -2232,7 +2226,7 @@ public class MapEditor : SceneBase
         }
         foreach (Village vill in State.World.Villages)
         {
-            if (vill.Race < Race.Succubi)
+            if (vill.Race < (Race)50)
                 Config.VillagesPerEmpire[(int)vill.Race]++;
         }
     }
@@ -2267,29 +2261,19 @@ public class MapEditor : SceneBase
                 sb.AppendLine($"Village: {villageAtCursor.Name}");
                 if (villageAtCursor.Capital)
                     sb.AppendLine($"Capital City ({villageAtCursor.OriginalRace})");
-                if (villageAtCursor.Race != Race.Vagrants || villageAtCursor.GetTotalPop() != 0)
                 {
                     sb.AppendLine($"Owner: {(Race)villageAtCursor.Side}");
                     sb.AppendLine($"Race: {villageAtCursor.Race}");
-                }
-                else
-                {
-                    sb.AppendLine($"Abandoned Village");
                 }
                 sb.AppendLine($"Village Location - X: {villageAtCursor.Position.x} Y: {villageAtCursor.Position.y}");
 
             }
             else
             {
-                if (villageAtCursor.Race != Race.Vagrants || villageAtCursor.GetTotalPop() != 0)
                 {
                     if (villageAtCursor.Capital)
                         sb.AppendLine($"Capital City ({villageAtCursor.OriginalRace})");
                     sb.AppendLine($"Race: {villageAtCursor.Race}");
-                }
-                else
-                {
-                    sb.AppendLine($"Abandoned Village");
                 }
 
             }

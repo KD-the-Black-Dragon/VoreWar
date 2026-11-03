@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System.Collections.Generic;
 using UnityEngine;
 
 class Raiju : BlankSlate
@@ -122,46 +125,6 @@ class Raiju : BlankSlate
 
         int size = actor.GetBallSize(45);
 
-        if (size >= 44 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.balls) ?? false))
-        {
-            return SpriteDictionary.Raiju240[23];
-        }
-
-        else if (size >= 42 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false))
-        {
-            return SpriteDictionary.Raiju240[22];
-        }
-
-        else if (size >= 40 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false))
-        {
-            return SpriteDictionary.Raiju240[21];
-        }
-
-        else if (size >= 38 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false))
-        {
-            return SpriteDictionary.Raiju240[20];
-        }
-
-        else if (size >= 36 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false))
-        {
-            return SpriteDictionary.Raiju240[19];
-        }
-
-        else if (size >= 34 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false))
-        {
-            return SpriteDictionary.Raiju240[18];
-        }
-
-        else if (size >= 32 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false))
-        {
-            return SpriteDictionary.Raiju240[17];
-        }
-
-        else if (size >= 30 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false))
-        {
-            return SpriteDictionary.Raiju240[16];
-        }
-
         if (size > 29) size = 29;
 
         if (size >= 26) return SpriteDictionary.Raiju240[12 + size - 26];
@@ -200,46 +163,6 @@ class Raiju : BlankSlate
             return null;
 
         int size = actor.GetStomachSize(45);
-
-        if (size >= 44 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach) ?? false))
-        {
-            return SpriteDictionary.Raiju240[11];
-        }
-
-        else if (size >= 42 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach) ?? false))
-        {
-            return SpriteDictionary.Raiju240[10];
-        }
-
-        else if (size >= 40 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach) ?? false))
-        {
-            return SpriteDictionary.Raiju240[9];
-        }
-
-        else if (size >= 38 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach) ?? false))
-        {
-            return SpriteDictionary.Raiju240[8];
-        }
-
-        else if (size >= 36 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach) ?? false))
-        {
-            return SpriteDictionary.Raiju240[7];
-        }
-
-        else if (size >= 34 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach) ?? false))
-        {
-            return SpriteDictionary.Raiju240[6];
-        }
-
-        else if (size >= 32 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach) ?? false))
-        {
-            return SpriteDictionary.Raiju240[5];
-        }
-
-        else if (size >= 30 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach) ?? false))
-        {
-            return SpriteDictionary.Raiju240[4];
-        }
 
         if (size > 29) size = 29;
 

@@ -1,4 +1,4 @@
-﻿// Modified for the VoreWar mercenary-company conversion.
+// Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Remove the retired Unit Editor hyperlink from unit inspection (spec 02B).
 // 2026-11-01: Label out-of-fight units as downed in character information (spec 10).
 // 2026-11-01: Use the shared individual display names for retained species (09–10 feedback).
@@ -7,6 +7,7 @@
 // 2026-11-02: Display tactical weapon/spell slots and reduce only trait text size (spec 16).
 // 2026-11-03: Reduce tactical trait and innate-spell text to 70 percent (spec 16 feedback).
 // 2026-11-03: Keep the final trait line at the same reduced font metrics as its predecessors (spec 16 feedback).
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Linq;
@@ -155,119 +156,48 @@ public class InfoPanel
     public static string RaceSingular(Unit unit)
     {
         if (!SpeciesPolicy.IsRetired(unit.Race)) return SpeciesPolicy.DisplayName(unit.Race);
-        if (unit.Race >= Race.Selicia)
+        if (unit.Race >= (Race)170)
             return unit.Race.ToString();
         switch (unit.Race)
         {
-            case Race.Cats:
-                return "Cat";
-            case Race.Dogs:
-                return "Dog";
-            case Race.Foxes:
-                return "Fox";
-            case Race.Youko:
-                return "Youko";
-            case Race.Wolves:
-                return "Wolf";
             case Race.Bunnies:
                 return "Bunny";
             case Race.Lizards:
                 return "Lizard";
-            case Race.Slimes:
-                return "Slime";
-            case Race.Scylla:
-                return "Scylla";
-            case Race.Harpies:
-                return "Harpy";
-            case Race.Imps:
-                return "Imp";
-            case Race.Humans:
-                return "Human";
-            case Race.Crypters:
-                return "Crypter";
-            case Race.Lamia:
-                return "Lamia";
             case Race.Kangaroos:
                 return "Kangaroo";
-            case Race.Taurus:
-                return "Cow";
-            case Race.Crux:
-                return "Crux";
             case Race.Equines:
                 return "Equine";
             case Race.Sergal:
                 return "Sergal";
             case Race.Bees:
                 return "Bee";
-            case Race.Driders:
-                return "Drider";
-            case Race.Alraune:
-                return "Alraune";
             case Race.Bats:
                 return "Bat";
-            case Race.Tigers:
-                return "Tiger";
-            case Race.Goblins:
-                return "Goblin";
-            case Race.Succubi:
-                if (unit.GetGender() == Gender.Female)
-                    return "Succubus";
-                else if (unit.GetGender() == Gender.Male)
-                    return "Incubus";
-                else
-                    return "Concubus";
             case Race.Alligators:
                 return "Alligator";
-            case Race.Puca:
-                return "Puca";
-            case Race.Hamsters:
-                return "Hamster";
             case Race.Hippos:
                 return "Hippo";
-            case Race.Vipers:
-                return "Viper";
             case Race.Komodos:
                 return "Komodo";
-            case Race.Vagrants:
-                return "Vagrant";
             case Race.Serpents:
                 return "Serpent";
             case Race.Wyvern:
                 return "Wyvern";
             case Race.WyvernMatron:
                 return "Wyvern Matron";
-            case Race.Compy:
-                return "Compy";
             case Race.FeralWolves:
                 return "Wolf";
-            case Race.FeralSharks:
-                return "Shark";
-            case Race.DarkSwallower:
-                return "Swallower";
-            case Race.Cake:
-                return "Cake";
             case Race.Harvesters:
                 return "Harvester";
-            case Race.Collectors:
-                return "Collector";
-            case Race.Vision:
-                return "Vision";
-            case Race.Voilin:
-                return "Voilin";
             case Race.FeralBats:
                 return "Bat";
-            case Race.FeralFrogs:
-                return "Frog";
             case Race.Dragon:
                 return "Dragon";
             case Race.Dragonfly:
                 return "Dragonfly";
             case Race.TwistedVines:
                 return "Plant";
-            case Race.Fairies:
-                return "Fairy";
-            case Race.DRACO:
-                return "D.R.A.C.O";
             case Race.FeralAnts:
                 return "Ant";
             case Race.Gryphons:
@@ -280,24 +210,18 @@ public class InfoPanel
                 return "RockSlug";
             case Race.CoralSlugs:
                 return "CoralSlug";
-            case Race.DewSprites:
-                return "Sprite";
             case Race.Panthers:
                 return "Panther";
             case Race.Salamanders:
                 return "Salamander";
             case Race.EasternDragon:
                 return "Eastern Dragon";
-            case Race.Merfolk:
-                return "Merfolk";
             case Race.Mantis:
                 return "Mantis";
             case Race.Avians:
                 return "Avian";
             case Race.Catfish:
                 return "Catfish";
-            case Race.Raptor:
-                return "Raptor";
             case Race.Ants:
                 return "Ant";
             case Race.WarriorAnts:
@@ -308,20 +232,14 @@ public class InfoPanel
                 return "Gazelle";
             case Race.Sharks:
                 return "Shark";
-            case Race.Earthworms:
-                return "Earthworm";
             case Race.FeralLizards:
                 return "Lizard";
-            case Race.Cockatrice:
-                return "Cockatrice";
             case Race.Monitors:
                 return "Monitor";
             case Race.Deer:
                 return "Deer";
             case Race.Mice:
                 return "Mouse";
-            case Race.Schiwardez:
-                return "Schiwardez";
             case Race.Terrorbird:
                 return "Terrorbird";
             case Race.Dratopyr:
@@ -330,58 +248,18 @@ public class InfoPanel
                 return "Lion";
             case Race.Kobolds:
                 return "Kobold";
-            case Race.Whisp:
-                return "Whisp";
             case Race.FeralHorses:
                 return "Horse";
-            case Race.Abakhanskya:
-                return "Khatunlao";
-            case Race.Singularity:
-                return "Faun";
-            case Race.Feit:
-                return "Draconic Raptor";
             case Race.FeralFox:
                 return "Fox";
             case Race.Terminid:
                 return "Terminid";
-            case Race.FeralOrcas:
-                return "Orca";
-            case Race.BoomBunnies:
-                return "Boom Bunnies";
             case Race.Gnolls:
                 return "Gnoll";
-            case Race.Centaur:
-                return "Centaur";
             case Race.FeralSlime:
                 return "Slime";
-            case Race.MainlandElves:
-                return "Elf";
-            case Race.ViraeUltimae:
-                return "ViraeUltimae";
-            case Race.Viisels:
-                return "Viisel";
-            case Race.Umbreon:
-                return "Umbreon";
-            case Race.Eevee:
-                return "Eevee";
-            case Race.Equaleon:
-                return "Equaleon";
             case Race.FeralUmbreon:
                 return "Umbreon";
-            case Race.FeralEevee:
-                return "Eevee";
-            case Race.FeralEqualeon:
-                return "Equaleon";
-            case Race.Ghosts:
-                return "Ghost";
-            case Race.WoodDryad:
-                return "WoodDryad";
-            case Race.EarthDryad:
-                return "EarthDryad";
-            case Race.RiverDryad:
-                return "RiverDryad";
-            case Race.FungalDryad:
-                return "FungalDryad";
             case Race.Otachi:
                 return "Otachi";
             case Race.Raiju:
@@ -396,8 +274,6 @@ public class InfoPanel
                 return "Utahraptor";
             case Race.Badgers:
                 return "Badger";
-            case Race.Renamon:
-                return "Renamon";
             case Race.Draconians:
                 return "Draconian";
             case Race.none:
@@ -408,114 +284,50 @@ public class InfoPanel
 
     public static string RaceSingular(Empire empire)
     {
-        if (empire?.ReplacedRace >= Race.Selicia)
+        if (empire?.ReplacedRace >= (Race)170)
             return "";
         switch (empire?.ReplacedRace)
         {
-            case Race.Cats:
-                return "Cat";
-            case Race.Dogs:
-                return "Dog";
-            case Race.Foxes:
-                return "Fox";
-            case Race.Wolves:
-                return "Wolf";
             case Race.Bunnies:
                 return "Bunny";
             case Race.Lizards:
                 return "Lizard";
-            case Race.Slimes:
-                return "Slime";
-            case Race.Scylla:
-                return "Scylla";
-            case Race.Harpies:
-                return "Harpy";
-            case Race.Imps:
-                return "Imp";
-            case Race.Humans:
-                return "Human";
-            case Race.Crypters:
-                return "Crypter";
-            case Race.Lamia:
-                return "Lamia";
             case Race.Kangaroos:
                 return "Kangaroo";
-            case Race.Taurus:
-                return "Cow";
-            case Race.Crux:
-                return "Crux";
             case Race.Equines:
                 return "Equine";
             case Race.Sergal:
                 return "Sergal";
             case Race.Bees:
                 return "Bee";
-            case Race.Driders:
-                return "Drider";
-            case Race.Alraune:
-                return "Alraune";
             case Race.Bats:
                 return "Bat";
-            case Race.Tigers:
-                return "Tiger";
-            case Race.Goblins:
-                return "Goblin";
-            case Race.Succubi:
-                return "Succubus";
             case Race.Alligators:
                 return "Alligator";
-            case Race.Puca:
-                return "Puca";
-            case Race.Hamsters:
-                return "Hamster";
             case Race.Hippos:
                 return "Hippo";
-            case Race.Vipers:
-                return "Viper";
             case Race.Komodos:
                 return "Komodo";
-            case Race.Vagrants:
-                return "Vagrant";
             case Race.Serpents:
                 return "Serpent";
             case Race.Wyvern:
                 return "Wyvern";
             case Race.WyvernMatron:
                 return "Wyvern Matron";
-            case Race.Compy:
-                return "Compy";
             case Race.FeralWolves:
                 return "Feral Wolf";
-            case Race.FeralSharks:
-                return "Shark";
-            case Race.DarkSwallower:
-                return "Dark Swallower";
-            case Race.Cake:
-                return "Cake";
             case Race.Harvesters:
                 return "Harvester";
-            case Race.Collectors:
-                return "Collector";
-            case Race.Vision:
-                return "Vision";
-            case Race.Voilin:
-                return "Voilin";
             case Race.FeralBats:
                 return "Bat";
             case Race.Kobolds:
                 return "Kobolds";
-            case Race.FeralFrogs:
-                return "Feral Frog";
             case Race.Dragon:
                 return "Dragon";
             case Race.Dragonfly:
                 return "Dragonfly";
             case Race.TwistedVines:
                 return "Plant";
-            case Race.Fairies:
-                return "Fairy";
-            case Race.DRACO:
-                return "D.R.A.C.O";
             case Race.FeralAnts:
                 return "Ant";
             case Race.Gryphons:
@@ -528,24 +340,18 @@ public class InfoPanel
                 return "Rock Slug";
             case Race.CoralSlugs:
                 return "Coral Slug";
-            case Race.DewSprites:
-                return "Dew Sprite";
             case Race.Panthers:
                 return "Panther";
             case Race.Salamanders:
                 return "Salamander";
             case Race.EasternDragon:
                 return "Eastern Dragon";
-            case Race.Merfolk:
-                return "Merfolk";
             case Race.Mantis:
                 return "Mantis";
             case Race.Avians:
                 return "Avian";
             case Race.Catfish:
                 return "Catfish";
-            case Race.Raptor:
-                return "Raptor";
             case Race.Ants:
                 return "Ant";
             case Race.WarriorAnts:
@@ -556,20 +362,14 @@ public class InfoPanel
                 return "Gazelle";
             case Race.Sharks:
                 return "Shark";
-            case Race.Earthworms:
-                return "Earthworm";
             case Race.FeralLizards:
                 return "Feral Lizard";
-            case Race.Cockatrice:
-                return "Cockatrice";
             case Race.Monitors:
                 return "Monitor";
             case Race.Deer:
                 return "Deer";
             case Race.Mice:
                 return "Mouse";
-            case Race.Schiwardez:
-                return "Schiwardez";
             case Race.Terrorbird:
                 return "Terrorbird";
             case Race.Dratopyr:
@@ -578,56 +378,16 @@ public class InfoPanel
                 return "Lion";
             case Race.FeralHorses:
                 return "Horse";
-            case Race.Whisp:
-                return "Whisp";
-            case Race.Abakhanskya:
-                return "Khatunlao";
-            case Race.Singularity:
-                return "Faun";
-            case Race.Feit:
-                return "Draconic Raptor";
             case Race.FeralFox:
                 return "Fox";
             case Race.Terminid:
                 return "Terminid";
-            case Race.FeralOrcas:
-                return "Feral Orca";
-            case Race.BoomBunnies:
-                return "Boom Bunny";
             case Race.Gnolls:
                 return "Gnoll";
-            case Race.Centaur:
-                return "Centaur";
             case Race.FeralSlime:
                 return "Slime";
-            case Race.MainlandElves:
-                return "Mainland Elf";
-            case Race.ViraeUltimae:
-                return "Virae Ultimae";
-            case Race.Viisels:
-                return "Viisel";
-            case Race.Umbreon:
-                return "Umbreon";
-            case Race.Eevee:
-                return "Eevee";
-            case Race.Equaleon:
-                return "Equaleon";
             case Race.FeralUmbreon:
                 return "Umbreon";
-            case Race.FeralEevee:
-                return "Eevee";
-            case Race.FeralEqualeon:
-                return "Equaleon";
-            case Race.Ghosts:
-                return "Ghost";
-            case Race.WoodDryad:
-                return "Wood Dryad";
-            case Race.EarthDryad:
-                return "Earth Dryad";
-            case Race.RiverDryad:
-                return "River Dryad";
-            case Race.FungalDryad:
-                return "Fungal Dryad";
             case Race.Otachi:
                 return "Otachi";
             case Race.Raiju:
@@ -642,8 +402,6 @@ public class InfoPanel
                 return "Utahraptor";
             case Race.Badgers:
                 return "Badger";
-            case Race.Renamon:
-                return "Renamon";
             case Race.Draconians:
                 return "Draconian";
         }
@@ -662,7 +420,7 @@ public class InfoPanel
         sb.AppendLine($"Level {unit.Level} {RaceSingular(unit)}");
 
         // Add Gender and Type
-        if (unit.Race >= Race.Selicia)
+        if (unit.Race >= (Race)170)
             sb.AppendLine($"{unit.Type}");
         else
         {

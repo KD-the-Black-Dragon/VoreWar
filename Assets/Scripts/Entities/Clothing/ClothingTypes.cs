@@ -1,4 +1,7 @@
-﻿using System;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,8 +24,6 @@ class BikiniTop : MainClothing
         if (actor.Unit.HasBreasts)
         {
             int breastMod = 0;
-            if (actor.Unit.Race == Race.Succubi)
-                breastMod = 3;
             clothing1.GetSprite = (s) => State.GameManager.SpriteDictionary.BikiniTop[actor.Unit.BreastSize + breastMod];
             actor.SquishedBreasts = true;
             clothing1.GetPalette = (s) => ColorPaletteMap.GetPalette(ColorPaletteMap.SwapType.Clothing, actor.Unit.ClothingColor);
@@ -56,8 +57,6 @@ class StrapTop : MainClothing
         if (actor.Unit.HasBreasts)
         {
             int breastMod = 0;
-            if (actor.Unit.Race == Race.Succubi)
-                breastMod = 3;
             clothing1.GetSprite = (s) => State.GameManager.SpriteDictionary.Straps[actor.Unit.BreastSize + breastMod];
             clothing1.GetPalette = (s) => ColorPaletteMap.GetPalette(ColorPaletteMap.SwapType.Clothing, actor.Unit.ClothingColor);
             actor.SquishedBreasts = true;
@@ -95,8 +94,6 @@ class BeltTop : MainClothing
         else if (actor.Unit.HasBreasts)
         {
             int breastMod = 0;
-            if (actor.Unit.Race == Race.Succubi)
-                breastMod = 3;
             clothing1.GetSprite = (s) => State.GameManager.SpriteDictionary.Belts[actor.Unit.BreastSize + breastMod];
             actor.SquishedBreasts = true;
         }
@@ -138,12 +135,7 @@ class BikiniBottom : MainClothing
             blocksDick = true;
             spr = 8;
             }
-        else if (actor.Unit.Race == Race.Harpies)
-            spr = 9;
-        else if (actor.Unit.Race == Race.Lamia)
-            spr = 3 + (actor.Unit.HasBreasts ? 0 : 4);
-        else
-        {
+        else {
             if (actor.GetBodyWeight() > 0)
                 spr = (actor.Unit.HasBreasts ? 0 : 4) + actor.Unit.BodySize;
             if (spr > 7)
@@ -199,10 +191,7 @@ class Shorts : MainClothing
             blocksDick = true;
             spr = 8;
             }
-        else if (actor.Unit.Race == Race.Harpies)
-            spr = 9;
-        else
-        {
+        else {
             if (actor.GetBodyWeight() > 0)
                 spr = (actor.Unit.HasBreasts ? 0 : 4) + actor.Unit.BodySize;
             if (spr > 7)
@@ -245,12 +234,7 @@ class Loincloth : MainClothing
             }
         else if (actor.Unit.Race == Race.Lizards)
             spr = 8;
-        else if (actor.Unit.Race == Race.Harpies)
-            spr = 9;
-        else if (actor.Unit.Race == Race.Lamia)
-            spr = 3 + (actor.Unit.HasBreasts ? 0 : 4);
-        else
-        {
+        else {
             if (actor.GetBodyWeight() > 0)
                 spr = (actor.Unit.HasBreasts ? 0 : 4) + actor.Unit.BodySize;
             if (spr > 7)
@@ -288,10 +272,7 @@ class Leotard : MainClothing
             blocksDick = true;
             spr = 8;
             }
-        else if (actor.Unit.Race == Race.Harpies)
-            spr = 9;
-        else
-        {
+        else {
             if (actor.GetBodyWeight() > 0)
                 spr = (actor.Unit.HasBreasts ? 0 : 4) + actor.Unit.BodySize;
             if (spr > 7)
@@ -362,14 +343,7 @@ class Rags : MainClothing
             spr = 8;
             sprite.ChangeOffset(SpriteType.Clothing2, new Vector2(0, 2.5f));
         }
-        else if (actor.Unit.Race == Race.Harpies)
-            spr = 9;
-        else if (actor.Unit.Race == Race.Lamia)
-            spr = 3 + (actor.Unit.HasBreasts ? 0 : 4);
-        else if (actor.Unit.Race == Race.Imps || actor.Unit.Race == Race.Goblins)
-            spr = 10;
-        else
-        {
+        else {
             if (actor.GetBodyWeight() > 0)
                 spr = (actor.Unit.HasBreasts ? 0 : 4) + actor.Unit.BodySize;
             if (spr > 7)
@@ -382,15 +356,7 @@ class Rags : MainClothing
             clothing1.GetSprite = (s) => State.GameManager.SpriteDictionary.Rags[spr];
 
         clothing2.layer = 10;
-        if (actor.Unit.Race == Race.Imps || actor.Unit.Race == Race.Goblins)
-        {
-            int spr2 = 21 + actor.Unit.BreastSize; //-1 to 1
-            if (spr2 > 22)
-                spr2 = 22;
-            clothing2.GetSprite = (s) => State.GameManager.SpriteDictionary.Rags[spr2];
-            clothing2.layer = 18;
-        }
-        else if (actor.Unit.Race == Race.Lizards && actor.IsAnalVoring || actor.IsUnbirthing)
+        if (actor.Unit.Race == Race.Lizards && actor.IsAnalVoring || actor.IsUnbirthing)
             {
             blocksDick = false;
             clothing2.GetSprite = (s) => null;
@@ -425,21 +391,10 @@ class BlackTop : MainClothing
     {
         switch (actor.Unit.Race)
         {
-            case Race.Goblins:
-            case Race.Imps:
-                if (actor.Unit.Race == Race.Goblins && actor.Unit.BreastSize > 0)
-                {
-                    clothing1.GetSprite = (s) => State.GameManager.SpriteDictionary.BlackTop[3 + actor.Unit.BreastSize];
-                }
-                else
-                    clothing1.GetSprite = (s) => State.GameManager.SpriteDictionary.BlackTop[16 + Math.Min(actor.Unit.BreastSize, 1)];
-                break;
             default:
                 if (actor.Unit.HasBreasts)
                 {
                     int breastMod = 0;
-                    if (actor.Unit.Race == Race.Succubi)
-                        breastMod = 3;
                     clothing1.GetSprite = (s) => State.GameManager.SpriteDictionary.BlackTop[6 + actor.Unit.BreastSize + breastMod];
                 }
                 else

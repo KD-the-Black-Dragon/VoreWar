@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System.Collections.Generic;
 using UnityEngine;
 
 class FeralLions : BlankSlate
@@ -142,8 +145,6 @@ class FeralLions : BlankSlate
         if (actor.HasBelly == false)
             return null;
         Belly.layer = hindView ? 14 : 4;
-        if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb))
-            return hindView ? Sprites[75] : Sprites[10];
         return hindView ? Sprites[60 + actor.GetStomachSize(13)] : Sprites[1 + actor.GetStomachSize(8)];
     }
 
@@ -154,8 +155,6 @@ class FeralLions : BlankSlate
             return null;
         if (actor.PredatorComponent?.BallsFullness > 0)
         {
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.balls))
-                return hindView ? Sprites[86] : Sprites[25];
 
             return hindView ? Sprites[78 + actor.GetBallSize(7)] : Sprites[15 + actor.GetBallSize(9)];
         }

@@ -1,5 +1,6 @@
-﻿// Modified for the VoreWar mercenary-company conversion.
+// Modified for the VoreWar mercenary-company conversion.
 // 2026-11-01: Complete approved ability retirement and close legacy reactivation paths (spec 05A3B17).
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Collections.Generic;
@@ -419,7 +420,7 @@ class StrategicArmyCommander
             if (!hostileArmy.Units.All(u => u.HasTrait(Traits.Infiltrator)) && StrategicUtilities.ArmyPower(hostileArmy) < MaxDefenderStrength * StrategicUtilities.ArmyPower(army) && hostileArmy.InVillageIndex == -1)
             {
                 potentialTargets.Add(hostileArmy.Position);
-                if (hostileArmy.Side >= 100 || hostileArmy.Side == (int)Race.Goblins) //If Monster
+                if (hostileArmy.Side >= 100) //If Monster
                     potentialTargetValue.Add(12);
                 else
                     potentialTargetValue.Add(42 - hostileArmy.Position.GetNumberOfMovesDistance(capitalPosition) / 3);

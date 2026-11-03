@@ -1,4 +1,4 @@
-﻿// Modified for the VoreWar mercenary-company conversion.
+// Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: 04B2: Replace callback prose with neutral action and status notices.
 // 2026-10-31: Retire the obsolete post-battle village conquest helper (spec 05A3B2).
 // Upstream additional narrative contributions were credited to Tatltuae; credit retained after reset.
@@ -6,6 +6,7 @@
 // 2026-10-31: Retire unused Resurrection targeting, picker, revive and respawn placement helpers (spec 05A3B9).
 // 2026-10-31: Retire obsolete reanimation targeting, picker, runtime and private picker context (spec 05A3B12).
 // 2026-11-01: Use retained skirmish control/hostility/visibility rules without empire diplomacy (spec 05A6).
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork's change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Collections.Generic;
@@ -388,7 +389,6 @@ static class TacticalUtilities
             return;
         foreach (Actor_Unit actor in Units)
         {
-            if (actor.Unit.Race != Race.Imps && actor.Unit.Race != Race.Lamia && actor.Unit.Race != Race.Tigers)
             {
                 Races.GetRace(actor.Unit).RandomCustom(actor.Unit);
             }

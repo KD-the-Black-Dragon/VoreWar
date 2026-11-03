@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System.Collections.Generic;
 using UnityEngine;
 
 class Trex : BlankSlate
@@ -185,46 +188,6 @@ class Trex : BlankSlate
 
         int size = actor.GetBallSize(54);
 
-        if (size >= 54 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.balls) ?? false))
-        {
-            return SpriteDictionary.Trex[106];
-        }
-
-        else if (size >= 51 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false))
-        {
-            return SpriteDictionary.Trex[105];
-        }
-
-        else if (size >= 48 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false))
-        {
-            return SpriteDictionary.Trex[104];
-        }
-
-        else if (size >= 45 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false))
-        {
-            return SpriteDictionary.Trex[103];
-        }
-
-        else if (size >= 42 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false))
-        {
-            return SpriteDictionary.Trex[102];
-        }
-
-        else if (size >= 39 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false))
-        {
-            return SpriteDictionary.Trex[101];
-        }
-
-        else if (size >= 36 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false))
-        {
-            return SpriteDictionary.Trex[100];
-        }
-
-        else if (size >= 33 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false))
-        {
-            return SpriteDictionary.Trex[99];
-        }
-
         if (size > 29) size = 29;
         return SpriteDictionary.Trex[69 + size];
     }
@@ -235,46 +198,6 @@ class Trex : BlankSlate
             return null;
 
         int size = actor.GetStomachSize(54);
-
-        if (size >= 54 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.Trex[67];
-        }
-
-        else if (size >= 51 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.Trex[66];
-        }
-
-        else if (size >= 48 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.Trex[65];
-        }
-
-        else if (size >= 45 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.Trex[64];
-        }
-
-        else if (size >= 42 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.Trex[63];
-        }
-
-        else if (size >= 39 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.Trex[62];
-        }
-
-        else if (size >= 36 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.Trex[61];
-        }
-
-        else if (size >= 33 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.Trex[60];
-        }
 
         if (size > 29) size = 29;
         return SpriteDictionary.Trex[30 + size];

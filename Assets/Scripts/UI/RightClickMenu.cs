@@ -1,6 +1,7 @@
-﻿// Modified for the VoreWar mercenary-company conversion.
+// Modified for the VoreWar mercenary-company conversion.
 // 2026-11-02: Use the shared distance-selected Attack command in the tactical context menu (spec 16).
 // 2026-11-01: Omit direct attacks against downed targets and label lethal physical previews as downing (spec 10).
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Collections.Generic;
@@ -419,8 +420,6 @@ public class RightClickMenu : MonoBehaviour
                 Buttons[currentButton].onClick.AddListener(FinishAction);
                 if (actionType == SpecialAction.TailVore && actor.Unit.Race == Race.Terrorbird)
                     Buttons[currentButton].GetComponentInChildren<Text>().text = $"Crop Vore {data.DevourChance}%";
-                else if (actionType == SpecialAction.TailVore && actor.Unit.Race == Race.Tatltuae)
-                    Buttons[currentButton].GetComponentInChildren<Text>().text = $"Hackle Vore {data.DevourChance}%";
                 else if (actionType == SpecialAction.BreastVore && actor.Unit.Race == Race.Kangaroos)
                     Buttons[currentButton].GetComponentInChildren<Text>().text = $"Pouch Vore {data.DevourChance}%";
                 else
@@ -590,12 +589,7 @@ public class RightClickMenu : MonoBehaviour
                     PounceButtons[currentButton].GetComponentInChildren<Text>().text = $"Too bulky to {targetedAction.Name}";
                     PounceButtons[currentButton].interactable = false;
                 }
-                if (data.Actor.Unit.Race == Race.Ki && data.Target.Unit.Race != Race.Selicia && type == SpecialAction.CockVore)
-                {
-                    PounceButtons[currentButton].GetComponentInChildren<Text>().text = $"Ki's cock is for Selicia only";
-                    PounceButtons[currentButton].interactable = false;
-                }
-                else if (data.Actor.BodySize() < data.Target.BodySize() * 3 && data.Actor.Unit.HasTrait(Traits.TightNethers) && (type == SpecialAction.CockVore || type == SpecialAction.Unbirth))
+                if (data.Actor.BodySize() < data.Target.BodySize() * 3 && data.Actor.Unit.HasTrait(Traits.TightNethers) && (type == SpecialAction.CockVore || type == SpecialAction.Unbirth))
                 {
                     PounceButtons[currentButton].GetComponentInChildren<Text>().text = $"Too large to {targetedAction.Name}";
                     PounceButtons[currentButton].interactable = false;

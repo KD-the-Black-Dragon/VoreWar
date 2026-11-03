@@ -1,4 +1,7 @@
-﻿using System;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System;
 using UnityEngine;
 
 class Monitors : BlankSlate
@@ -234,26 +237,6 @@ class Monitors : BlankSlate
             belly.transform.localScale = new Vector3(1, 1, 1);
             belly.SetActive(true);
             int size = actor.GetStomachSize(29, 0.7f);
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb) && size == 29)
-            {
-                AddOffset(Belly, 0, -13 * .625f);
-                return Sprites[153];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 29)
-            {
-                AddOffset(Belly, 0, -13 * .625f);
-                return Sprites[152];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 28)
-            {
-                AddOffset(Belly, 0, -13 * .625f);
-                return Sprites[151];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 27)
-            {
-                AddOffset(Belly, 0, -13 * .625f);
-                return Sprites[150];
-            }
             switch (size)
             {
                 case 26:
@@ -329,22 +312,7 @@ class Monitors : BlankSlate
         }
 
         int offset = actor.GetBallSize(28, .8f);
-        if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.balls) ?? false) && offset == 28)
-        {
-            AddOffset(Balls, 0, -27 * .625f);
-            return Sprites[119];
-        }
-        else if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false) && offset == 28)
-        {
-            AddOffset(Balls, 0, -27 * .625f);
-            return Sprites[118];
-        }
-        else if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false) && offset == 27)
-        {
-            AddOffset(Balls, 0, -27 * .625f);
-            return Sprites[117];
-        }
-        else if (offset >= 26)
+        if (offset >= 26)
         {
             AddOffset(Balls, 0, -27 * .625f);
         }

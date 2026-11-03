@@ -1,4 +1,7 @@
-﻿using KangarooClothes;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using KangarooClothes;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -118,14 +121,10 @@ class Kangaroos : DefaultRaceData
             int sprite = actor.GetStomachSize(19, .8f);
             if (actor.Unit.HasBreasts)
             {
-                if (sprite == 19 && actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb))
-                    return SpriteDictionary.Kangaroos[136];
                 if (sprite <= 15)
                     return SpriteDictionary.Kangaroos[78 + sprite];
                 return SpriteDictionary.Kangaroos[132 - 16 + sprite];
             }
-            if (sprite == 19 && actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb))
-                return SpriteDictionary.Kangaroos[131];
             if (sprite <= 15)
                 return SpriteDictionary.Kangaroos[62 + sprite];
             return SpriteDictionary.Kangaroos[127 - 16 + sprite];
@@ -145,13 +144,6 @@ class Kangaroos : DefaultRaceData
 
         if (actor.Unit.DickSize >= 0)
         {
-            if (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.balls) ?? false)
-            {
-                if (actor.PredatorComponent.BallsFullness > 3)
-                {
-                    return SpriteDictionary.Kangaroos[148];
-                }
-            }
 
             if (actor.PredatorComponent?.BallsFullness > 0)
             {

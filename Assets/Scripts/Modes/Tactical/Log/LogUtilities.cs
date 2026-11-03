@@ -1,6 +1,7 @@
 // Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Return a missing-target context rather than constructing a Human narrative dummy (spec 04B1).
 // 2026-10-30: Replace flavor descriptors with neutral unit/species labels (spec 04B2).
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Collections.Generic;
@@ -222,7 +223,7 @@ static class LogUtilities
 
     internal static bool ActorHumanoid(Unit s)
     {
-        return s.Race < Race.Vagrants || s.Race >= Race.Selicia;
+        return s.Race < (Race)100 || s.Race >= (Race)170;
     }
 
     internal static bool RomanticTarget(Unit unit, Unit target)
@@ -339,95 +340,17 @@ static class LogUtilities
     /// <returns></returns>
     internal static string GetWeaponTrueName(Weapon weapon, Unit unit)
     {
-        if (unit.Race == Race.Vagrants) return "Stinger";
-        else if (unit.Race == Race.Wyvern) return "Claws";
+        if (unit.Race == Race.Wyvern) return "Claws";
         else if (unit.Race == Race.WyvernMatron) return "Fierce Claws";
         else if (unit.Race == Race.Serpents) return "Tail Blade";
-        else if (unit.Race == Race.FeralSharks) return "Jaws";
         else if (unit.Race == Race.FeralWolves) return "Fangs";
-        else if (unit.Race == Race.DarkSwallower) return "Jaws";
         else if (unit.Race == Race.Harvesters) return "Scythes";
-        else if (unit.Race == Race.Collectors) return "Maw";
-        else if (unit.Race == Race.Ki) return "Jaws";
-        else if (unit.Race == Race.Selicia) return "Claws";
-        else if (unit.Race == Race.Xelhilde) return "Zweihänder";
-        else if (unit.Race == Race.Olivia) return "Static Fist";
-        else if (unit.Race == Race.Nectar) return "Claws";
-        else if (unit.Race == Race.Renamon) return "Palm Strike";
-
         else if (unit.Race == Race.Kangaroos)
         {
             if (weapon.Name == "Mace") return "Club";
             else if (weapon.Name == "Axe") return "Spear";
             else if (weapon.Name == "Simple Bow") return "Boomerang";
             else if (weapon.Name == "Compound Bow") return "Woomera";
-            else if (weapon.Name == "Claw") return "Claws";
-        }
-        else if (unit.Race == Race.Goblins)
-        {
-            if (weapon.Name == "Mace") return "Cleaver";
-            else if (weapon.Name == "Axe") return "Sharpened Cleaver";
-            else if (weapon.Name == "Simple Bow") return "Derringer";
-            else if (weapon.Name == "Compound Bow") return "Pepperbox Pistol";
-            else if (weapon.Name == "Claw") return "Fist";
-        }
-        else if (unit.Race == Race.Slimes)
-        {
-            if (weapon.Name == "Mace") return "Bone Blade";
-            else if (weapon.Name == "Axe") return "Whip";
-            else if (weapon.Name == "Simple Bow") return "Floating Slimey";
-            else if (weapon.Name == "Compound Bow") return "Bioelectricity";
-            else if (weapon.Name == "Claw") return "Hardened Lump";
-        }
-        else if (unit.Race == Race.Imps)
-        {
-            if (weapon.Name == "Mace") return "Morningstar";
-            else if (weapon.Name == "Axe") return "Cleaver";
-            else if (weapon.Name == "Simple Bow") return "Bow";
-            else if (weapon.Name == "Compound Bow") return "Infernal Bow";
-            else if (weapon.Name == "Claw") return "Fist";
-        }
-        else if (unit.Race == Race.Crypters)
-        {
-            if (weapon.Name == "Mace") return "Sword";
-            else if (weapon.Name == "Axe") return "Power Fist";
-            else if (weapon.Name == "Simple Bow") return "Crossbow";
-            else if (weapon.Name == "Compound Bow") return "Cannon";
-            else if (weapon.Name == "Claw") return "Metal Fist";
-        }
-        else if (unit.Race == Race.Scylla)
-        {
-            if (weapon.Name == "Mace") return "Knife";
-            else if (weapon.Name == "Axe") return "Trident";
-            else if (weapon.Name == "Simple Bow") return "Javelin";
-            else if (weapon.Name == "Compound Bow") return "Medusa Launcher";
-            else if (weapon.Name == "Claw") return "Tentacle";
-        }
-        else if (unit.Race == Race.Harpies)
-        {
-            if (weapon.Name == "Mace") return "Bronze Claws";
-            else if (weapon.Name == "Axe") return "Steel Claws";
-            else if (weapon.Name == "Simple Bow") return "Simple Bow";
-            else if (weapon.Name == "Compound Bow") return "Compound Bow";
-            else if (weapon.Name == "Claw") return "Talons";
-        }
-        else if (unit.Race == Race.Taurus)
-        {
-            if (weapon.Name == "Mace") return "Hammer";
-            else if (weapon.Name == "Axe") return "Glaive";
-            else if (weapon.Name == "Simple Bow") return "Revolver";
-            else if (weapon.Name == "Compound Bow") return "Shotgun";
-            else if (weapon.Name == "Claw") return "Fist";
-        }
-        else if (unit.Race == Race.Crux)
-        {
-            if (weapon.Name == "Mace" && unit.BasicMeleeWeaponType == 0) return "Bat";
-            else if (weapon.Name == "Mace" && unit.BasicMeleeWeaponType == 1) return "Pipe";
-            else if (weapon.Name == "Mace" && unit.BasicMeleeWeaponType == 2) return "Dildo";
-            else if (weapon.Name == "Axe" && unit.AdvancedMeleeWeaponType == 0) return "Machete";
-            else if (weapon.Name == "Axe" && unit.AdvancedMeleeWeaponType == 1) return "Axe";
-            else if (weapon.Name == "Simple Bow") return "Handbow";
-            else if (weapon.Name == "Compound Bow") return "Compound Bow";
             else if (weapon.Name == "Claw") return "Claws";
         }
         else if (unit.Race == Race.Alligators)
@@ -448,42 +371,6 @@ static class LogUtilities
             else if (weapon.Name == "Axe") return "War Scythe";
             else if (weapon.Name == "Claw") return "Claws";
         }
-        else if (unit.Race == Race.Puca)
-        {
-            if (weapon.Name == "Mace") return "Shovel";
-            else if (weapon.Name == "Axe") return "Shovel";
-            else if (weapon.Name == "Simple Bow") return "Slingshot";
-            else if (weapon.Name == "Compound Bow") return "Heavy Slingshot";
-        }
-        else if (unit.Race == Race.Hamsters)
-        {
-            if (weapon.Name == "Mace") return "Warhammer";
-            else if (weapon.Name == "Axe") return "Heavy Warhammer";
-            else if (weapon.Name == "Simple Bow") return "Throwing Axe";
-            else if (weapon.Name == "Compound Bow") return "Throwing Axe";
-            else if (weapon.Name == "Claw") return "Claws";
-        }
-        else if (unit.Race == Race.RwuMercenaries)
-        {
-            if (weapon.Name == "Mace") return "Combat Knife";
-            else if (weapon.Name == "Axe" && unit.EyeType == 0) return "Machete";
-            else if (weapon.Name == "Axe" && unit.EyeType == 1) return "Ikakalaka";
-            else if (weapon.Name == "Axe" && unit.EyeType == 2) return "Sabre";
-            else if (weapon.Name == "Axe" && unit.EyeType == 3) return "Cutlass";
-            else if (weapon.Name == "Simple Bow") return "Sidearm";
-            else if (weapon.Name == "Compound Bow" && unit.EyeType == 0) return "SMG";
-            else if (weapon.Name == "Compound Bow" && unit.EyeType == 1) return "LMG";
-            else if (weapon.Name == "Compound Bow" && unit.EyeType == 2) return "Sniper Rifle";
-            else if (weapon.Name == "Compound Bow" && unit.EyeType == 3) return "Assault Rifle";
-            else if (weapon.Name == "Claw") return "Fist";
-        }
-        else if (unit.Race == Race.Vipers)
-        { /*V33B ADDITION*/
-            if (weapon.Name == "Mace") return "Arc Blade";
-            else if (weapon.Name == "Axe") return "Fusion Blade";
-            else if (weapon.Name == "Simple Bow") return "Plasma Pistol";
-            else if (weapon.Name == "Compound Bow") return "Plasma Rifle";
-        }
         else if (unit.Race == Race.Sergal)
         {
             if (weapon.Name == "Mace") return "Lance";
@@ -498,20 +385,6 @@ static class LogUtilities
             else if (weapon.Name == "Simple Bow") return "Javelin";
             else if (weapon.Name == "Compound Bow") return "War Javelin";
         }
-        else if (unit.Race == Race.Driders)
-        {
-            if (weapon.Name == "Mace") return "Dagger";
-            else if (weapon.Name == "Axe") return "Short Sword";
-            else if (weapon.Name == "Simple Bow") return "Pistol Crossbow";
-            else if (weapon.Name == "Compound Bow") return "Crossbow";
-        }
-        else if (unit.Race == Race.Alraune)
-        {
-            if (weapon.Name == "Mace") return "Vine Whip";
-            else if (weapon.Name == "Axe") return "Stem Blade";
-            else if (weapon.Name == "Simple Bow") return "Unbloomed Corolla";
-            else if (weapon.Name == "Compound Bow") return "Blooming Flower";
-        }
         else if (unit.Race == Race.Bats)
         {
             if (weapon.Name == "Mace") return "Push Dagger";
@@ -525,13 +398,6 @@ static class LogUtilities
             else if (weapon.Name == "Axe") return "Kukri";
             else if (weapon.Name == "Simple Bow") return "Chakram";
             else if (weapon.Name == "Compound Bow") return "Onzil";
-        }
-        else if (unit.Race == Race.Merfolk)
-        {
-            if (weapon.Name == "Mace") return "Crude Trident";
-            else if (weapon.Name == "Axe") return "Royal Trident";
-            else if (weapon.Name == "Simple Bow") return "Scepter";
-            else if (weapon.Name == "Compound Bow") return "Orb Staff";
         }
         else if (unit.Race == Race.Ants)
         {
@@ -578,14 +444,6 @@ static class LogUtilities
             else if (weapon.Name == "Compound Bow") return "Dart";
             else if (weapon.Name == "Claw") return "Fist";
         }
-        else if (unit.Race == Race.Aabayx)
-        {
-            if (weapon.Name == "Mace") return "Longscalpel";
-            else if (weapon.Name == "Axe") return "Personsmasher";
-            else if (weapon.Name == "Simple Bow") return "Razorflinger";
-            else if (weapon.Name == "Compound Bow") return "Arrowbisector";
-            else if (weapon.Name == "Claw") return "Fist";
-        }
         else if (unit.Race == Race.Mice)
         {
             if (weapon.Name == "Mace") return "Shortsword";
@@ -593,23 +451,7 @@ static class LogUtilities
             else if (weapon.Name == "Simple Bow") return "Hand Crossbow";
             else if (weapon.Name == "Compound Bow") return "Greatbow";
         }
-        else if (unit.Race == Race.Bears)
-        {
-            if (weapon.Name == "Mace") return "Hand Axe";
-            else if (weapon.Name == "Axe") return "Battle Axe";
-            else if (weapon.Name == "Simple Bow") return "Spear";
-            else if (weapon.Name == "Compound Bow") return "Throwing Axe";
-            else if (weapon.Name == "Claw") return "Claws";
-        }
-        else if (unit.Race == Race.Umbreon)
-        {
-            if (weapon.Name == "Mace") return "Claw Gauntlet";
-            else if (weapon.Name == "Axe") return "Scythe";
-            else if (weapon.Name == "Simple Bow") return "Slingbow";
-            else if (weapon.Name == "Compound Bow") return "Mechanical Slingbow";
-            else if (weapon.Name == "Claw") return "Claws";
-        }
-        else if (unit.Race == Race.Cats || unit.Race == Race.Dogs || unit.Race == Race.Foxes || unit.Race == Race.Wolves || unit.Race == Race.Bunnies || unit.Race == Race.Tigers)
+        else if (unit.Race == Race.Bunnies)
         {
             if (weapon.Name == "Mace" && unit.BasicMeleeWeaponType == 1) return "Sword";
         }

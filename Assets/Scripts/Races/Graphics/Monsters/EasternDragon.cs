@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System.Collections.Generic;
 using UnityEngine;
 
 class EasternDragon : BlankSlate
@@ -105,21 +108,6 @@ class EasternDragon : BlankSlate
         {
             int sprite = actor.GetWombSize(17, 0.8f);
 
-            if (sprite == 17 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.womb) ?? false))
-            {
-                return SpriteDictionary.EasternDragon[86];
-            }
-
-            if (sprite == 17 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.womb) ?? false))
-            {
-                return SpriteDictionary.EasternDragon[85];
-            }
-
-            if (sprite == 16 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.womb) ?? false))
-            {
-                return SpriteDictionary.EasternDragon[84];
-            }
-
             return SpriteDictionary.EasternDragon[68 + sprite];
         }
         return null;
@@ -223,22 +211,6 @@ class EasternDragon : BlankSlate
         {
             belly.SetActive(true);
             int sprite = actor.GetExclusiveStomachSize(16, 0.8f);
-
-            if (sprite == 16 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach) ?? false))
-            {
-                AddOffset(Belly, 0, 0 * .625f);
-                return SpriteDictionary.EasternDragon[37];
-            }
-            else if (sprite == 16 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach) ?? false))
-            {
-                AddOffset(Belly, 0, 0 * .625f);
-                return SpriteDictionary.EasternDragon[36];
-            }
-            else if (sprite == 15 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach) ?? false))
-            {
-                AddOffset(Belly, 0, 0 * .625f);
-                return SpriteDictionary.EasternDragon[35];
-            }
             if (sprite >= 14)
                 return SpriteDictionary.EasternDragon[34];
             return SpriteDictionary.EasternDragon[20 + sprite];
@@ -261,19 +233,6 @@ class EasternDragon : BlankSlate
         if (actor.PredatorComponent?.BallsFullness > 0 || actor.IsCockVoring)
         {
             int sprite = actor.GetBallSize(24, 0.8f);
-
-            if (sprite == 24 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.balls) ?? false))
-            {
-                return SpriteDictionary.EasternDragon[66];
-            }
-            else if (sprite == 24 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false))
-            {
-                return SpriteDictionary.EasternDragon[65];
-            }
-            else if (sprite == 23 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false))
-            {
-                return SpriteDictionary.EasternDragon[64];
-            }
             if (sprite >= 22)
                 return SpriteDictionary.EasternDragon[63];
             if (sprite <= 1)

@@ -117,3 +117,6 @@ $RECYCLE.BIN/
 .vsconfig
 LibraryBackup
 Assets/package/Api/GlobalSuppressions.cs
+
+# Local archival content is intentionally excluded from Unity and routine source distributions.
+/Recycle Bin/

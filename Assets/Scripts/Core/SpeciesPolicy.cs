@@ -4,6 +4,7 @@
 // 2026-10-30: Expose permanent retirement separately from approval and player preferences (spec 03B1).
 // 2026-11-01: Curate user-selected Avians, Lizards, Gnolls and animal SpitterSlugs (specs 07–08).
 // 2026-11-01: Add singular spaced display names and label parsing without changing saved species IDs (09–10 feedback).
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Collections.Generic;
@@ -25,99 +26,6 @@ internal static class SpeciesPolicy
         { Race.Lizards, SpeciesKind.Sapient },
         { Race.Gnolls, SpeciesKind.Sapient },
         { Race.SpitterSlugs, SpeciesKind.Animal }
-    };
-    private static readonly HashSet<Race> RetiredSpecies = new HashSet<Race>
-    {
-        Race.Aabayx,
-        Race.Abakhanskya,
-        Race.Alraune,
-        Race.Asura,
-        Race.Auri,
-        Race.Bears,
-        Race.Bella,
-        Race.BoomBunnies,
-        Race.Cake,
-        Race.Cats,
-        Race.Centaur,
-        Race.Cherub,
-        Race.Cierihaka,
-        Race.Cockatrice,
-        Race.Collectors,
-        Race.Compy,
-        Race.Crux,
-        Race.Crypters,
-        Race.DRACO,
-        Race.DarkSwallower,
-        Race.DewSprites,
-        Race.Dogs,
-        Race.Driders,
-        Race.EarthDryad,
-        Race.Earthworms,
-        Race.Eevee,
-        Race.Equaleon,
-        Race.Erin,
-        Race.Fairies,
-        Race.Feit,
-        Race.FeralEevee,
-        Race.FeralEqualeon,
-        Race.FeralFrogs,
-        Race.FeralOrcas,
-        Race.FeralSharks,
-        Race.Foxes,
-        Race.FungalDryad,
-        Race.Ghosts,
-        Race.Goblins,
-        Race.Hamsters,
-        Race.Harpies,
-        Race.Humans,
-        Race.Iliijiith,
-        Race.Imps,
-        Race.Ki,
-        Race.Konane,
-        Race.Lamia,
-        Race.MainlandElves,
-        Race.Merfolk,
-        Race.Nectar,
-        Race.Olivia,
-        Race.OoviKat,
-        Race.Puca,
-        Race.Pudding,
-        Race.Raptor,
-        Race.Renamon,
-        Race.RiverDryad,
-        Race.RwuMercenaries,
-        Race.Ryan,
-        Race.Salix,
-        Race.Schiwardez,
-        Race.Scorch,
-        Race.Scylla,
-        Race.Selicia,
-        Race.Seraph,
-        Race.Seville,
-        Race.Singularity,
-        Race.Skapa,
-        Race.Slimes,
-        Race.SoulSprite,
-        Race.Succubi,
-        Race.Taraluxia,
-        Race.Tatltuae,
-        Race.Taurus,
-        Race.Tigers,
-        Race.Umbreon,
-        Race.Vagrants,
-        Race.Viisels,
-        Race.Vipers,
-        Race.ViraeUltimae,
-        Race.Vision,
-        Race.Voilin,
-        Race.Whisp,
-        Race.Wolves,
-        Race.WoodDryad,
-        Race.Xelhilde,
-        Race.Yordles,
-        Race.Youko,
-        Race.Zera,
-        Race.Zoey,
     };
     private static readonly Dictionary<Race, bool> PlayerChoices = new Dictionary<Race, bool>();
 
@@ -181,7 +89,7 @@ internal static class SpeciesPolicy
 
     internal static bool IsRetired(Race race)
     {
-        return RetiredSpecies.Contains(race);
+        return race != Race.none && !Enum.IsDefined(typeof(Race), race);
     }
 
     internal static bool IsCurated(Race race)

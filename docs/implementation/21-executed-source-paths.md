@@ -1,0 +1,966 @@
+# Spec21 executed path record — 2026-11-03
+
+Completed source/asset changes; archive files are preserved outside Assets in ignored Recycle Bin. No filesystem deletion.
+
+## Modified active files
+
+- `Assets/base.unity`
+- `Assets/Prefabs/Sprite Dictionary.prefab`
+- `Assets/StreamingAssets/AssetBundles/AssetBundles`
+- `Assets/StreamingAssets/AssetBundles/AssetBundles.manifest`
+- `Assets/StreamingAssets/AssetBundles/empire`
+- `Assets/StreamingAssets/AssetBundles/empire.manifest`
+- `Assets/StreamingAssets/AssetBundles/merc`
+- `Assets/StreamingAssets/AssetBundles/merc.manifest`
+- `Assets/StreamingAssets/AssetBundles/monster`
+- `Assets/StreamingAssets/AssetBundles/monster.manifest`
+- `Assets/Scripts/AI/StrategicArmyCommander.cs`
+- `Assets/Scripts/AI/TacticalAI.cs`
+- `Assets/Scripts/Core/AssetBundleLoader.cs`
+- `Assets/Scripts/Core/ContentSettingsData.cs`
+- `Assets/Scripts/Core/SpeciesPolicy.cs`
+- `Assets/Scripts/Core/WorldConfig.cs`
+- `Assets/Scripts/Entities/Army.cs`
+- `Assets/Scripts/Entities/MercenaryHouse.cs`
+- `Assets/Scripts/Entities/Village.cs`
+- `Assets/Scripts/Enums/BoneTypes.cs`
+- `Assets/Scripts/Enums/Race.cs`
+- `Assets/Scripts/Enums/SpecialAction.cs`
+- `Assets/Scripts/Enums/Tags.cs`
+- `Assets/Scripts/Modes/MapEditor.cs`
+- `Assets/Scripts/Modes/Recruit_Mode.cs`
+- `Assets/Scripts/Modes/StrategyMode.cs`
+- `Assets/Scripts/Modes/TacticalMode.cs`
+- `Assets/Scripts/Races/RaceParameters.cs`
+- `Assets/Scripts/Races/Traits.cs`
+- `Assets/Scripts/Subwindows/DiplomacyScreen.cs`
+- `Assets/Scripts/Subwindows/EmpireReport.cs`
+- `Assets/Scripts/Subwindows/InfoPanel.cs`
+- `Assets/Scripts/Subwindows/RaceEditorPanel.cs`
+- `Assets/Scripts/Subwindows/UnitCustomizer.cs`
+- `Assets/Scripts/UI/BestiaryPanel.cs`
+- `Assets/Scripts/UI/RightClickMenu.cs`
+- `Assets/Scripts/Utility/RelationsManager.cs`
+- `Assets/Scripts/Utility/TagConditionChecker.cs`
+- `Assets/Scripts/Utility/TutorialScript.cs`
+- `Assets/Scripts/Utility/Stored/CustomizationDataStorer.cs`
+- `Assets/Scripts/Utility/Stored/RaceSettings.cs`
+- `Assets/Scripts/Utility/Texts/DefaultTooltips.cs`
+- `Assets/Scripts/UI/Connectors/AdvancedUnitCommands.cs`
+- `Assets/Scripts/UI/Connectors/ConditionalTrait.cs`
+- `Assets/Scripts/UI/Connectors/ConditionalTraitInfoBlock.cs`
+- `Assets/Scripts/UI/Connectors/CustomTrait.cs`
+- `Assets/Scripts/Races/Graphics/CompleteSprite.cs`
+- `Assets/Scripts/Races/Graphics/DefaultRaceData.cs`
+- `Assets/Scripts/Races/Graphics/SpriteDictionary.cs`
+- `Assets/Scripts/Races/Graphics/TaurHumanHalf.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/AntQueen.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Avians.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Bees.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Deer.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Demiants.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Demibats.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/DemiDragons.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Demifrogs.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Demisharks.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Equines.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Gnolls.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Jackals.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Kangaroos.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Lizards.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Lupine.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/MatronsMinions.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Mice.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Panthers.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Sergal.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/Badgers.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/Hippos.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/Komodos.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/Vargul.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Ant.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Bat.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/BlackWidow.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Catfish.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/CoralSlug.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Dragon.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Dragonfly.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Dratopyr.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/EasternDragon.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/FeralFox.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/FeralHorses.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/FeralLions.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/FeralLizards.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/FeralSlime.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/FeralUmbreon.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/FeralWolf.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Gazelle.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Gryphons.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Harvester.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Kobolds.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Mantis.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Monitors.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Otachi.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Plant.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Raiju.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/RockSlug.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Salamanders.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Smudger.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/SpaceCroach.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/SpitterSlug.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/SpringSlug.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Terminid.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Terrorbird.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Trex.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Utahraptor.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/WarriorAnt.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Wyvern.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/WyvernMatron.cs`
+- `Assets/Scripts/Modes/MapEditor/MapVillagePoplator.cs`
+- `Assets/Scripts/Modes/Strategic/StrategicUtilities.cs`
+- `Assets/Scripts/Modes/Strategic/WorldGenerator.cs`
+- `Assets/Scripts/Modes/Tactical/BoneInfo.cs`
+- `Assets/Scripts/Modes/Tactical/ScatInfo.cs`
+- `Assets/Scripts/Modes/Tactical/ScatV2Discard.cs`
+- `Assets/Scripts/Modes/Tactical/TacticalAction.cs`
+- `Assets/Scripts/Modes/Tactical/TacticalGraphicalEffects.cs`
+- `Assets/Scripts/Modes/Tactical/TacticalMapGenerator.cs`
+- `Assets/Scripts/Modes/Tactical/TacticalUtilities.cs`
+- `Assets/Scripts/Modes/Tactical/Log/LogUtilities.cs`
+- `Assets/Scripts/Entities/Buildings/ConstructableBuilding.cs`
+- `Assets/Scripts/Entities/Clothing/ClothingDiscards.cs`
+- `Assets/Scripts/Entities/Clothing/ClothingTypes.cs`
+- `Assets/Scripts/Entities/Clothing/MainAccessories.cs`
+- `Assets/Scripts/Entities/Clothing/MainClothing.cs`
+- `Assets/Scripts/Entities/Items/ItemRepository.cs`
+- `Assets/Scripts/Entities/Units/Actor_Unit.cs`
+- `Assets/Scripts/Entities/Units/Leader.cs`
+- `Assets/Scripts/Entities/Units/NPC_unit.cs`
+- `Assets/Scripts/Entities/Units/PredatorComponent.cs`
+- `Assets/Scripts/Entities/Units/Prey.cs`
+- `Assets/Scripts/Entities/Units/Spawn.cs`
+- `Assets/Scripts/Entities/Units/Unit.cs`
+- `Assets/Scripts/AI/Monsters/MonsterStrategicAI.cs`
+- `Assets/Prefabs/Tactical/Specific Effects/DiamondStorm.prefab`
+- `Assets/Prefabs/Tactical/Specific Effects/Slash Effect.prefab`
+
+## Added active files
+
+- `Assets/Editor/RetiredContentBuild.cs`
+- `Assets/Editor/RetiredContentBuild.cs.meta`
+- `Assets/Sprites/TacticalEffects/SharedDiamondProjectile.png`
+- `Assets/Sprites/TacticalEffects/SharedDiamondProjectile.png.meta`
+- `Assets/Sprites/TacticalEffects/SharedSlashFrames.png`
+- `Assets/Sprites/TacticalEffects/SharedSlashFrames.png.meta`
+- `Assets/Sprites/Units/SharedMaskParts.png`
+- `Assets/Sprites/Units/SharedMaskParts.png.meta`
+
+## Direct archive moves
+
+- `Assets/Scripts/Entities/Animations/EntropicChaos.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Entities/Animations/EntropicChaos.cs`
+- `Assets/Scripts/Entities/Animations/EntropicChaos.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Entities/Animations/EntropicChaos.cs.meta`
+- `Assets/Scripts/Entities/Animations/SuccubusSword.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Entities/Animations/SuccubusSword.cs`
+- `Assets/Scripts/Entities/Animations/SuccubusSword.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Entities/Animations/SuccubusSword.cs.meta`
+- `Assets/Scripts/Entities/Animations/VenomBite.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Entities/Animations/VenomBite.cs`
+- `Assets/Scripts/Entities/Animations/VenomBite.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Entities/Animations/VenomBite.cs.meta`
+- `Assets/Scripts/Entities/Clothing/CowClothes.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Entities/Clothing/CowClothes.cs`
+- `Assets/Scripts/Entities/Clothing/CowClothes.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Entities/Clothing/CowClothes.cs.meta`
+- `Assets/Scripts/Entities/Clothing/CruxClothing.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Entities/Clothing/CruxClothing.cs`
+- `Assets/Scripts/Entities/Clothing/CruxClothing.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Entities/Clothing/CruxClothing.cs.meta`
+- `Assets/Scripts/Races/Graphics/MainRaces/Aabayx.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Aabayx.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Aabayx.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Aabayx.cs.meta`
+- `Assets/Scripts/Races/Graphics/MainRaces/Abakhanskya.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Abakhanskya.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Abakhanskya.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Abakhanskya.cs.meta`
+- `Assets/Scripts/Races/Graphics/MainRaces/Alraune.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Alraune.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Alraune.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Alraune.cs.meta`
+- `Assets/Scripts/Races/Graphics/MainRaces/Bears.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Bears.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Bears.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Bears.cs.meta`
+- `Assets/Scripts/Races/Graphics/MainRaces/Cats.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Cats.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Cats.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Cats.cs.meta`
+- `Assets/Scripts/Races/Graphics/MainRaces/Centaur.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Centaur.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Centaur.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Centaur.cs.meta`
+- `Assets/Scripts/Races/Graphics/MainRaces/Crux.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Crux.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Crux.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Crux.cs.meta`
+- `Assets/Scripts/Races/Graphics/MainRaces/Crypters.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Crypters.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Crypters.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Crypters.cs.meta`
+- `Assets/Scripts/Races/Graphics/MainRaces/Dogs.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Dogs.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Dogs.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Dogs.cs.meta`
+- `Assets/Scripts/Races/Graphics/MainRaces/Driders.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Driders.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Driders.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Driders.cs.meta`
+- `Assets/Scripts/Races/Graphics/MainRaces/Eevee.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Eevee.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Eevee.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Eevee.cs.meta`
+- `Assets/Scripts/Races/Graphics/MainRaces/Equaleon.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Equaleon.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Equaleon.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Equaleon.cs.meta`
+- `Assets/Scripts/Races/Graphics/MainRaces/Foxes.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Foxes.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Foxes.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Foxes.cs.meta`
+- `Assets/Scripts/Races/Graphics/MainRaces/Ghosts.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Ghosts.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Ghosts.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Ghosts.cs.meta`
+- `Assets/Scripts/Races/Graphics/MainRaces/Harpies.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Harpies.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Harpies.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Harpies.cs.meta`
+- `Assets/Scripts/Races/Graphics/MainRaces/Humans.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Humans.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Humans.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Humans.cs.meta`
+- `Assets/Scripts/Races/Graphics/MainRaces/Imps.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Imps.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Imps.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Imps.cs.meta`
+- `Assets/Scripts/Races/Graphics/MainRaces/Lamia.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Lamia.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Lamia.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Lamia.cs.meta`
+- `Assets/Scripts/Races/Graphics/MainRaces/MainlandElves.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/MainlandElves.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/MainlandElves.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/MainlandElves.cs.meta`
+- `Assets/Scripts/Races/Graphics/MainRaces/Mermen.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Mermen.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Mermen.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Mermen.cs.meta`
+- `Assets/Scripts/Races/Graphics/MainRaces/Scylla.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Scylla.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Scylla.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Scylla.cs.meta`
+- `Assets/Scripts/Races/Graphics/MainRaces/SlimeQueen.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/SlimeQueen.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/SlimeQueen.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/SlimeQueen.cs.meta`
+- `Assets/Scripts/Races/Graphics/MainRaces/Slimes.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Slimes.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Slimes.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Slimes.cs.meta`
+- `Assets/Scripts/Races/Graphics/MainRaces/Taurus.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Taurus.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Taurus.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Taurus.cs.meta`
+- `Assets/Scripts/Races/Graphics/MainRaces/Umbreon.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Umbreon.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Umbreon.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Umbreon.cs.meta`
+- `Assets/Scripts/Races/Graphics/MainRaces/Wolves.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Wolves.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Wolves.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Wolves.cs.meta`
+- `Assets/Scripts/Races/Graphics/MainRaces/Yordles.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Yordles.cs`
+- `Assets/Scripts/Races/Graphics/MainRaces/Yordles.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/MainRaces/Yordles.cs.meta`
+- `Assets/Scripts/Races/Graphics/Mercs/Cockatrice.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Mercs/Cockatrice.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/Cockatrice.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Mercs/Cockatrice.cs.meta`
+- `Assets/Scripts/Races/Graphics/Mercs/DewSprite.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Mercs/DewSprite.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/DewSprite.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Mercs/DewSprite.cs.meta`
+- `Assets/Scripts/Races/Graphics/Mercs/Goblins.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Mercs/Goblins.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/Goblins.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Mercs/Goblins.cs.meta`
+- `Assets/Scripts/Races/Graphics/Mercs/Hamsters.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Mercs/Hamsters.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/Hamsters.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Mercs/Hamsters.cs.meta`
+- `Assets/Scripts/Races/Graphics/Mercs/OoviKat.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Mercs/OoviKat.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/OoviKat.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Mercs/OoviKat.cs.meta`
+- `Assets/Scripts/Races/Graphics/Mercs/Puca.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Mercs/Puca.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/Puca.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Mercs/Puca.cs.meta`
+- `Assets/Scripts/Races/Graphics/Mercs/Renamon.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Mercs/Renamon.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/Renamon.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Mercs/Renamon.cs.meta`
+- `Assets/Scripts/Races/Graphics/Mercs/RwuMercenaries.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Mercs/RwuMercenaries.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/RwuMercenaries.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Mercs/RwuMercenaries.cs.meta`
+- `Assets/Scripts/Races/Graphics/Mercs/Succubi.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Mercs/Succubi.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/Succubi.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Mercs/Succubi.cs.meta`
+- `Assets/Scripts/Races/Graphics/Mercs/Tigers.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Mercs/Tigers.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/Tigers.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Mercs/Tigers.cs.meta`
+- `Assets/Scripts/Races/Graphics/Mercs/Viisels.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Mercs/Viisels.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/Viisels.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Mercs/Viisels.cs.meta`
+- `Assets/Scripts/Races/Graphics/Mercs/Vipers.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Mercs/Vipers.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/Vipers.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Mercs/Vipers.cs.meta`
+- `Assets/Scripts/Races/Graphics/Mercs/Youko.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Mercs/Youko.cs`
+- `Assets/Scripts/Races/Graphics/Mercs/Youko.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Mercs/Youko.cs.meta`
+- `Assets/Scripts/Races/Graphics/Monsters/Bella.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/Bella.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Bella.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/Bella.cs.meta`
+- `Assets/Scripts/Races/Graphics/Monsters/BoomBunnies.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/BoomBunnies.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/BoomBunnies.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/BoomBunnies.cs.meta`
+- `Assets/Scripts/Races/Graphics/Monsters/Cake.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/Cake.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Cake.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/Cake.cs.meta`
+- `Assets/Scripts/Races/Graphics/Monsters/Collector.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/Collector.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Collector.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/Collector.cs.meta`
+- `Assets/Scripts/Races/Graphics/Monsters/Compy.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/Compy.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Compy.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/Compy.cs.meta`
+- `Assets/Scripts/Races/Graphics/Monsters/DarkSwallower.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/DarkSwallower.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/DarkSwallower.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/DarkSwallower.cs.meta`
+- `Assets/Scripts/Races/Graphics/Monsters/EarthDryad.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/EarthDryad.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/EarthDryad.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/EarthDryad.cs.meta`
+- `Assets/Scripts/Races/Graphics/Monsters/Earthworms.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/Earthworms.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Earthworms.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/Earthworms.cs.meta`
+- `Assets/Scripts/Races/Graphics/Monsters/Fairy.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/Fairy.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Fairy.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/Fairy.cs.meta`
+- `Assets/Scripts/Races/Graphics/Monsters/FeraEqualeon.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/FeraEqualeon.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/FeraEqualeon.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/FeraEqualeon.cs.meta`
+- `Assets/Scripts/Races/Graphics/Monsters/FeralEevee.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/FeralEevee.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/FeralEevee.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/FeralEevee.cs.meta`
+- `Assets/Scripts/Races/Graphics/Monsters/FeralOrcas.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/FeralOrcas.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/FeralOrcas.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/FeralOrcas.cs.meta`
+- `Assets/Scripts/Races/Graphics/Monsters/Frogs.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/Frogs.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Frogs.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/Frogs.cs.meta`
+- `Assets/Scripts/Races/Graphics/Monsters/FungalDryad.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/FungalDryad.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/FungalDryad.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/FungalDryad.cs.meta`
+- `Assets/Scripts/Races/Graphics/Monsters/Iliijiith.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/Iliijiith.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Iliijiith.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/Iliijiith.cs.meta`
+- `Assets/Scripts/Races/Graphics/Monsters/Pudding.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/Pudding.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Pudding.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/Pudding.cs.meta`
+- `Assets/Scripts/Races/Graphics/Monsters/Raptor.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/Raptor.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Raptor.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/Raptor.cs.meta`
+- `Assets/Scripts/Races/Graphics/Monsters/RiverDryad.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/RiverDryad.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/RiverDryad.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/RiverDryad.cs.meta`
+- `Assets/Scripts/Races/Graphics/Monsters/Schiwardez.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/Schiwardez.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Schiwardez.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/Schiwardez.cs.meta`
+- `Assets/Scripts/Races/Graphics/Monsters/Sharks.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/Sharks.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Sharks.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/Sharks.cs.meta`
+- `Assets/Scripts/Races/Graphics/Monsters/SoulSprite.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/SoulSprite.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/SoulSprite.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/SoulSprite.cs.meta`
+- `Assets/Scripts/Races/Graphics/Monsters/Vagrants.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/Vagrants.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Vagrants.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/Vagrants.cs.meta`
+- `Assets/Scripts/Races/Graphics/Monsters/ViraeUltimae.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/ViraeUltimae.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/ViraeUltimae.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/ViraeUltimae.cs.meta`
+- `Assets/Scripts/Races/Graphics/Monsters/Voilin.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/Voilin.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Voilin.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/Voilin.cs.meta`
+- `Assets/Scripts/Races/Graphics/Monsters/Whisp.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/Whisp.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/Whisp.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/Whisp.cs.meta`
+- `Assets/Scripts/Races/Graphics/Monsters/WoodDryad.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/WoodDryad.cs`
+- `Assets/Scripts/Races/Graphics/Monsters/WoodDryad.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/Monsters/WoodDryad.cs.meta`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Asura.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Asura.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Asura.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Asura.cs.meta`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Auri.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Auri.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Auri.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Auri.cs.meta`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Cherub.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Cherub.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Cherub.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Cherub.cs.meta`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Cierihaka.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Cierihaka.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Cierihaka.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Cierihaka.cs.meta`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/DRACO.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/DRACO.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/DRACO.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/DRACO.cs.meta`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Erin.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Erin.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Erin.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Erin.cs.meta`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Feit.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Feit.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Feit.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Feit.cs.meta`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Ki.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Ki.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Ki.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Ki.cs.meta`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Konane.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Konane.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Konane.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Konane.cs.meta`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Nectar.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Nectar.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Nectar.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Nectar.cs.meta`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Olivia.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Olivia.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Olivia.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Olivia.cs.meta`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Ryan.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Ryan.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Ryan.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Ryan.cs.meta`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Salix.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Salix.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Salix.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Salix.cs.meta`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Scorch.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Scorch.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Scorch.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Scorch.cs.meta`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Selicia.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Selicia.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Selicia.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Selicia.cs.meta`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Seraph.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Seraph.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Seraph.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Seraph.cs.meta`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Seville.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Seville.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Seville.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Seville.cs.meta`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Singularity.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Singularity.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Singularity.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Singularity.cs.meta`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Skapa.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Skapa.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Skapa.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Skapa.cs.meta`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Taraluxia.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Taraluxia.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Taraluxia.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Taraluxia.cs.meta`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Tatltuae.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Tatltuae.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Tatltuae.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Tatltuae.cs.meta`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Vision.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Vision.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Vision.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Vision.cs.meta`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Xelhilde.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Xelhilde.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Xelhilde.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Xelhilde.cs.meta`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Zera.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Zera.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Zera.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Zera.cs.meta`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Zoey.cs` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Zoey.cs`
+- `Assets/Scripts/Races/Graphics/UniqueMercs/Zoey.cs.meta` → `Recycle Bin/Retired Content/Assets/Scripts/Races/Graphics/UniqueMercs/Zoey.cs.meta`
+- `Assets/Bestiary/AabayxHunter.png` → `Recycle Bin/Retired Content/Assets/Bestiary/AabayxHunter.png`
+- `Assets/Bestiary/AabayxHunter.png.meta` → `Recycle Bin/Retired Content/Assets/Bestiary/AabayxHunter.png.meta`
+- `Assets/Bestiary/Abakhanskya Grand Catch.png` → `Recycle Bin/Retired Content/Assets/Bestiary/Abakhanskya Grand Catch.png`
+- `Assets/Bestiary/Abakhanskya Grand Catch.png.meta` → `Recycle Bin/Retired Content/Assets/Bestiary/Abakhanskya Grand Catch.png.meta`
+- `Assets/Prefabs/Tactical/Specific Effects/Asura Special 1.prefab` → `Recycle Bin/Retired Content/Assets/Prefabs/Tactical/Specific Effects/Asura Special 1.prefab`
+- `Assets/Prefabs/Tactical/Specific Effects/Asura Special 1.prefab.meta` → `Recycle Bin/Retired Content/Assets/Prefabs/Tactical/Specific Effects/Asura Special 1.prefab.meta`
+- `Assets/Sprites/Units/Aabayx.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Aabayx.png`
+- `Assets/Sprites/Units/Aabayx.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Aabayx.png.meta`
+- `Assets/Sprites/Units/AabayxFacePaint.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/AabayxFacePaint.png`
+- `Assets/Sprites/Units/AabayxFacePaint.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/AabayxFacePaint.png.meta`
+- `Assets/Sprites/Units/Abakhanskya.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Abakhanskya.png`
+- `Assets/Sprites/Units/Abakhanskya.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Abakhanskya.png.meta`
+- `Assets/Sprites/Units/Alraune.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Alraune.png`
+- `Assets/Sprites/Units/Alraune.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Alraune.png.meta`
+- `Assets/Sprites/Units/Asura.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Asura.png`
+- `Assets/Sprites/Units/Asura.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Asura.png.meta`
+- `Assets/Sprites/Units/AsuraHoliday.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/AsuraHoliday.png`
+- `Assets/Sprites/Units/AsuraHoliday.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/AsuraHoliday.png.meta`
+- `Assets/Sprites/Units/Auri.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Auri.png`
+- `Assets/Sprites/Units/Auri.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Auri.png.meta`
+- `Assets/Sprites/Units/AuriVore.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/AuriVore.png`
+- `Assets/Sprites/Units/AuriVore.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/AuriVore.png.meta`
+- `Assets/Sprites/Units/AuriXmasAddSheet.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/AuriXmasAddSheet.png`
+- `Assets/Sprites/Units/AuriXmasAddSheet.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/AuriXmasAddSheet.png.meta`
+- `Assets/Sprites/Units/Bears.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Bears.png`
+- `Assets/Sprites/Units/Bears.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Bears.png.meta`
+- `Assets/Sprites/Units/BearsClothes.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/BearsClothes.png`
+- `Assets/Sprites/Units/BearsClothes.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/BearsClothes.png.meta`
+- `Assets/Sprites/Units/Bella/BellaArm1.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Bella/BellaArm1.png`
+- `Assets/Sprites/Units/Bella/BellaArm1.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Bella/BellaArm1.png.meta`
+- `Assets/Sprites/Units/Bella/BellaArm2.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Bella/BellaArm2.png`
+- `Assets/Sprites/Units/Bella/BellaArm2.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Bella/BellaArm2.png.meta`
+- `Assets/Sprites/Units/Bella/BellaBody1.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Bella/BellaBody1.png`
+- `Assets/Sprites/Units/Bella/BellaBody1.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Bella/BellaBody1.png.meta`
+- `Assets/Sprites/Units/Bella/BellaBody2.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Bella/BellaBody2.png`
+- `Assets/Sprites/Units/Bella/BellaBody2.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Bella/BellaBody2.png.meta`
+- `Assets/Sprites/Units/Bella/BellaHead1.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Bella/BellaHead1.png`
+- `Assets/Sprites/Units/Bella/BellaHead1.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Bella/BellaHead1.png.meta`
+- `Assets/Sprites/Units/Bella/BellaHead2.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Bella/BellaHead2.png`
+- `Assets/Sprites/Units/Bella/BellaHead2.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Bella/BellaHead2.png.meta`
+- `Assets/Sprites/Units/Bella/BellaRobes1.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Bella/BellaRobes1.png`
+- `Assets/Sprites/Units/Bella/BellaRobes1.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Bella/BellaRobes1.png.meta`
+- `Assets/Sprites/Units/Bella/BellaRobes2.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Bella/BellaRobes2.png`
+- `Assets/Sprites/Units/Bella/BellaRobes2.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Bella/BellaRobes2.png.meta`
+- `Assets/Sprites/Units/Boom_Bunnies.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Boom_Bunnies.png`
+- `Assets/Sprites/Units/Boom_Bunnies.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Boom_Bunnies.png.meta`
+- `Assets/Sprites/Units/Cake.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Cake.png`
+- `Assets/Sprites/Units/Cake.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Cake.png.meta`
+- `Assets/Sprites/Units/CentaurTorsoAddOns.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/CentaurTorsoAddOns.png`
+- `Assets/Sprites/Units/CentaurTorsoAddOns.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/CentaurTorsoAddOns.png.meta`
+- `Assets/Sprites/Units/Cherub/Cherub.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Cherub/Cherub.png`
+- `Assets/Sprites/Units/Cherub/Cherub.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Cherub/Cherub.png.meta`
+- `Assets/Sprites/Units/Cierihaka.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Cierihaka.png`
+- `Assets/Sprites/Units/Cierihaka.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Cierihaka.png.meta`
+- `Assets/Sprites/Units/Cockatrice1.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Cockatrice1.png`
+- `Assets/Sprites/Units/Cockatrice1.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Cockatrice1.png.meta`
+- `Assets/Sprites/Units/Collector.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Collector.png`
+- `Assets/Sprites/Units/Collector.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Collector.png.meta`
+- `Assets/Sprites/Units/Compy.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Compy.png`
+- `Assets/Sprites/Units/Compy.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Compy.png.meta`
+- `Assets/Sprites/Units/CruxBodySprites2.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/CruxBodySprites2.png`
+- `Assets/Sprites/Units/CruxBodySprites2.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/CruxBodySprites2.png.meta`
+- `Assets/Sprites/Units/CruxGear.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/CruxGear.png`
+- `Assets/Sprites/Units/CruxGear.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/CruxGear.png.meta`
+- `Assets/Sprites/Units/CruxMisc.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/CruxMisc.png`
+- `Assets/Sprites/Units/CruxMisc.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/CruxMisc.png.meta`
+- `Assets/Sprites/Units/DRACO.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/DRACO.png`
+- `Assets/Sprites/Units/DRACO.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/DRACO.png.meta`
+- `Assets/Sprites/Units/DarkSwallower.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/DarkSwallower.png`
+- `Assets/Sprites/Units/DarkSwallower.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/DarkSwallower.png.meta`
+- `Assets/Sprites/Units/Drider.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Drider.png`
+- `Assets/Sprites/Units/Drider.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Drider.png.meta`
+- `Assets/Sprites/Units/Dryad/Dryad1.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Dryad/Dryad1.png`
+- `Assets/Sprites/Units/Dryad/Dryad1.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Dryad/Dryad1.png.meta`
+- `Assets/Sprites/Units/Dryad/Dryad2.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Dryad/Dryad2.png`
+- `Assets/Sprites/Units/Dryad/Dryad2.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Dryad/Dryad2.png.meta`
+- `Assets/Sprites/Units/Dryad/Dryad3.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Dryad/Dryad3.png`
+- `Assets/Sprites/Units/Dryad/Dryad3.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Dryad/Dryad3.png.meta`
+- `Assets/Sprites/Units/Dryad/Dryad4.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Dryad/Dryad4.png`
+- `Assets/Sprites/Units/Dryad/Dryad4.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Dryad/Dryad4.png.meta`
+- `Assets/Sprites/Units/Dryad/Dryad5.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Dryad/Dryad5.png`
+- `Assets/Sprites/Units/Dryad/Dryad5.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Dryad/Dryad5.png.meta`
+- `Assets/Sprites/Units/Earthworms.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Earthworms.png`
+- `Assets/Sprites/Units/Earthworms.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Earthworms.png.meta`
+- `Assets/Sprites/Units/Eeveelution/AnthroEevee.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Eeveelution/AnthroEevee.png`
+- `Assets/Sprites/Units/Eeveelution/AnthroEevee.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Eeveelution/AnthroEevee.png.meta`
+- `Assets/Sprites/Units/Eeveelution/AnthroEqualeon.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Eeveelution/AnthroEqualeon.png`
+- `Assets/Sprites/Units/Eeveelution/AnthroEqualeon.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Eeveelution/AnthroEqualeon.png.meta`
+- `Assets/Sprites/Units/Eeveelution/AnthroUmbreon.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Eeveelution/AnthroUmbreon.png`
+- `Assets/Sprites/Units/Eeveelution/AnthroUmbreon.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Eeveelution/AnthroUmbreon.png.meta`
+- `Assets/Sprites/Units/Eeveelution/AnthroUmbreon2.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Eeveelution/AnthroUmbreon2.png`
+- `Assets/Sprites/Units/Eeveelution/AnthroUmbreon2.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Eeveelution/AnthroUmbreon2.png.meta`
+- `Assets/Sprites/Units/Eeveelution/AnthroUmbreon3.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Eeveelution/AnthroUmbreon3.png`
+- `Assets/Sprites/Units/Eeveelution/AnthroUmbreon3.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Eeveelution/AnthroUmbreon3.png.meta`
+- `Assets/Sprites/Units/Eeveelution/FeralEevee.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Eeveelution/FeralEevee.png`
+- `Assets/Sprites/Units/Eeveelution/FeralEevee.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Eeveelution/FeralEevee.png.meta`
+- `Assets/Sprites/Units/Eeveelution/FeralEqualeon.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Eeveelution/FeralEqualeon.png`
+- `Assets/Sprites/Units/Eeveelution/FeralEqualeon.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Eeveelution/FeralEqualeon.png.meta`
+- `Assets/Sprites/Units/Elves/elven_armor.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Elves/elven_armor.png`
+- `Assets/Sprites/Units/Elves/elven_armor.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Elves/elven_armor.png.meta`
+- `Assets/Sprites/Units/Erin.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Erin.png`
+- `Assets/Sprites/Units/Erin.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Erin.png.meta`
+- `Assets/Sprites/Units/Feit.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Feit.png`
+- `Assets/Sprites/Units/Feit.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Feit.png.meta`
+- `Assets/Sprites/Units/Feral_Orcas.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Feral_Orcas.png`
+- `Assets/Sprites/Units/Feral_Orcas.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Feral_Orcas.png.meta`
+- `Assets/Sprites/Units/Frog.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Frog.png`
+- `Assets/Sprites/Units/Frog.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Frog.png.meta`
+- `Assets/Sprites/Units/Hamsters.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Hamsters.png`
+- `Assets/Sprites/Units/Hamsters.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Hamsters.png.meta`
+- `Assets/Sprites/Units/Iliijiith.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Iliijiith.png`
+- `Assets/Sprites/Units/Iliijiith.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Iliijiith.png.meta`
+- `Assets/Sprites/Units/Ki.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Ki.png`
+- `Assets/Sprites/Units/Ki.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Ki.png.meta`
+- `Assets/Sprites/Units/Konane.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Konane.png`
+- `Assets/Sprites/Units/Konane.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Konane.png.meta`
+- `Assets/Sprites/Units/Lamia.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Lamia.png`
+- `Assets/Sprites/Units/Lamia.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Lamia.png.meta`
+- `Assets/Sprites/Units/LamiaNaga.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/LamiaNaga.png`
+- `Assets/Sprites/Units/LamiaNaga.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/LamiaNaga.png.meta`
+- `Assets/Sprites/Units/LamiaNagaBits.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/LamiaNagaBits.png`
+- `Assets/Sprites/Units/LamiaNagaBits.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/LamiaNagaBits.png.meta`
+- `Assets/Sprites/Units/MainlandElves.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/MainlandElves.png`
+- `Assets/Sprites/Units/MainlandElves.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/MainlandElves.png.meta`
+- `Assets/Sprites/Units/Mermen.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Mermen.png`
+- `Assets/Sprites/Units/Mermen.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Mermen.png.meta`
+- `Assets/Sprites/Units/Mermen2.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Mermen2.png`
+- `Assets/Sprites/Units/Mermen2.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Mermen2.png.meta`
+- `Assets/Sprites/Units/Nectar.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Nectar.png`
+- `Assets/Sprites/Units/Nectar.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Nectar.png.meta`
+- `Assets/Sprites/Units/Olivia.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Olivia.png`
+- `Assets/Sprites/Units/Olivia.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Olivia.png.meta`
+- `Assets/Sprites/Units/OliviaVoreSprites.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/OliviaVoreSprites.png`
+- `Assets/Sprites/Units/OliviaVoreSprites.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/OliviaVoreSprites.png.meta`
+- `Assets/Sprites/Units/OoviKatCustom.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/OoviKatCustom.png`
+- `Assets/Sprites/Units/OoviKatCustom.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/OoviKatCustom.png.meta`
+- `Assets/Sprites/Units/OoviKatFemale.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/OoviKatFemale.png`
+- `Assets/Sprites/Units/OoviKatFemale.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/OoviKatFemale.png.meta`
+- `Assets/Sprites/Units/OoviKatMale.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/OoviKatMale.png`
+- `Assets/Sprites/Units/OoviKatMale.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/OoviKatMale.png.meta`
+- `Assets/Sprites/Units/Pudding.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Pudding.png`
+- `Assets/Sprites/Units/Pudding.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Pudding.png.meta`
+- `Assets/Sprites/Units/RaptorSprites.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/RaptorSprites.png`
+- `Assets/Sprites/Units/RaptorSprites.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/RaptorSprites.png.meta`
+- `Assets/Sprites/Units/RenamonBodies.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/RenamonBodies.png`
+- `Assets/Sprites/Units/RenamonBodies.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/RenamonBodies.png.meta`
+- `Assets/Sprites/Units/RenamonClothes1.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/RenamonClothes1.png`
+- `Assets/Sprites/Units/RenamonClothes1.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/RenamonClothes1.png.meta`
+- `Assets/Sprites/Units/RenamonClothes2.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/RenamonClothes2.png`
+- `Assets/Sprites/Units/RenamonClothes2.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/RenamonClothes2.png.meta`
+- `Assets/Sprites/Units/RenamonClothes3.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/RenamonClothes3.png`
+- `Assets/Sprites/Units/RenamonClothes3.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/RenamonClothes3.png.meta`
+- `Assets/Sprites/Units/RenamonVore.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/RenamonVore.png`
+- `Assets/Sprites/Units/RenamonVore.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/RenamonVore.png.meta`
+- `Assets/Sprites/Units/RwuMercenaries/RwuMercenariesLizard.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/RwuMercenaries/RwuMercenariesLizard.png`
+- `Assets/Sprites/Units/RwuMercenaries/RwuMercenariesLizard.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/RwuMercenaries/RwuMercenariesLizard.png.meta`
+- `Assets/Sprites/Units/RwuMercenaries/RwuMercenariesLizardArmor1.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/RwuMercenaries/RwuMercenariesLizardArmor1.png`
+- `Assets/Sprites/Units/RwuMercenaries/RwuMercenariesLizardArmor1.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/RwuMercenaries/RwuMercenariesLizardArmor1.png.meta`
+- `Assets/Sprites/Units/RwuMercenaries/RwuMercenariesMice.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/RwuMercenaries/RwuMercenariesMice.png`
+- `Assets/Sprites/Units/RwuMercenaries/RwuMercenariesMice.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/RwuMercenaries/RwuMercenariesMice.png.meta`
+- `Assets/Sprites/Units/RwuMercenaries/RwuMercenariesMiceArmor1.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/RwuMercenaries/RwuMercenariesMiceArmor1.png`
+- `Assets/Sprites/Units/RwuMercenaries/RwuMercenariesMiceArmor1.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/RwuMercenaries/RwuMercenariesMiceArmor1.png.meta`
+- `Assets/Sprites/Units/RwuMercenaries/RwuMercenariesShark.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/RwuMercenaries/RwuMercenariesShark.png`
+- `Assets/Sprites/Units/RwuMercenaries/RwuMercenariesShark.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/RwuMercenaries/RwuMercenariesShark.png.meta`
+- `Assets/Sprites/Units/RwuMercenaries/RwuMercenariesSharkArmor1.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/RwuMercenaries/RwuMercenariesSharkArmor1.png`
+- `Assets/Sprites/Units/RwuMercenaries/RwuMercenariesSharkArmor1.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/RwuMercenaries/RwuMercenariesSharkArmor1.png.meta`
+- `Assets/Sprites/Units/RwuMercenaries/RwuMercenariesSharkArmor2.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/RwuMercenaries/RwuMercenariesSharkArmor2.png`
+- `Assets/Sprites/Units/RwuMercenaries/RwuMercenariesSharkArmor2.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/RwuMercenaries/RwuMercenariesSharkArmor2.png.meta`
+- `Assets/Sprites/Units/RwuMercenaries/RwuMercenariesStandard.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/RwuMercenaries/RwuMercenariesStandard.png`
+- `Assets/Sprites/Units/RwuMercenaries/RwuMercenariesStandard.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/RwuMercenaries/RwuMercenariesStandard.png.meta`
+- `Assets/Sprites/Units/RwuMercenaries/RwuMercenariesStandardArmor1.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/RwuMercenaries/RwuMercenariesStandardArmor1.png`
+- `Assets/Sprites/Units/RwuMercenaries/RwuMercenariesStandardArmor1.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/RwuMercenaries/RwuMercenariesStandardArmor1.png.meta`
+- `Assets/Sprites/Units/Ryan.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Ryan.png`
+- `Assets/Sprites/Units/Ryan.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Ryan.png.meta`
+- `Assets/Sprites/Units/RyanVore.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/RyanVore.png`
+- `Assets/Sprites/Units/RyanVore.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/RyanVore.png.meta`
+- `Assets/Sprites/Units/Salix.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Salix.png`
+- `Assets/Sprites/Units/Salix.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Salix.png.meta`
+- `Assets/Sprites/Units/SalixGen.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/SalixGen.png`
+- `Assets/Sprites/Units/SalixGen.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/SalixGen.png.meta`
+- `Assets/Sprites/Units/SalixVore.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/SalixVore.png`
+- `Assets/Sprites/Units/SalixVore.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/SalixVore.png.meta`
+- `Assets/Sprites/Units/Schiwardez.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Schiwardez.png`
+- `Assets/Sprites/Units/Schiwardez.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Schiwardez.png.meta`
+- `Assets/Sprites/Units/Scorch.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Scorch.png`
+- `Assets/Sprites/Units/Scorch.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Scorch.png.meta`
+- `Assets/Sprites/Units/Scylla.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Scylla.png`
+- `Assets/Sprites/Units/Scylla.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Scylla.png.meta`
+- `Assets/Sprites/Units/Selicia.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Selicia.png`
+- `Assets/Sprites/Units/Selicia.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Selicia.png.meta`
+- `Assets/Sprites/Units/Seraph/Seraph.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Seraph/Seraph.png`
+- `Assets/Sprites/Units/Seraph/Seraph.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Seraph/Seraph.png.meta`
+- `Assets/Sprites/Units/Seville.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Seville.png`
+- `Assets/Sprites/Units/Seville.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Seville.png.meta`
+- `Assets/Sprites/Units/Seville_VenomBite.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Seville_VenomBite.png`
+- `Assets/Sprites/Units/Seville_VenomBite.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Seville_VenomBite.png.meta`
+- `Assets/Sprites/Units/Singularity1.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Singularity1.png`
+- `Assets/Sprites/Units/Singularity1.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Singularity1.png.meta`
+- `Assets/Sprites/Units/Singularity2.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Singularity2.png`
+- `Assets/Sprites/Units/Singularity2.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Singularity2.png.meta`
+- `Assets/Sprites/Units/Skapa.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Skapa.png`
+- `Assets/Sprites/Units/Skapa.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Skapa.png.meta`
+- `Assets/Sprites/Units/SkyShark.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/SkyShark.png`
+- `Assets/Sprites/Units/SkyShark.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/SkyShark.png.meta`
+- `Assets/Sprites/Units/SoulSprite/AngelProjectile.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/SoulSprite/AngelProjectile.png`
+- `Assets/Sprites/Units/SoulSprite/AngelProjectile.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/SoulSprite/AngelProjectile.png.meta`
+- `Assets/Sprites/Units/SoulSprite/SoulSprite.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/SoulSprite/SoulSprite.png`
+- `Assets/Sprites/Units/SoulSprite/SoulSprite.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/SoulSprite/SoulSprite.png.meta`
+- `Assets/Sprites/Units/TaraTailStrikes.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/TaraTailStrikes.png`
+- `Assets/Sprites/Units/TaraTailStrikes.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/TaraTailStrikes.png.meta`
+- `Assets/Sprites/Units/Taraluxia.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Taraluxia.png`
+- `Assets/Sprites/Units/Taraluxia.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Taraluxia.png.meta`
+- `Assets/Sprites/Units/Tatltuae.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Tatltuae.png`
+- `Assets/Sprites/Units/Tatltuae.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Tatltuae.png.meta`
+- `Assets/Sprites/Units/TatltuaeHackleVore.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/TatltuaeHackleVore.png`
+- `Assets/Sprites/Units/TatltuaeHackleVore.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/TatltuaeHackleVore.png.meta`
+- `Assets/Sprites/Units/Vagrants.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Vagrants.png`
+- `Assets/Sprites/Units/Vagrants.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Vagrants.png.meta`
+- `Assets/Sprites/Units/Viisels.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Viisels.png`
+- `Assets/Sprites/Units/Viisels.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Viisels.png.meta`
+- `Assets/Sprites/Units/Vipers1.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Vipers1.png`
+- `Assets/Sprites/Units/Vipers1.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Vipers1.png.meta`
+- `Assets/Sprites/Units/Vipers2.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Vipers2.png`
+- `Assets/Sprites/Units/Vipers2.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Vipers2.png.meta`
+- `Assets/Sprites/Units/Vipers3.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Vipers3.png`
+- `Assets/Sprites/Units/Vipers3.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Vipers3.png.meta`
+- `Assets/Sprites/Units/Vipers4.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Vipers4.png`
+- `Assets/Sprites/Units/Vipers4.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Vipers4.png.meta`
+- `Assets/Sprites/Units/ViraeUltimae.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/ViraeUltimae.png`
+- `Assets/Sprites/Units/ViraeUltimae.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/ViraeUltimae.png.meta`
+- `Assets/Sprites/Units/Vision.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Vision.png`
+- `Assets/Sprites/Units/Vision.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Vision.png.meta`
+- `Assets/Sprites/Units/Voilin.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Voilin.png`
+- `Assets/Sprites/Units/Voilin.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Voilin.png.meta`
+- `Assets/Sprites/Units/Whisp.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Whisp.png`
+- `Assets/Sprites/Units/Whisp.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Whisp.png.meta`
+- `Assets/Sprites/Units/Whisp.xcf` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Whisp.xcf`
+- `Assets/Sprites/Units/Whisp.xcf.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Whisp.xcf.meta`
+- `Assets/Sprites/Units/Xelhilde1.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Xelhilde1.png`
+- `Assets/Sprites/Units/Xelhilde1.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Xelhilde1.png.meta`
+- `Assets/Sprites/Units/Yordles/YordleBodies.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Yordles/YordleBodies.png`
+- `Assets/Sprites/Units/Yordles/YordleBodies.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Yordles/YordleBodies.png.meta`
+- `Assets/Sprites/Units/Yordles/YordleClothes1.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Yordles/YordleClothes1.png`
+- `Assets/Sprites/Units/Yordles/YordleClothes1.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Yordles/YordleClothes1.png.meta`
+- `Assets/Sprites/Units/Yordles/YordleClothes2.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Yordles/YordleClothes2.png`
+- `Assets/Sprites/Units/Yordles/YordleClothes2.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Yordles/YordleClothes2.png.meta`
+- `Assets/Sprites/Units/Yordles/YordleCustomization1.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Yordles/YordleCustomization1.png`
+- `Assets/Sprites/Units/Yordles/YordleCustomization1.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Yordles/YordleCustomization1.png.meta`
+- `Assets/Sprites/Units/Yordles/YordleCustomization2.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Yordles/YordleCustomization2.png`
+- `Assets/Sprites/Units/Yordles/YordleCustomization2.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Yordles/YordleCustomization2.png.meta`
+- `Assets/Sprites/Units/Yordles/YordleVoreFur.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Yordles/YordleVoreFur.png`
+- `Assets/Sprites/Units/Yordles/YordleVoreFur.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Yordles/YordleVoreFur.png.meta`
+- `Assets/Sprites/Units/Yordles/YordleVoreSkin.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Yordles/YordleVoreSkin.png`
+- `Assets/Sprites/Units/Yordles/YordleVoreSkin.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/Yordles/YordleVoreSkin.png.meta`
+- `Assets/Sprites/Units/YoukoTails.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/YoukoTails.png`
+- `Assets/Sprites/Units/YoukoTails.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/YoukoTails.png.meta`
+- `Assets/Sprites/Units/alraunechristmas.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/alraunechristmas.png`
+- `Assets/Sprites/Units/alraunechristmas.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/alraunechristmas.png.meta`
+- `Assets/Sprites/Units/cows.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/cows.png`
+- `Assets/Sprites/Units/cows.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/cows.png.meta`
+- `Assets/Sprites/Units/crypters.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/crypters.png`
+- `Assets/Sprites/Units/crypters.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/crypters.png.meta`
+- `Assets/Sprites/Units/dew.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/dew.png`
+- `Assets/Sprites/Units/dew.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/dew.png.meta`
+- `Assets/Sprites/Units/fairy240.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/fairy240.png`
+- `Assets/Sprites/Units/fairy240.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/fairy240.png.meta`
+- `Assets/Sprites/Units/fairySmall.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/fairySmall.png`
+- `Assets/Sprites/Units/fairySmall.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/fairySmall.png.meta`
+- `Assets/Sprites/Units/fairy_addsheet.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/fairy_addsheet.png`
+- `Assets/Sprites/Units/fairy_addsheet.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/fairy_addsheet.png.meta`
+- `Assets/Sprites/Units/ghosts1.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/ghosts1.png`
+- `Assets/Sprites/Units/ghosts1.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/ghosts1.png.meta`
+- `Assets/Sprites/Units/ghosts2.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/ghosts2.png`
+- `Assets/Sprites/Units/ghosts2.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/ghosts2.png.meta`
+- `Assets/Sprites/Units/ghosts3.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/ghosts3.png`
+- `Assets/Sprites/Units/ghosts3.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/ghosts3.png.meta`
+- `Assets/Sprites/Units/ghostvorebits.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/ghostvorebits.png`
+- `Assets/Sprites/Units/ghostvorebits.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/ghostvorebits.png.meta`
+- `Assets/Sprites/Units/goblins/gobbglove.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/goblins/gobbglove.png`
+- `Assets/Sprites/Units/goblins/gobbglove.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/goblins/gobbglove.png.meta`
+- `Assets/Sprites/Units/goblins/gobbo.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/goblins/gobbo.png`
+- `Assets/Sprites/Units/goblins/gobbo.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/goblins/gobbo.png.meta`
+- `Assets/Sprites/Units/goblins/gobbohat.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/goblins/gobbohat.png`
+- `Assets/Sprites/Units/goblins/gobbohat.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/goblins/gobbohat.png.meta`
+- `Assets/Sprites/Units/goblins/gobboverbottoms.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/goblins/gobboverbottoms.png`
+- `Assets/Sprites/Units/goblins/gobboverbottoms.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/goblins/gobboverbottoms.png.meta`
+- `Assets/Sprites/Units/goblins/gobboveronepieces.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/goblins/gobboveronepieces.png`
+- `Assets/Sprites/Units/goblins/gobboveronepieces.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/goblins/gobboveronepieces.png.meta`
+- `Assets/Sprites/Units/goblins/gobbovertops.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/goblins/gobbovertops.png`
+- `Assets/Sprites/Units/goblins/gobbovertops.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/goblins/gobbovertops.png.meta`
+- `Assets/Sprites/Units/goblins/gobbovore.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/goblins/gobbovore.png`
+- `Assets/Sprites/Units/goblins/gobbovore.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/goblins/gobbovore.png.meta`
+- `Assets/Sprites/Units/goblins/gobbunderbottoms.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/goblins/gobbunderbottoms.png`
+- `Assets/Sprites/Units/goblins/gobbunderbottoms.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/goblins/gobbunderbottoms.png.meta`
+- `Assets/Sprites/Units/goblins/gobbunderonepieces.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/goblins/gobbunderonepieces.png`
+- `Assets/Sprites/Units/goblins/gobbunderonepieces.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/goblins/gobbunderonepieces.png.meta`
+- `Assets/Sprites/Units/goblins/gobleggo.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/goblins/gobleggo.png`
+- `Assets/Sprites/Units/goblins/gobleggo.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/goblins/gobleggo.png.meta`
+- `Assets/Sprites/Units/goblins/gobundertops.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/goblins/gobundertops.png`
+- `Assets/Sprites/Units/goblins/gobundertops.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/goblins/gobundertops.png.meta`
+- `Assets/Sprites/Units/harpies.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/harpies.png`
+- `Assets/Sprites/Units/harpies.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/harpies.png.meta`
+- `Assets/Sprites/Units/humanrework/Hu_men_uniform_1.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/humanrework/Hu_men_uniform_1.png`
+- `Assets/Sprites/Units/humanrework/Hu_men_uniform_1.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/humanrework/Hu_men_uniform_1.png.meta`
+- `Assets/Sprites/Units/humanrework/hu_men_bigloin.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/humanrework/hu_men_bigloin.png`
+- `Assets/Sprites/Units/humanrework/hu_men_bigloin.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/humanrework/hu_men_bigloin.png.meta`
+- `Assets/Sprites/Units/humanrework/hu_men_pants.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/humanrework/hu_men_pants.png`
+- `Assets/Sprites/Units/humanrework/hu_men_pants.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/humanrework/hu_men_pants.png.meta`
+- `Assets/Sprites/Units/humanrework/hu_men_skirt.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/humanrework/hu_men_skirt.png`
+- `Assets/Sprites/Units/humanrework/hu_men_skirt.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/humanrework/hu_men_skirt.png.meta`
+- `Assets/Sprites/Units/humanrework/hu_men_uniform_2.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/humanrework/hu_men_uniform_2.png`
+- `Assets/Sprites/Units/humanrework/hu_men_uniform_2.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/humanrework/hu_men_uniform_2.png.meta`
+- `Assets/Sprites/Units/imps/Impfinished.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/imps/Impfinished.png`
+- `Assets/Sprites/Units/imps/Impfinished.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/imps/Impfinished.png.meta`
+- `Assets/Sprites/Units/imps/impfinishedvore.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/imps/impfinishedvore.png`
+- `Assets/Sprites/Units/imps/impfinishedvore.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/imps/impfinishedvore.png.meta`
+- `Assets/Sprites/Units/imps/impgloves.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/imps/impgloves.png`
+- `Assets/Sprites/Units/imps/impgloves.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/imps/impgloves.png.meta`
+- `Assets/Sprites/Units/imps/imphood.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/imps/imphood.png`
+- `Assets/Sprites/Units/imps/imphood.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/imps/imphood.png.meta`
+- `Assets/Sprites/Units/imps/implegg.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/imps/implegg.png`
+- `Assets/Sprites/Units/imps/implegg.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/imps/implegg.png.meta`
+- `Assets/Sprites/Units/imps/impoverbottoms.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/imps/impoverbottoms.png`
+- `Assets/Sprites/Units/imps/impoverbottoms.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/imps/impoverbottoms.png.meta`
+- `Assets/Sprites/Units/imps/impoveronepiece.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/imps/impoveronepiece.png`
+- `Assets/Sprites/Units/imps/impoveronepiece.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/imps/impoveronepiece.png.meta`
+- `Assets/Sprites/Units/imps/impovertops.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/imps/impovertops.png`
+- `Assets/Sprites/Units/imps/impovertops.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/imps/impovertops.png.meta`
+- `Assets/Sprites/Units/imps/impunderbottoms.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/imps/impunderbottoms.png`
+- `Assets/Sprites/Units/imps/impunderbottoms.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/imps/impunderbottoms.png.meta`
+- `Assets/Sprites/Units/imps/impunderonepieces.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/imps/impunderonepieces.png`
+- `Assets/Sprites/Units/imps/impunderonepieces.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/imps/impunderonepieces.png.meta`
+- `Assets/Sprites/Units/imps/impundertops.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/imps/impundertops.png`
+- `Assets/Sprites/Units/imps/impundertops.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/imps/impundertops.png.meta`
+- `Assets/Sprites/Units/puca.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/puca.png`
+- `Assets/Sprites/Units/puca.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/puca.png.meta`
+- `Assets/Sprites/Units/selicia_in_taurus.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/selicia_in_taurus.png`
+- `Assets/Sprites/Units/selicia_in_taurus.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/selicia_in_taurus.png.meta`
+- `Assets/Sprites/Units/vagrants2.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/vagrants2.png`
+- `Assets/Sprites/Units/vagrants2.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/vagrants2.png.meta`
+- `Assets/Sprites/Units/vagrants3.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/vagrants3.png`
+- `Assets/Sprites/Units/vagrants3.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/vagrants3.png.meta`
+- `Assets/Sprites/Units/zera/1x1_bols.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/zera/1x1_bols.png`
+- `Assets/Sprites/Units/zera/1x1_bols.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/zera/1x1_bols.png.meta`
+- `Assets/Sprites/Units/zera/1x2_bols.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/zera/1x2_bols.png`
+- `Assets/Sprites/Units/zera/1x2_bols.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/zera/1x2_bols.png.meta`
+- `Assets/Sprites/Units/zera/2x2_bols.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/zera/2x2_bols.png`
+- `Assets/Sprites/Units/zera/2x2_bols.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/zera/2x2_bols.png.meta`
+- `Assets/Sprites/Units/zera/2x3_bols.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/zera/2x3_bols.png`
+- `Assets/Sprites/Units/zera/2x3_bols.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/zera/2x3_bols.png.meta`
+- `Assets/Sprites/Units/zera/Front Belly 2x1.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/zera/Front Belly 2x1.png`
+- `Assets/Sprites/Units/zera/Front Belly 2x1.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/zera/Front Belly 2x1.png.meta`
+- `Assets/Sprites/Units/zera/Front Belly 3x2.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/zera/Front Belly 3x2.png`
+- `Assets/Sprites/Units/zera/Front Belly 3x2.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/zera/Front Belly 3x2.png.meta`
+- `Assets/Sprites/Units/zera/zera240.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/zera/zera240.png`
+- `Assets/Sprites/Units/zera/zera240.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/zera/zera240.png.meta`
+- `Assets/Sprites/Units/zera/zerabel.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/zera/zerabel.png`
+- `Assets/Sprites/Units/zera/zerabel.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/zera/zerabel.png.meta`
+- `Assets/Sprites/Units/zoey.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/zoey.png`
+- `Assets/Sprites/Units/zoey.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/zoey.png.meta`
+- `Assets/Sprites/Units/zoey_addsheet.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/zoey_addsheet.png`
+- `Assets/Sprites/Units/zoey_addsheet.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/zoey_addsheet.png.meta`
+- `Assets/Sprites/Units/zoey_sel.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/zoey_sel.png`
+- `Assets/Sprites/Units/zoey_sel.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/zoey_sel.png.meta`
+- `Assets/StreamingAssets/Cake.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/Cake.txt`
+- `Assets/StreamingAssets/Cake.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/Cake.txt.meta`
+- `Assets/StreamingAssets/Collectors.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/Collectors.txt`
+- `Assets/StreamingAssets/Collectors.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/Collectors.txt.meta`
+- `Assets/StreamingAssets/Compy.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/Compy.txt`
+- `Assets/StreamingAssets/Compy.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/Compy.txt.meta`
+- `Assets/StreamingAssets/DarkSwallower.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/DarkSwallower.txt`
+- `Assets/StreamingAssets/DarkSwallower.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/DarkSwallower.txt.meta`
+- `Assets/StreamingAssets/EarthDryad.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/EarthDryad.txt`
+- `Assets/StreamingAssets/EarthDryad.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/EarthDryad.txt.meta`
+- `Assets/StreamingAssets/Earthworms.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/Earthworms.txt`
+- `Assets/StreamingAssets/Earthworms.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/Earthworms.txt.meta`
+- `Assets/StreamingAssets/FeralFrogs.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/FeralFrogs.txt`
+- `Assets/StreamingAssets/FeralFrogs.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/FeralFrogs.txt.meta`
+- `Assets/StreamingAssets/FeralSharks.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/FeralSharks.txt`
+- `Assets/StreamingAssets/FeralSharks.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/FeralSharks.txt.meta`
+- `Assets/StreamingAssets/FungalDryad.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/FungalDryad.txt`
+- `Assets/StreamingAssets/FungalDryad.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/FungalDryad.txt.meta`
+- `Assets/StreamingAssets/Iliijiith.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/Iliijiith.txt`
+- `Assets/StreamingAssets/Iliijiith.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/Iliijiith.txt.meta`
+- `Assets/StreamingAssets/Raptor.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/Raptor.txt`
+- `Assets/StreamingAssets/Raptor.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/Raptor.txt.meta`
+- `Assets/StreamingAssets/RiverDryad.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/RiverDryad.txt`
+- `Assets/StreamingAssets/RiverDryad.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/RiverDryad.txt.meta`
+- `Assets/StreamingAssets/Schiwardez.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/Schiwardez.txt`
+- `Assets/StreamingAssets/Schiwardez.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/Schiwardez.txt.meta`
+- `Assets/StreamingAssets/Vagrants.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/Vagrants.txt`
+- `Assets/StreamingAssets/Vagrants.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/Vagrants.txt.meta`
+- `Assets/StreamingAssets/Voilin.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/Voilin.txt`
+- `Assets/StreamingAssets/Voilin.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/Voilin.txt.meta`
+- `Assets/StreamingAssets/Whisp.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/Whisp.txt`
+- `Assets/StreamingAssets/Whisp.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/Whisp.txt.meta`
+- `Assets/StreamingAssets/WoodDryad.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/WoodDryad.txt`
+- `Assets/StreamingAssets/WoodDryad.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/WoodDryad.txt.meta`
+- `Assets/StreamingAssets/femaleAabayx.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleAabayx.txt`
+- `Assets/StreamingAssets/femaleAabayx.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleAabayx.txt.meta`
+- `Assets/StreamingAssets/femaleAlraune.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleAlraune.txt`
+- `Assets/StreamingAssets/femaleAlraune.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleAlraune.txt.meta`
+- `Assets/StreamingAssets/femaleBears.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleBears.txt`
+- `Assets/StreamingAssets/femaleBears.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleBears.txt.meta`
+- `Assets/StreamingAssets/femaleBoomBunnies.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleBoomBunnies.txt`
+- `Assets/StreamingAssets/femaleBoomBunnies.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleBoomBunnies.txt.meta`
+- `Assets/StreamingAssets/femaleCats.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleCats.txt`
+- `Assets/StreamingAssets/femaleCats.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleCats.txt.meta`
+- `Assets/StreamingAssets/femaleCentaur.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleCentaur.txt`
+- `Assets/StreamingAssets/femaleCentaur.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleCentaur.txt.meta`
+- `Assets/StreamingAssets/femaleCockatrice.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleCockatrice.txt`
+- `Assets/StreamingAssets/femaleCockatrice.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleCockatrice.txt.meta`
+- `Assets/StreamingAssets/femaleCrux.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleCrux.txt`
+- `Assets/StreamingAssets/femaleCrux.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleCrux.txt.meta`
+- `Assets/StreamingAssets/femaleCrypters.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleCrypters.txt`
+- `Assets/StreamingAssets/femaleCrypters.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleCrypters.txt.meta`
+- `Assets/StreamingAssets/femaleDewSprites.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleDewSprites.txt`
+- `Assets/StreamingAssets/femaleDewSprites.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleDewSprites.txt.meta`
+- `Assets/StreamingAssets/femaleDogs.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleDogs.txt`
+- `Assets/StreamingAssets/femaleDogs.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleDogs.txt.meta`
+- `Assets/StreamingAssets/femaleDriders.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleDriders.txt`
+- `Assets/StreamingAssets/femaleDriders.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleDriders.txt.meta`
+- `Assets/StreamingAssets/femaleEevee.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleEevee.txt`
+- `Assets/StreamingAssets/femaleEevee.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleEevee.txt.meta`
+- `Assets/StreamingAssets/femaleEqualeon.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleEqualeon.txt`
+- `Assets/StreamingAssets/femaleEqualeon.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleEqualeon.txt.meta`
+- `Assets/StreamingAssets/femaleFairies.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleFairies.txt`
+- `Assets/StreamingAssets/femaleFairies.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleFairies.txt.meta`
+- `Assets/StreamingAssets/femaleFeralEevee.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleFeralEevee.txt`
+- `Assets/StreamingAssets/femaleFeralEevee.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleFeralEevee.txt.meta`
+- `Assets/StreamingAssets/femaleFeralEqualeon.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleFeralEqualeon.txt`
+- `Assets/StreamingAssets/femaleFeralEqualeon.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleFeralEqualeon.txt.meta`
+- `Assets/StreamingAssets/femaleFeralOrcas.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleFeralOrcas.txt`
+- `Assets/StreamingAssets/femaleFeralOrcas.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleFeralOrcas.txt.meta`
+- `Assets/StreamingAssets/femaleFoxes.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleFoxes.txt`
+- `Assets/StreamingAssets/femaleFoxes.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleFoxes.txt.meta`
+- `Assets/StreamingAssets/femaleGhosts.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleGhosts.txt`
+- `Assets/StreamingAssets/femaleGhosts.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleGhosts.txt.meta`
+- `Assets/StreamingAssets/femaleGoblins.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleGoblins.txt`
+- `Assets/StreamingAssets/femaleGoblins.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleGoblins.txt.meta`
+- `Assets/StreamingAssets/femaleHamsters.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleHamsters.txt`
+- `Assets/StreamingAssets/femaleHamsters.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleHamsters.txt.meta`
+- `Assets/StreamingAssets/femaleHarpies.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleHarpies.txt`
+- `Assets/StreamingAssets/femaleHarpies.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleHarpies.txt.meta`
+- `Assets/StreamingAssets/femaleHumans.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleHumans.txt`
+- `Assets/StreamingAssets/femaleHumans.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleHumans.txt.meta`
+- `Assets/StreamingAssets/femaleImps.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleImps.txt`
+- `Assets/StreamingAssets/femaleImps.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleImps.txt.meta`
+- `Assets/StreamingAssets/femaleLamia.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleLamia.txt`
+- `Assets/StreamingAssets/femaleLamia.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleLamia.txt.meta`
+- `Assets/StreamingAssets/femaleMainlandElves.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleMainlandElves.txt`
+- `Assets/StreamingAssets/femaleMainlandElves.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleMainlandElves.txt.meta`
+- `Assets/StreamingAssets/femaleMerfolk.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleMerfolk.txt`
+- `Assets/StreamingAssets/femaleMerfolk.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleMerfolk.txt.meta`
+- `Assets/StreamingAssets/femaleOoviKat.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleOoviKat.txt`
+- `Assets/StreamingAssets/femaleOoviKat.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleOoviKat.txt.meta`
+- `Assets/StreamingAssets/femalePuca.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femalePuca.txt`
+- `Assets/StreamingAssets/femalePuca.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femalePuca.txt.meta`
+- `Assets/StreamingAssets/femaleRenamon.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleRenamon.txt`
+- `Assets/StreamingAssets/femaleRenamon.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleRenamon.txt.meta`
+- `Assets/StreamingAssets/femaleRwuMercenaries.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleRwuMercenaries.txt`
+- `Assets/StreamingAssets/femaleRwuMercenaries.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleRwuMercenaries.txt.meta`
+- `Assets/StreamingAssets/femaleScylla.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleScylla.txt`
+- `Assets/StreamingAssets/femaleScylla.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleScylla.txt.meta`
+- `Assets/StreamingAssets/femaleSlimes.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleSlimes.txt`
+- `Assets/StreamingAssets/femaleSlimes.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleSlimes.txt.meta`
+- `Assets/StreamingAssets/femaleSuccubi.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleSuccubi.txt`
+- `Assets/StreamingAssets/femaleSuccubi.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleSuccubi.txt.meta`
+- `Assets/StreamingAssets/femaleTaurus.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleTaurus.txt`
+- `Assets/StreamingAssets/femaleTaurus.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleTaurus.txt.meta`
+- `Assets/StreamingAssets/femaleTigers.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleTigers.txt`
+- `Assets/StreamingAssets/femaleTigers.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleTigers.txt.meta`
+- `Assets/StreamingAssets/femaleUmbreon.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleUmbreon.txt`
+- `Assets/StreamingAssets/femaleUmbreon.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleUmbreon.txt.meta`
+- `Assets/StreamingAssets/femaleViisels.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleViisels.txt`
+- `Assets/StreamingAssets/femaleViisels.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleViisels.txt.meta`
+- `Assets/StreamingAssets/femaleVipers.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleVipers.txt`
+- `Assets/StreamingAssets/femaleVipers.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleVipers.txt.meta`
+- `Assets/StreamingAssets/femaleWolves.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleWolves.txt`
+- `Assets/StreamingAssets/femaleWolves.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleWolves.txt.meta`
+- `Assets/StreamingAssets/femaleYordles.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleYordles.txt`
+- `Assets/StreamingAssets/femaleYordles.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleYordles.txt.meta`
+- `Assets/StreamingAssets/femaleYouko.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleYouko.txt`
+- `Assets/StreamingAssets/femaleYouko.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/femaleYouko.txt.meta`
+- `Assets/StreamingAssets/maleAabayx.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleAabayx.txt`
+- `Assets/StreamingAssets/maleAabayx.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleAabayx.txt.meta`
+- `Assets/StreamingAssets/maleAlraune.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleAlraune.txt`
+- `Assets/StreamingAssets/maleAlraune.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleAlraune.txt.meta`
+- `Assets/StreamingAssets/maleBears.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleBears.txt`
+- `Assets/StreamingAssets/maleBears.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleBears.txt.meta`
+- `Assets/StreamingAssets/maleBoomBunnies.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleBoomBunnies.txt`
+- `Assets/StreamingAssets/maleBoomBunnies.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleBoomBunnies.txt.meta`
+- `Assets/StreamingAssets/maleCats.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleCats.txt`
+- `Assets/StreamingAssets/maleCats.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleCats.txt.meta`
+- `Assets/StreamingAssets/maleCentaur.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleCentaur.txt`
+- `Assets/StreamingAssets/maleCentaur.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleCentaur.txt.meta`
+- `Assets/StreamingAssets/maleCockatrice.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleCockatrice.txt`
+- `Assets/StreamingAssets/maleCockatrice.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleCockatrice.txt.meta`
+- `Assets/StreamingAssets/maleCrux.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleCrux.txt`
+- `Assets/StreamingAssets/maleCrux.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleCrux.txt.meta`
+- `Assets/StreamingAssets/maleCrypters.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleCrypters.txt`
+- `Assets/StreamingAssets/maleCrypters.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleCrypters.txt.meta`
+- `Assets/StreamingAssets/maleDogs.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleDogs.txt`
+- `Assets/StreamingAssets/maleDogs.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleDogs.txt.meta`
+- `Assets/StreamingAssets/maleDriders.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleDriders.txt`
+- `Assets/StreamingAssets/maleDriders.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleDriders.txt.meta`
+- `Assets/StreamingAssets/maleEevee.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleEevee.txt`
+- `Assets/StreamingAssets/maleEevee.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleEevee.txt.meta`
+- `Assets/StreamingAssets/maleEqualeon.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleEqualeon.txt`
+- `Assets/StreamingAssets/maleEqualeon.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleEqualeon.txt.meta`
+- `Assets/StreamingAssets/maleFairies.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleFairies.txt`
+- `Assets/StreamingAssets/maleFairies.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleFairies.txt.meta`
+- `Assets/StreamingAssets/maleFeralEevee.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleFeralEevee.txt`
+- `Assets/StreamingAssets/maleFeralEevee.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleFeralEevee.txt.meta`
+- `Assets/StreamingAssets/maleFeralEqualeon.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleFeralEqualeon.txt`
+- `Assets/StreamingAssets/maleFeralEqualeon.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleFeralEqualeon.txt.meta`
+- `Assets/StreamingAssets/maleFeralOrcas.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleFeralOrcas.txt`
+- `Assets/StreamingAssets/maleFeralOrcas.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleFeralOrcas.txt.meta`
+- `Assets/StreamingAssets/maleFoxes.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleFoxes.txt`
+- `Assets/StreamingAssets/maleFoxes.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleFoxes.txt.meta`
+- `Assets/StreamingAssets/maleGhosts.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleGhosts.txt`
+- `Assets/StreamingAssets/maleGhosts.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleGhosts.txt.meta`
+- `Assets/StreamingAssets/maleGoblins.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleGoblins.txt`
+- `Assets/StreamingAssets/maleGoblins.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleGoblins.txt.meta`
+- `Assets/StreamingAssets/maleHamsters.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleHamsters.txt`
+- `Assets/StreamingAssets/maleHamsters.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleHamsters.txt.meta`
+- `Assets/StreamingAssets/maleHarpies.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleHarpies.txt`
+- `Assets/StreamingAssets/maleHarpies.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleHarpies.txt.meta`
+- `Assets/StreamingAssets/maleHumans.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleHumans.txt`
+- `Assets/StreamingAssets/maleHumans.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleHumans.txt.meta`
+- `Assets/StreamingAssets/maleImps.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleImps.txt`
+- `Assets/StreamingAssets/maleImps.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleImps.txt.meta`
+- `Assets/StreamingAssets/maleLamia.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleLamia.txt`
+- `Assets/StreamingAssets/maleLamia.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleLamia.txt.meta`
+- `Assets/StreamingAssets/maleMainlandElves.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleMainlandElves.txt`
+- `Assets/StreamingAssets/maleMainlandElves.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleMainlandElves.txt.meta`
+- `Assets/StreamingAssets/maleMerfolk.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleMerfolk.txt`
+- `Assets/StreamingAssets/maleMerfolk.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleMerfolk.txt.meta`
+- `Assets/StreamingAssets/maleOoviKat.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleOoviKat.txt`
+- `Assets/StreamingAssets/maleOoviKat.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleOoviKat.txt.meta`
+- `Assets/StreamingAssets/malePuca.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/malePuca.txt`
+- `Assets/StreamingAssets/malePuca.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/malePuca.txt.meta`
+- `Assets/StreamingAssets/maleRenamon.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleRenamon.txt`
+- `Assets/StreamingAssets/maleRenamon.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleRenamon.txt.meta`
+- `Assets/StreamingAssets/maleRwuMercenaries.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleRwuMercenaries.txt`
+- `Assets/StreamingAssets/maleRwuMercenaries.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleRwuMercenaries.txt.meta`
+- `Assets/StreamingAssets/maleScylla.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleScylla.txt`
+- `Assets/StreamingAssets/maleScylla.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleScylla.txt.meta`
+- `Assets/StreamingAssets/maleSlimes.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleSlimes.txt`
+- `Assets/StreamingAssets/maleSlimes.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleSlimes.txt.meta`
+- `Assets/StreamingAssets/maleSuccubi.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleSuccubi.txt`
+- `Assets/StreamingAssets/maleSuccubi.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleSuccubi.txt.meta`
+- `Assets/StreamingAssets/maleTaurus.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleTaurus.txt`
+- `Assets/StreamingAssets/maleTaurus.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleTaurus.txt.meta`
+- `Assets/StreamingAssets/maleTigers.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleTigers.txt`
+- `Assets/StreamingAssets/maleTigers.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleTigers.txt.meta`
+- `Assets/StreamingAssets/maleUmbreon.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleUmbreon.txt`
+- `Assets/StreamingAssets/maleUmbreon.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleUmbreon.txt.meta`
+- `Assets/StreamingAssets/maleViisels.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleViisels.txt`
+- `Assets/StreamingAssets/maleViisels.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleViisels.txt.meta`
+- `Assets/StreamingAssets/maleVipers.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleVipers.txt`
+- `Assets/StreamingAssets/maleVipers.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleVipers.txt.meta`
+- `Assets/StreamingAssets/maleWolves.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleWolves.txt`
+- `Assets/StreamingAssets/maleWolves.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleWolves.txt.meta`
+- `Assets/StreamingAssets/maleYordles.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleYordles.txt`
+- `Assets/StreamingAssets/maleYordles.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleYordles.txt.meta`
+- `Assets/StreamingAssets/maleYouko.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleYouko.txt`
+- `Assets/StreamingAssets/maleYouko.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/maleYouko.txt.meta`
+- `Assets/TilePalettes/Doodads/SpawnerFlag/BoomBunnies.asset` → `Recycle Bin/Retired Content/Assets/TilePalettes/Doodads/SpawnerFlag/BoomBunnies.asset`
+- `Assets/TilePalettes/Doodads/SpawnerFlag/BoomBunnies.asset.meta` → `Recycle Bin/Retired Content/Assets/TilePalettes/Doodads/SpawnerFlag/BoomBunnies.asset.meta`
+- `Assets/TilePalettes/Doodads/SpawnerFlag/Cake.asset` → `Recycle Bin/Retired Content/Assets/TilePalettes/Doodads/SpawnerFlag/Cake.asset`
+- `Assets/TilePalettes/Doodads/SpawnerFlag/Cake.asset.meta` → `Recycle Bin/Retired Content/Assets/TilePalettes/Doodads/SpawnerFlag/Cake.asset.meta`
+- `Assets/TilePalettes/Doodads/SpawnerFlag/Compy.asset` → `Recycle Bin/Retired Content/Assets/TilePalettes/Doodads/SpawnerFlag/Compy.asset`
+- `Assets/TilePalettes/Doodads/SpawnerFlag/Compy.asset.meta` → `Recycle Bin/Retired Content/Assets/TilePalettes/Doodads/SpawnerFlag/Compy.asset.meta`
+- `Assets/TilePalettes/Doodads/SpawnerFlag/FeralOrcas.asset` → `Recycle Bin/Retired Content/Assets/TilePalettes/Doodads/SpawnerFlag/FeralOrcas.asset`
+- `Assets/TilePalettes/Doodads/SpawnerFlag/FeralOrcas.asset.meta` → `Recycle Bin/Retired Content/Assets/TilePalettes/Doodads/SpawnerFlag/FeralOrcas.asset.meta`
+- `Assets/TilePalettes/Doodads/SpawnerFlag/Iliijiith.asset` → `Recycle Bin/Retired Content/Assets/TilePalettes/Doodads/SpawnerFlag/Iliijiith.asset`
+- `Assets/TilePalettes/Doodads/SpawnerFlag/Iliijiith.asset.meta` → `Recycle Bin/Retired Content/Assets/TilePalettes/Doodads/SpawnerFlag/Iliijiith.asset.meta`
+- `Assets/TilePalettes/Doodads/SpawnerFlag/Pudding.asset` → `Recycle Bin/Retired Content/Assets/TilePalettes/Doodads/SpawnerFlag/Pudding.asset`
+- `Assets/TilePalettes/Doodads/SpawnerFlag/Pudding.asset.meta` → `Recycle Bin/Retired Content/Assets/TilePalettes/Doodads/SpawnerFlag/Pudding.asset.meta`
+- `Assets/TilePalettes/Doodads/SpawnerFlag/Schiwardez.asset` → `Recycle Bin/Retired Content/Assets/TilePalettes/Doodads/SpawnerFlag/Schiwardez.asset`
+- `Assets/TilePalettes/Doodads/SpawnerFlag/Schiwardez.asset.meta` → `Recycle Bin/Retired Content/Assets/TilePalettes/Doodads/SpawnerFlag/Schiwardez.asset.meta`
+- `Assets/TilePalettes/Doodads/SpawnerFlag/SoulSprite.asset` → `Recycle Bin/Retired Content/Assets/TilePalettes/Doodads/SpawnerFlag/SoulSprite.asset`
+- `Assets/TilePalettes/Doodads/SpawnerFlag/SoulSprite.asset.meta` → `Recycle Bin/Retired Content/Assets/TilePalettes/Doodads/SpawnerFlag/SoulSprite.asset.meta`
+- `Assets/TilePalettes/Doodads/SpawnerFlag/Umbreon.asset` → `Recycle Bin/Retired Content/Assets/TilePalettes/Doodads/SpawnerFlag/Umbreon.asset`
+- `Assets/TilePalettes/Doodads/SpawnerFlag/Umbreon.asset.meta` → `Recycle Bin/Retired Content/Assets/TilePalettes/Doodads/SpawnerFlag/Umbreon.asset.meta`
+- `Assets/TilePalettes/Doodads/SpawnerFlag/Viisels.asset` → `Recycle Bin/Retired Content/Assets/TilePalettes/Doodads/SpawnerFlag/Viisels.asset`
+- `Assets/TilePalettes/Doodads/SpawnerFlag/Viisels.asset.meta` → `Recycle Bin/Retired Content/Assets/TilePalettes/Doodads/SpawnerFlag/Viisels.asset.meta`
+- `Assets/TilePalettes/Doodads/SpawnerFlag/ViraeUltimae.asset` → `Recycle Bin/Retired Content/Assets/TilePalettes/Doodads/SpawnerFlag/ViraeUltimae.asset`
+- `Assets/TilePalettes/Doodads/SpawnerFlag/ViraeUltimae.asset.meta` → `Recycle Bin/Retired Content/Assets/TilePalettes/Doodads/SpawnerFlag/ViraeUltimae.asset.meta`
+- `Assets/TilePalettes/Doodads/SpawnerFlag/Voilin.asset` → `Recycle Bin/Retired Content/Assets/TilePalettes/Doodads/SpawnerFlag/Voilin.asset`
+- `Assets/TilePalettes/Doodads/SpawnerFlag/Voilin.asset.meta` → `Recycle Bin/Retired Content/Assets/TilePalettes/Doodads/SpawnerFlag/Voilin.asset.meta`
+- `Assets/Sprites/Units/CentaurParts.png` → `Recycle Bin/Retired Content/Assets/Sprites/Units/CentaurParts.png`
+- `Assets/Sprites/Units/CentaurParts.png.meta` → `Recycle Bin/Retired Content/Assets/Sprites/Units/CentaurParts.png.meta`
+- `Assets/StreamingAssets/Pudding.txt` → `Recycle Bin/Retired Content/Assets/StreamingAssets/Pudding.txt`
+- `Assets/StreamingAssets/Pudding.txt.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/Pudding.txt.meta`
+- `Assets/StreamingAssets/AssetBundles/AssetBundles` → `Recycle Bin/Retired Content/Assets/StreamingAssets/AssetBundles/AssetBundles`
+- `Assets/StreamingAssets/AssetBundles/AssetBundles.manifest` → `Recycle Bin/Retired Content/Assets/StreamingAssets/AssetBundles/AssetBundles.manifest`
+- `Assets/StreamingAssets/AssetBundles/AssetBundles.manifest.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/AssetBundles/AssetBundles.manifest.meta`
+- `Assets/StreamingAssets/AssetBundles/AssetBundles.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/AssetBundles/AssetBundles.meta`
+- `Assets/StreamingAssets/AssetBundles/empire` → `Recycle Bin/Retired Content/Assets/StreamingAssets/AssetBundles/empire`
+- `Assets/StreamingAssets/AssetBundles/empire.manifest` → `Recycle Bin/Retired Content/Assets/StreamingAssets/AssetBundles/empire.manifest`
+- `Assets/StreamingAssets/AssetBundles/empire.manifest.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/AssetBundles/empire.manifest.meta`
+- `Assets/StreamingAssets/AssetBundles/empire.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/AssetBundles/empire.meta`
+- `Assets/StreamingAssets/AssetBundles/merc` → `Recycle Bin/Retired Content/Assets/StreamingAssets/AssetBundles/merc`
+- `Assets/StreamingAssets/AssetBundles/merc.manifest` → `Recycle Bin/Retired Content/Assets/StreamingAssets/AssetBundles/merc.manifest`
+- `Assets/StreamingAssets/AssetBundles/merc.manifest.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/AssetBundles/merc.manifest.meta`
+- `Assets/StreamingAssets/AssetBundles/merc.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/AssetBundles/merc.meta`
+- `Assets/StreamingAssets/AssetBundles/monster` → `Recycle Bin/Retired Content/Assets/StreamingAssets/AssetBundles/monster`
+- `Assets/StreamingAssets/AssetBundles/monster.manifest` → `Recycle Bin/Retired Content/Assets/StreamingAssets/AssetBundles/monster.manifest`
+- `Assets/StreamingAssets/AssetBundles/monster.manifest.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/AssetBundles/monster.manifest.meta`
+- `Assets/StreamingAssets/AssetBundles/monster.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/AssetBundles/monster.meta`
+- `Assets/StreamingAssets/AssetBundles/specialmerc` → `Recycle Bin/Retired Content/Assets/StreamingAssets/AssetBundles/specialmerc`
+- `Assets/StreamingAssets/AssetBundles/specialmerc.manifest` → `Recycle Bin/Retired Content/Assets/StreamingAssets/AssetBundles/specialmerc.manifest`
+- `Assets/StreamingAssets/AssetBundles/specialmerc.manifest.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/AssetBundles/specialmerc.manifest.meta`
+- `Assets/StreamingAssets/AssetBundles/specialmerc.meta` → `Recycle Bin/Retired Content/Assets/StreamingAssets/AssetBundles/specialmerc.meta`

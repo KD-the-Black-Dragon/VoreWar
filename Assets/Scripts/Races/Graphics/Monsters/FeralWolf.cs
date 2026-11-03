@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System.Collections.Generic;
 using UnityEngine;
 
 class FeralWolf : BlankSlate
@@ -35,15 +38,11 @@ class FeralWolf : BlankSlate
     {
         if (actor.HasBelly == false)
             return null;
-        if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach) ?? false) && actor.GetStomachSize(15, 1) == 15)
-            return SpriteDictionary.FeralWolf[16];
         return SpriteDictionary.FeralWolf[10 + actor.GetStomachSize(4)];
     }
 
     protected override Sprite AccessorySprite(Actor_Unit actor)
     {
-        if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach) ?? false) && actor.GetStomachSize(15, 1) == 15)
-            return null;
         if (actor.GetStomachSize(4) == 4)
             return SpriteDictionary.FeralWolf[15];
         return null;

@@ -3,6 +3,8 @@
 // 2026-10-30: Exclude retired metadata catalogs/previews and preserve unchanged mapping values (spec 03B1).
 // 2026-11-01: Separate stored species reads from intentional override creation (spec 03B3C).
 // 2026-11-01: Preserve species and mapping identity behind singular developer dropdown labels (09–10 feedback).
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// 2026-11-03: Keep developer tag selections stable across empty lists, sparse IDs and editor refreshes (spec 22).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Collections.Generic;
@@ -212,12 +214,7 @@ public class RaceEditorPanel : MonoBehaviour
                 }
                 TraitDropdown.RefreshShownValue();
 
-                TagDropdown.options.Clear();
-                foreach (UnitTag ut in State.UnitTagList)
-                {
-                    TagDropdown.options.Add(new TMP_Dropdown.OptionData(ut.name));
-                }
-            TagDropdown.RefreshShownValue();
+            RefreshUnitTags();
 
             if (FavoredStat.options?.Any() == false)
             {
@@ -410,50 +407,70 @@ public class RaceEditorPanel : MonoBehaviour
 
     }
 
+    readonly List<int> availableTagIds = new List<int>();
+
+    internal void RefreshUnitTags()
+    {
+        int selectedId = TagDropdown.value >= 0 && TagDropdown.value < availableTagIds.Count
+            ? availableTagIds[TagDropdown.value] : -1;
+        availableTagIds.Clear();
+        TagDropdown.options.Clear();
+        foreach (UnitTag tag in State.UnitTagList)
+        {
+            availableTagIds.Add(tag.id);
+            TagDropdown.options.Add(new TMP_Dropdown.OptionData(tag.name));
+        }
+        TagDropdown.interactable = availableTagIds.Count > 0;
+        TagDropdown.value = System.Math.Max(0, availableTagIds.IndexOf(selectedId));
+        TagDropdown.RefreshShownValue();
+    }
+
+    UnitTag SelectedUnitTag()
+    {
+        if (TagDropdown.value < 0 || TagDropdown.value >= availableTagIds.Count) return null;
+        return State.UnitTagList.FirstOrDefault(t => t.id == availableTagIds[TagDropdown.value]);
+    }
+
     public void AddTag()
     {
-
-        if (State.UnitTagList.Any(ut => ut.id == TagDropdown.value))
-        {
-            CurrentTags.Add(TagDropdown.value);
-        }
+        UnitTag tag = SelectedUnitTag();
+        if (tag == null) return;
+        if (CurrentTags == null) CurrentTags = new List<int>();
+        if (!CurrentTags.Contains(tag.id)) CurrentTags.Add(tag.id);
         UpdateInteractable();
     }
 
     public void AddTagALL()
     {
-        if (State.UnitTagList.Any(ut => ut.name == TagDropdown.options[TagDropdown.value].text))
+        UnitTag tag = SelectedUnitTag();
+        if (tag == null) return;
+        foreach (Race race in GetEditableSpecies())
         {
-            foreach (Race race in GetEditableSpecies())
-            {
-                RaceSettingsItem item = State.RaceSettings.GetOrCreate(race);
-                item.RaceTags.Add((int)State.UnitTagList.Where(ut => ut.name == TagDropdown.options[TagDropdown.value].text).FirstOrDefault()?.id);
-            }
-            AddTag();
+            RaceSettingsItem item = State.RaceSettings.GetOrCreate(race);
+            if (item.RaceTags == null) item.RaceTags = new List<int>();
+            if (!item.RaceTags.Contains(tag.id)) item.RaceTags.Add(tag.id);
         }
-
+        AddTag();
     }
 
     public void RemoveTag()
     {
-        if (State.UnitTagList.Any(ut => ut.name == TagDropdown.options[TagDropdown.value].text))
-        {
-            CurrentTags.Remove((int)State.UnitTagList.Where(rl => rl.name == TagDropdown.options[TagDropdown.value].text).FirstOrDefault()?.id);
-        }
+        UnitTag tag = SelectedUnitTag();
+        if (tag == null) return;
+        if (CurrentTags != null) CurrentTags.RemoveAll(id => id == tag.id);
         UpdateInteractable();
     }
 
     public void RemoveTagALL()
     {
-        if (State.UnitTagList.Any(ut => ut.name == TagDropdown.options[TagDropdown.value].text))
+        UnitTag tag = SelectedUnitTag();
+        if (tag == null) return;
+        foreach (Race race in GetEditableSpecies())
         {
-            foreach (Race race in GetEditableSpecies())
-            {
-                RaceSettingsItem item = State.RaceSettings.GetOrCreate(race);
-                item.RaceTags.Remove((int)State.UnitTagList.Where(ut => ut.name == TagDropdown.options[TagDropdown.value].text).FirstOrDefault()?.id);
-            }
-            RemoveTag();
+            RaceSettingsItem item = State.RaceSettings.GetOrCreate(race);
+            if (item.RaceTags != null) item.RaceTags.RemoveAll(id => id == tag.id);
         }
+        RemoveTag();
     }
 
     internal void SaveRace()
@@ -880,8 +897,6 @@ public class RaceEditorPanel : MonoBehaviour
             OverrideClothed.isOn = false;
         }
 
-        BannerType.interactable = PreviousRace < Race.Succubi;
-
 
 
         MaleFraction.interactable = OverrideGender.isOn;
@@ -926,7 +941,8 @@ public class RaceEditorPanel : MonoBehaviour
             CurrentTags = new List<int>();
         foreach (int unitTag in CurrentTags)
         {
-            sb.AppendLine(State.UnitTagList.Where(ct => ct.id == unitTag).FirstOrDefault().name);
+            UnitTag tag = State.UnitTagList.FirstOrDefault(ct => ct.id == unitTag);
+            if (tag != null) sb.AppendLine(tag.name);
         }
         TagList.text = sb.ToString();
     }

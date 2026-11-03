@@ -1,6 +1,7 @@
 // Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Disconnect legacy event UI binding and player/AI turn triggers (spec 04A).
 // 2026-10-31: Retire empire turn/AI/economy scheduler and strategic input/regeneration entry bodies (spec 05A2).
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Collections.Generic;
@@ -410,7 +411,6 @@ public class StrategyMode : SceneBase
                         switch (doodad)
                         {
                             case StrategicDoodadType.SpawnerVagrant:
-                                Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.Vagrants));
                                 break;
                             case StrategicDoodadType.SpawnerSerpents:
                                 Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.Serpents));
@@ -419,28 +419,23 @@ public class StrategyMode : SceneBase
                                 Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.Wyvern));
                                 break;
                             case StrategicDoodadType.SpawnerCompy:
-                                Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.Compy));
                                 break;
                             case StrategicDoodadType.SpawnerSharks:
-                                Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.FeralSharks));
                                 break;
                             case StrategicDoodadType.SpawnerFeralWolves:
                                 Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.FeralWolves));
                                 break;
                             case StrategicDoodadType.SpawnerCake:
-                                Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.Cake));
                                 break;
                             case StrategicDoodadType.SpawnerHarvester:
                                 Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.Harvesters));
                                 break;
                             case StrategicDoodadType.SpawnerVoilin:
-                                Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.Voilin));
                                 break;
                             case StrategicDoodadType.SpawnerBats:
                                 Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.FeralBats));
                                 break;
                             case StrategicDoodadType.SpawnerFrogs:
-                                Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.FeralFrogs));
                                 break;
                             case StrategicDoodadType.SpawnerDragon:
                                 Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.Dragon));
@@ -452,7 +447,6 @@ public class StrategyMode : SceneBase
                                 Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.TwistedVines));
                                 break;
                             case StrategicDoodadType.SpawnerFairy:
-                                Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.Fairies));
                                 break;
                             case StrategicDoodadType.SpawnerAnts:
                                 Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.FeralAnts));
@@ -479,7 +473,6 @@ public class StrategyMode : SceneBase
                                 Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.Gazelle));
                                 break;
                             case StrategicDoodadType.SpawnerEarthworm:
-                                Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.Earthworms));
                                 break;
                             case StrategicDoodadType.SpawnerFeralLizards:
                                 Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.FeralLizards));
@@ -488,7 +481,6 @@ public class StrategyMode : SceneBase
                                 Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.Monitors));
                                 break;
                             case StrategicDoodadType.SpawnerSchiwardez:
-                                Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.Schiwardez));
                                 break;
                             case StrategicDoodadType.SpawnerTerrorbird:
                                 Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.Terrorbird));
@@ -512,25 +504,20 @@ public class StrategyMode : SceneBase
                                 Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.Terminid));
                                 break;
                             case StrategicDoodadType.SpawnerFeralOrcas:
-                                Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.FeralOrcas));
                                 break;
                             case StrategicDoodadType.SpawnerBoomBunnies:
-                                Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.BoomBunnies));
                                 break;
                             case StrategicDoodadType.SpawnerFeralSlime:
                                 Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.FeralSlime));
                                 break;
                             case StrategicDoodadType.SpawnerViraeUltimae:
-                                Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.ViraeUltimae));
                                 break;
                             case StrategicDoodadType.SpawnerViisels:
-                                Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.Viisels));
                                 break;
                             case StrategicDoodadType.SpawnerFeralUmbreon:
                                 Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.FeralUmbreon));
                                 break;
                             case StrategicDoodadType.SpawnerDryad:
-                                Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.WoodDryad));
                                 break;
                             case StrategicDoodadType.SpawnerOtachi:
                                 Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.Otachi));
@@ -551,13 +538,10 @@ public class StrategyMode : SceneBase
                                 Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.Utahraptor));
                                 break;
                             case StrategicDoodadType.SpawnerIliijiith:
-                                Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.Iliijiith));
                                 break;
                             case StrategicDoodadType.SpawnerPudding:
-                                Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.Pudding));
                                 break;
                             case StrategicDoodadType.SpawnerSoulSprite:
-                                Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.SoulSprite));
                                 break;
                             case StrategicDoodadType.SpawnerBlackWidow:
                                 Spawners.Add(new MonsterSpawnerLocation(new Vec2i(i, j), Race.BlackWidow));

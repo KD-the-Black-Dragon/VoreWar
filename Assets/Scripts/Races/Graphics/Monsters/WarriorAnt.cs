@@ -1,4 +1,7 @@
-﻿using System;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -97,46 +100,6 @@ class WarriorAnt : BlankSlate
             return null;
 
         int size = actor.GetStomachSize(47);
-
-        if (size >= 47 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.WarriorAnt[49];
-        }
-
-        else if (size >= 47 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.WarriorAnt[48];
-        }
-
-        else if (size >= 44 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.WarriorAnt[47];
-        }
-
-        else if (size >= 41 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.WarriorAnt[46];
-        }
-
-        else if (size >= 38 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.WarriorAnt[45];
-        }
-
-        else if (size >= 35 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.WarriorAnt[44];
-        }
-
-        else if (size >= 32 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.WarriorAnt[43];
-        }
-
-        else if (size >= 29 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.WarriorAnt[42];
-        }
 
         if (size > 24) size = 24;
 

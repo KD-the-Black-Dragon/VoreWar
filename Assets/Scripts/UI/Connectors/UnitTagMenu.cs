@@ -1,6 +1,7 @@
 // Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Keep nested tag modification inside the authorized editor session (spec 02B).
 // 2026-10-30: Filter retired species in nested tag conditions while preserving old target values (spec 03B1).
+// 2026-11-03: Save tag-condition IDs rather than dropdown indices inside authorized developer sessions (spec 22).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Collections.Generic;
@@ -374,7 +375,7 @@ public class UnitTagMenu : MonoBehaviour
                         loadMod.targetValue.options.Add(new TMP_Dropdown.OptionData(rl.name.ToString()));
                         if (rl.id == item.targetValue)
                         {
-                            loadMod.targetValue.value = loadMod.targetValue.options.Count();
+                            loadMod.targetValue.value = loadMod.targetValue.options.Count() - 1;
                         }
                     }
                     foreach (CustomTraitBoost ct in State.CustomTraitList)
@@ -382,7 +383,7 @@ public class UnitTagMenu : MonoBehaviour
                         loadMod.targetValue.options.Add(new TMP_Dropdown.OptionData(ct.name.ToString()));
                         if (ct.id == item.targetValue)
                         {
-                            loadMod.targetValue.value = loadMod.targetValue.options.Count();
+                            loadMod.targetValue.value = loadMod.targetValue.options.Count() - 1;
                         }
                     }
                     foreach (ConditionalTraitContainer cdt in State.ConditionalTraitList)
@@ -390,7 +391,7 @@ public class UnitTagMenu : MonoBehaviour
                         loadMod.targetValue.options.Add(new TMP_Dropdown.OptionData(cdt.name.ToString()));
                         if (cdt.id == item.targetValue)
                         {
-                            loadMod.targetValue.value = loadMod.targetValue.options.Count();
+                            loadMod.targetValue.value = loadMod.targetValue.options.Count() - 1;
                         }
                     }
                     foreach (Traits traitId in ((Traits[])Enum.GetValues(typeof(Traits))).OrderBy(s =>
@@ -401,7 +402,7 @@ public class UnitTagMenu : MonoBehaviour
                         loadMod.targetValue.options.Add(new TMP_Dropdown.OptionData(traitId.ToString()));
                         if (traitId == (Traits)item.targetValue)
                         {
-                            loadMod.targetValue.value = loadMod.targetValue.options.Count();
+                            loadMod.targetValue.value = loadMod.targetValue.options.Count() - 1;
                         }
 
                     }
@@ -416,7 +417,7 @@ public class UnitTagMenu : MonoBehaviour
                         loadMod.targetValue.options.Add(new TMP_Dropdown.OptionData(uTag.name.ToString()));
                         if (uTag.id == item.targetValue)
                         {
-                            loadMod.targetValue.value = loadMod.targetValue.options.Count();
+                            loadMod.targetValue.value = loadMod.targetValue.options.Count() - 1;
                         }
                     }
                     loadMod.targetValue.RefreshShownValue();
@@ -430,7 +431,7 @@ public class UnitTagMenu : MonoBehaviour
                         loadMod.targetValue.options.Add(new TMP_Dropdown.OptionData(targetGender.ToString()));
                         if (targetGender == (Gender)item.targetValue)
                         {
-                            loadMod.targetValue.value = loadMod.targetValue.options.Count();
+                            loadMod.targetValue.value = loadMod.targetValue.options.Count() - 1;
                         }
                     }
                     loadMod.targetValue.RefreshShownValue();
@@ -444,7 +445,7 @@ public class UnitTagMenu : MonoBehaviour
                         loadMod.targetValue.options.Add(new TMP_Dropdown.OptionData(statusEffectType.ToString()));
                         if (statusEffectType == (StatusEffectType)item.targetValue)
                         {
-                            loadMod.targetValue.value = loadMod.targetValue.options.Count();
+                            loadMod.targetValue.value = loadMod.targetValue.options.Count() - 1;
                         }
                     }
                     loadMod.targetValue.RefreshShownValue();
@@ -458,7 +459,7 @@ public class UnitTagMenu : MonoBehaviour
                         loadMod.targetValue.options.Add(new TMP_Dropdown.OptionData(unitType.ToString()));
                         if (unitType == (UnitType)item.targetValue)
                         {
-                            loadMod.targetValue.value = loadMod.targetValue.options.Count();
+                            loadMod.targetValue.value = loadMod.targetValue.options.Count() - 1;
                         }
                     }
                     loadMod.targetValue.RefreshShownValue();
@@ -484,6 +485,7 @@ public class UnitTagMenu : MonoBehaviour
 
     public void SaveTag()
     {
+        if (!State.GameManager.Menu.IsRaceEditorSessionActive) return;
         unitTag.name = name.text;
         unitTag.AssociatedTraits = CurrentTraits;
         unitTag.modifiers.Clear();
@@ -523,7 +525,9 @@ public class UnitTagMenu : MonoBehaviour
                     }
                     break;
                 case UnitTagModifierTarget.HasTag:
-                    newMod.targetValue = mod.targetValue.value;
+                    UnitTag targetTag = State.UnitTagList.ElementAtOrDefault(mod.targetValue.value);
+                    if (targetTag == null) continue;
+                    newMod.targetValue = targetTag.id;
                     break;
                 case UnitTagModifierTarget.IsGender:
                     if (Enum.TryParse(mod.targetValue.options[mod.targetValue.value].text, out Gender gender))

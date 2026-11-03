@@ -1,4 +1,7 @@
-﻿using MapObjects;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using MapObjects;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
@@ -19,17 +22,6 @@ class MapVillagePopulator
 
         for (int i = 0; i < map.storedVillages.Length; i++)
         {
-            if (map.storedVillages[i].Race == Race.Vagrants)
-            {
-                Race race = Race.Vagrants;
-                if (nameIndex.ContainsKey((int)race) == false)
-                    nameIndex[(int)race] = 0;
-                Village vill = new Village(State.NameGen.GetTownName(race, nameIndex[(int)race]), map.storedVillages[i].Position, FarmSquares(map.storedVillages[i].Position), race, false);
-                vill.SubtractPopulation(999999);
-                newVillages.Add(vill);
-                nameIndex[(int)race] = nameIndex[(int)race] + 1;
-                continue;
-            }
             if (Config.VillagesPerEmpire.Length < (int)map.storedVillages[i].Race)
                 continue;
             if (Config.VillagesPerEmpire[(int)map.storedVillages[i].Race] == 0)

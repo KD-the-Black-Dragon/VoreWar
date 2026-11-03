@@ -1,4 +1,7 @@
-﻿using System;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -103,8 +106,6 @@ class Sergal : DefaultRaceData
             return null;
 
         int size = actor.GetStomachSize(18);
-        if (size == 18 && actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb))
-            return Sprites[45];
         return Sprites[26 + size];
     }
 
@@ -135,7 +136,7 @@ class Sergal : DefaultRaceData
             clothing4 = new SpriteExtraInfo(6, null, null);
             clothing5 = new SpriteExtraInfo(0, null, null);
 
-            DiscardSprite = SpriteDictionary.Asura[39];
+            DiscardSprite = SpriteDictionary.SharedMaskParts[0];
 
         }
 

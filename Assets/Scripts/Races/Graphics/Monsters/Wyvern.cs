@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using UnityEngine;
 
 class Wyvern : BlankSlate
 {
@@ -197,11 +200,6 @@ class Wyvern : BlankSlate
 
     internal override Sprite BellySprite(Actor_Unit actor, GameObject belly) // Belly, both empty and filled.
     {
-        if (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true) ?? false)
-        {
-            if (actor.PredatorComponent.VisibleFullness > 3)
-                return SpriteDictionary.Wyvern[50];
-        }
 
         if (actor.GetUniversalSize(1) == 0)
             return SpriteDictionary.Wyvern[7];

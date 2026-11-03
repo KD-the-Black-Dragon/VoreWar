@@ -1,4 +1,7 @@
-﻿using System.Collections;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -183,36 +186,6 @@ class WyvernMatron : BlankSlate
 
         int size = actor.GetBallSize(30);
 
-        if (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.balls) ?? false)
-        {
-            return SpriteDictionary.WyvernMatron[53];
-        }
-
-        else if (size >= 29 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false))
-        {
-            return SpriteDictionary.WyvernMatron[52];
-        }
-
-        else if (size >= 27 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false))
-        {
-            return SpriteDictionary.WyvernMatron[51];
-        }
-
-        else if (size >= 25 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false))
-        {
-            return SpriteDictionary.WyvernMatron[50];
-        }
-
-        else if (size >= 23 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false))
-        {
-            return SpriteDictionary.WyvernMatron[49];
-        }
-
-        else if (size >= 21 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false))
-        {
-            return SpriteDictionary.WyvernMatron[48];
-        }
-
         if (size > 19) size = 19;
 
         return SpriteDictionary.WyvernMatron[28 + size];
@@ -224,51 +197,6 @@ class WyvernMatron : BlankSlate
             return null;
 
         int size = actor.GetStomachSize(42);
-
-        if (size == 42 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.WyvernMatron[88];
-        }
-
-        if (size >= 41 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.WyvernMatron[87];
-        }
-
-        if (size >= 39 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.WyvernMatron[86];
-        }
-
-        if (size >= 37 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.WyvernMatron[85];
-        }
-
-        if (size >= 35 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.WyvernMatron[84];
-        }
-
-        if (size >= 33 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.WyvernMatron[83];
-        }
-
-        if (size >= 31 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.WyvernMatron[82];
-        }
-
-        if (size >= 29 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.WyvernMatron[81];
-        }
-
-        if (size >= 27 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) ?? false))
-        {
-            return SpriteDictionary.WyvernMatron[80];
-        }
 
         if (size > 25) size = 25;
 

@@ -1,4 +1,7 @@
-﻿using OdinSerializer;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using OdinSerializer;
 using UnityEngine;
 
 class BoneInfo
@@ -37,7 +40,6 @@ class BoneInfo
             case BoneTypes.Imp2EyeSkull:
             case BoneTypes.Imp1EyeSkull:
             case BoneTypes.Imp3EyeSkull:
-            case BoneTypes.SeliciaSkull:
                 rtn = new Vector3(0.65f, 0.65f);
                 break;
             case BoneTypes.FurryBones:
@@ -58,9 +60,6 @@ class BoneInfo
             case BoneTypes.Cake:
             case BoneTypes.WyvernBonesWithoutHead:
                 rtn = new Vector3(0.5f, 0.5f);
-                break;
-            case BoneTypes.VisionSkull:
-                rtn = new Vector3(0.8f, 0.8f);
                 break;
             default:
                 // Hide unknown bone type
@@ -92,9 +91,6 @@ class BoneInfo
             case BoneTypes.Imp3EyeSkull:
                 rtn = new Vector3(Random.Range(-.07f, .07f), -.02f);
                 break;
-            case BoneTypes.SeliciaSkull:
-                rtn = new Vector3(Random.Range(-.07f, .07f), Random.Range(0, .03f));
-                break;
             case BoneTypes.FurryBones:
             case BoneTypes.FurryRabbitBones:
             case BoneTypes.HarrysGooPile:
@@ -121,9 +117,6 @@ class BoneInfo
                 break;
             case BoneTypes.WyvernBonesWithoutHead:
                 rtn = new Vector3(0, .05f);
-                break;
-            case BoneTypes.VisionSkull:
-                rtn = new Vector3(Random.Range(-.07f, .07f), Random.Range(-0.13f, -0.15f));
                 break;
             default:
                 rtn = new Vector3(0, 0);

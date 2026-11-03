@@ -1,4 +1,7 @@
-﻿using OdinSerializer;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using OdinSerializer;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -27,24 +30,12 @@ class ScatV2Discard : MiscDiscard
         scatFront.sortingOrder = sortOrder + 1 + scatInfo.bonesInfos.Count;
 
 
-        if (scatInfo.predRace == Race.Aabayx || scatInfo.predRace == Race.ViraeUltimae)
-        {}// No color changes needed
-        else if (color != -1 && scatInfo.predRace != Race.Aabayx || scatInfo.predRace == Race.ViraeUltimae)
+        if (color != -1)
         {
             scatBack.color = ColorPaletteMap.GetSlimeBaseColor(color);
             scatFront.color = ColorPaletteMap.GetSlimeBaseColor(color);
         }
-        else if (scatInfo.predRace == Race.Cherub || scatInfo.predRace == Race.Seraph || scatInfo.predRace == Race.SoulSprite)
-        {
-            int r = 135 + Random.Range(-20, 20);
-            int g = 135 + Random.Range(-20, 20);
-            int b = 135 + Random.Range(-20, 20);
-            Color defaultColor = new Color(r / 255.0F, g / 255.0F, b / 255.0F);
-            scatBack.color = defaultColor;
-            scatFront.color = defaultColor;
-        }
-        else
-        {
+        else {
             int r = 135 + Random.Range(-20, 20);
             int g = 107 + Random.Range(-5, 5);
             int b = 80 + Random.Range(-5, 5);
@@ -58,12 +49,6 @@ class ScatV2Discard : MiscDiscard
         if (scatInfo.preySize < 9)
         {
             int rndNum = Random.Range(0, State.GameManager.SpriteDictionary.ScatV2SBack.Length);
-            if(scatInfo.predRace == Race.Aabayx || scatInfo.predRace == Race.ViraeUltimae)
-            {
-                scatBack.sprite = State.GameManager.SpriteDictionary.ScatViralV2SBack[rndNum];
-                scatFront.sprite = State.GameManager.SpriteDictionary.ScatViralV2SFront[rndNum];
-            }
-            else
             {
                 scatBack.sprite = State.GameManager.SpriteDictionary.ScatV2SBack[rndNum];
                 scatFront.sprite = State.GameManager.SpriteDictionary.ScatV2SFront[rndNum];
@@ -72,12 +57,6 @@ class ScatV2Discard : MiscDiscard
         else if (scatInfo.preySize > 15)
         {
             int rndNum = Random.Range(0, State.GameManager.SpriteDictionary.ScatV2LBack.Length);
-            if(scatInfo.predRace == Race.Aabayx || scatInfo.predRace == Race.ViraeUltimae)
-            {
-                scatBack.sprite = State.GameManager.SpriteDictionary.ScatViralV2LBack[rndNum];
-                scatFront.sprite = State.GameManager.SpriteDictionary.ScatViralV2LFront[rndNum];
-            }
-            else
             {
                 scatBack.sprite = State.GameManager.SpriteDictionary.ScatV2LBack[rndNum];
                 scatFront.sprite = State.GameManager.SpriteDictionary.ScatV2LFront[rndNum];
@@ -91,12 +70,6 @@ class ScatV2Discard : MiscDiscard
         else
         {
             int rndNum = Random.Range(0, State.GameManager.SpriteDictionary.ScatV2MBack.Length);
-            if(scatInfo.predRace == Race.Aabayx || scatInfo.predRace == Race.ViraeUltimae)
-            {
-                scatBack.sprite = State.GameManager.SpriteDictionary.ScatViralV2MBack[rndNum];
-                scatFront.sprite = State.GameManager.SpriteDictionary.ScatViralV2MFront[rndNum];
-            }
-            else
             {
                 scatBack.sprite = State.GameManager.SpriteDictionary.ScatV2MBack[rndNum];
                 scatFront.sprite = State.GameManager.SpriteDictionary.ScatV2MFront[rndNum];

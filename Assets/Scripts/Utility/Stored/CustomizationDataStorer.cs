@@ -1,4 +1,7 @@
-﻿using OdinSerializer;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using OdinSerializer;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -62,7 +65,6 @@ static class CustomizationDataStorer
 
     static bool IsCompatibleWithGraphics(CustomizerData data)
     {
-        if (data.Race != Race.Imps && data.Race != Race.Lamia && data.Race != Race.Tigers)
         {
             if (data.NewGraphics != Config.NewGraphics)
                 return false;

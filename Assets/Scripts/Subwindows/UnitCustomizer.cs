@@ -1,6 +1,7 @@
-﻿// Modified for the VoreWar mercenary-company conversion.
+// Modified for the VoreWar mercenary-company conversion.
 // 2026-11-01: Disconnect rejected graphics instances and their typed rendering hooks (spec 03B4).
 // 2026-11-03: Notify the company-only layout after native customization refreshes (spec 18).
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using UnityEngine.UI;
@@ -214,7 +215,6 @@ public class UnitCustomizer
         buttons[(int)ButtonTypes.ClothingExtraType4].gameObject.SetActive(RaceData.ExtraMainClothing4Count > 1);
         buttons[(int)ButtonTypes.ClothingExtraType5].gameObject.SetActive(RaceData.ExtraMainClothing5Count > 1);
         buttons[(int)ButtonTypes.HatType].gameObject.SetActive(RaceData.ClothingHatTypesCount > 1);
-        buttons[(int)ButtonTypes.ClothingAccessoryType].gameObject.SetActive(RaceData.ClothingAccessoryTypesCount > 1 || (unit.EarnedMask && Unit.Race <= Race.Goblins && Unit.Race != Race.Lizards));
         buttons[(int)ButtonTypes.ClothingColor2].gameObject.SetActive(RaceData == Races.Panthers);
         buttons[(int)ButtonTypes.ClothingColor3].gameObject.SetActive(RaceData == Races.Panthers);
         buttons[(int)ButtonTypes.MouthType].gameObject.SetActive(RaceData.MouthTypes > 1);
@@ -241,65 +241,22 @@ public class UnitCustomizer
 
         switch (unit.Race)
         {
-            case Race.Cats:
-            case Race.Dogs:
-            case Race.Foxes:
-            case Race.Wolves:
             case Race.Bunnies:
-            case Race.Tigers:
                 buttons[(int)ButtonTypes.HairColor].Label.text = "Hair Color: " + HairColorLookup(Unit.HairColor);
                 buttons[(int)ButtonTypes.BodyAccessoryColor].Label.text = "Fur Color: " + HairColorLookup(Unit.AccessoryColor);
                 buttons[(int)ButtonTypes.AltWeaponTypes].Label.text = "Mace Alt";
                 break;
-            case Race.Imps:
-                Imp();
-                break;
-            case Race.Goblins:
-                Goblin();
-                break;
             case Race.Lizards:
                 Lizard();
-                break;
-            case Race.Slimes:
-                Slime();
-                break;
-            case Race.Crypters:
-                buttons[(int)ButtonTypes.ClothingColor].gameObject.SetActive(false);
-                break;
-            case Race.Harpies:
-                Harpy();
-                break;
-            case Race.Lamia:
-                Lamia();
                 break;
             case Race.Kangaroos:
                 buttons[(int)ButtonTypes.HairStyle].Label.text = "Ear Type";
                 break;
-            case Race.Taurus:
-                buttons[(int)ButtonTypes.EyeType].Label.text = "Face Expression";
-                break;
-            case Race.Crux:
-                Crux();
-                break;
             case Race.Wyvern:
                 buttons[(int)ButtonTypes.BodyWeight].Label.text = "Horn Type";
                 break;
-            case Race.Succubi:
-                buttons[(int)ButtonTypes.ClothingColor2].gameObject.SetActive(true);
-                break;
-            case Race.Collectors:
-                buttons[(int)ButtonTypes.ExtraColor2].Label.text = "Mouth / Dick Color";
-                break;
-            case Race.Asura:
-                buttons[(int)ButtonTypes.ClothingAccessoryType].Label.text = "Mask";
-                break;
             case Race.Kobolds:
                 buttons[(int)ButtonTypes.TailTypes].Label.text = "Preferred Facing";
-                break;
-            case Race.Fairies:
-                buttons[(int)ButtonTypes.HatType].Label.text = "Leg Accessory";
-                buttons[(int)ButtonTypes.ClothingAccessoryType].Label.text = "Arm Accessory";
-                buttons[(int)ButtonTypes.BodyAccentTypes1].Label.text = "Fairy Season";
                 break;
             case Race.Equines:
                 buttons[(int)ButtonTypes.ClothingExtraType1].Label.text = "Overtop";
@@ -308,23 +265,9 @@ public class UnitCustomizer
                 buttons[(int)ButtonTypes.BodyAccentTypes4].Label.text = "Head Pattern";
                 buttons[(int)ButtonTypes.BodyAccentTypes5].Label.text = "Torso Color";
                 break;
-            case Race.Zera:
-                buttons[(int)ButtonTypes.TailTypes].Label.text = "Default Facing";
-                break;
             case Race.Bees:
                 buttons[(int)ButtonTypes.BodyAccessoryColor].Label.text = "Exoskeleton Color";
                 buttons[(int)ButtonTypes.BodyAccessoryType].Label.text = "Antennae Type";
-                break;
-            case Race.Driders:
-                buttons[(int)ButtonTypes.BodyAccessoryColor].Label.text = "Spider Half Color";
-                buttons[(int)ButtonTypes.ExtraColor1].Label.text = "Spider Accent Color";
-                break;
-            case Race.Alraune:
-                buttons[(int)ButtonTypes.BodyAccessoryType].Label.text = "Hair Accessory";
-                buttons[(int)ButtonTypes.ExtraColor1].Label.text = "Plant Colors";
-                buttons[(int)ButtonTypes.BodyAccentTypes1].Label.text = "Inner Petals";
-                buttons[(int)ButtonTypes.BodyAccentTypes2].Label.text = "Outer Petals";
-                buttons[(int)ButtonTypes.BodyAccentTypes3].Label.text = "Plant Base";
                 break;
             case Race.Gryphons:
                 buttons[(int)ButtonTypes.Skintone].Label.text = "Body Color";
@@ -342,22 +285,6 @@ public class UnitCustomizer
                 buttons[(int)ButtonTypes.Skintone].Label.text = "Body Color";
                 buttons[(int)ButtonTypes.BodyAccessoryColor].Label.text = "Spine Color";
                 buttons[(int)ButtonTypes.BodyAccessoryType].Label.text = "Spine Type";
-                break;
-            case Race.Vipers:
-                buttons[(int)ButtonTypes.Skintone].Label.text = "Body Color";
-                buttons[(int)ButtonTypes.BodyAccessoryType].Label.text = "Hood Type";
-                buttons[(int)ButtonTypes.ExtraColor1].Label.text = "Accent Color";
-                buttons[(int)ButtonTypes.TailTypes].Label.text = "Tail Pattern";
-                buttons[(int)ButtonTypes.BodyAccentTypes1].Label.text = "Accent Pattern";
-                break;
-            case Race.Merfolk:
-                buttons[(int)ButtonTypes.BodyAccessoryType].Label.text = "Head Fin";
-                buttons[(int)ButtonTypes.ClothingAccessoryType].Label.text = "Necklace / Hair Ornament";
-                buttons[(int)ButtonTypes.ExtraColor1].Label.text = "Scale Color";
-                buttons[(int)ButtonTypes.BodyAccentTypes2].Label.text = "Tail Fin";
-                buttons[(int)ButtonTypes.BodyAccentTypes3].Label.text = "Arm Fin";
-                buttons[(int)ButtonTypes.BodyAccentTypes4].Label.text = "Eyebrow";
-
                 break;
             case Race.Avians:
                 buttons[(int)ButtonTypes.HairStyle].Label.text = "Head Type";
@@ -382,15 +309,6 @@ public class UnitCustomizer
                 buttons[(int)ButtonTypes.BodyAccessoryType].Label.text = "Antennae Type";
                 buttons[(int)ButtonTypes.BodyAccentTypes1].Label.text = "Wing Type";
                 buttons[(int)ButtonTypes.BodyAccentTypes2].Label.text = "Back Spines";
-
-                break;
-            case Race.Auri:
-                buttons[(int)ButtonTypes.ClothingType].Label.text = "Breast Wrap";
-                buttons[(int)ButtonTypes.ClothingExtraType1].Label.text = "Kimono";
-                buttons[(int)ButtonTypes.ClothingExtraType2].Label.text = "Socks";
-                buttons[(int)ButtonTypes.ClothingExtraType3].Label.text = "Hair Ornament";
-                buttons[(int)ButtonTypes.TailTypes].Label.text = "Tail Quantity";
-                buttons[(int)ButtonTypes.BodyAccentTypes1].Label.text = "Beast Mode";
 
                 break;
             case Race.Catfish:
@@ -443,10 +361,6 @@ public class UnitCustomizer
                 buttons[(int)ButtonTypes.BodyAccentTypes1].Label.text = "Visible Teeth (during attacks)";
                 break;
 
-            case Race.Cockatrice:
-                buttons[(int)ButtonTypes.BodyAccessoryColor].Label.text = "Feather Color";
-                break;
-
             case Race.Monitors:
                 buttons[(int)ButtonTypes.BodyAccessoryType].Label.text = "Body Pattern Type";
                 buttons[(int)ButtonTypes.BodyAccessoryColor].Label.text = "Body Pattern Colors";
@@ -459,18 +373,8 @@ public class UnitCustomizer
                 buttons[(int)ButtonTypes.BodyAccentTypes3].Label.text = "Leg Type";
                 break;
 
-            case Race.Schiwardez:
-                buttons[(int)ButtonTypes.Skintone].Label.text = "Body Color";
-                break;
-
             case Race.Terrorbird:
                 buttons[(int)ButtonTypes.BodyAccessoryType].Label.text = "Head Plumage Type";
-                break;
-
-            case Race.Erin:
-                buttons[(int)ButtonTypes.ClothingExtraType1].Label.text = "Panties";
-                buttons[(int)ButtonTypes.ClothingExtraType2].Label.text = "Stockings";
-                buttons[(int)ButtonTypes.ClothingExtraType3].Label.text = "Shoes";
                 break;
 
             case Race.Vargul:
@@ -492,68 +396,12 @@ public class UnitCustomizer
                 buttons[(int)ButtonTypes.HairStyle].Label.text = "Mane Style";
                 buttons[(int)ButtonTypes.HairColor].Label.text = "Mane Color";
                 break;
-            case Race.Aabayx:
-                buttons[(int)ButtonTypes.BodyAccessoryColor].Label.text = "Head Color";
-                buttons[(int)ButtonTypes.ClothingExtraType1].Label.text = "Face Paint";
-                buttons[(int)ButtonTypes.EyeColor].Label.text = "Face Paint Color";
-                break;
             case Race.Mice:
                 buttons[(int)ButtonTypes.BodyAccentTypes1].Label.text = "Face Pattern";
                 buttons[(int)ButtonTypes.BodyAccentTypes2].Label.text = "Chest Pattern";
                 buttons[(int)ButtonTypes.BodyAccentTypes3].Label.text = "Hands/Feet Pattern";
                 buttons[(int)ButtonTypes.BodyAccentTypes4].Label.text = "Left Ear Damage";
                 buttons[(int)ButtonTypes.BodyAccentTypes5].Label.text = "Right Ear Damage";
-                break;
-            case Race.FeralOrcas:
-                buttons[(int)ButtonTypes.BodyAccentTypes1].Label.text = "Dorsal Fin";
-                break;
-            case Race.RwuMercenaries:
-                buttons[(int)ButtonTypes.BodyAccentTypes2].Label.text = "Race Detail";
-                buttons[(int)ButtonTypes.ClothingType].Label.text = "Bonus Accessory";
-                buttons[(int)ButtonTypes.EyeType].Label.text = "Race";
-                buttons[(int)ButtonTypes.MouthType].Label.text = "Helmet";
-                buttons[(int)ButtonTypes.HairStyle].Label.text = "Custom livery (for Sharks)";
-                break;
-            case Race.Olivia:
-                buttons[(int)ButtonTypes.BodyAccessoryType].Label.text = "Top";
-                buttons[(int)ButtonTypes.BodyAccentTypes1].Label.text = "Pants";
-                break;
-            case Race.Renamon:
-                buttons[(int)ButtonTypes.ClothingExtraType1].Label.text = "Gloves";
-                buttons[(int)ButtonTypes.BodyAccentTypes1].Label.text = "Head Shape";
-                buttons[(int)ButtonTypes.BodyAccentTypes2].Label.text = "Leg Markings";
-                buttons[(int)ButtonTypes.BodyAccentTypes3].Label.text = "Chest Floof";
-                buttons[(int)ButtonTypes.BodyAccentTypes4].Label.text = "Tail";
-                break;
-            case Race.Seville:
-                buttons[(int)ButtonTypes.BodyAccessoryType].Label.text = "Raiments";
-                break;
-            case Race.Taraluxia:
-                Taraluxia();
-                break;
-            case Race.ViraeUltimae:
-                buttons[(int)ButtonTypes.BodyAccessoryColor].Label.text = "Head Color";
-                break;
-            case Race.MainlandElves:
-                buttons[(int)ButtonTypes.BodyAccentTypes2].Label.text = "Ear Accessory";
-                break;
-            case Race.Umbreon:
-                buttons[(int)ButtonTypes.Furry].Label.text = "Handedness";
-                buttons[(int)ButtonTypes.BodyAccessoryColor].Label.text = "Ring Color";
-                buttons[(int)ButtonTypes.ExtraColor1].Label.text = "Body Armor Metal";
-                buttons[(int)ButtonTypes.ClothingExtraType1].Label.text = "Body Armor(req. item)";
-                buttons[(int)ButtonTypes.BodyAccentTypes1].Label.text = "Decal";
-                buttons[(int)ButtonTypes.BodyAccentTypes2].Label.text = "Armor Rust";
-                break;
-            case Race.Equaleon:
-            case Race.FeralEqualeon:
-                buttons[(int)ButtonTypes.BodyAccentTypes2].gameObject.SetActive(false);
-                buttons[(int)ButtonTypes.EyeColor].Label.text = "Right Eye Color";
-                buttons[(int)ButtonTypes.EyeType].Label.text = "Left Eye Color";
-                buttons[(int)ButtonTypes.BodyAccentTypes1].Label.text = "Heterochromia On/Off";
-                break;
-            case Race.Viisels:
-                buttons[(int)ButtonTypes.BodyAccessoryColor].Label.text = "Faceplate Color";
                 break;
             case Race.Lupine:
                 buttons[(int)ButtonTypes.BodyAccessoryColor].Label.text = "Iris Color";
@@ -564,19 +412,6 @@ public class UnitCustomizer
                 buttons[(int)ButtonTypes.BodyAccentTypes4].Label.text = "Head Pattern";
                 buttons[(int)ButtonTypes.HairStyle].Label.text = "Cheek Fluff";
                 buttons[(int)ButtonTypes.BodyAccessoryType].gameObject.SetActive(false);
-                break;
-            case Race.Tatltuae:
-                buttons[(int)ButtonTypes.BodyAccentTypes4].Label.text = "Hat";
-                buttons[(int)ButtonTypes.BodyAccentTypes3].Label.text = "Glasses";
-                buttons[(int)ButtonTypes.BodyAccessoryType].Label.text = "Outfit";
-                buttons[(int)ButtonTypes.BodyAccentTypes1].Label.text = "Shirt On/Off";
-                buttons[(int)ButtonTypes.BodyAccentTypes2].Label.text = "Pants On/Off";
-                break;
-            case Race.Skapa:
-                buttons[(int)ButtonTypes.TailTypes].Label.text = "Facing";
-                break;
-            case Race.Ryan:
-                buttons[(int)ButtonTypes.BodyAccessoryType].Label.text = "Armor";
                 break;
             case Race.Jackals:
                 buttons[(int)ButtonTypes.BodyAccessoryColor].Label.text = "Fur Color";
@@ -597,57 +432,6 @@ public class UnitCustomizer
             case Race.Utahraptor:
                 buttons[(int)ButtonTypes.TailTypes].Label.text = "Preferred Facing";
                 break;
-            case Race.WoodDryad:
-                buttons[(int)ButtonTypes.ExtraColor1].Label.text = "Leaf Color";
-                buttons[(int)ButtonTypes.BodyAccessoryType].Label.text = "Trunk Type";
-                buttons[(int)ButtonTypes.BodyAccessoryColor].Label.text = "Wood Color";
-                buttons[(int)ButtonTypes.BodyAccentTypes1].Label.text = "Horn Type";
-                buttons[(int)ButtonTypes.BodyAccentTypes2].Label.text = "Leaves On/Off";
-                buttons[(int)ButtonTypes.BodyAccentTypes3].Label.text = "Eyebrows";
-                buttons[(int)ButtonTypes.BodyAccentTypes4].Label.text = "Trunk Addon";
-                break;
-            case Race.EarthDryad:
-                buttons[(int)ButtonTypes.ExtraColor1].Label.text = "Leaf Color";
-                buttons[(int)ButtonTypes.BodyAccessoryType].Label.text = "Pattern";
-                buttons[(int)ButtonTypes.Skintone].Label.text = "Body Color";
-                buttons[(int)ButtonTypes.BodyAccentTypes1].Label.text = "Horn Type";
-                buttons[(int)ButtonTypes.BodyAccentTypes2].Label.text = "Leaves On/Off";
-                buttons[(int)ButtonTypes.BodyAccentTypes3].Label.text = "Eyebrows";
-                break;
-            case Race.RiverDryad:
-                buttons[(int)ButtonTypes.BodyAccessoryType].Label.text = "Pattern";
-                buttons[(int)ButtonTypes.BodyAccentTypes3].Label.text = "Eyebrows";
-                break;
-            case Race.FungalDryad:
-                buttons[(int)ButtonTypes.BodyAccessoryColor].Label.text = "Mushroom Color";
-                buttons[(int)ButtonTypes.BodyAccessoryType].Label.text = "Hat Type";
-                buttons[(int)ButtonTypes.Skintone].Label.text = "Body Color";
-                buttons[(int)ButtonTypes.BodyAccentTypes1].Label.text = "Mushroom Damage";
-                buttons[(int)ButtonTypes.BodyAccentTypes2].Label.text = "Spots On/Off";
-                buttons[(int)ButtonTypes.BodyAccentTypes3].Label.text = "Spots Type";
-                buttons[(int)ButtonTypes.BodyAccentTypes4].Label.text = "Lower Mushroom Type";
-                break;
-            case Race.OoviKat:
-                buttons[(int)ButtonTypes.BeardStyle].Label.text = "Thigh Pattern";
-                buttons[(int)ButtonTypes.BodyAccessoryType].Label.text = "Flower Type";
-                buttons[(int)ButtonTypes.HeadType].Label.text = "Head Pattern";
-                buttons[(int)ButtonTypes.ExtraColor1].Label.text = "Secondary Color";
-                buttons[(int)ButtonTypes.ExtraColor2].Label.text = "Flower Color";
-                buttons[(int)ButtonTypes.ExtraColor4].Label.text = "Shin Pattern";
-                buttons[(int)ButtonTypes.BodyAccessoryColor].Label.text = "Main Pattern Color";
-                buttons[(int)ButtonTypes.FurTypes].Label.text = "Main Pattern Type";
-                buttons[(int)ButtonTypes.BodyAccentTypes1].Label.text = "Eyebrows";
-                buttons[(int)ButtonTypes.BodyAccentTypes2].Label.text = "Face Pattern";
-                buttons[(int)ButtonTypes.BodyAccentTypes3].Label.text = "Shoulder Pattern";
-                buttons[(int)ButtonTypes.BodyAccentTypes4].Label.text = "Hand Pattern";
-                buttons[(int)ButtonTypes.BodyAccentTypes5].Label.text = "Shin Bright Pattern";
-                buttons[(int)ButtonTypes.VulvaTypes].Label.text = "Head Accessory";
-                break;
-            case Race.Pudding:
-                buttons[(int)ButtonTypes.BodyAccentTypes1].Label.text = "Cream Type";
-                buttons[(int)ButtonTypes.BodyAccentTypes2].Label.text = "Ear Type";
-                buttons[(int)ButtonTypes.BodyAccentTypes3].Label.text = "Topping Type";
-                break;
             case Race.Draconians:
                 buttons[(int)ButtonTypes.BodyAccessoryColor].Label.text = "Outer Scale Color";
                 buttons[(int)ButtonTypes.BodyAccessoryType].Label.text = "Body Pattern Type";
@@ -665,17 +449,6 @@ public class UnitCustomizer
                 buttons[(int)ButtonTypes.BodyAccentTypes3].gameObject.SetActive(false);
                 buttons[(int)ButtonTypes.BodyAccentTypes4].gameObject.SetActive(false);
                 buttons[(int)ButtonTypes.BodyAccentTypes5].gameObject.SetActive(false);
-                break;
-            case Race.Yordles:
-                buttons[(int)ButtonTypes.BodyAccessoryType].Label.text = "Ear Type";
-                buttons[(int)ButtonTypes.BodyAccentTypes1].Label.text = "Eyebrow Type";
-                buttons[(int)ButtonTypes.BodyAccentTypes2].Label.text = "Moustaches Type";
-                buttons[(int)ButtonTypes.BodyAccentTypes3].Label.text = "Head Fluff Type";
-                buttons[(int)ButtonTypes.BodyAccentTypes4].Label.text = "Fur Type";
-                buttons[(int)ButtonTypes.BodyAccentTypes5].Label.text = "Face Pattern";
-                buttons[(int)ButtonTypes.Furry].gameObject.SetActive(false);
-                buttons[(int)ButtonTypes.HatType].gameObject.SetActive(false);
-                buttons[(int)ButtonTypes.BodyAccessoryColor].gameObject.SetActive(false);
                 break;
             case Race.Badgers:
                 buttons[(int)ButtonTypes.BodyAccessoryType].Label.text = "Body Pattern Type";
@@ -856,12 +629,6 @@ public class UnitCustomizer
         buttons[(int)ButtonTypes.BodyAccentTypes3].Label.text = "Head Pattern";
     }
 
-    void Taraluxia()
-    {
-        buttons[(int)ButtonTypes.BodyAccentTypes5].Label.text = "Glowing Maw";
-        buttons[(int)ButtonTypes.TailTypes].Label.text = "Facing Front";
-    }
-
 
     internal void RefreshGenderSelector()
     {
@@ -899,10 +666,6 @@ public class UnitCustomizer
                     // What in the hell--
                     CustomizerUI.Gender.value = 0;
             }
-        }
-        if (RaceData.CanBeGender.Count <= 2)
-        {
-
         }
     }
 
@@ -984,7 +747,7 @@ public class UnitCustomizer
     void ChangeHairColor(int change)
     {
         Unit.HairColor = (RaceData.HairColors + Unit.HairColor + change) % RaceData.HairColors;
-        if (Unit.Race == Race.Cats | Unit.Race == Race.Dogs | Unit.Race == Race.Bunnies | Unit.Race == Race.Wolves | Unit.Race == Race.Foxes | Unit.Race == Race.Tigers)
+        if (false | false | Unit.Race == Race.Bunnies | false | false | false)
         {
             buttons[(int)ButtonTypes.HairColor].Label.text = "Hair Color: " + HairColorLookup(Unit.HairColor);
         }
@@ -1042,7 +805,7 @@ public class UnitCustomizer
     void ChangeBodyAccessoryColor(int change)
     {
         Unit.AccessoryColor = (RaceData.AccessoryColors + Unit.AccessoryColor + change) % RaceData.AccessoryColors;
-        if (Unit.Race == Race.Cats | Unit.Race == Race.Dogs | Unit.Race == Race.Bunnies | Unit.Race == Race.Wolves | Unit.Race == Race.Foxes | Unit.Race == Race.Tigers)
+        if (false | false | Unit.Race == Race.Bunnies | false | false | false)
             buttons[(int)ButtonTypes.BodyAccessoryColor].Label.text = "Fur Color: " + HairColorLookup(Unit.AccessoryColor);
         RefreshView();
     }
@@ -1414,7 +1177,7 @@ public class UnitCustomizer
     void ChangeClothingAccesoryType(int change)
     {
         int totalClothingTypes = RaceData.ClothingAccessoryTypesCount;
-        if (Unit.EarnedMask && Unit.Race <= Race.Goblins && Unit.Race != Race.Lizards)
+        if (Unit.EarnedMask && Unit.Race <= (Race)52 && Unit.Race != Race.Lizards)
             totalClothingTypes += 1;
         if (totalClothingTypes == 0)
         {
@@ -1566,8 +1329,6 @@ public class UnitCustomizer
     void ChangeWeaponSprite(int change)
     {
         int basicMeleeTypes = RaceData.BasicMeleeWeaponTypes;
-        if (Config.HideCocks == false && Unit.Race == Race.Crux) // Give Crux the ability to have dildo weapons only if HideCocks is off
-            basicMeleeTypes++;
         Unit.BasicMeleeWeaponType = (basicMeleeTypes + Unit.BasicMeleeWeaponType + change) % basicMeleeTypes;
 
         Unit.AdvancedMeleeWeaponType = (RaceData.AdvancedMeleeWeaponTypes + Unit.AdvancedMeleeWeaponType + change) % RaceData.AdvancedMeleeWeaponTypes;

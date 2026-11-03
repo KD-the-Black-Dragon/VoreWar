@@ -1,4 +1,7 @@
-﻿using System;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -216,27 +219,6 @@ class Demifrogs : DefaultRaceData
 
             if (actor.Unit.SpecialAccessoryType == 6)
             {
-
-                if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb) && size == 28)
-                {
-                    AddOffset(Belly, 0, -26 * .625f);
-                    return Sprites3A[94];
-                }
-                else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 28)
-                {
-                    AddOffset(Belly, 0, -26 * .625f);
-                    return Sprites3A[93];
-                }
-                else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 27)
-                {
-                    AddOffset(Belly, 0, -26 * .625f);
-                    return Sprites3A[92];
-                }
-                else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 26)
-                {
-                    AddOffset(Belly, 0, -26 * .625f);
-                    return Sprites3A[91];
-                }
                 switch (size)
                 {
                     case 23:
@@ -263,26 +245,6 @@ class Demifrogs : DefaultRaceData
             }
             else
             {
-                if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb) && size == 28)
-                {
-                    AddOffset(Belly, 0, -26 * .625f);
-                    return Sprites3[94];
-                }
-                else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 28)
-                {
-                    AddOffset(Belly, 0, -26 * .625f);
-                    return Sprites3[93];
-                }
-                else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 27)
-                {
-                    AddOffset(Belly, 0, -26 * .625f);
-                    return Sprites3[92];
-                }
-                else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 26)
-                {
-                    AddOffset(Belly, 0, -26 * .625f);
-                    return Sprites3[91];
-                }
                 switch (size)
                 {
                     case 23:
@@ -365,18 +327,6 @@ class Demifrogs : DefaultRaceData
                 int leftSize = (int)Math.Sqrt((actor.Unit.DefaultBreastSize * actor.Unit.DefaultBreastSize) + actor.GetLeftBreastSize(31 * 31, 1f));
                 if (leftSize > actor.Unit.DefaultBreastSize)
                     oversize = true;
-                if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.leftBreast) && leftSize >= 31)
-                {
-                    return Sprites3A[30];
-                }
-                else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.leftBreast) && leftSize >= 29)
-                {
-                    return Sprites3A[29];
-                }
-                else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.leftBreast) && leftSize >= 27)
-                {
-                    return Sprites3A[28];
-                }
 
                 if (leftSize > 27)
                     leftSize = 27;
@@ -395,18 +345,6 @@ class Demifrogs : DefaultRaceData
                 int leftSize = (int)Math.Sqrt((actor.Unit.DefaultBreastSize * actor.Unit.DefaultBreastSize) + actor.GetLeftBreastSize(31 * 31, 1f));
                 if (leftSize > actor.Unit.DefaultBreastSize)
                     oversize = true;
-                if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.leftBreast) && leftSize >= 31)
-                {
-                    return Sprites3[30];
-                }
-                else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.leftBreast) && leftSize >= 29)
-                {
-                    return Sprites3[29];
-                }
-                else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.leftBreast) && leftSize >= 27)
-                {
-                    return Sprites3[28];
-                }
 
                 if (leftSize > 27)
                     leftSize = 27;
@@ -433,18 +371,6 @@ class Demifrogs : DefaultRaceData
                 int rightSize = (int)Math.Sqrt((actor.Unit.DefaultBreastSize * actor.Unit.DefaultBreastSize) + actor.GetRightBreastSize(31 * 31, 1f));
                 if (rightSize > actor.Unit.DefaultBreastSize)
                     oversize = true;
-                if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.rightBreast) && rightSize >= 31)
-                {
-                    return Sprites3A[61];
-                }
-                else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.rightBreast) && rightSize >= 29)
-                {
-                    return Sprites3A[60];
-                }
-                else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.rightBreast) && rightSize >= 27)
-                {
-                    return Sprites3A[59];
-                }
 
                 if (rightSize > 27)
                     rightSize = 27;
@@ -463,18 +389,6 @@ class Demifrogs : DefaultRaceData
                 int rightSize = (int)Math.Sqrt((actor.Unit.DefaultBreastSize * actor.Unit.DefaultBreastSize) + actor.GetRightBreastSize(31 * 31, 1f));
                 if (rightSize > actor.Unit.DefaultBreastSize)
                     oversize = true;
-                if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.rightBreast) && rightSize >= 31)
-                {
-                    return Sprites3[61];
-                }
-                else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.rightBreast) && rightSize >= 29)
-                {
-                    return Sprites3[60];
-                }
-                else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.rightBreast) && rightSize >= 27)
-                {
-                    return Sprites3[59];
-                }
 
                 if (rightSize > 27)
                     rightSize = 27;
@@ -545,22 +459,7 @@ class Demifrogs : DefaultRaceData
         if (actor.Unit.SpecialAccessoryType == 6)
         {
 
-            if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.balls) ?? false) && offset == 28)
-            {
-                AddOffset(Balls, 0, -22 * .625f);
-                return Sprites3A[132];
-            }
-            else if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false) && offset == 28)
-            {
-                AddOffset(Balls, 0, -20 * .625f);
-                return Sprites3A[131];
-            }
-            else if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false) && offset == 27)
-            {
-                AddOffset(Balls, 0, -18 * .625f);
-                return Sprites3A[130];
-            }
-            else if (offset >= 26)
+            if (offset >= 26)
             {
                 AddOffset(Balls, 0, -16 * .625f);
             }
@@ -596,22 +495,7 @@ class Demifrogs : DefaultRaceData
         else
         {
 
-            if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.balls) ?? false) && offset == 28)
-            {
-                AddOffset(Balls, 0, -22 * .625f);
-                return Sprites3[132];
-            }
-            else if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false) && offset == 28)
-            {
-                AddOffset(Balls, 0, -20 * .625f);
-                return Sprites3[131];
-            }
-            else if ((actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false) && offset == 27)
-            {
-                AddOffset(Balls, 0, -18 * .625f);
-                return Sprites3[130];
-            }
-            else if (offset >= 26)
+            if (offset >= 26)
             {
                 AddOffset(Balls, 0, -16 * .625f);
             }

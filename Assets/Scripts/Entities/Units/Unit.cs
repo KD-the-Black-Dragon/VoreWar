@@ -1,4 +1,4 @@
-﻿// Modified for the VoreWar mercenary-company conversion.
+// Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Validate new shape destinations before mutation; leave original-form restoration unrestricted (spec 03A2).
 // 2026-10-31: Exclude retired Resurrection from all assembled usable spell sources (spec 05A3B6).
 // 2026-11-01: Enforce retired ability/status/control policy and remove Leadership effects (spec 05A3B17).
@@ -11,6 +11,7 @@
 // 2026-11-01: Use company-owned exponential XP requirements and weak-enemy scaling instead of retired world level caps (spec 11 feedback).
 // 2026-11-02: Expose per-level XP progress and cost without changing saved totals or level-up rules (spec 13 feedback).
 // 2026-11-03: Persist the attrition injury latch and temporary combat boosts across tactical saves (spec 19).
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
 using OdinSerializer.Utilities;
@@ -855,10 +856,6 @@ public class Unit
             if (rand == 3) InnateSpells.Add(SpellTypes.PowerBolt);
             if (rand == 4) InnateSpells.Add(SpellTypes.Poison);
         }
-        if (race == Race.Fairies)
-        {
-            FairyUtil.SetSeason(this, FairyUtil.GetSeason(this)); //To establish the spell properly
-        }
 
         RandomSkills();
         Health = MaxHealth;
@@ -968,193 +965,12 @@ public class Unit
     internal void SetGear(Race race, bool skipTraitItems = false)
     {
         if (CompanyLoadout) return;
-        if (race >= Race.Vagrants && race < Race.Selicia)
+        if (race >= (Race)100 && race < (Race)170)
         {
             FixedGear = true;
             Items[0] = ItemCatalog.GetMonsterItem((int)Race - 100);
         }
-        else if (race == Race.Selicia)
-        {
-            FixedGear = true;
-            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.SeliciaWeapon);
-        }
-        else if (race == Race.Vision)
-        {
-            FixedGear = true;
-            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.VisionWeapon);
-        }
-        else if (race == Race.Ki)
-        {
-            FixedGear = true;
-            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.KiWeapon);
-        }
-        else if (race == Race.Scorch)
-        {
-            FixedGear = true;
-            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.ScorchWeapon);
-        }
-        else if (race == Race.Succubi)
-        {
-            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.SuccubusWeapon);
-        }
-        else if (race == Race.OoviKat)
-        {
-            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.OoviKatWeapon);
-        }
-        else if (race == Race.Asura)
-        {
-            Items[0] = ItemCatalog.GetItem(ItemType.Axe);
-        }
-        else if (race == Race.DRACO)
-        {
-            FixedGear = true;
-            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.DRACOWeapon);
-        }
-        else if (race == Race.Zoey)
-        {
-            FixedGear = true;
-            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.ZoeyWeapon);
-        }
-        else if (race == Race.Cierihaka)
-        {
-            FixedGear = true;
-            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.CierihakaWeapon);
-        }
-        else if (race == Race.Zera)
-        {
-            FixedGear = true;
-            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.ZeraWeapon);
-        }
-        else if (race == Race.Auri)
-        {
-            FixedGear = true;
-            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.AurilikaWeapon);
-        }
-        else if (race == Race.Salix)
-        {
-            FixedGear = true;
-            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.SalixWeapon);
-        }
-        else if (race == Race.Erin)
-        {
-            FixedGear = true;
-            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.ErinWeapon);
-            Items[1] = ItemCatalog.GetSpecialItem(SpecialItems.ErinWings);
-        }
-        else if (race == Race.Abakhanskya)
-        {
-            try
-            {
-                FixedGear = true;
-                Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.AbaWeapon);
-                Items[1] = ItemCatalog.GetSpecialItem(SpecialItems.AbaArmor);
-            }
-            catch { }
-        }
-        else if (race == Race.Bella)
-        {
-            FixedGear = true;
-            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.BellaWeapon);
-        }
-        else if (race == Race.Singularity)
-        {
-            try
-            {
-                FixedGear = true;
-                Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.SingularityWeapon);
-                Items[1] = ItemCatalog.GetSpecialItem(SpecialItems.SingularityArmor);
-            }
-            catch { }
-        }
-        else if (race == Race.Feit)
-        {
-            try
-            {
-                FixedGear = true;
-                Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.FeitWeapon);
-                Items[1] = ItemCatalog.GetSpecialItem(SpecialItems.FeitArmor);
-            }
-            catch { }
-        }
-        else if (race == Race.Taraluxia)
-        {
-            try
-            {
-                FixedGear = true;
-                Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.TaraWeapon);
-            }
-            catch { }
-        }
-        else if (race == Race.Xelhilde)
-        {
-            FixedGear = true;
-            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.XelhildeWeapon);
-        }
-        else if (race == Race.Olivia)
-        {
-            FixedGear = false;
-            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.OliviaWeapon);
-        }
-        else if (race == Race.Skapa)
-        {
-            FixedGear = true;
-            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.SkapaWeapon);
-        }
-        else if (race == Race.Tatltuae)
-        {
-            FixedGear = false;
-            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.TatltuaeWeapon);
-        }
-        else if (race == Race.Seville)
-        {
-            try
-            {
-                FixedGear = true;
-                Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.SevilleMelee);
-                Items[1] = ItemCatalog.GetSpecialItem(SpecialItems.SevilleArmor);
-            }
-            catch { }
-        }
-        else if (race == Race.Nectar)
-        {
-            FixedGear = false;
-            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.NectarWeapon);
-        }
-        else if (race == Race.Ryan)
-        {
-            FixedGear = true;
-            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.RyanWeapon);
-        }
-        else if (race == Race.Konane)
-        {
-            FixedGear = true;
-            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.KonaneWeapon);
-        }
-        else if (race == Race.Cherub || race == Race.SoulSprite)
-        {
-            try
-            {
-                FixedGear = false;
-                Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.CherubWeapon);
-            }
-            catch { }
-        }
-        else if (race == Race.Seraph)
-        {
-            try
-            {
-                FixedGear = false;
-                Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.SeraphWeapon);
-            }
-            catch { }
-        }
-        else if (race == Race.Renamon)
-        {
-            FixedGear = false;
-            Items[0] = ItemCatalog.GetSpecialItem(SpecialItems.RenamonWeapon);
-        }
-        else
-        {
+        else {
             FixedGear = false;
             for (int i = 0; i < Items.Length; i++)
             {
@@ -1193,8 +1009,6 @@ public class Unit
                     }
                 }
             }
-            if (RaceParameters.GetRaceTraits(race).CanUseRangedWeapons == false && RaceParameters.GetRaceTraits(race).CanUseMeleeWeapons == false)
-            {}
             if (!skipTraitItems)
                 GiveTraitBooks();
         }
@@ -1349,7 +1163,7 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
             isMale = false;
         }
 
-        if (race >= Race.Vagrants)
+        if (race >= (Race)100)
         {
             Name = State.NameGen.GetMonsterName(isMale, race);
         }
@@ -1429,7 +1243,7 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
             isMale = false;
         }
 
-        if (race >= Race.Vagrants)
+        if (race >= (Race)100)
         {
             Name = State.NameGen.GetMonsterName(isMale, race);
         }
@@ -1955,8 +1769,6 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
     {
         if (TraitsMethods.IsRetired(tag))
             return false;
-        if (tag == Traits.TheGreatEscape && Race == Race.Erin)
-            return true;
         if (Tags != null)
             return Tags.Contains(tag) || (PermanentTraits?.Contains(tag) ?? false);
         return false;

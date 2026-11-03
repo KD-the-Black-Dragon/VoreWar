@@ -1,4 +1,7 @@
-﻿using System;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -353,18 +356,6 @@ class Panthers : BlankSlate
             int leftSize = (int)Math.Sqrt((actor.Unit.DefaultBreastSize * actor.Unit.DefaultBreastSize) + actor.GetLeftBreastSize(32 * 32, 1f));
             if (leftSize > actor.Unit.DefaultBreastSize)
                 oversize = true;
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.leftBreast) && leftSize >= 32)
-            {
-                return SpritesVore[35];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.leftBreast) && leftSize >= 30)
-            {
-                return SpritesVore[34];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.leftBreast) && leftSize >= 28)
-            {
-                return SpritesVore[33];
-            }
 
             if (leftSize > 28)
                 leftSize = 28;
@@ -394,18 +385,6 @@ class Panthers : BlankSlate
             int rightSize = (int)Math.Sqrt((actor.Unit.DefaultBreastSize * actor.Unit.DefaultBreastSize) + actor.GetRightBreastSize(32 * 32, 1f));
             if (rightSize > actor.Unit.DefaultBreastSize)
                 oversize = true;
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.rightBreast) && rightSize >= 32)
-            {
-                return SpritesVore[70];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.rightBreast) && rightSize >= 30)
-            {
-                return SpritesVore[69];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.rightBreast) && rightSize >= 28)
-            {
-                return SpritesVore[68];
-            }
 
             if (rightSize > 28)
                 rightSize = 28;
@@ -483,31 +462,6 @@ class Panthers : BlankSlate
             belly.transform.localScale = new Vector3(1, 1, 1);
             belly.SetActive(true);
             int size = actor.GetStomachSize(32, 1.2f);
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb) && size == 32)
-            {
-                AddOffset(Belly, 0, -22 * .625f);
-                return SpritesVore[145];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 32)
-            {
-                AddOffset(Belly, 0, -22 * .625f);
-                return SpritesVore[144];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 31)
-            {
-                AddOffset(Belly, 0, -22 * .625f);
-                return SpritesVore[143];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 30)
-            {
-                AddOffset(Belly, 0, -22 * .625f);
-                return SpritesVore[142];
-            }
-            else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 29)
-            {
-                AddOffset(Belly, 0, -22 * .625f);
-                return SpritesVore[141];
-            }
             size = actor.GetStomachSize(29, 0.8f);
             switch (size)
             {
@@ -550,21 +504,6 @@ class Panthers : BlankSlate
             return SpritesVore[107 + actor.Unit.BallsSize];
 
         int size = actor.GetBallSize(31, .8f);
-        if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.balls) && size == 31)
-        {
-            AddOffset(Balls, 0, -19 * .625f);
-            return SpritesVore[139];
-        }
-        else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) && size == 31)
-        {
-            AddOffset(Balls, 0, -16 * .625f);
-            return SpritesVore[138];
-        }
-        else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) && size == 30)
-        {
-            AddOffset(Balls, 0, -15 * .625f);
-            return SpritesVore[137];
-        }
         if (size > 29)
             size = 29;
         switch (size)

@@ -1,4 +1,7 @@
-﻿using Assets.Scripts.Modes.Strategic;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using Assets.Scripts.Modes.Strategic;
 using Noise;
 using System.Collections.Generic;
 using System.Linq;
@@ -394,7 +397,6 @@ public class WorldGenerator
         {
             VillageLocation newVillage = remainingVillages[i];
             int index = newVillage.Index;
-            villages[index] = new Village($"Abandoned town {i + 1}", sites[index].Position, sites[index].UtilityScore, Race.Vagrants, false);
             villages[index].SubtractPopulation(999999);
             CreateFarmland(index);
         }
@@ -460,11 +462,6 @@ public class WorldGenerator
         {
             for (int k = sites[i].Position.y - 1; k < sites[i].Position.y + 2; k++)
             {
-                if (j == sites[i].Position.x && k == sites[i].Position.y)
-                {
-
-                }
-                else
                 {
                     if (StrategicTileInfo.CanWalkInto(tiles[j, k]))
                     {

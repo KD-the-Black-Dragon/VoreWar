@@ -1,6 +1,7 @@
 // Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Reject disallowed transformation destinations before prey-state callbacks (spec 03A2).
 // 2026-11-01: Complete approved ability retirement and close legacy reactivation paths (spec 05A3B17).
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
 using System.Collections.Generic;
@@ -228,15 +229,8 @@ class Prey
         List<BoneInfo> rtn = new List<BoneInfo>();
         switch (Unit.Race)
         {
-            case Race.Slimes:
-                rtn.Add(new BoneInfo(BoneTypes.SlimePile, Unit.Name, Unit.AccessoryColor));
-                break;
             case Race.FeralSlime:
                 rtn.Add(new BoneInfo(BoneTypes.SlimePile, Unit.Name, Unit.SkinColor));
-                break;
-            case Race.Crypters:
-                rtn.Add(new BoneInfo(BoneTypes.CrypterBonePile, Unit.Name, Unit.AccessoryColor));
-                rtn.Add(new BoneInfo(BoneTypes.CrypterSkull, Unit.Name));
                 break;
             case Race.Kangaroos:
                 rtn.Add(new BoneInfo(BoneTypes.Kangaroo, Unit.Name));
@@ -247,38 +241,14 @@ class Prey
             case Race.WyvernMatron:
                 rtn.Add(new BoneInfo(BoneTypes.Wyvern, Unit.Name));
                 break;
-            case Race.Compy:
-                rtn.Add(new BoneInfo(BoneTypes.Compy, Unit.Name));
-                break;
-            case Race.FeralSharks:
-                rtn.Add(new BoneInfo(BoneTypes.Shark, Unit.Name));
-                break;
-            case Race.DarkSwallower:
-                rtn.Add(new BoneInfo(BoneTypes.DarkSwallower, Unit.Name));
-                break;
-            case Race.Cake:
-                rtn.Add(new BoneInfo(BoneTypes.Cake, Unit.Name));
-                break;
-            case Race.Selicia:
-                rtn.Add(new BoneInfo(BoneTypes.WyvernBonesWithoutHead, Unit.Name));
-                rtn.Add(new BoneInfo(BoneTypes.SeliciaSkull, Unit.Name));
-                break;
-            case Race.Vagrants:
             case Race.CoralSlugs:
             case Race.RockSlugs:
             case Race.SpitterSlugs:
             case Race.SpringSlugs:
-            case Race.Aabayx:
-            case Race.ViraeUltimae:
-            case Race.Iliijiith:
                 // No bone
                 break;
             case Race.Dragon:
                 rtn.Add(new BoneInfo(BoneTypes.WyvernBonesWithoutHead, Unit.Name));
-                break;
-            case Race.Vision:
-                rtn.Add(new BoneInfo(BoneTypes.WyvernBonesWithoutHead, Unit.Name));
-                rtn.Add(new BoneInfo(BoneTypes.VisionSkull, Unit.Name));
                 break;
             default:
                 if (Unit.Furry)
@@ -293,21 +263,7 @@ class Prey
                     rtn.Add(new BoneInfo(BoneTypes.GenericBonePile, Unit.Name));
                     if (Unit.Race == Race.Lizards)
                         rtn.Add(new BoneInfo(BoneTypes.LizardSkull, ""));
-                    else if (Unit.Race == Race.Imps)
-                    {
-                        if (Unit.EyeType == 0)
-                            rtn.Add(new BoneInfo(BoneTypes.Imp3EyeSkull, ""));
-                        else if (Unit.EyeType == 1)
-                            rtn.Add(new BoneInfo(BoneTypes.Imp1EyeSkull, ""));
-                        else
-                            rtn.Add(new BoneInfo(BoneTypes.Imp2EyeSkull, ""));
-                    }
-                    else if (Unit.Race == Race.Goblins)
-                    {
-                        rtn.Add(new BoneInfo(BoneTypes.Imp2EyeSkull, ""));
-                    }
-                    else
-                    {
+                    else {
                         rtn.Add(new BoneInfo(BoneTypes.HumanoidSkull, ""));
                     }
                 }

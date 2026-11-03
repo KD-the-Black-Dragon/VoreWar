@@ -1,5 +1,6 @@
 // Modified for the VoreWar mercenary-company conversion.
 // 2026-11-01: Retire strategic daily recovery, village effects, civilian feeding and paid training (spec 05A5).
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
 using System;
@@ -750,7 +751,7 @@ public class Army
     internal void AttuneEeveelution(Unit unit, Dictionary<Race,int> races)
     {
         // Get if current race is a monster race
-        bool monster = unit.Race >= Race.Vagrants && unit.Race < Race.Selicia;
+        bool monster = unit.Race >= (Race)100 && unit.Race < (Race)170;
         Dictionary<eeveeConversion,int> convertedRaces = new Dictionary<eeveeConversion,int>();
 
         // Convert race demographic to eevee version
@@ -759,7 +760,6 @@ public class Army
             eeveeConversion shiftedRace;
             switch (item.Key)
             {
-                case Race.Umbreon:
                 case Race.FeralUmbreon:
                     shiftedRace = eeveeConversion.Umbreon;
                     break;
@@ -784,17 +784,10 @@ public class Army
                 }
                 else
                 {
-                    unit.attunedEeveeRace = Race.Umbreon;
                 }
                 break;
             default:
-                if (monster)
                 {
-                    unit.attunedEeveeRace = Race.FeralEqualeon;
-                }
-                else
-                {
-                    unit.attunedEeveeRace = Race.Equaleon;
                 }
                 break;
         }

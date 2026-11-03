@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using UnityEngine;
 
 /// <summary>
 /// The main clothing type, suitable for Primary clothing or waist clothing.  Covers breasts and blocks dick by default
@@ -167,35 +170,17 @@ abstract class MainClothing
         {
             sprite.HideSprite(SpriteType.Breasts);
             sprite.HideSprite(SpriteType.SecondaryBreasts);
-            if (actor.Unit.Race == Race.Succubi)
-            {
-                sprite.HideSprite(SpriteType.BreastShadow); //Used for other things in newgraphics
-            }
-            if (actor.Unit.Race == Race.Umbreon)
-            {
-                sprite.HideSprite(SpriteType.BodyAccent3); //Used for Breast Ring colors
-                sprite.HideSprite(SpriteType.BodyAccent4);
-            }
 
         }
         else if (coversBreasts)
         {
             sprite.ChangeLayer(SpriteType.Breasts, 8);
             sprite.ChangeLayer(SpriteType.SecondaryBreasts, 8);
-            if (actor.Unit.Race == Race.Succubi)
-            {
-                sprite.ChangeLayer(SpriteType.Breasts, 7);
-                sprite.ChangeLayer(SpriteType.BreastShadow, 8);
-            }
         }
         if (blocksDick)
         {
             sprite.HideSprite(SpriteType.Dick);
             sprite.HideSprite(SpriteType.Balls);
-            if (actor.Unit.Race == Race.Umbreon)
-            {
-                sprite.HideSprite(SpriteType.BodyAccent2); //Used for Dick Ring colors
-            }
         }
         if (inFrontOfDick > 0)
         {

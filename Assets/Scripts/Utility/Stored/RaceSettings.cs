@@ -1,6 +1,7 @@
-﻿// Modified for the VoreWar mercenary-company conversion.
+// Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Preserve retired override records without hydration; use correct new mapping defaults (spec 03B3A).
 // 2026-11-01: Separate stored species reads from intentional override creation (spec 03B3C).
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
 using System;
@@ -31,13 +32,6 @@ class RaceSettings
             if (entry.Value.LeaderRace == Race.none) entry.Value.LeaderRace = RaceParameters.GetRaceTraits(entry.Key).LeaderRace;
             if (entry.Value.SpawnRace == Race.none) entry.Value.SpawnRace = RaceParameters.GetRaceTraits(entry.Key).SpawnRace;
             if (entry.Value.MorphRace == Race.none) entry.Value.MorphRace = RaceParameters.GetRaceTraits(entry.Key).MorphRace;
-            if (entry.Value.ConversionRace == Race.Cats && entry.Value.LeaderRace == Race.Cats && entry.Value.SpawnRace == Race.Cats && entry.Key != Race.Cats)
-            {
-                entry.Value.ConversionRace = RaceParameters.GetRaceTraits(entry.Key).ConversionRace;
-                entry.Value.LeaderRace = RaceParameters.GetRaceTraits(entry.Key).LeaderRace;
-                entry.Value.SpawnRace = RaceParameters.GetRaceTraits(entry.Key).SpawnRace;
-                entry.Value.MorphRace = RaceParameters.GetRaceTraits(entry.Key).MorphRace;
-            }
         }
         foreach (KeyValuePair<Race, RaceSettingsItem> entry in Races)
         {

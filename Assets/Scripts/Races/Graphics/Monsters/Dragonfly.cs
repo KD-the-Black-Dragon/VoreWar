@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System.Collections.Generic;
 using UnityEngine;
 
 class Dragonfly : BlankSlate
@@ -27,11 +30,6 @@ class Dragonfly : BlankSlate
     {
         if (actor.Unit.Predator == false)
             return null;
-        if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach))
-        {
-            if (actor.PredatorComponent.VisibleFullness > 3)
-                return SpriteDictionary.Dragonfly[27];
-        }
 
         if (!actor.HasBelly)
             return SpriteDictionary.Dragonfly[6];

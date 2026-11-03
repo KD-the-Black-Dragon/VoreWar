@@ -1,5 +1,6 @@
 // Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Restrict the retained nested tag editor to an authorized Race Editor session (spec 02B).
+// 2026-11-03: Refresh species tag choices when the developer tag editor closes (spec 22).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer.Utilities;
 using System;
@@ -115,6 +116,7 @@ public class UnitTagEditor : MonoBehaviour
     public void Close()
     {
         TagConditionChecker.CompileTraitTagAssociateDict();
+        State.GameManager.Menu.RaceEditor.RefreshUnitTags();
         gameObject.SetActive(false);
         int children = Folder.childCount;
         for (int i = children - 1; i >= 0; i--)

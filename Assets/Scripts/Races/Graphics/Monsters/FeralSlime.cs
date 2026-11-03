@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System.Collections.Generic;
 using UnityEngine;
 
 class FeralSlime : BlankSlate
@@ -36,15 +39,6 @@ class FeralSlime : BlankSlate
             return SpriteDictionary.FeralSlime[0];
 
         int size = actor.GetStomachSize(8);
-
-        if (size >= 8 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true) ?? false))
-        {
-            return SpriteDictionary.FeralSlime[7];
-        }
-        if (size >= 7 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false) ?? false))
-        {
-            return SpriteDictionary.FeralSlime[6];
-        }
         return SpriteDictionary.FeralSlime[0 + actor.GetStomachSize(6)];
     }
 
@@ -54,15 +48,6 @@ class FeralSlime : BlankSlate
             return SpriteDictionary.FeralSlime[8];
 
         int size = actor.GetStomachSize(8);
-
-        if (size >= 8 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true) ?? false))
-        {
-            return SpriteDictionary.FeralSlime[15];
-        }
-        if (size >= 7 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false) ?? false))
-        {
-            return SpriteDictionary.FeralSlime[14];
-        }
         return SpriteDictionary.FeralSlime[8 + actor.GetStomachSize(6)];
     }
     protected override Sprite AccessorySprite(Actor_Unit actor)
@@ -70,22 +55,6 @@ class FeralSlime : BlankSlate
         if (actor.HasBelly == false)
             return null;
         int size = actor.GetStomachSize(24, 0.7f);
-        if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach, PreyLocation.womb) && size == 24)
-        {
-            return SpriteDictionary.FeralSlime[39];
-        }
-        else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 24)
-        {
-            return SpriteDictionary.FeralSlime[38];
-        }
-        else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 23)
-        {
-            return SpriteDictionary.FeralSlime[37];
-        }
-        else if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach, PreyLocation.womb) && size == 22)
-        {
-            return SpriteDictionary.FeralSlime[36];
-        }
         return SpriteDictionary.FeralSlime[16 + actor.GetStomachSize(20, 0.7f)];
     }
 }

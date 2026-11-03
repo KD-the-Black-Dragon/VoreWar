@@ -1,4 +1,7 @@
-﻿using System;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -86,36 +89,6 @@ class Terminid : BlankSlate
             return null;
 
         int size = actor.GetStomachSize(37);
-
-        if ( size >= 37 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true) ?? false))
-        {
-            return SpriteDictionary.Terminid[37];
-        }
-
-        if (size >= 35 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false) ?? false))
-        {
-            return SpriteDictionary.Terminid[36];
-        }
-
-        if (size >= 32 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false) ?? false))
-        {
-            return SpriteDictionary.Terminid[35];
-        }
-
-        if (size >= 29 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false) ?? false))
-        {
-            return SpriteDictionary.Terminid[34];
-        }
-
-        if (size >= 26 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false) ?? false))
-        {
-            return SpriteDictionary.Terminid[33];
-        }
-
-        if (size >= 23 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false) ?? false))
-        {
-            return SpriteDictionary.Terminid[32];
-        }
 
         if (size > 19) size = 19;
         return SpriteDictionary.Terminid[12 + size];

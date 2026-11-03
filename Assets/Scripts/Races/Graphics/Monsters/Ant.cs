@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System.Collections.Generic;
 using UnityEngine;
 
 class Ant : BlankSlate
@@ -19,16 +22,6 @@ class Ant : BlankSlate
             return SpriteDictionary.Ant[2];
 
         int size = actor.GetStomachSize(16, 0.75f);
-
-        if (size == 16 && actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach))
-        {
-            return SpriteDictionary.Ant[19];
-        }
-
-        if (size == 16 && actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach))
-        {
-            return SpriteDictionary.Ant[18];
-        }
 
         if (size > 15) size = 15;
 

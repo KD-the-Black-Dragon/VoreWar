@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System.Collections.Generic;
 using UnityEngine;
 
 class SpaceCroach : BlankSlate
@@ -108,46 +111,6 @@ class SpaceCroach : BlankSlate
         else
         {   
             AddOffset(Belly, 0, 0 * .5f);
-        }
-
-        if (size >= 44 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true) ?? false))
-        {
-            return SpriteDictionary.SpaceCroach[63];
-        }
-
-        if (size >= 42 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false) ?? false))
-        {
-            return SpriteDictionary.SpaceCroach[62];
-        }
-
-        if (size >= 40 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false) ?? false))
-        {
-            return SpriteDictionary.SpaceCroach[61];
-        }
-
-        if (size >= 38 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false) ?? false))
-        {
-            return SpriteDictionary.SpaceCroach[60];
-        }
-
-        if (size >= 36 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false) ?? false))
-        {
-            return SpriteDictionary.SpaceCroach[59];
-        }
-
-        if (size >= 34 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false) ?? false))
-        {
-            return SpriteDictionary.SpaceCroach[58];
-        }
-
-        if (size >= 32 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false) ?? false))
-        {
-            return SpriteDictionary.SpaceCroach[57];
-        }
-
-        if (size >= 30 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false) ?? false))
-        {
-            return SpriteDictionary.SpaceCroach[56];
         }
 
         if (size > 29) size = 29;

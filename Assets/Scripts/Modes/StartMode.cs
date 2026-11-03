@@ -9,6 +9,7 @@
 // 2026-11-02: Retire the temporary portrait-comparison main-menu entry (spec 15D feedback).
 // 2026-11-03: Expose the company load view without reopening campaign setup (spec 19).
 // 2026-11-03: Rename the main-menu load action to Load Game (spec 20).
+// 2026-11-03: Keep developer trait-category diagnostics off the player main menu (spec 22).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using UnityEngine;
 using UnityEngine.UI;
@@ -199,7 +200,7 @@ public class StartMode : SceneBase
 
     public void RunTaggedTraitCheck()
     {
-        TagAlertButton.gameObject.SetActive(State.UntaggedTraits.Count > 0);
+        TagAlertButton.gameObject.SetActive(false); // Trait taxonomy is a developer concern, not a player warning.
         CloseTaggedTraitCheck();
     }
 

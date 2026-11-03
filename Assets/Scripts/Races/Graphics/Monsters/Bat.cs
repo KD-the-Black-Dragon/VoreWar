@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System.Collections.Generic;
 using UnityEngine;
 
 class Bat : BlankSlate
@@ -85,19 +88,6 @@ class Bat : BlankSlate
             if (actor.PredatorComponent.BallsFullness <= 0) return SpriteDictionary.Bat[28];
 
             int sprite = actor.GetBallSize(21);
-
-            if (sprite >= 20 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.balls) ?? false))
-            {
-                return SpriteDictionary.Bat[49];
-            }
-            else if (sprite >= 18 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false))
-            {
-                return SpriteDictionary.Bat[48];
-            }
-            else if (sprite >= 16 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.balls) ?? false))
-            {
-                return SpriteDictionary.Bat[47];
-            }
             if (sprite >= 15)
                 return SpriteDictionary.Bat[46];
             return SpriteDictionary.Bat[31 + sprite];
@@ -128,30 +118,6 @@ class Bat : BlankSlate
         {
             belly.SetActive(true);
             int sprite = actor.GetStomachSize(22);
-
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.stomach) || actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, true, PreyLocation.womb))
-            {
-                if (sprite >= 21)
-                {
-                    return SpriteDictionary.Bat[27];
-                }
-            }
-
-            if (actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.stomach) || actor.PredatorComponent.IsUnitOfSpecificationInPrey(Race.Selicia, false, PreyLocation.womb))
-            {
-                if (sprite >= 19)
-                {
-                    return SpriteDictionary.Bat[26];
-                }
-                else if (sprite >= 17)
-                {
-                    return SpriteDictionary.Bat[25];
-                }
-                else if (sprite >= 15)
-                {
-                    return SpriteDictionary.Bat[24];
-                }
-            }
 
             if (sprite >= 15)
                 return SpriteDictionary.Bat[23];

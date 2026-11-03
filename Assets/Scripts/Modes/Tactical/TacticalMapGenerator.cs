@@ -1,4 +1,7 @@
-﻿using System;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System;
 using System.Collections.Generic;
 using TacticalBuildings;
 using TacticalDecorations;
@@ -693,20 +696,6 @@ class TacticalMapGenerator
             Vec2 loc = new Vec2(x, y);
             switch (village.Race)
             {
-                case Race.Harpies:
-                    return GetRandomBuildingFrom(loc, typeof(HarpyNest), typeof(HarpyNestCanopy));
-                case Race.Lamia:
-                    return GetRandomBuildingFrom(loc, typeof(StoneHouse), typeof(LamiaTemple), typeof(FancyStoneHouse));
-                case Race.Cats:
-                    if (State.Rand.Next(2) == 0)
-                        return GetRandomBuildingFrom(loc, typeof(CatHouse), typeof(YellowCobbleStoneHouse));
-                    break;
-                case Race.Youko:
-                case Race.Foxes:
-                    if (State.Rand.Next(3) == 0)
-                        return new FoxStoneHouse(loc);
-                    break;
-                case Race.Crux:
                 case Race.Kangaroos:
                     return GetRandomBuildingFrom(loc, typeof(LogCabin), typeof(Log1x2), typeof(Log1x1));
 

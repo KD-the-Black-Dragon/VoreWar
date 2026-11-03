@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System.Collections.Generic;
 using UnityEngine;
 
 class FeralUmbreon : BlankSlate
@@ -58,21 +61,6 @@ class FeralUmbreon : BlankSlate
 
         if (!actor.HasBelly)
             return null;
-
-        if (size >= 8 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, true) ?? false))
-        {
-            return SpriteDictionary.FeralUmbreon[19];
-        }
-
-        if (size >= 7 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false) ?? false))
-        {
-            return SpriteDictionary.FeralUmbreon[18];
-        }
-
-        if (size >= 6 && (actor.PredatorComponent?.IsUnitOfSpecificationInPrey(Race.Selicia, false) ?? false))
-        {
-            return SpriteDictionary.FeralUmbreon[17];
-        }
 
         if (size > 4) size = 4;
 

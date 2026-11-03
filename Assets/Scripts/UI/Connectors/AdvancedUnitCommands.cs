@@ -1,5 +1,6 @@
-﻿// Modified for the VoreWar mercenary-company conversion.
+// Modified for the VoreWar mercenary-company conversion.
 // 2026-11-02: Style dynamically generated tactical ability buttons with the shared blue palette (spec 16).
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using UnityEngine;
@@ -37,9 +38,7 @@ public class AdvancedUnitCommands : MonoBehaviour
             {
                 if (action.Name == "Tail Vore" && actor.Unit.Race == Race.Terrorbird)
                     SetButton("Crop Vore", action.OnClicked, action.ButtonColor);
-                if (action.Name == "Tail Vore" && actor.Unit.Race == Race.Tatltuae)
-                    SetButton("Hackle Vore", action.OnClicked, action.ButtonColor);
-                else if (action.Name == "Breast Vore" && actor.Unit.Race == Race.Kangaroos)
+                if (action.Name == "Breast Vore" && actor.Unit.Race == Race.Kangaroos)
                     SetButton("Pouch Vore", action.OnClicked, action.ButtonColor);
                 else if (action.ManaCost > 0)
                     SetButton(action.Name, action.OnClicked, action.ButtonColor, false, actor, action.ManaCost);

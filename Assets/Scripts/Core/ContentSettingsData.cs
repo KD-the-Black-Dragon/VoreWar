@@ -3,6 +3,7 @@
 // 2026-10-30: Lock retired settings to code defaults; persist only retained preferences (spec 02C).
 // 2026-10-30: Route species preferences through the approved roster (spec 03A1).
 // 2026-11-02: Retire nine additional content preferences to their existing defaults (spec 15B).
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 // Defaults and loading logic are extracted from the upstream ContentSettings component.
 using System;
@@ -321,8 +322,7 @@ internal static class ContentSettingsData
     // This is the old page's spawner set, not the future curated species policy.
     internal static bool HasLegacySpawnerControls(Race race)
     {
-        return race >= Race.Vagrants && race < Race.Selicia && race != Race.WyvernMatron && race != Race.DarkSwallower && race != Race.Collectors && race != Race.CoralSlugs
-            && race != Race.SpitterSlugs && race != Race.SpringSlugs && race != Race.Raptor && race != Race.WarriorAnts && race != Race.FeralEevee && race != Race.FeralEqualeon
-            && race != Race.EarthDryad && race != Race.RiverDryad && race != Race.FungalDryad;
+        return race >= (Race)100 && race < (Race)170 && race != Race.WyvernMatron && race != Race.CoralSlugs
+            && race != Race.SpitterSlugs && race != Race.SpringSlugs && race != Race.WarriorAnts;
     }
 }

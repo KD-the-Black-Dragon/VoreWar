@@ -8,6 +8,58 @@ The covered derivative work continues under the applicable GNU GPL version 3 ter
 
 Record completed source changes by actual date, affected paths, and a short description, with a related spec where useful. Modified source files also receive dated notices under the workflow in [AGENTS.md](AGENTS.md). Mark additions as this fork's additions. Preserve previous entries and do not describe planned removals or features as implemented.
 
+## 2026-11-03 — Spec24: physical Bestiary retirement
+
+- Modified `Assets/base.unity`: remove the deprecated Bestiary Screen subtree, inactive Bestiary menu-button instance, dedicated controller component and their callbacks. Remove only the retired transforms from parent child lists; preserve all unrelated scene content, including the pending Spec23 credits changes. Exact retired local IDs recorded in Logs/bestiary24-before.json; no remaining local-ID/GUID consumers found during source/content review.
+- Directly moved the remaining `Assets/Bestiary/` folder and `Assets/Bestiary.meta`, plus `Assets/Scripts/UI/BestiaryPanel.cs` and its metadata, into ignored `Recycle Bin/Retired Bestiary/` with the original Assets hierarchy. 15 files, including six image/metadata pairs, folder metadata and controller/metadata; hashes verified after moves. Nothing deleted, shared assets untouched. Exact paths follow:
+
+  - `Assets/Bestiary/BoomBunny.jpg` -> `Recycle Bin/Retired Bestiary/Assets/Bestiary/BoomBunny.jpg`
+  - `Assets/Bestiary/BoomBunny.jpg.meta` -> `Recycle Bin/Retired Bestiary/Assets/Bestiary/BoomBunny.jpg.meta`
+  - `Assets/Bestiary/HarvesterBio.jpg` -> `Recycle Bin/Retired Bestiary/Assets/Bestiary/HarvesterBio.jpg`
+  - `Assets/Bestiary/HarvesterBio.jpg.meta` -> `Recycle Bin/Retired Bestiary/Assets/Bestiary/HarvesterBio.jpg.meta`
+  - `Assets/Bestiary/HS010.png` -> `Recycle Bin/Retired Bestiary/Assets/Bestiary/HS010.png`
+  - `Assets/Bestiary/HS010.png.meta` -> `Recycle Bin/Retired Bestiary/Assets/Bestiary/HS010.png.meta`
+  - `Assets/Bestiary/HS011.png` -> `Recycle Bin/Retired Bestiary/Assets/Bestiary/HS011.png`
+  - `Assets/Bestiary/HS011.png.meta` -> `Recycle Bin/Retired Bestiary/Assets/Bestiary/HS011.png.meta`
+  - `Assets/Bestiary/HS012.png` -> `Recycle Bin/Retired Bestiary/Assets/Bestiary/HS012.png`
+  - `Assets/Bestiary/HS012.png.meta` -> `Recycle Bin/Retired Bestiary/Assets/Bestiary/HS012.png.meta`
+  - `Assets/Bestiary/HS013.png` -> `Recycle Bin/Retired Bestiary/Assets/Bestiary/HS013.png`
+  - `Assets/Bestiary/HS013.png.meta` -> `Recycle Bin/Retired Bestiary/Assets/Bestiary/HS013.png.meta`
+  - `Assets/Bestiary.meta` -> `Recycle Bin/Retired Bestiary/Assets/Bestiary.meta`
+  - `Assets/Scripts/UI/BestiaryPanel.cs` -> `Recycle Bin/Retired Bestiary/Assets/Scripts/UI/BestiaryPanel.cs`
+  - `Assets/Scripts/UI/BestiaryPanel.cs.meta` -> `Recycle Bin/Retired Bestiary/Assets/Scripts/UI/BestiaryPanel.cs.meta`
+
+- GPL workflow: actual License.txt sections 4–5 reviewed; the archived controller retains earlier notices and has a dated retirement notice. Exact serialized/moved paths recorded here; inherited licensing/attribution preserved. No outside code/art/dependencies introduced. Existing provenance/distribution gates remain open. Source/scene-reference and archive-hash review only; no Unity compile, new player build or manual playtest run for this packet.
+
+## 2026-11-03 — Spec23: Warband and upstream credits separation
+
+- Modified `Assets/StreamingAssets/Credits.txt` and the existing credits text in `Assets/base.unity`: add a separate centered Vore Warband credit for K.D. — Curator of Voracious Beasts, the user-supplied Patreon URL and requested GPL-3.0 principles statement. Label the remaining credits as Vore War 45D. Remove the obsolete OC character-rights entries through Renamon and the closing Note from Ignis. Preserve the CHARACTER RIGHTS heading, complete GAME FREAK/Creatures Inc./Nintendo note and all other contributor/art/code credits unchanged.
+- Added fork source `Assets/Scripts/UI/CreditsLink.cs` and `Assets/Scripts/UI/CreditsLink.cs.meta`; attach the component only to the existing credits text in `Assets/base.unity`. A left-click on the supplied Patreon link opens that exact URL. No other menu layout, artwork or gameplay changes.
+- GPL workflow: actual License.txt sections 4–5 reviewed; new source has an addition/date notice, exact text/serialized/source/meta paths recorded here, existing contributor/legal notices retained outside the explicitly requested obsolete character-rights block. No outside code/assets/dependencies introduced. The displayed principles statement is the user's requested credit wording; existing provenance/distribution checks remain applicable. Source/content review performed; no Unity compile, new player build or graphical/manual link test run for this packet.
+
+## 2026-11-03 — Spec22: trait metadata import and retained developer Unit Tags
+
+- Modified `Assets/Scripts/Utility/ExternalTraitHandler.cs`: skip undefined retired trait names per entry, keep valid local category/rarity edits, fill missing entries from the shipped catalog and replace metadata without deleting the existing file first. Malformed entries cannot abort later valid rows. Update the Unit Tags loader per file, report invalid/duplicate definitions, normalize missing lists and track source filenames so legacy space-prefixed files and renamed tags save to their own existing paths. New tag filenames include stable IDs. No personal settings or saves accessed during agent checks.
+- Modified `Assets/StreamingAssets/taggedTraits.json`: remove exactly TheMatron, QueenOfFrost and DestroyingAngel category rows; all other rows and their ordering/values retained.
+- Modified `Assets/Scripts/Subwindows/RaceEditorPanel.cs`, `Assets/Scripts/Subwindows/UnitTagEditor.cs`, `Assets/Scripts/UI/Connectors/UnitTagMenu.cs`: tolerate empty tag lists/missing definitions; assign stable IDs rather than dropdown positions; refresh species tag choices after tag editing; correct loaded condition dropdown offsets. Retain the existing password/session gate and require it for SaveTag. No built-in Unit Tags or player balance controls added.
+- Modified `Assets/Scripts/Utility/TagConditionChecker.cs`: correct legacy numeric species-category comparisons, retain trait-derived tags when species tag overrides are absent and guard missing tactical actors in fullness/digestion conditions. These legacy category conditions remain developer-only and do not replace the curated sapient/animal policy.
+- Modified `Assets/Scripts/Modes/StartMode.cs`: suppress the player-facing developer trait-category warning on the main menu; developer tools remain available through the password-protected Race Editor.
+- Includes the preceding `Assets/Scripts/UI/Connectors/RaceHoverObjectAuto.cs` fix in the next player build. No additional art changes or content restoration.
+- GPL workflow: actual License.txt sections 4–5 reviewed; seven changed C# paths have dated modification notices, inherited notices/attribution preserved; exact non-commentable metadata path recorded above. No outside code/assets/dependencies introduced. Seven license/change/dependency notices accompany the private build; existing provenance/distribution gates remain open. See `docs/implementation/22-unit-tags-correction.md` for actual verification and manual-review limits.
+
+## 2026-11-03 — Race Editor dropdown hover preview correction
+
+- Modified `Assets/Scripts/UI/Connectors/RaceHoverObjectAuto.cs`: use the shared species-name parser for singular/spaced dropdown labels instead of parsing display text as a raw enum name. Retain the existing preview eligibility gate, including rejection of retired species. No artwork, bundles, scenes or species availability changed.
+- GPL check: actual License.txt sections 4–5 reviewed; dated conversion notice added, exact source path recorded here, existing licensing/attribution retained. No copied code, assets or dependencies introduced; existing release-provenance gates remain open. Source/diff review only; no new Unity compile, player build or graphical playtest run for this correction.
+
+## 2026-11-03 — Spec21: approved physical content retirement
+
+- Removed the 90 permanently rejected species/character identities from the active Race catalog, exclusive rendering implementations, spawn/parameter entries and OC equipment/trait branches. Surviving numeric species IDs are unchanged. Modified and relocated source files carry dated conversion notices; meaningful previous notices and attribution are retained.
+- Directly moved 808 source/asset/bundle/metadata paths into ignored `Recycle Bin/Retired Content/`, preserving original hierarchy and verified hashes. Nothing was deleted. Exact modified, added and source-to-archive paths are recorded in [the executed path record](docs/implementation/21-executed-source-paths.md), which is part of this change notice. The former bundle payloads were replaced rather than left carrying rejected artwork.
+- Preserved generic/shared artwork and future non-rejected species. Extracted original pixels for Sergal mask/discard, generic slash and Diamond Storm effects into `Assets/Sprites/Units/SharedMaskParts.png`, `Assets/Sprites/TacticalEffects/SharedSlashFrames.png`, and `Assets/Sprites/TacticalEffects/SharedDiamondProjectile.png`; original artwork attribution/terms continue to apply. Added fork editor utility `Assets/Editor/RetiredContentBuild.cs` and associated metadata. Updated `Assets/Prefabs/Tactical/Specific Effects/Slash Effect.prefab`, `Assets/Prefabs/Tactical/Specific Effects/DiamondStorm.prefab`, sprite catalog/loader bindings and exact archived GUID references in `Assets/base.unity`, `Assets/Prefabs/Sprite Dictionary.prefab` and associated metadata. Replacement empire/merc/monster bundles and manifests are under `Assets/StreamingAssets/AssetBundles/`; the exclusive specialmerc group is archived.
+- Broad swallowed-Selicia sprite sheets are intact. The [artwork inspection index](docs/implementation/21-selicia-artwork-review.md) identifies dedicated archived candidates and historical mixed-sheet frame references for user review. It does not authorize trimming those sheets.
+- GPL workflow: actual License.txt sections 4–5 reviewed; source notice/date/path coverage checked, existing license/attribution preserved, exact relocations recorded. No outside code/art/dependencies introduced. Retained original/derived asset provenance and binary-distribution obligations remain open release gates; these checks are not a claim of complete distribution compliance. Verification and manual-review limits are recorded in the [execution report](docs/implementation/21-retired-content-execution.md).
+
 ## 2026-11-03 — Spec20: menu cleanup and shared campaign Help
 
 - Modified `Assets/Scripts/Subwindows/CompanyCampaignView.cs`: remove Continue and Map-only preview creation buttons and their unused handlers; remove the obsolete preview instruction; move the retained Load Game beside Create company. Existing campaign/leader creation, Ironman setup and save loading remain intact.

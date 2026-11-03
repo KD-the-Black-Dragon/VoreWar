@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
@@ -37,12 +40,6 @@ public class EmpireReport : MonoBehaviour
             Reports[i].Contact.gameObject.SetActive(State.World.ActingEmpire.Side != i);
             Reports[i].Contact.onClick.AddListener(() => DiplomacyScreen.Open(State.World.ActingEmpire, State.World.GetEmpireOfSide(side)));
         }
-        if (Config.GoblinCaravans)
-        {
-            int side = (int)Race.Goblins;
-            Reports[GoblinNum].Contact.onClick.RemoveAllListeners();
-            Reports[GoblinNum].Contact.onClick.AddListener(() => DiplomacyScreen.Open(State.World.ActingEmpire, State.World.GetEmpireOfSide(side)));
-        }
 
 
         Refresh();
@@ -69,27 +66,12 @@ public class EmpireReport : MonoBehaviour
             }
 
         }
-        if (Config.GoblinCaravans)
-        {
-            Empire empire = State.World.GetEmpireOfRace(Race.Goblins);
-            Reports[GoblinNum].gameObject.SetActive(true);
-            if (empire != null)
-            {
-                Reports[GoblinNum].EmpireStatus.text = $"{empire.Name}  Armies : {empire.Armies.Count()} ";
-                if (empire.IsAlly(State.World.ActingEmpire) || Config.CheatExtraStrategicInfo || State.GameManager.StrategyMode.OnlyAIPlayers)
-                {
-                    Reports[GoblinNum].EmpireStatus.text += $"Units: {empire.GetAllUnits().Count}";
-                }
-            }
-        }
 
 
         int currentIndex = GoblinNum;
         foreach (Empire empire in State.World.MonsterEmpires)
         {
             currentIndex += 1;
-            if (empire.Race == Race.Goblins)
-                continue;
             SpawnerInfo spawner = Config.SpawnerInfo(empire.Race);
             if (spawner == null)
                 continue;
@@ -112,7 +94,6 @@ public class EmpireReport : MonoBehaviour
         List<string> Neutral = new List<string>();
         List<string> Enemies = new List<string>();
         List<Empire> list = State.World.MainEmpires.Where(s => s.KnockedOut == false).ToList();
-        //list.Append(State.World.GetEmpireOfRace(Race.Goblins));
 
         foreach (Empire emp in list)
         {

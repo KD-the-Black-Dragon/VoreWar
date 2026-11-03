@@ -1,4 +1,7 @@
-﻿using OdinSerializer;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using OdinSerializer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -151,24 +154,11 @@ class MonsterStrategicAI : IStrategicAI
                         }
                     }
                 }
-                else if (empire.ReplacedRace == Race.FeralSharks)
-                {
-                    for (int i = 0; i < count; i++)
-                    {
-                        if (spawner.AddOnRace && State.Rand.Next(2) == 0)
-                            army.Units.Add(new Unit(empire.Side, Race.DarkSwallower, RandXp(baseXp), true));
-                        else
-                            army.Units.Add(new Unit(empire.Side, Race.FeralSharks, RandXp(baseXp), true));
-                    }
-                }
                 else if (empire.ReplacedRace == Race.Harvesters)
                 {
                     for (int i = 0; i < count; i++)
                     {
-                        if (spawner.AddOnRace && State.Rand.Next(3) == 0)
-                            army.Units.Add(new Unit(empire.Side, Race.Collectors, RandXp(baseXp), true));
-                        else
-                            army.Units.Add(new Unit(empire.Side, Race.Harvesters, RandXp(baseXp), true));
+                        army.Units.Add(new Unit(empire.Side, Race.Harvesters, RandXp(baseXp), true));
                     }
                 }
                 else if (empire.ReplacedRace == Race.Dragon)
@@ -202,16 +192,6 @@ class MonsterStrategicAI : IStrategicAI
                     for (int i = 0; i < springCount; i++)
                         army.Units.Add(new Unit(empire.Side, Race.SpringSlugs, RandXp(baseXp), true));
                 }
-                else if (empire.ReplacedRace == Race.Compy)
-                {
-                    for (int i = 0; i < count; i++)
-                    {
-                        if (spawner.AddOnRace && State.Rand.Next(2) == 0)
-                            army.Units.Add(new Unit(empire.Side, Race.Raptor, RandXp(baseXp), true));
-                        else
-                            army.Units.Add(new Unit(empire.Side, Race.Compy, RandXp(baseXp), true));
-                    }
-                }
                 else if (empire.ReplacedRace == Race.Monitors)
                 {
                     for (int i = 0; i < count; i++)
@@ -234,50 +214,10 @@ class MonsterStrategicAI : IStrategicAI
                 {
                     for (int i = 0; i < count; i++)
                     {
-                        if (spawner.AddOnRace && State.Rand.Next(4) == 0)
-                            army.Units.Add(new Unit(empire.Side, Race.FeralEevee, RandXp(baseXp), true));
-                        else
-                            army.Units.Add(new Unit(empire.Side, Race.FeralUmbreon, RandXp(baseXp), true));
+                        army.Units.Add(new Unit(empire.Side, Race.FeralUmbreon, RandXp(baseXp), true));
                     }
                 }
-                else if (empire.ReplacedRace == Race.WoodDryad)
-                {
-                    const float woodFraction = .25f;
-                    const float earthFraction = .25f;
-                    const float riverFraction = .25f;
-                    int woodCount = Math.Max((int)(woodFraction * count), 1);
-                    int earthCount = Math.Max((int)(earthFraction * count), 1);
-                    int riverCount = Math.Max((int)(riverFraction * count), 1);
-                    int fungalCount = count - woodCount - earthCount - riverCount;
-                    for (int i = 0; i < woodCount; i++)
-                        army.Units.Add(new Unit(empire.Side, Race.WoodDryad, RandXp(baseXp), true));
-                    for (int i = 0; i < earthCount; i++)
-                        army.Units.Add(new Unit(empire.Side, Race.EarthDryad, RandXp(baseXp), true));
-                    for (int i = 0; i < riverCount; i++)
-                        army.Units.Add(new Unit(empire.Side, Race.RiverDryad, RandXp(baseXp), true));
-                    for (int i = 0; i < fungalCount; i++)
-                        army.Units.Add(new Unit(empire.Side, Race.FungalDryad, RandXp(baseXp), true));
-                }
-                else if (empire.ReplacedRace == Race.SoulSprite)
-                {
-                    if (spawner.AddOnRace)
-                    {
-                        army.Units.Add(new Leader(empire.Side, Race.Seraph, RandXp(baseXp * 2)));
-                        for (int i = 1; i < count; i++)
-                        {
-                            army.Units.Add(new Unit(empire.Side, Race.SoulSprite, RandXp(baseXp), true));
-                        }
-                    }
-                    else
-                    {
-                        for (int i = 0; i < count; i++)
-                        {
-                            army.Units.Add(new Unit(empire.Side, Race.SoulSprite, RandXp(baseXp), true));
-                        }
-                    }
-                }
-                else
-                {
+                else {
                     for (int i = 0; i < count; i++)
                     {
                         army.Units.Add(new Unit(empire.Side, empire.ReplacedRace, RandXp(baseXp), true));

@@ -1,4 +1,6 @@
-﻿using CruxClothing;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Remove exclusive retired code and preserve retained dependencies (spec 21).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;

@@ -1,4 +1,11 @@
+<align=center><size=36><b>Vore Warband</b></size>
+Total conversion by
+<b>K.D. — Curator of Voracious Beasts</b>
+<link="https://www.patreon.com/KD_Dragon"><u>https://www.patreon.com/KD_Dragon</u></link>
+Created with full observance of GPL-3.0 license principles.
 
+<size=32><b>Vore War 45D</b></size>
+The remaining credits are for Vore War 45D.</align>
 
 CODE:
 Original game by <b>darkevilme/WarpedRealities</b>
@@ -286,93 +293,8 @@ Some of the remaining sprites are still by <b>darkevilme</b>, but most of the ta
 
 
 <b>CHARACTER RIGHTS:</b>
-<i>These are all OCs and as such we must respect their wishes.
-These characters can <b>not</b> be used outside of this game 
-without explicit permission from their owners.</i>
-
-<b><u>Selicia:</b></u>
-Selicia
-Zera
-
-<b><u>InfernoTheDragon:</b></u>
-Zoey
-Feit
-Taraluxia
-Konane
-
-<b><u>Magentasaur:</b></u>
-Scorch
-Vision
-D.R.A.C.O.
-
-<b><u>SecretlyKoishi:</b></u>
-Erin
-
-<b><u>GreenSlime:</b></u>
-Asura
-
-<b><u>Aurilika:</b></u>
-Auri
-
-<b><u>Novoyetelo:</b></u>
-Abakhanskya
-Cierihaka(?)
-
-<b><u>StarSpectre:</b></u>
-Singularity
-
-<b><u>CaneSugarCat:</b></u>
-Salix
-
-<b><u>Tatltuae:</b></u>
-Tatltuae
-
-<b><u>Wolfwar106:</b></u>
-Xelhilde
-
-<b><u>Supra:</b></u>
-Olivia
-
-<b><u>Legoshi/RyanTheSergal:</b></u>
-Ryan
-
-<b><u>Zezmeril:</b></u>
-Skapa
-
-<b><u>IronGelatin:</b></u>
-Nectar
-
-<b><u>Yonell:</b></u>
-Seville
-
-<b><u>NemoTheAxolotl:</b></u>
-Cherub
-Seraph
-
-<b><u>Bandi Namco/Toei Animation:</b></u>
-Renamon
-
 <b><u>GAME FREAK/Creatures Inc./Nintendo:</b></u>
 Goodra
 Eevee, Anthro and Feral
 Umbreon, Anthro and Feral
 (Feels weird, I know.  But credit where its due.)
-
-
-<b><u><i>Note from Ignis</b></u></i> 
-I know I'm missing a bunch of stuff 
-as this game is seven years old now and I can 
-only recall so much information on my own.
-I'm especially unclear on who wrote what log messages
-Or who wrote the events for that matter.
-If you see anything missing that you would 
-like added, please don't hesitate to contact 
-me and let me know!
-
-
-
-
-
-
-
-
