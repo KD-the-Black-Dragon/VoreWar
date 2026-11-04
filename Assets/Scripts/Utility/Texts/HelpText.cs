@@ -4,6 +4,7 @@
 // 2026-11-03: Describe named saves, exact battle resumption and Ironman recovery (spec 19).
 // 2026-11-03: Match saving help to the renamed Load Game button (spec 20).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+// 2026-11-03: Implement four active stats and agreed combat rules (spec 29).
 using System;
 using System.Linq;
 using System.Text;
@@ -56,18 +57,16 @@ After battle, read the results, then handle any leader revival. Campaign rewards
 
     public static string Stats = @"Character stats
 
-Strength: melee accuracy/damage and part of maximum HP.
-Dexterity: ranged accuracy/damage and a smaller contribution to escape.
-Agility: defense and tactical movement.
-Endurance: maximum HP and resistance to some damage.
-Mind: magic accuracy, damage and other spell effects.
-Will: magic defense, mana and much of vore defense/escape.
-Voracity: vore accuracy and related offense.
-Stomach: capacity, retention and digestion.
+Strength (STR): melee accuracy/damage, maximum HP and digestion resistance.
+Agility (AGI): ranged accuracy/damage, physical evasion and vore evasion.
+Intelligence (INT): magic accuracy/damage/effects, mana, magic resistance, escape while swallowed and critical chance.
+Voracity (VOR): swallow chance, capacity, digestion speed and keeping prey from escaping.
 
-Species and traits still influence these stats. Leadership is retired; the company leader instead starts with stronger ordinary stats.
+Base AP is fixed by species specialty: melee/vore 3, ranged/magic 2. AGI does not grant AP. Moving uses AP; most attacks and abilities use all remaining AP.
 
-Injury penalties are derived separately from base stats and stack. Hand injuries reduce Dexterity, head injuries Mind, leg injuries movement, and arm/body injuries weapon damage. Equipment and existing trait/status effects still matter. Inspect a unit for its current effects.";
+A missed weapon attack with at least 51% accuracy gets one silent retry at that same percentage for a graze. A graze uses reduced damage; a successful hit can become a critical. Only the final result is shown.
+
+Injuries and equipment still modify combat. Hand injuries reduce AGI, head injuries INT, leg injuries movement, and arm/body injuries weapon damage. Leadership remains retired.";
 
     public static string Items = @"Company equipment
 

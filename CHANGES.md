@@ -8,6 +8,88 @@ The covered derivative work continues under the applicable GNU GPL version 3 ter
 
 Record completed source changes by actual date, affected paths, and a short description, with a related spec where useful. Modified source files also receive dated notices under the workflow in [AGENTS.md](AGENTS.md). Mark additions as this fork's additions. Preserve previous entries and do not describe planned removals or features as implemented.
 
+## 2026-11-03 — Spec29 tactical stat layout and hidden hover correction
+
+- Modified `Assets/Scripts/UI/TacticalHudView.cs`: fix visible stat rows at30 reference units rather than stretching them over the old eight-stat area. Place four equipment boxes below the compact stats and optional battle counters, and move/enlarge the traits/status viewport to reclaim the space. Preserve existing font sizes, health/mana/XP bars, portrait, item slots and gameplay.
+- Modified `Assets/Scripts/Subwindows/InfoPanel.cs`: refresh the compact tactical layout after determining whether battle counters are visible, including when switching units.
+- Modified `Assets/Scripts/UI/UnitInfoPanel.cs`: exclude inactive objects from geometry-based hover checks, including hidden legacy stats/equipment; retain tooltips on visible stats and the four live item slots. New internal rectangle references are UI state only, not game/save data.
+- Dated per-source notices and exact-path change record added; inherited legal/attribution notices retained. No external source, assets or dependencies introduced, no scene/prefab changes, no files moved/deleted. Existing distribution/provenance review gates remain open. Related record: `docs/implementation/29-four-stat-planning.md`.
+
+## 2026-11-03 — Spec29 four-stat, AP and weapon-result revamp
+
+- Implement four active stats: STR melee/HP/digestion resistance, AGI ranged/evasion/vore evasion, INT magic/mana/resistance/escape/criticals, VOR swallowing/capacity/digestion/retention. Preserve historical numeric IDs and compatibility aliases; old units and species ranges convert once using documented weighted averages, never summing the old stats. Count active stats once in growth, choices and power ratings. Preserve equipped stat bonuses during conversion.
+- Fixed species AP: Gnoll/melee and future-default melee/vore 3; Avian/ranged, Lizard/mage and ranged Spitter Slug 2. Remove stat/positive speed growth from AP, retain injury/fullness penalties, ordinary all-remaining-AP action rules and un-restored retired trait status. Fractional supporting-action costs have a minimum of 1 in execution and AI estimates.
+- Ordinary weapon attacks roll accuracy first; a miss at accuracy >=51% gets one independent retry at the same chance for a graze, using the inherited graze damage pipeline (default30% plus existing modifiers). Initial hits can critically hit using provisional INT-based chance (5% +0.25 percentage points per effective INT, capped35%) and inherited critical damage (default1.5x). No crit on a rescued graze; logs/popups report final result only. Spells/vore/status abilities retain their separate resolution rules.
+- Update company/inspection/level-up/help/tooltips and developer stat-range/choice controls. Preserve old saves via per-unit/per-range markers and non-destructive load conversion; old pending level-up choices refresh and old mid-battle AP clamps only on upgrade. Existing Spec28 feedback fixes are preserved and included in subsequent builds.
+- Modified source paths:
+  - `Assets/Scripts/AI/TacticalAI.cs`
+  - `Assets/Scripts/Core/CompanyContracts.cs`
+  - `Assets/Scripts/Core/CompanyEconomy.cs`
+  - `Assets/Scripts/Core/CompanyEquipment.cs`
+  - `Assets/Scripts/Core/CompanyInjuries.cs`
+  - `Assets/Scripts/Core/ContentSettingsData.cs`
+  - `Assets/Scripts/Core/WorldConfig.cs`
+  - `Assets/Scripts/Entities/Units/Actor_Unit.cs`
+  - `Assets/Scripts/Entities/Units/Leader.cs`
+  - `Assets/Scripts/Entities/Units/NPC_unit.cs`
+  - `Assets/Scripts/Entities/Units/PredatorComponent.cs`
+  - `Assets/Scripts/Entities/Units/Prey.cs`
+  - `Assets/Scripts/Entities/Units/Spawn.cs`
+  - `Assets/Scripts/Entities/Units/Unit.cs`
+  - `Assets/Scripts/Enums/Stat.cs`
+  - `Assets/Scripts/Modes/Tactical/TacticalMessageLog.cs`
+  - `Assets/Scripts/Races/RaceParameters.cs`
+  - `Assets/Scripts/Races/Traits.cs`
+  - `Assets/Scripts/Subwindows/CompanyManagementUI.cs`
+  - `Assets/Scripts/Subwindows/InfoPanel.cs`
+  - `Assets/Scripts/Subwindows/RaceEditorPanel.cs`
+  - `Assets/Scripts/UI/Connectors/EditStatButton.cs`
+  - `Assets/Scripts/UI/UnitEditorPanel.cs`
+  - `Assets/Scripts/Utility/Stored/RaceSettings.cs`
+  - `Assets/Scripts/Utility/Texts/HelpText.cs`
+  - `Assets/Scripts/Utility/Texts/HoveringTooltip.cs`
+- Added `Assets/Scripts/Core/WarbandStats.cs` and its `Assets/Scripts/Core/WarbandStats.cs.meta` companion. The helper is original fork code; no external code/assets/dependencies introduced. The exact meta path is associated here because Unity metadata cannot carry C# comments.
+- Related design/implementation record: `docs/implementation/29-four-stat-planning.md`. Every changed source has a dated modification/addition notice; earlier attribution retained, actual License.txt sections4–5 reviewed. Existing distribution/provenance obligations remain unresolved as previously recorded; this is not a release or blanket compliance claim.
+
+## 2026-11-03 — Spec28 accepted styling: two padding/border corrections
+
+- User accepts the UI beautification except two specific details. Modified `Assets/Scripts/UI/TacticalHudView.cs` and `Assets/Scripts/UI/UIThemeSurface.cs`: omit only the duplicate left border of the combat log's nested scroll/viewport surfaces, keeping the leftmost outer frame, other edges, shading, text and layout. The per-instance left-edge setting is serialized for normal Unity cloning; all other surfaces default to retaining it.
+- Modified `Assets/Scripts/Subwindows/CompanyManagementUI.cs`: member-row actions only use34-point reference height instead of38, six units less width centered within the previous bounds, and matching label rectangles. Keep fonts/text/callbacks, row borders, portraits, pagination and other screens unchanged.
+- GPL workflow: actual License.txt sections4–5 reviewed; three source files carry dated notices, meaningful earlier notices/attribution retained, exact paths recorded here. No new source/assets/dependencies, serialized scene changes, file moves/deletion or personal-save access. Existing provenance/distribution gates unchanged. Scoped source/scene-reference and diff review only; no Unity compile, new build or graphical playtest run for these small follow-ups. Latest0691b41b executable predates the corrections.
+
+## 2026-11-03 — Spec28: selected blue-and-gold UI beautification
+
+- Implement the user's selected sampler treatment: Current menu blue base colors, gradient100%, border100%, Aged gold accent and panel borders. Preserve text, accepted sizes/positions, interactions, gameplay and save formats. Base palette is not the Blue & aged gold alternative preset.
+- Added fork source `Assets/Scripts/UI/UIThemeSurface.cs` and `Assets/Scripts/UI/UIThemeSurface.cs.meta`: procedural three-stop UI-only gradients and inside-one-pixel aged-gold borders; full control depth (16%white top/14%black bottom), gentler panel/row/section depth,70%panel-edge opacity/full control opacity. Separate border-only overlay for map/command selection; retain clipping, alpha and ordinary UI materials. Serialize the renderer settings so cloned dropdown templates keep the configured treatment. Reject artwork/fill graphics at the renderer boundary. No imported textures/shaders/dependencies or artwork edits.
+- Modified `Assets/Scripts/UI/UITheme.cs`: gold border/selected accents, shared gradient surfaces, neutral hover/pressed tinting, framed dropdown items and border-only frames. Existing callers cover main menu, Save/Load, Help/Credits, Esc, popups, input dialogs, tooltips and the existing settings/creator/setup controls.
+- Modified `Assets/Scripts/Subwindows/CompanyCampaignView.cs`, `Assets/Scripts/Subwindows/CompanyManagementUI.cs`: replace grey campaign chrome with the shared palette; frame setup/town/management/status areas and roster/recruitment rows; route buttons and inputs through shared styling. Keep terrain/fog tile buttons out of the new effect; place a non-intercepting border over the unchanged map viewport. Row backplates stay behind all portraits so overlapping paper-doll parts are not clipped or obscured. Existing locations, actions, wording, costs and timing unchanged.
+- Modified `Assets/Scripts/Subwindows/OptionsView.cs`, `Assets/Scripts/Subwindows/ContentSettingsView.cs`, `Assets/Scripts/Subwindows/SingleBattleSetupView.cs`, `Assets/Scripts/Subwindows/CompanyLeaderCreatorView.cs`: theme dropdown items/templates without painting over checkmark/arrow or paper-doll graphics.
+- Modified `Assets/Scripts/UI/TacticalHudView.cs`: shared tactical panel/command treatment, bright-gold action-selection outline at its accepted position; exclude portraits and Slider status fills/backgrounds. Modified `Assets/Scripts/UI/RightClickMenu.cs` and `Assets/Scripts/UI/HoveringRacePicture.cs`: theme remaining context-menu/hover-card chrome. Modified `Assets/Scripts/UI/InputBox.cs`: gold-frame retained light input with black entered text and neutral hover colors. Developer Race Editor page redesign remains outside this player-facing pass.
+- GPL workflow: actual License.txt sections4–5 reviewed; eleven modified C# sources plus the new fork source have dated notices and preserve meaningful previous notices/attribution. Exact new metadata path recorded here; no serialized game asset/project/package changes, personal-save access or file deletion/moves. Seven existing license/change/dependency notices packaged with the review build. No new external code/assets/dependencies. Existing provenance/distribution gates remain open; a successful build is not full distribution clearance.
+- Native review build exit0 with no logged C# errors/exceptions/missing scripts; the initial scene/import run refreshed a stale compiler list before recognizing the newly added source and is not counted as clean compilation evidence. Source/hash/notice/diff scope reviewed. No new test framework/tests or repeated unrelated save suite; no graphical playtest claimed. See `docs/implementation/28-ui-beautification.md` for coverage/limits and the combined player checklist.
+
+## 2026-11-03 — Spec27: standalone UI palette sampler
+
+- Added fork source `docs/ui-sampler/index.html` and documentation `docs/ui-sampler/README.md`. Offline, self-contained browser design sampler: current campaign grey/menu blue references plus Blue & aged gold, Midnight & bronze and Warm slate alternatives. Adjustable gradient contrast/border emphasis/accent/panel edges; campaign, tactical-control and options specimens; sample dialog, control states, temporary reference comparison and copyable preference summary. Local browser-only choice persistence. No integration into or modification of Unity UI/gameplay/settings/saves.
+- GPL workflow: actual License.txt sections 4–5 reviewed; dated fork-addition notice at top of new HTML and an exact-path change record here, with local license link. New locally authored HTML/CSS/JavaScript, system fonts only; no external code/assets/dependencies or copied artwork. Existing upstream/dependency attribution and provenance/distribution gates remain untouched. This design sampler does not certify release readiness of the game.
+- Inspection: isolated headless Edge, 14 focused interaction/layout checks passed; rendered campaign/tactical/options specimens inspected at 1440/1024/360 pixel widths. Final JavaScript syntax check passed. No Unity build, new test framework or game test sources. See sampler README for exact limits and usage. Existing live UI and all prior user work preserved; no files deleted or moved.
+
+## 2026-11-03 — Credits character-rights wording follow-up
+
+- Modified `Assets/StreamingAssets/Credits.txt` and the matching credits text in `Assets/base.unity`: add the exact user-requested statement “All OCs used in Vore War have been removed from Vore Warband.” beneath CHARACTER RIGHTS with blank lines before/after. Remove the complete parenthetical “Feels weird, I know. But credit where its due.” line. Preserve the remaining Pokémon attribution, credit wording and layout.
+- Content-only change; exact serialized/text paths recorded here as the associated modification notice. Actual License.txt sections 4–5 reviewed, remaining license/attribution preserved, no new code/assets/dependencies. Existing provenance/distribution gates unchanged. Scoped content review only; no Unity invocation, new build or playtest.
+
+## 2026-11-03 — Requested Windows review build for Specs23–26
+
+- Built the pending credits text/link update, Bestiary retirement, default name-list cleanup and dark-blue/smaller credits styling into a fresh private Win64 player. Final clean build exited0 with no logged C# errors, exceptions or missing-script messages. Initial build refreshed a stale BestiaryPanel compiler-cache entry; it is preserved separately and is not the clean-log evidence.
+- Existing License.txt sections4–5 and source modification notices/CHANGES coverage reviewed; seven existing license/change/dependency notices packaged with the build. No new code, art or dependencies in this build-only step; existing provenance/distribution gates remain open. No graphical playtest or repeated save suite claimed.
+- Unity import recognized the user's intentional removal of empty retired-art folders and removed their orphan folder metadata: `Assets/Sprites/Units/Bella.meta`, `Cherub.meta`, `Elves.meta`, `RwuMercenaries.meta`, `Seraph.meta`, `SoulSprite.meta`, `Yordles.meta`, `goblins.meta`, `imps.meta`, `zera.meta` (all under the same Units directory). These were not restored or treated as corruption. No agent deletion command, personal-save access or changes to prior builds.
+
+## 2026-11-03 — Spec26: credits color and typography unification
+
+- Modified `Assets/Scripts/UI/CreditsLink.cs`: apply the existing UITheme dark-blue background/panel colors, blue Exit button and scrollbar, and light text when the credits page opens. Reduce body text from 30 to 24 points, render the Warband heading at 30 and upstream heading at 26, and reduce Exit label typography to 24. Restrict styling to the existing credits Canvas hierarchy; preserve layout, scroll behavior, wording, attribution and Patreon click handling. No serialized scene/content changes in this packet.
+- GPL workflow: actual License.txt sections 4–5 reviewed; dated per-file modification notice added after the existing fork-addition notice, exact source path recorded here, existing licensing/attribution preserved. No external assets/code/dependencies introduced. Existing provenance/distribution gates remain open. Scoped source/scene-hierarchy review only; no Unity compile, player build or graphical playtest run.
+
 ## 2026-11-03 — Spec25: retired species name-list cleanup
 
 - Modified `Assets/StreamingAssets/armyNames.txt`: remove exactly 22 retired-species paragraphs while preserving all remaining paragraphs and their spacing byte-for-byte, including uncurated/future species. Removed headings: Humans, Dogs, Wolves, Cats, Imps, Taurus, Foxes, Slimes, Crypters, Harpies, Lamia, Driders, Aabayx, Merfolk, Crux, MainlandElves, Bears, Umbreon, Scylla, Alraune, Ghosts, Yordles. Kept Bunnies and the historical DemiDragons candidate section; no additional species retirement inferred.

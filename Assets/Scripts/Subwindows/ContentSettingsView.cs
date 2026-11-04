@@ -2,6 +2,7 @@
 // 2026-11-02: Restyle retained content pages with a centered blue scroll column, top page selector and visible checkmarks (spec 15B).
 // 2026-11-02: Restore the user-preferred herm/herms wording in content labels (spec 15B feedback).
 // 2026-11-02: Name content apply buttons by their current-game or saved-global-default scope (spec 15B feedback).
+// 2026-11-03: Theme dropdown item surfaces while preserving checkmark graphics (spec 28).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Collections.Generic;
@@ -226,8 +227,7 @@ internal sealed class ContentSettingsView
         {
             var rect = item.GetComponent<RectTransform>(); rect.sizeDelta = new Vector2(rect.sizeDelta.x, 38);
             UITheme.Stretch(dropdown.itemText.rectTransform, 30, 6, 0, 0);
-            foreach (var image in item.GetComponentsInChildren<Image>(true)) image.color = UITheme.Control;
-            UITheme.StyleCheckmark(item, true); UITheme.StyleSelectable(item);
+            UITheme.StyleDropdownItem(item);
         }
     }
 

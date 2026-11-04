@@ -6,6 +6,7 @@
 // 2026-11-02: Enlarge 2x preview cards from their lower-left corner and make room in the combatant columns (spec 15D feedback).
 // 2026-11-02: Nudge sample cards down approximately15screen pixels at1080p, preserving size and centered dolls (spec 15D feedback).
 // 2026-11-02: Move only the sample doll upward inside its unchanged card to clear the feet (spec 15D feedback).
+// 2026-11-03: Theme dropdown item surfaces while preserving checkmark graphics (spec 28).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System.Collections.Generic;
 using System.Linq;
@@ -183,8 +184,7 @@ internal sealed class SingleBattleSetupView
         {
             var rect = item.GetComponent<RectTransform>(); rect.sizeDelta = new Vector2(rect.sizeDelta.x, 36);
             UITheme.Stretch(dropdown.itemText.rectTransform, 30, 6, 0, 0);
-            foreach (var image in item.GetComponentsInChildren<Image>(true)) image.color = UITheme.Control;
-            UITheme.StyleCheckmark(item, true); UITheme.StyleSelectable(item);
+            UITheme.StyleDropdownItem(item);
         }
         Bind(dropdown, row);
     }

@@ -2,6 +2,7 @@
 // 2026-10-30: Remove the hidden Unit Editor click route while retaining ordinary inspection (spec 02B).
 // 2026-11-02: Preserve item hover information for four tactical equipment readouts (spec 16).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+// 2026-11-03: Compact tactical stat rows and restrict hover to active controls (spec 29 feedback).
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -28,6 +29,8 @@ public class UnitInfoPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     internal Unit Unit;
     internal Actor_Unit Actor;
     internal TextMeshProUGUI[] TacticalEquipmentLabels;
+    internal RectTransform[] TacticalEquipmentHeaders;
+    internal RectTransform[] TacticalEquipmentBoxes;
 
     private int nameInstances;
 
@@ -87,7 +90,7 @@ public class UnitInfoPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
         if (TacticalEquipmentLabels != null)
             foreach (var label in TacticalEquipmentLabels)
-                if (RectTransformUtility.RectangleContainsScreenPoint(label.rectTransform, Input.mousePosition, null)) HoverBox = label;
+                if (label != null && IsMousingOver(label.gameObject)) HoverBox = label;
 
         int wordIndex = TMP_TextUtilities.FindIntersectingWord(HoverBox, Input.mousePosition, null);
         //if (wordIndex <= -1 && BasicInfo)
@@ -197,6 +200,8 @@ public class UnitInfoPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     public bool IsMousingOver(GameObject thing)
     {
+        // Hidden legacy stat/equipment labels retain rectangles, but must never be hover targets.
+        if (thing == null || !thing.activeInHierarchy) return false;
         Vector3[] v = new Vector3[4];
         thing.GetComponent<RectTransform>().GetWorldCorners(v);
         Rect rect = new Rect(v[0].x, v[0].y, v[2].x - v[0].x, v[2].y - v[0].y);

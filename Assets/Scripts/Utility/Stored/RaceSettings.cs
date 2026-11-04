@@ -3,6 +3,7 @@
 // 2026-11-01: Separate stored species reads from intentional override creation (spec 03B3C).
 // 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+// 2026-11-03: Implement four active stats and agreed combat rules (spec 29).
 using OdinSerializer;
 using System;
 using System.Collections.Generic;
@@ -215,11 +216,11 @@ class RaceSettings
             var par = GetExisting(race);
             if (par.FavoredStatSet)
             {
-                return par.FavoredStat;
+                return WarbandStats.Canonical(par.FavoredStat);
             }
         }
 
-        return RaceParameters.GetRaceTraits(race).FavoredStat;
+        return WarbandStats.Canonical(RaceParameters.GetRaceTraits(race).FavoredStat);
     }
 
     internal SpellTypes GetInnateSpell(Race race)
@@ -267,9 +268,9 @@ class RaceSettings
 
     internal RaceStats GetRaceStats(Race race)
     {
-        if (Races.ContainsKey(race))
-            return GetExisting(race).Stats;
-        return RaceParameters.GetRaceTraits(race).RaceStats;
+        var stats = Races.ContainsKey(race) ? GetExisting(race).Stats : RaceParameters.GetRaceTraits(race).RaceStats;
+        stats.Consolidate();
+        return stats;
     }
 
     internal Race GetSpawnRace(Race race)

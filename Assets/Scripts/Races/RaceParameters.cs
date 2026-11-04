@@ -4,7 +4,9 @@
 // 2026-11-01: Provisional approved species specialties and weak SpitterSlug support profile (spec 07).
 // 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+// 2026-11-03: Implement four active stats and agreed combat rules (spec 29).
 using OdinSerializer;
+using System;
 using System.Collections.Generic;
 
 static class RaceParameters
@@ -2139,6 +2141,29 @@ internal class RaceStats
     internal StatRange Endurance;
     [OdinSerialize]
     internal StatRange Will;
+
+    [OdinSerialize] internal int FourStatVersion;
+    internal void Consolidate()
+    {
+        if (FourStatVersion == 1) return;
+        Strength = Merge(Strength, Endurance, 2);
+        Agility = Merge(Agility, Dexterity, 1);
+        Mind = Merge(Mind, Will, 2);
+        Voracity = Merge(Voracity, Stomach, 1);
+        Mirror();
+    }
+    static StatRange Merge(StatRange a, StatRange b, int weight)
+    {
+        int min = Math.Max(1, (int)Math.Round((a.Minimum + weight * (double)b.Minimum) / (1 + weight)));
+        int max = Math.Max(min, (int)Math.Round((a.Minimum + Math.Max(1, a.Roll) - 1 +
+            weight * (double)(b.Minimum + Math.Max(1, b.Roll) - 1)) / (1 + weight)));
+        return new StatRange(min, max);
+    }
+    internal void Mirror()
+    {
+        Endurance = Strength; Dexterity = Agility; Will = Mind; Stomach = Voracity;
+        FourStatVersion = 1;
+    }
 
     public RaceStats() //Default Stats
     {

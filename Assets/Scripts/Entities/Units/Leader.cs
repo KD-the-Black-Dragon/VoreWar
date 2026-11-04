@@ -1,6 +1,7 @@
 // Modified for the VoreWar mercenary-company conversion.
 // 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md and License.txt for GPL-3.0 terms.
+// 2026-11-03: Implement four active stats and agreed combat rules (spec 29).
 public class Leader : Unit
 {
 
@@ -18,6 +19,8 @@ public class Leader : Unit
         Stats[(int)Stat.Stomach] = 4 + raceStats.Stomach.Minimum + raceStats.Stomach.Roll;
         Stats[(int)Stat.Leadership] = 10;
 
+        FourStatVersion = 0;
+        EnsureFourStats();
         Health = MaxHealth;
         if (Race == Race.Lizards)
             Races.GetRace(Race.Lizards).RandomCustom(this);
@@ -36,22 +39,12 @@ public class Leader : Unit
     }
     public static Stat[] GetLevelUpPossibilities()
     {
-        Stat[] ret;
-        if (Config.LeadersAutoGainLeadership)
-            ret = new Stat[(int)Stat.Leadership];
-        else
-            ret = new Stat[(int)Stat.None];
-        for (int i = 0; i < ret.Length; i++)
-        {
-
-            ret[i] = (Stat)i;
-        }
-        return ret;
+        return (Stat[])WarbandStats.Active.Clone();
     }
 
     public override int GetStatTotal()
     {
-        return base.GetStatTotal() + GetStat(Stat.Leadership);
+        return base.GetStatTotal();
     }
 }
 

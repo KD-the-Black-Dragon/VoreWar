@@ -1,6 +1,7 @@
 // Modified for the VoreWar mercenary-company conversion.
 // 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md and License.txt for GPL-3.0 terms.
+// 2026-11-03: Implement four active stats and agreed combat rules (spec 29).
 public class Spawn : Unit
 {
 
@@ -17,6 +18,8 @@ public class Spawn : Unit
         Stats[(int)Stat.Voracity] = 8 + raceStats.Voracity.Minimum;
         Stats[(int)Stat.Stomach] = 4 + raceStats.Stomach.Minimum;
 
+        FourStatVersion = 0;
+        EnsureFourStats();
         Health = MaxHealth;
         if (race == Race.Lizards)
             Races.GetRace(Race.Lizards).RandomCustom(this);

@@ -8,6 +8,7 @@
 // 2026-11-01: Mark actual digestion death explicitly and preserve lasting vore recovery through temporary HP (specs 09–10).
 // 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+// 2026-11-03: Implement four active stats and agreed combat rules (spec 29).
 using OdinSerializer;
 using System;
 using System.Collections.Generic;
@@ -936,7 +937,7 @@ public class PredatorComponent
             c += unit.GetStatusEffect(StatusEffectType.Gorging).Strength * 10;
         }
 
-        c *= unit.GetStat(Stat.Stomach) / 12f * unit.TraitBoosts.CapacityMult;
+        c *= unit.GetStat(Stat.Voracity) / 12f * unit.TraitBoosts.CapacityMult;
 
         //c *= unit.GetScale(3);  It may be more realistic, but having huge resulting in 81 times the base stomach capacity is just overkill
         
@@ -1256,7 +1257,7 @@ public class PredatorComponent
             {
                 preyUnit.Unit.ApplyStatusEffect(StatusEffectType.WillingPrey, 0, 3);
             }
-            if (actor.Unit.HasTrait(Traits.Multifaceted) && actor.Unit.IsHighestStat(Stat.Stomach))
+            if (actor.Unit.HasTrait(Traits.Multifaceted) && actor.Unit.IsHighestStat(Stat.Voracity))
             {
                 if (preyUnit.Unit.GetStatusEffect(StatusEffectType.Lethargy) == null)
                 {
@@ -1307,7 +1308,7 @@ public class PredatorComponent
             {
                 while (actor.PredatorComponent.birthStatBoost > 0)
                 {
-                    int stat = UnityEngine.Random.Range(0, 8);
+                    int stat = (int)WarbandStats.Active[UnityEngine.Random.Range(0, WarbandStats.Active.Length)];
                     preyUnit.Unit.ModifyStat(stat, 1);
                     if (stat == 6)
                     {
@@ -1434,10 +1435,10 @@ public class PredatorComponent
             return 0;
 
         float usedCapacity = TotalCapacity() - FreeCap();
-        float PredStomach = Mathf.Pow(unit.GetStat(Stat.Stomach) + 15, 1.5f);
+        float PredStomach = Mathf.Pow(unit.GetStat(Stat.Voracity) + 15, 1.5f);
         float PredVoracity = Mathf.Pow(unit.GetStat(Stat.Voracity) + 15, 1.5f);
-        float preyEndurance = Mathf.Pow(preyUnit.Unit.GetStat(Stat.Endurance) + 15, 1.5f);
-        float preyWill = Mathf.Pow(preyUnit.Unit.GetStat(Stat.Will) + 15, 1.5f);
+        float preyEndurance = Mathf.Pow(preyUnit.Unit.GetStat(Stat.Strength) + 15, 1.5f);
+        float preyWill = preyEndurance;
         float predScore = 2 * (40 + PredStomach * 3 + PredVoracity) / (1f + ((usedCapacity - preyUnit.Actor.Bulk()) / usedCapacity));
         float preyScore = ((preyEndurance + preyWill * .75f) / (1 + preyUnit.Actor.BodySize() / 40) + 300) / (1 + preyUnit.TurnsDigested / 5f);
         predScore *= unit.TraitBoosts.Outgoing.DigestionRate;
@@ -2000,7 +2001,7 @@ public class PredatorComponent
     //                newPrey = new Prey(newActor, actor, newActor.PredatorComponent?.prey);
     //                while (actor.PredatorComponent.birthStatBoost > 0)
     //                {
-    //                    int stat = UnityEngine.Random.Range(0, 8);
+    //                    int stat = (int)WarbandStats.Active[UnityEngine.Random.Range(0, WarbandStats.Active.Length)];
     //                    newPrey.Unit.ModifyStat(stat, 1);
     //                    if (stat == 6)
     //                    {
@@ -2728,7 +2729,7 @@ public class PredatorComponent
         {
             //actor.SetPredMode(preyType);
             float r = (float)State.Rand.NextDouble();
-            float v = target.GetDevourChance(actor, skillBoost: actor.Unit.GetStat(Stat.Mind));
+            float v = target.GetDevourChance(actor, skillBoost: actor.Unit.GetStat(Stat.Intelligence));
             if (r < v)
             {
                 if (target.Unit.IsDead == false)
@@ -3253,7 +3254,7 @@ public class PredatorComponent
         float predVoracity = Mathf.Pow(15 + actor.Unit.GetStat(Stat.Voracity), 1.5f);
         float predStrength = Mathf.Pow(15 + actor.Unit.GetStat(Stat.Strength), 1.5f);
         float preyStrength = Mathf.Pow(15 + target.Unit.GetStat(Stat.Strength), 1.5f);
-        float preyWill = Mathf.Pow(15 + target.Unit.GetStat(Stat.Will), 1.5f);
+        float preyWill = Mathf.Pow(15 + target.Unit.GetStat(Stat.Intelligence), 1.5f);
         float attackerScore = (predVoracity + 2 * predStrength) * (actor.Unit.HealthPct + 1) * (30 + actor.BodySize()) / 16 / (1 + 2 * Mathf.Pow(actor.PredatorComponent.UsageFraction, 2));
         float defenderScore = 20 + (2 * (preyStrength + 2 * preyWill) * target.Unit.HealthPct * target.Unit.HealthPct * ((10 + target.BodySize()) / 2));
 
@@ -3408,7 +3409,7 @@ public class PredatorComponent
         float recipientStrength = Mathf.Pow(15 + attacker.Unit.GetStat(Stat.Strength), 1.5f);
         float donorVoracity = Mathf.Pow(15 + actor.Unit.GetStat(Stat.Voracity), 1.5f);
         float donorStrength = Mathf.Pow(15 + actor.Unit.GetStat(Stat.Strength), 1.5f);
-        float donorWill = Mathf.Pow(15 + actor.Unit.GetStat(Stat.Will), 1.5f);
+        float donorWill = Mathf.Pow(15 + actor.Unit.GetStat(Stat.Intelligence), 1.5f);
         float attackerScore = (recipientVoracity + recipientStrength) * (attacker.Unit.HealthPct + 1) * (30 + attacker.BodySize()) / 16 / (1 + 2 * Mathf.Pow(attacker.PredatorComponent.UsageFraction, 2)) - prey.Actor.Bulk();
         float defenderHealthPct = actor.Unit.HealthPct;
         float defenderScore = 20 + (2 * (donorStrength + 1.5f * donorVoracity + 2 * donorWill) * defenderHealthPct * defenderHealthPct * ((10 + actor.BodySize()) / 2));

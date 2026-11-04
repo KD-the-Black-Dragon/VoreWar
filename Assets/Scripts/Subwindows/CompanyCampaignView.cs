@@ -13,6 +13,7 @@
 // 2026-11-02: Expose the existing company checkpoint browser to the main-menu load button (spec 15C).
 // 2026-11-03: Connect unified saves and exact battle resumption to campaign screens (spec 19).
 // 2026-11-03: Retire Continue/map preview setup entries and compact the remaining creation/load choices (spec 20).
+// 2026-11-03: Route campaign chrome through shared blue/gold surfaces while leaving terrain tiles intact (spec 28).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.IO;
@@ -102,21 +103,25 @@ public sealed class CompanyCampaignView : MonoBehaviour
     {
         var go = Panel("Label", parent); Place(go, x, y, w, h);
         var text = go.AddComponent<Text>(); text.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-        text.text = words; text.color = Color.white; text.fontSize = size; text.raycastTarget = false;
+        text.text = words; text.color = UITheme.Foreground; text.fontSize = size; text.raycastTarget = false;
         return text;
     }
     internal Button Action(Transform parent, string words, float x, float y, float w, Action callback)
     {
         var go = Panel(words, parent); Place(go, x, y, w, 38);
-        go.AddComponent<Image>().color = new Color(.18f, .23f, .29f);
-        var button = go.AddComponent<Button>(); button.onClick.AddListener(() => Guard(callback));
+        bool chrome = !string.IsNullOrEmpty(words); // Map tile buttons must retain their artwork and fog rendering.
+        var image = chrome ? UITheme.Surface(go, UITheme.Control, true) : go.AddComponent<Image>();
+        var button = go.AddComponent<Button>(); button.targetGraphic = image;
+        if (chrome) UITheme.StyleSelectable(button);
+        button.onClick.AddListener(() => Guard(callback));
         var label = Label(go.transform, words, 3, 3, w - 6, 32, 17); label.alignment = TextAnchor.MiddleCenter;
         return button;
     }
-    void Box(Transform parent, string name, float x, float y, float w, float h, Color color)
+    internal GameObject Box(Transform parent, string name, float x, float y, float w, float h, Color color)
     {
         var go = Panel(name, parent); Place(go, x, y, w, h);
-        var image = go.AddComponent<Image>(); image.color = color; image.raycastTarget = false;
+        UITheme.Surface(go, color, true).raycastTarget = false;
+        return go;
     }
     bool CanNavigate
     {
@@ -226,11 +231,11 @@ public sealed class CompanyCampaignView : MonoBehaviour
         root.AddComponent<GraphicRaycaster>();
         var background = Panel("Background", root.transform); var rect = background.GetComponent<RectTransform>();
         rect.anchorMin = Vector2.zero; rect.anchorMax = Vector2.one; rect.offsetMin = rect.offsetMax = Vector2.zero;
-        background.AddComponent<Image>().color = new Color(.055f, .07f, .09f);
+        UITheme.Surface(background, UITheme.Background);
         frame = Panel("Centered campaign frame", root.transform);
         var frameRect = frame.GetComponent<RectTransform>(); frameRect.anchorMin = frameRect.anchorMax = frameRect.pivot = new Vector2(.5f, .5f);
         frameRect.sizeDelta = new Vector2(1280, 800); frameRect.anchoredPosition = Vector2.zero;
-        Box(frame.transform, "Header", 0, 0, 1280, 72, new Color(.09f, .12f, .16f));
+        Box(frame.transform, "Header", 0, 0, 1280, 72, UITheme.Panel);
         heading = Label(frame.transform, "Mercenary company", 80, 76, 1120, 28, 21);
         message = Label(frame.transform, "", 480, 741, 545, 55, 15);
         stageBanner = Label(frame.transform, "", 30, 640, 1220, 20, 15);
@@ -240,17 +245,19 @@ public sealed class CompanyCampaignView : MonoBehaviour
         retrySaveButton = Action(frame.transform, "Retry save", 1045, 746, 155, () => { if (checkpointFailed) Save("Game saved; you can continue."); });
         retrySaveButton.gameObject.SetActive(false);
         setupPage = Panel("Setup", frame.transform);
+        Box(setupPage.transform, "Setup surface", 20, 104, 1240, 536, UITheme.Panel);
         Label(setupPage.transform, "Create your leader, recruit and equip a small company, then choose contracts and fight.\nNumeric tuning is provisional.", 30, 105, 1150, 90);
         var toggleGo = Panel("Ironman", setupPage.transform); Place(toggleGo, 30, 220, 25, 25);
-        var check = toggleGo.AddComponent<Image>(); check.color = new Color(.3f, .65f, .4f);
+        var check = UITheme.Surface(toggleGo, UITheme.Control, true);
         ironman = toggleGo.AddComponent<Toggle>(); ironman.targetGraphic = check;
         var mark = Panel("Check", toggleGo.transform); Place(mark, 5, 5, 15, 15);
         ironman.graphic = mark.AddComponent<Image>(); ironman.isOn = false;
+        UITheme.StyleCheckmark(ironman); UITheme.StyleSelectable(ironman);
         Label(setupPage.transform, "Ironman (locked at creation; autosaves only; recovery backups)", 70, 216, 1100, 40);
         Action(setupPage.transform, "Create company", 30, 285, 250, () => management.StartCreator(ironman.isOn));
         mapPage = Panel("World map", frame.transform);
         var viewport = Panel("Map viewport", mapPage.transform); Place(viewport, 80, 156, 1120, 420);
-        viewport.AddComponent<Image>().color = new Color(.08f, .1f, .12f); viewport.AddComponent<RectMask2D>();
+        UITheme.Surface(viewport, UITheme.Background); viewport.AddComponent<RectMask2D>();
         mapViewport = viewport.GetComponent<RectTransform>(); mapScroll = viewport.AddComponent<CompanyMapScroll>();
         mapScroll.viewport = mapViewport; mapScroll.horizontal = mapScroll.vertical = true;
         mapScroll.movementType = ScrollRect.MovementType.Clamped; mapScroll.inertia = false; mapScroll.scrollSensitivity = 42;
@@ -272,11 +279,13 @@ public sealed class CompanyCampaignView : MonoBehaviour
             Place(tileLabels[i].gameObject, 0, 0, TileSize, TileSize); tileLabels[i].fontSize = 24;
             tileLabels[i].gameObject.AddComponent<Outline>().effectColor = Color.black;
         }
+        var mapFrame = UITheme.Node("Map border", viewport.transform);
+        UITheme.Stretch(mapFrame.GetComponent<RectTransform>()); UITheme.Frame(mapFrame);
         dayButton = Action(mapPage.transform, "End turn", 80, 108, 130, EndDay);
         restOneButton = Action(mapPage.transform, "Rest 1 day", 222, 108, 130, () => Rest(1));
         var restInput = Panel("Rest days", mapPage.transform); Place(restInput, 364, 108, 60, 38);
-        restInput.AddComponent<Image>().color = new Color(.2f, .25f, .3f);
-        var restDays = restInput.AddComponent<InputField>(); restDays.contentType = InputField.ContentType.IntegerNumber;
+        UITheme.Surface(restInput, UITheme.Control, true);
+        var restDays = restInput.AddComponent<InputField>(); UITheme.StyleSelectable(restDays); restDays.contentType = InputField.ContentType.IntegerNumber;
         restDays.characterLimit = 3; restDays.textComponent = Label(restInput.transform, "1", 8, 2, 44, 34, 18); restDays.text = "1";
         restChosenButton = Action(mapPage.transform, "Rest chosen days", 436, 108, 150, () =>
         {
@@ -286,11 +295,12 @@ public sealed class CompanyCampaignView : MonoBehaviour
         });
         resumeRestButton = Action(mapPage.transform, "Resume rest", 598, 108, 170, ResumeRest);
         cancelRestButton = Action(mapPage.transform, "Cancel rest", 780, 108, 120, () => { state.RestDaysRemaining = 0; Save("Remaining rest cancelled."); ShowMap(); });
-        Box(mapPage.transform, "Active contracts", 80, 582, 1120, 75, new Color(.09f, .12f, .16f));
+        Box(mapPage.transform, "Active contracts", 80, 582, 1120, 75, UITheme.Panel);
         contractList = Label(mapPage.transform, "", 96, 588, 1088, 64, 16);
         saveButton = Action(mapPage.transform, "Save / Load", 912, 108, 140, () => CompanySaveMenu.Show(this));
         Action(mapPage.transform, "Center company", 1064, 108, 136, CenterMap);
         townPage = Panel("Town", frame.transform);
+        Box(townPage.transform, "Town surface", 238, 88, 1022, 552, UITheme.Panel);
         townHeading = Label(townPage.transform, "", 250, 110, 950, 65, 32);
         townDetails = Label(townPage.transform, "", 250, 210, 900, 250, 22);
         companyPage = Panel("Company", frame.transform);
@@ -308,14 +318,14 @@ public sealed class CompanyCampaignView : MonoBehaviour
         townButton = Action(navigation.transform, "Town", 735, 20, 155, EnterTown);
         recordsButton = Action(navigation.transform, "Records", 1055, 20, 145, () => missions.Record());
         townNavigation = Panel("Town services", frame.transform);
-        Box(townNavigation.transform, "Service column", 20, 140, 205, 485, new Color(.09f, .12f, .16f));
+        Box(townNavigation.transform, "Service column", 20, 140, 205, 485, UITheme.Panel);
         Label(townNavigation.transform, "TOWN SERVICES", 30, 153, 185, 30, 17);
         Action(townNavigation.transform, "Recruitment", 30, 200, 185, () => management.Recruit());
         Action(townNavigation.transform, "Merchant", 30, 258, 185, () => management.Shop());
         Action(townNavigation.transform, "Contracts", 30, 316, 185, () => missions.Contracts(true));
         Action(townNavigation.transform, "Treatment", 30, 374, 185, () => Recovery.Treatment());
         statusPanel = Panel("Company status", frame.transform);
-        Box(statusPanel.transform, "Status background", 80, 0, 1120, 72, new Color(.09f, .12f, .16f));
+        Box(statusPanel.transform, "Status background", 80, 0, 1120, 72, UITheme.Panel);
         financesText = Label(statusPanel.transform, "", 96, 9, 330, 60, 17);
         conditionText = Label(statusPanel.transform, "", 454, 5, 420, 66, 17);
         calendarText = Label(statusPanel.transform, "", 900, 9, 285, 60, 17);

@@ -2,6 +2,7 @@
 // 2026-11-02: Shared restrained blue palette and compact UI styling, introduced with Options (spec 15A).
 // 2026-11-02: Share normalized sliders and bright vector checkmarks across Options and Content Settings (spec 15B).
 // 2026-11-03: Share restrained blue styling for player-facing popup surfaces (spec 17).
+// 2026-11-03: Apply the selected full-depth blue gradients and aged-gold control/panel edges (spec 28).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,21 +14,21 @@ internal static class UITheme
     internal static readonly Color Row = new Color32(25, 51, 83, 255);
     internal static readonly Color Section = new Color32(30, 66, 105, 255);
     internal static readonly Color Control = new Color32(35, 72, 112, 255);
-    internal static readonly Color Border = new Color32(65, 100, 140, 255);
+    internal static readonly Color Border = new Color32(145, 122, 81, 255);
     internal static readonly Color Foreground = new Color32(231, 240, 251, 255);
     internal static readonly Color Muted = new Color32(167, 193, 220, 255);
-    internal static readonly Color Accent = new Color32(128, 179, 231, 255);
+    internal static readonly Color Accent = new Color32(196, 165, 116, 255);
 
     internal static void StylePopup(GameObject root)
     {
         // Only popup hierarchies are passed here; preserve dimmers and non-background graphics.
         foreach (var image in root.GetComponentsInChildren<Image>(true))
         {
-            if (image.GetComponentInParent<Slider>() != null) continue;
+            if (image.GetComponentInParent<Slider>() != null || image.GetComponentInParent<UIUnitSprite>() != null) continue;
             Color old = image.color;
             if (old.b > old.r + .1f && old.b > old.g + .1f)
             {
-                Color color = Panel; color.a = old.a; image.color = color;
+                Color color = Panel; color.a = old.a; Surface(image.gameObject, color, true);
             }
         }
         foreach (var button in root.GetComponentsInChildren<Button>(true))
@@ -58,13 +59,45 @@ internal static class UITheme
     internal static Image Surface(GameObject go, Color color, bool border = false)
     {
         var image = go.GetComponent<Image>() ?? go.AddComponent<Image>();
-        image.sprite = null; image.color = color;
-        if (border)
+        image.sprite = null; image.overrideSprite = null; image.type = Image.Type.Simple;
+        image.color = color;
+        bool control = SameColor(color, Control);
+        float depth = control ? 1 : SameColor(color, Panel) ? .55f : SameColor(color, Row) ? .35f : SameColor(color, Section) ? .65f : 0;
+        bool accent = SameColor(color, Accent) || SameColor(color, Border);
+        if (depth == 0 && border && !accent && !SameColor(color, Background))
+        { depth = 1; control = true; } // Explicitly framed, lightly tinted tactical commands.
+        border |= depth > 0;
+        var effect = go.GetComponent<UIThemeSurface>();
+        if (depth > 0 || border)
         {
-            var outline = go.GetComponent<Outline>() ?? go.AddComponent<Outline>();
-            outline.effectColor = Border; outline.effectDistance = new Vector2(1, -1);
+            if (effect == null) effect = go.AddComponent<UIThemeSurface>();
+            effect.enabled = true;
+            effect.Configure(depth, border, control);
+            // The new border is drawn inside the image and must not be doubled by an old outline.
+            var outline = go.GetComponent<Outline>();
+            if (outline != null) outline.enabled = false;
         }
+        else if (effect != null) effect.enabled = false;
         return image;
+    }
+    static bool SameColor(Color a, Color b)
+    {
+        return Mathf.Abs(a.r - b.r) < .001f && Mathf.Abs(a.g - b.g) < .001f && Mathf.Abs(a.b - b.b) < .001f;
+    }
+    internal static void Frame(GameObject go, bool selected = false)
+    {
+        var image = go.GetComponent<Image>() ?? go.AddComponent<Image>();
+        image.sprite = null; image.overrideSprite = null; image.type = Image.Type.Simple;
+        image.color = Color.white; image.raycastTarget = false;
+        var effect = go.GetComponent<UIThemeSurface>() ?? go.AddComponent<UIThemeSurface>();
+        effect.Configure(0, true, selected, true, selected);
+    }
+    internal static void StyleDropdownItem(Toggle item)
+    {
+        var image = item.targetGraphic as Image;
+        if (image != null) Surface(image.gameObject, Control, true);
+        StyleCheckmark(item, true);
+        StyleSelectable(item);
     }
     internal static Text Label(Transform parent, string words, float x, float y, float width, float height, int size = 17)
     {
@@ -136,8 +169,8 @@ internal static class UITheme
     internal static void StyleSelectable(Selectable control)
     {
         var colors = control.colors;
-        colors.normalColor = Color.white; colors.highlightedColor = new Color(.88f, .95f, 1);
-        colors.pressedColor = new Color(.65f, .8f, .96f); colors.disabledColor = new Color(.45f, .55f, .68f, .6f);
+        colors.normalColor = Color.white; colors.highlightedColor = new Color(1.1f, 1.1f, 1.1f);
+        colors.pressedColor = new Color(.84f, .84f, .84f); colors.disabledColor = new Color(.45f, .55f, .68f, .6f);
         colors.colorMultiplier = 1; colors.fadeDuration = .08f;
         control.colors = colors;
     }

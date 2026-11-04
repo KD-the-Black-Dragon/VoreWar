@@ -1,6 +1,7 @@
 // Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Block both retired Unit Editor opening paths (spec 02B).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+// 2026-11-03: Implement four active stats and agreed combat rules (spec 29).
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,7 +54,7 @@ public class UnitEditorPanel : CustomizerPanel
             RaceDropdown.options.Add(new TMP_Dropdown.OptionData(race.ToString()));
         }
         buttons = new EditStatButton[10];
-        foreach (Stat stat in (Stat[])Enum.GetValues(typeof(Stat)))
+        foreach (Stat stat in WarbandStats.Active)
         {
             if (stat == Stat.None)
                 break;

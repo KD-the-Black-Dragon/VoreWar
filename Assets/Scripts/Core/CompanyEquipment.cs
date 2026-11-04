@@ -3,6 +3,7 @@
 // 2026-11-01: Define enemy-only weak slug ranged gear without adding it to company shops (spec 09).
 // 2026-11-01: Provide safe body-part armor protection for both company and original Pure Tactical inventories (spec 11).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+// 2026-11-03: Implement four active stats and agreed combat rules (spec 29).
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,10 +28,10 @@ internal static class CompanyEquipment
         Weapon("weapon.bow", "Simple bow", 6, true, 4, 5),
         Weapon("weapon.compound", "Compound bow", 12, true, 6, 7),
         Armor("armor.helmet", "Helmet", CompanySlot.Helmet, 4, Stat.Agility, 1),
-        Armor("armor.torso", "Torso armor", CompanySlot.Torso, 8, Stat.Endurance, 2),
-        Armor("armor.legs", "Leg armor", CompanySlot.Legs, 6, Stat.Endurance, 1),
+        Armor("armor.torso", "Torso armor", CompanySlot.Torso, 8, Stat.Strength, 2),
+        Armor("armor.legs", "Leg armor", CompanySlot.Legs, 6, Stat.Strength, 1),
         Armor("armor.arms", "Arm armor", CompanySlot.Arms, 6, Stat.Strength, 1),
-        Armor("accessory.charm", "Will charm", CompanySlot.Accessory, 4, Stat.Will, 1),
+        Armor("accessory.charm", "Insight charm", CompanySlot.Accessory, 4, Stat.Intelligence, 1),
         new Definition { Id = "natural.slug", Name = "Slug slime", Slot = CompanySlot.Ranged, EnemyOnly = true,
             Create = () => new Weapon("Slug slime", "Weak natural ranged attack", 0, 0, 2, 5, 1, true) },
         Book("spell.bolt", "Power Bolt", SpellTypes.PowerBolt, 8),

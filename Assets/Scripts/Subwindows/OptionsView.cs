@@ -2,6 +2,7 @@
 // 2026-11-02: Center and categorize normal Options using retained controls and a compact blue scroll layout (spec 15A).
 // 2026-11-02: Align slider track/fill/handle geometry, enlarge hover text and restore preferred vore terminology (spec 15A feedback).
 // 2026-11-02: Use shared bright checkmarks and slider styling for the Content Settings milestone (spec 15B).
+// 2026-11-03: Theme option-list item surfaces through the shared blue/gold treatment (spec 28).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Collections.Generic;
@@ -224,9 +225,7 @@ internal sealed class OptionsView
         {
             var itemRect = item.GetComponent<RectTransform>(); itemRect.sizeDelta = new Vector2(itemRect.sizeDelta.x, 38);
             UITheme.Stretch(dropdown.itemText.rectTransform, 26, 6, 0, 0);
-            foreach (var image in item.GetComponentsInChildren<Image>(true)) image.color = image == item.graphic ? UITheme.Accent : UITheme.Control;
-            UITheme.StyleCheckmark(item, true);
-            UITheme.StyleSelectable(item);
+            UITheme.StyleDropdownItem(item);
         }
         Bind(dropdown, label, row);
     }

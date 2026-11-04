@@ -9,6 +9,8 @@
 // 2026-11-03: Keep the final trait line at the same reduced font metrics as its predecessors (spec 16 feedback).
 // 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+// 2026-11-03: Implement four active stats and agreed combat rules (spec 29).
+// 2026-11-03: Compact tactical stat rows and restrict hover to active controls (spec 29 feedback).
 using System;
 using System.Linq;
 using System.Text;
@@ -478,48 +480,22 @@ public class InfoPanel
             //    sb.AppendLine(unit.GetItem(i)?.Name ?? "empty");
             //}
 
-            Text STRVal = UnitInfoPanel.StatBlock.transform.GetChild(0).GetChild(0).GetChild(1).GetComponent<Text>();
-            Text DEXVal = UnitInfoPanel.StatBlock.transform.GetChild(0).GetChild(1).GetChild(1).GetComponent<Text>();
-            Text MNDVal = UnitInfoPanel.StatBlock.transform.GetChild(1).GetChild(0).GetChild(1).GetComponent<Text>();
-            Text WLLVal = UnitInfoPanel.StatBlock.transform.GetChild(1).GetChild(1).GetChild(1).GetComponent<Text>();
-            Text ENDVal = UnitInfoPanel.StatBlock.transform.GetChild(2).GetChild(0).GetChild(1).GetComponent<Text>();
-            Text AGIVal = UnitInfoPanel.StatBlock.transform.GetChild(2).GetChild(1).GetChild(1).GetComponent<Text>();
-            Text VORVal = UnitInfoPanel.StatBlock.transform.GetChild(3).GetChild(0).GetChild(1).GetComponent<Text>();
-            Text STMVal = UnitInfoPanel.StatBlock.transform.GetChild(3).GetChild(1).GetChild(1).GetComponent<Text>();
-            Text LDRVal = UnitInfoPanel.StatBlock.transform.GetChild(4).GetChild(0).GetChild(1).GetComponent<Text>();
 
-            // Add Battle Stats
-            STRVal.text = unit.GetStatInfo(Stat.Strength);
-            DEXVal.text = unit.GetStatInfo(Stat.Dexterity);
-            ENDVal.text = unit.GetStatInfo(Stat.Endurance);
-            AGIVal.text = unit.GetStatInfo(Stat.Agility);
-            if (unit.HasTrait(Traits.Brainless))
+            for (int i = 0; i < WarbandStats.Active.Length; i++)
             {
-                MNDVal.text = "<color=red>1</color>";
+                var cell = UnitInfoPanel.StatBlock.transform.GetChild(i / 2).GetChild(i % 2);
+                var stat = WarbandStats.Active[i];
+                var label = cell.GetChild(0).GetComponent<TMP_Text>();
+                if (label != null) label.text = WarbandStats.ShortName(stat);
+                var legacyLabel = cell.GetChild(0).GetComponent<Text>();
+                if (legacyLabel != null) legacyLabel.text = WarbandStats.ShortName(stat);
+                cell.GetChild(1).GetComponent<Text>().text = unit.GetStatInfo(stat);
+                cell.gameObject.SetActive(true);
             }
-            else
-                MNDVal.text = unit.GetStatInfo(Stat.Mind);
-            WLLVal.text = unit.GetStatInfo(Stat.Will);
-            if (CanVore)
-            {
-                UnitInfoPanel.StatBlock.transform.GetChild(3).gameObject.SetActive(true);
-                VORVal.text = unit.GetStatInfo(Stat.Voracity);
-                STMVal.text = unit.GetStatInfo(Stat.Stomach);
-            }
-            else
-                UnitInfoPanel.StatBlock.transform.GetChild(3).gameObject.SetActive(false);
-
+            UnitInfoPanel.StatBlock.transform.GetChild(2).gameObject.SetActive(false);
+            UnitInfoPanel.StatBlock.transform.GetChild(3).gameObject.SetActive(false);
             UnityEngine.Transform FifthLine = UnitInfoPanel.StatBlock.transform.GetChild(4);
-
-            // Add Leadership Stat if unit is a Leader
-            if (unit.Type == UnitType.Leader)
-            {
-                FifthLine.gameObject.SetActive(true);
-                FifthLine.GetChild(0).gameObject.SetActive(true);
-                LDRVal.text = unit.GetStatInfo(Stat.Leadership);
-            }
-            else
-                FifthLine.GetChild(0).gameObject.SetActive(false);
+            FifthLine.GetChild(0).gameObject.SetActive(false);
 
             UnityEngine.Transform killSection = FifthLine.GetChild(1).GetChild(0);
             UnityEngine.Transform digestSection = FifthLine.GetChild(1).GetChild(1);
@@ -558,6 +534,7 @@ public class InfoPanel
                 FifthLine.GetChild(1).gameObject.SetActive(false);
             if (!FifthLine.GetChild(0).gameObject.activeSelf && !FifthLine.GetChild(1).gameObject.activeSelf)
                 FifthLine.gameObject.SetActive(false);
+            TacticalHudView.CompactStats(UnitInfoPanel);
 
             if (Config.ShowUnitSides && actor?.Unit.Side == State.GameManager.TacticalMode.GetDefenderSide())
                 sb.AppendLine("DEFENDER");

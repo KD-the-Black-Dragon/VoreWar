@@ -1,6 +1,7 @@
 // Modified for the VoreWar mercenary-company conversion.
 // 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md and License.txt for GPL-3.0 terms.
+// 2026-11-03: Implement four active stats and agreed combat rules (spec 29).
 public class NPC_unit : Unit
 {
 
@@ -57,16 +58,13 @@ public class NPC_unit : Unit
             Items[0] = State.World.ItemRepository.GetItem(ItemType.Axe);
         else
             Items[0] = State.World.ItemRepository.GetItem(ItemType.Mace);
-        if (Stats[(int)Stat.Dexterity] > Stats[(int)Stat.Strength])
+        if (GetStatBase(Stat.Agility) > GetStatBase(Stat.Strength))
         {
-            int temp = Stats[(int)Stat.Dexterity];
-            Stats[(int)Stat.Dexterity] = Stats[(int)Stat.Strength];
-            Stats[(int)Stat.Strength] = temp;
+            int temporary = GetStatBase(Stat.Agility);
+            SetStatBase(Stat.Agility, GetStatBase(Stat.Strength)); SetStatBase(Stat.Strength, temporary);
         }
-        Stats[(int)Stat.Strength] += levels;
-        Stats[(int)Stat.Voracity] += levels;
-        Stats[(int)Stat.Stomach] += levels;
-        Stats[(int)Stat.Agility] += levels;
+        ModifyStat(Stat.Strength, levels);
+        ModifyStat(Stat.Voracity, levels);
         SetLevel(levels + 1);
         GeneralStatIncrease(levels);
         Health = MaxHealth;
@@ -78,16 +76,13 @@ public class NPC_unit : Unit
             Items[0] = State.World.ItemRepository.GetItem(ItemType.CompoundBow);
         else
             Items[0] = State.World.ItemRepository.GetItem(ItemType.Bow);
-        if (Stats[(int)Stat.Strength] > Stats[(int)Stat.Dexterity])
+        if (GetStatBase(Stat.Strength) > GetStatBase(Stat.Agility))
         {
-            int temp = Stats[(int)Stat.Dexterity];
-            Stats[(int)Stat.Dexterity] = Stats[(int)Stat.Strength];
-            Stats[(int)Stat.Strength] = temp;
+            int temporary = GetStatBase(Stat.Agility);
+            SetStatBase(Stat.Agility, GetStatBase(Stat.Strength)); SetStatBase(Stat.Strength, temporary);
         }
-        Stats[(int)Stat.Dexterity] += levels;
-        Stats[(int)Stat.Voracity] += levels;
-        Stats[(int)Stat.Stomach] += levels;
-        Stats[(int)Stat.Agility] += levels;
+        ModifyStat(Stat.Agility, levels);
+        ModifyStat(Stat.Voracity, levels);
         SetLevel(levels + 1);
         GeneralStatIncrease(levels);
         Health = MaxHealth;
@@ -112,17 +107,19 @@ public class NPC_unit : Unit
         Stats[(int)Stat.Stomach] = 4 + raceStats.Stomach.Minimum + raceStats.Stomach.Roll;
         Stats[(int)Stat.Leadership] = 10;
 
+        FourStatVersion = 0;
+        EnsureFourStats();
         if (race == Race.Lizards)
             Races.GetRace(Race.Lizards).RandomCustom(this);
         if (Config.LetterBeforeLeaderNames != "")
             Name = Config.LetterBeforeLeaderNames + Name.ToLower();
         ExpMultiplier = 2;
         if (Ranged)
-            Stats[(int)Stat.Dexterity] += levels;
+            ModifyStat(Stat.Agility, levels);
         else
-            Stats[(int)Stat.Strength] += levels;
-        Stats[(int)Stat.Leadership] += 2 * levels;
-        Stats[(int)Stat.Agility] += levels;
+            ModifyStat(Stat.Strength, levels);
+        // Leadership remains deprecated.
+        ModifyStat(Stat.Agility, levels);
         SetLevel(levels + 1);
         GeneralStatIncrease(levels);
         Health = MaxHealth;

@@ -4,6 +4,7 @@
 // 2026-11-01: Upgrade saved daily intent without replaying days and identify the leader for old-injury immunity (spec 11).
 // 2026-11-01: Add provisional challenge-scaled progression, migrate sentinel XP and separate departure notices from queued wage warnings (spec 11 feedback).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+// 2026-11-03: Implement four active stats and agreed combat rules (spec 29).
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,8 +31,8 @@ internal static class CompanyEconomy
                 BaseWage = 18 + state.Next(5), Employment = CompanyEmployment.Candidate,
                 Biography = new[] { "A caravan guard seeking a steadier company.", "A local hunter looking for a life beyond familiar roads.", "An apprentice who left home to see the wider world.", "A former watch recruit hoping to prove themselves." }[state.Next(4)] };
             unit.PermanentInjuryImmune = leader;
-            if (leader) for (int i = 0; i < (int)Stat.Leadership; i++) unit.SetStatBase((Stat)i, unit.GetStatBase((Stat)i) + 3);
-            for (int i = 1; i < level; i++) unit.LevelUp((Stat)(focus == 1 ? (int)Stat.Dexterity : focus == 2 ? (int)Stat.Mind : (int)Stat.Strength));
+            if (leader) foreach (var stat in WarbandStats.Active) unit.SetStatBase(stat, unit.GetStatBase(stat) + 3);
+            for (int i = 1; i < level; i++) unit.LevelUp((Stat)(focus == 1 ? (int)Stat.Agility : focus == 2 ? (int)Stat.Intelligence : (int)Stat.Strength));
             if (level > 1) unit.SetExp(unit.GetExperienceRequiredForLevel(level - 1));
             Item weapon = CompanyEquipment.Create(focus == 1 ? (level >= 5 ? "weapon.compound" : "weapon.bow") : (level >= 5 ? "weapon.axe" : "weapon.mace"));
             unit.SetItem(weapon, focus == 1 ? (int)CompanySlot.Ranged : (int)CompanySlot.Melee);
@@ -53,6 +54,21 @@ internal static class CompanyEconomy
     }
     internal static void Bind(CompanyCampaign state)
     {
+        bool upgradingStats = state.Characters.Any(person => person.Unit.NeedsFourStatUpgrade);
+        foreach (var person in state.Characters)
+        {
+            person.Unit.EnsureFourStats();
+            if (upgradingStats) person.LevelChoices = null;
+            else if (person.LevelChoices != null) person.LevelChoices = person.LevelChoices.Select(WarbandStats.Canonical)
+                .Where(WarbandStats.Active.Contains).Distinct().ToArray();
+        }
+
+        if (upgradingStats && state.Battle?.Tactical?.units != null)
+            foreach (var actor in state.Battle.Tactical.units)
+            {
+                actor.Unit.EnsureFourStats();
+                actor.Movement = Math.Min(actor.Movement, actor.CurrentMaxMovement());
+            }
         if (state.Preview)
         {
             if (state.Inventory == null) state.Inventory = new List<Item>();
@@ -162,7 +178,8 @@ internal static class CompanyEconomy
     internal static Stat[] LevelChoices(CompanyCampaign state, CompanyCharacter c)
     {
         if (!c.Unit.HasEnoughExpToLevelUp()) return new Stat[0];
-        if (c.LevelChoices == null) c.LevelChoices = Random(state, () => c.Unit.GetLevelUpPossibilities(true).Where(s => s != Stat.Leadership).ToArray());
+        if (c.LevelChoices != null) c.LevelChoices = c.LevelChoices.Select(WarbandStats.Canonical).Where(s => WarbandStats.Active.Contains(s)).Distinct().ToArray();
+        if (c.LevelChoices == null || c.LevelChoices.Length == 0) c.LevelChoices = Random(state, () => c.Unit.GetLevelUpPossibilities(true).Where(s => s != Stat.Leadership).ToArray());
         return c.LevelChoices;
     }
     internal static void Validate(CompanyCampaign state)

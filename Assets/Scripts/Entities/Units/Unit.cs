@@ -13,6 +13,7 @@
 // 2026-11-03: Persist the attrition injury latch and temporary combat boosts across tactical saves (spec 19).
 // 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+// 2026-11-03: Implement four active stats and agreed combat rules (spec 29).
 using OdinSerializer;
 using OdinSerializer.Utilities;
 using System;
@@ -165,8 +166,8 @@ public class Unit
     internal int Barrier { get; private set; }
     [OdinSerialize]
     internal int MaxBarrier { get; private set; }
-    internal int MaxMana => (int)(GetStatBase(Stat.Mind) + GetStatBase(Stat.Will) * 2 * TraitBoosts.ManaMultiplier);
-    internal int MaxStamina => (int)((GetStatBase(Stat.Strength) + GetStatBase(Stat.Endurance) * 2) * TraitBoosts.StaminaMultiplier);
+    internal int MaxMana => (int)(3 * GetStatBase(Stat.Intelligence) * TraitBoosts.ManaMultiplier);
+    internal int MaxStamina => (int)((3 * GetStatBase(Stat.Strength)) * TraitBoosts.StaminaMultiplier);
 
     private int _maxHealth = 99999;
 
@@ -178,17 +179,16 @@ public class Unit
             if (CompanyLoadout || BattleActive)
             {
                 // Company equipment owns explicit HP deltas; a display/read must not heal.
-                int endurance = Config.StatBoostsAffectMaxHP ? GetStat(Stat.Endurance) : Stats[(int)Stat.Endurance];
-                int strength = Config.StatBoostsAffectMaxHP ? GetStat(Stat.Strength) : Stats[(int)Stat.Strength];
-                return (int)((endurance * 2 + strength) * TraitBoosts.HealthMultiplier) + TempBoosts.HealthBoost;
+                int strength = Config.StatBoostsAffectMaxHP ? GetStat(Stat.Strength) : GetStatBase(Stat.Strength);
+                return (int)((strength * 3) * TraitBoosts.HealthMultiplier) + TempBoosts.HealthBoost;
             }
             if (!Config.StatBoostsAffectMaxHP) {
-                _maxHealth = Stats[(int)Stat.Endurance] * 2 + Stats[(int)Stat.Strength];
+                _maxHealth = 3 * GetStatBase(Stat.Strength);
                  return (int)(_maxHealth * TraitBoosts.HealthMultiplier) + TempBoosts.HealthBoost;
             }
 
             int oldMax = _maxHealth;
-            _maxHealth = GetStat(Stat.Endurance) * 2 + GetStat(Stat.Strength);
+            _maxHealth = 3 * GetStat(Stat.Strength);
             if (oldMax > 1 && oldMax != _maxHealth && _healthPct > 0)
             {
                 int lowestHP = 0;
@@ -783,6 +783,7 @@ public class Unit
         Stats[(int)Stat.Agility] = 6 + State.Rand.Next(5);
         Stats[(int)Stat.Voracity] = 5 + State.Rand.Next(7);
         Stats[(int)Stat.Stomach] = 12 + State.Rand.Next(4);
+        EnsureFourStats();
         Health = MaxHealth;
         Mana = MaxMana;
         Stamina = MaxStamina;
@@ -858,6 +859,7 @@ public class Unit
         }
 
         RandomSkills();
+        EnsureFourStats();
         Health = MaxHealth;
         Mana = MaxMana;
         Stamina = MaxStamina;
@@ -1516,14 +1518,35 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
 
     internal int BaseTraitsCount => Tags.Count(t => !TraitsMethods.IsRetired(t)) + PermanentTraits.Count(t => !TraitsMethods.IsRetired(t));
 
-    public int GetStatBase(Stat stat) => Stats[(int)stat];
-    public void SetStatBase(Stat stat, int value) => Stats[(int)stat] = value;
+    [OdinSerialize] protected int FourStatVersion;
+    internal bool NeedsFourStatUpgrade { get { return FourStatVersion != 1; } }
+    internal void EnsureFourStats()
+    {
+        if (FourStatVersion == 1 || Stats == null) return;
+        if (Stats.Length < (int)Stat.None) System.Array.Resize(ref Stats, (int)Stat.None);
+        // Old stored accessory bonuses were already included in their old stat slots.
+        var accessories = Items == null ? new Accessory[0] : Items.OfType<Accessory>().ToArray();
+        foreach (var item in accessories)
+            if (item.ChangedStat >= 0 && item.ChangedStat < 8) Stats[item.ChangedStat] -= item.StatBonus;
+        WarbandStats.Convert(Stats);
+        foreach (var item in accessories)
+            if (item.ChangedStat >= 0 && item.ChangedStat < 8) Stats[(int)WarbandStats.Canonical((Stat)item.ChangedStat)] += item.StatBonus;
+        FourStatVersion = 1;
+    }
+    public int GetStatBase(Stat stat)
+    {
+        EnsureFourStats();
+        return Stats[(int)WarbandStats.Canonical(stat)];
+    }
+    public void SetStatBase(Stat stat, int value)
+    {
+        EnsureFourStats();
+        Stats[(int)WarbandStats.Canonical(stat)] = value;
+    }
     public void SetStatBaseAll(int value)
     {
-        for (int i = 0; i < Stats.Length; i++)
-        {
-            Stats[i] = value;
-        }
+        EnsureFourStats();
+        foreach (var stat in WarbandStats.Active) Stats[(int)stat] = value;
     }
     public int GetLeaderBonus()
     {
@@ -1540,7 +1563,9 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
 
         foreach (IStatBoost trait in StatBoosts)
         {
-            bonus += trait.StatBoost(this, stat);
+            // An all-stat bonus applies once, while old stat-specific traits map to their new stat.
+            bonus += WarbandStats.Sources(stat).Select(source => trait.StatBoost(this, source))
+                .OrderByDescending(value => System.Math.Abs(value)).FirstOrDefault();
         }
 
         return bonus;
@@ -1556,15 +1581,6 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
                 bonus += (GetStatBase(Stat.Voracity) * .25f);
             }
         }
-        else if (stat == Stat.Stomach)
-        {
-            var effect = GetStatusEffect(StatusEffectType.Predation);
-            if (effect != null)
-            {
-                bonus += (effect.Strength);
-            }
-        }
-
         // todo: store the original duration of the effect, maybe?
         // can have it wear off over time, no matter the total duration
         if (GetStatusEffect(StatusEffectType.Empowered) != null)
@@ -1627,10 +1643,6 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
             {
                 bonus -= GetStatBase(stat) * (eff.Strength * eff.Duration / 50);
             }
-            if (stat == Stat.Dexterity)
-            {
-                bonus -= GetStatBase(stat) * (eff.Strength * eff.Duration / 50);
-            }
             if (stat == Stat.Agility)
             {
                 bonus -= GetStatBase(stat) * (eff.Strength * eff.Duration / 50);
@@ -1642,46 +1654,30 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
     }
     public int GetStat(Stat stat)
     {
+        stat = WarbandStats.Canonical(stat);
         float total = GetStatBase(stat) + GetLeaderBonus() + GetTraitBonus(stat) + GetEffectBonus(stat);
 
         total *= GetScale();
 
         total *= TraitBoosts.StatMult;
+        float multiplier = 1;
         switch (stat)
         {
-            case Stat.Strength:
-                total *= TraitBoosts.StrengthMult;
-                break;
-            case Stat.Dexterity:
-                total *= TraitBoosts.DexterityMult;
-                break;
-            case Stat.Voracity:
-                total *= TraitBoosts.VoracityMult;
-                break;
-            case Stat.Agility:
-                total *= TraitBoosts.AgilityMult;
-                break;
-            case Stat.Will:
-                total *= TraitBoosts.WillMult;
-                break;
-            case Stat.Mind:
-                total *= TraitBoosts.MindMult;
-                break;
-            case Stat.Endurance:
-                total *= TraitBoosts.EnduranceMult;
-                break;
-            case Stat.Stomach:
-                total *= TraitBoosts.StomachMult;
-                break;
-            default:
-                break;
+            case Stat.Strength: multiplier = StrongestMultiplier(TraitBoosts.StrengthMult, TraitBoosts.EnduranceMult); break;
+            case Stat.Agility: multiplier = StrongestMultiplier(TraitBoosts.AgilityMult, TraitBoosts.DexterityMult); break;
+            case Stat.Intelligence: multiplier = StrongestMultiplier(TraitBoosts.MindMult, TraitBoosts.WillMult); break;
+            case Stat.Voracity: multiplier = StrongestMultiplier(TraitBoosts.VoracityMult, TraitBoosts.StomachMult); break;
         }
+        total *= multiplier;
         total -= CompanyInjuries.StatPenalty(this, stat);
         if (total < 1)
             return 1;
 
         return Mathf.RoundToInt(total);
     }
+
+    static float StrongestMultiplier(float a, float b)
+    { return System.Math.Abs(a - 1) >= System.Math.Abs(b - 1) ? a : b; }
 
     public float GetScale(int power = 1)
     {
@@ -1721,12 +1717,9 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
 
     internal void ModifyStat(Stat stat, int amount)
     {
-        Stats[(int)stat] += amount;
-        if (stat == Stat.Endurance)
-            Health += 2 * amount;
-        if (stat == Stat.Strength)
-            Health += 1 * amount;
-
+        stat = WarbandStats.Canonical(stat);
+        SetStatBase(stat, GetStatBase(stat) + amount);
+        if (stat == Stat.Strength) Health += 3 * amount;
     }
 
     internal void InitializeTraits()
@@ -2545,95 +2538,20 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
 
     public Stat[] GetLevelUpPossibilities(bool canVore)
     {
-        if (Type == UnitType.Leader)
-            return Leader.GetLevelUpPossibilities().Where(s => s != Stat.Leadership).ToArray();
-        int[] stats = new int[(int)Stat.None - 1];
-        for (int i = 0; i < stats.Length; i++)
-        {
-            stats[i] = i;
-        }
-
-
-
-        if (canVore == false)
-        {
-            stats[(int)Stat.Voracity] = -1;
-            stats[(int)Stat.Stomach] = -1;
-        }
-
-        if (HasTrait(Traits.Brainless))
-        {
-            stats[(int)Stat.Mind] = -1;
-        }
-        //stats[(int)Stat.Leadership] = -1; unneeded as the stats already cuts it
-        if (TraitBoosts.OnLevelUpAllowAnyStat)
-        {
-            Stat[] ret2 = new Stat[stats.Length];
-            for (int i = 0; i < ret2.Length; i++)
-            {
-                ret2[i] = (Stat)i;
-            }
-            return ret2;
-        }
-
-        var traits = RaceParameters.GetTraitData(this);
-        var favored = State.RaceSettings.GetFavoredStat(Race);
-
-        if (favored != Stat.None)
-            stats[(int)favored] = -1;
-        if (HasTrait(Traits.Multifaceted))
-        {
-            favored = (Stat)GetHighestStatIndex();
-        }
-        stats = stats.Where(s => s >= 0).ToArray();
-
-        for (int i = 0; i < stats.GetUpperBound(0); i++) //Randomize the order
-        {
-            int j = State.Rand.Next(i, stats.GetUpperBound(0) + 1);
-            int temp = stats[i];
-            stats[i] = stats[j];
-            stats[j] = temp;
-        }
-        if (favored == Stat.None) //If no favored stat
-        {
-            Stat[] ret3 = new Stat[3];
-
-            for (int i = 0; i < 3; i++)
-            {
-                ret3[i] = (Stat)stats[i];
-            }
-            return ret3;
-        }
-        Stat[] ret = new Stat[4];
-
-        ret[0] = favored;
-        for (int i = 1; i < 4; i++)
-        {
-            ret[i] = (Stat)stats[i];
-        }
-        return ret;
-
+        return WarbandStats.Active.Where(s => (canVore || s != Stat.Voracity) &&
+            (!HasTrait(Traits.Brainless) || s != Stat.Intelligence)).ToArray();
     }
 
     public void GeneralStatIncrease(int amount)
     {
-        for (int x = 0; x < Stats.Length; x++)
-        {
-            if (Stats[x] > 0)
-                Stats[x] += amount;
-        }
+        EnsureFourStats();
+        foreach (var stat in WarbandStats.Active) Stats[(int)stat] += amount;
         Health += 3 * amount;
     }
     public void RandomStatIncrease(int amount)
-    {
-        int x = State.Rand.Next(Stats.Length);
-        if (Stats[x] > 0)
-            Stats[x] += amount;      
-    }
+    { ModifyStat(WarbandStats.Active[State.Rand.Next(WarbandStats.Active.Length)], amount); }
     public void SpecificStatIncrease(int amount, int index)
-    {
-        Stats[index] += amount;
-    }
+    { ModifyStat((Stat)index, amount); }
 
     public void LevelUp(Stat stat)
     {
@@ -2647,21 +2565,13 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
         {
             for (int i = 0; i < 2; i++)
             {
-                int bonusStat = State.Rand.Next((int)Stat.None - 1);
+                int bonusStat = (int)WarbandStats.Active[State.Rand.Next(WarbandStats.Active.Length)];
                 ModifyStat(bonusStat, TraitBoosts.OnLevelUpBonusToGiveToTwoRandomStats);
             }
         }
 
         level++;
-        Stats[(int)stat] += 4;
-        if (stat == Stat.Endurance)
-        {
-            Health += 8;
-        }
-        if (stat == Stat.Strength)
-        {
-            Health += 4;
-        }
+        ModifyStat(stat, 4);
 
         foreach (var item in AllConditionalTraits.Keys.Where(t => t.trigger == TraitConditionTrigger.OnLevelUp || t.trigger == TraitConditionTrigger.All).ToList())
         {
@@ -2751,48 +2661,20 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
 
     public virtual int GetStatTotal()
     {
-        return GetStat(Stat.Agility) + GetStat(Stat.Will) + GetStat(Stat.Mind)
-            + GetStat(Stat.Dexterity) + GetStat(Stat.Endurance) + GetStat(Stat.Strength)
-            + GetStat(Stat.Voracity) + GetStat(Stat.Stomach);
+        return WarbandStats.Active.Sum(GetStat);
     }
-
     public int GetHighestStatIndex()
-    {
-        int highestType = 0;
-        for (int i = 0; i < Stats.Length; i++)
-        {
-            if (Stats[i] > Stats[highestType])
-                highestType = i;
-        }
-        return highestType;
-    }
-
+    { return (int)WarbandStats.Active.OrderByDescending(GetStatBase).First(); }
     public bool IsHighestStat(Stat stat)
-    {
-        return (Stat)GetHighestStatIndex() == stat;
-    }
-
+    { return (Stat)GetHighestStatIndex() == WarbandStats.Canonical(stat); }
     public int GetLowestStatIndex()
-    {
-        int lowestType = 0;
-        for (int i = 0; i < Stats.Length; i++)
-        {
-            if (Stats[lowestType] > Stats[i])
-                lowestType = i;
-        }
-        return lowestType;
-    }
-    
+    { return (int)WarbandStats.Active.OrderBy(GetStatBase).First(); }
+
     public void LevelDown()
     {
         if (level <= 1)
             return;
-        int highestType = 0;
-        for (int i = 0; i < Stats.Length; i++)
-        {
-            if (Stats[i] > Stats[highestType])
-                highestType = i;
-        }
+        int highestType = GetHighestStatIndex();
         LevelDown((Stat)highestType);
     }
 
@@ -2813,22 +2695,12 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
         {
             for (int i = 0; i < 2; i++)
             {
-                int bonusStat = State.Rand.Next((int)Stat.None - 1);
+                int bonusStat = (int)WarbandStats.Active[State.Rand.Next(WarbandStats.Active.Length)];
                 ModifyStat(bonusStat, -1 * TraitBoosts.OnLevelUpBonusToGiveToTwoRandomStats);
             }
         }
 
-        Stats[loweredStat] -= 4;
-        if (loweredStat == (int)Stat.Endurance)
-        {
-            Health -= 8;
-        }
-
-        if (loweredStat == (int)Stat.Strength)
-        {
-            Health -= 4;
-        }
-
+        ModifyStat(stat, -4);
 
     }
 
@@ -2844,32 +2716,17 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
 
     void RandomSkills()
     {
-        var raceStats = State.RaceSettings.GetRaceStats(Race);
-        if (raceStats != null)
-        {
-            Stats[(int)Stat.Strength] = raceStats.Strength.Minimum + State.Rand.Next(raceStats.Strength.Roll);
-            Stats[(int)Stat.Dexterity] = raceStats.Dexterity.Minimum + State.Rand.Next(raceStats.Dexterity.Roll);
-            Stats[(int)Stat.Endurance] = raceStats.Endurance.Minimum + State.Rand.Next(raceStats.Endurance.Roll);
-            Stats[(int)Stat.Mind] = raceStats.Mind.Minimum + State.Rand.Next(raceStats.Mind.Roll);
-            Stats[(int)Stat.Will] = raceStats.Will.Minimum + State.Rand.Next(raceStats.Will.Roll);
-            Stats[(int)Stat.Agility] = raceStats.Agility.Minimum + State.Rand.Next(raceStats.Agility.Roll);
-            Stats[(int)Stat.Voracity] = raceStats.Voracity.Minimum + State.Rand.Next(raceStats.Voracity.Roll);
-            Stats[(int)Stat.Stomach] = raceStats.Stomach.Minimum + State.Rand.Next(raceStats.Stomach.Roll);
-        }
-        else
-        {
-            //These should not trigger under almost all circumstances, it uses the data at the bottom of RaceParameters now
-            Stats[(int)Stat.Strength] = 6 + State.Rand.Next(9);
-            Stats[(int)Stat.Dexterity] = 6 + State.Rand.Next(9);
-            Stats[(int)Stat.Endurance] = 8 + State.Rand.Next(6);
-            Stats[(int)Stat.Mind] = 6 + State.Rand.Next(8);
-            Stats[(int)Stat.Will] = 6 + State.Rand.Next(8);
-            Stats[(int)Stat.Agility] = 6 + State.Rand.Next(5);
-            Stats[(int)Stat.Voracity] = 5 + State.Rand.Next(7);
-            Stats[(int)Stat.Stomach] = 12 + State.Rand.Next(4);
-        }
-
-
+        var ranges = State.RaceSettings.GetRaceStats(Race) ?? new RaceStats();
+        ranges.Consolidate();
+        Stats = new int[(int)Stat.None];
+        Stats[(int)Stat.Strength] = ranges.Strength.Minimum + State.Rand.Next(ranges.Strength.Roll);
+        Stats[(int)Stat.Agility] = ranges.Agility.Minimum + State.Rand.Next(ranges.Agility.Roll);
+        Stats[(int)Stat.Intelligence] = ranges.Mind.Minimum + State.Rand.Next(ranges.Mind.Roll);
+        Stats[(int)Stat.Voracity] = ranges.Voracity.Minimum + State.Rand.Next(ranges.Voracity.Roll);
+        FourStatVersion = 1;
+        if (Items != null)
+            foreach (var item in Items.OfType<Accessory>())
+                Stats[(int)WarbandStats.Canonical((Stat)item.ChangedStat)] += item.StatBonus;
     }
 
     public Weapon GetBestMelee()
@@ -2961,20 +2818,13 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
 
     void AddAccessory(Accessory accessory)
     {
-        Stats[accessory.ChangedStat] += accessory.StatBonus;
-        if (accessory.ChangedStat == (int)Stat.Endurance)
-            Health += 2 * accessory.StatBonus;
+        ModifyStat(accessory.ChangedStat, accessory.StatBonus);
     }
 
     void RemoveAccessory(Accessory accessory)
     {
-        Stats[accessory.ChangedStat] -= accessory.StatBonus;
-        if (accessory.ChangedStat == (int)Stat.Endurance)
-        {
-            Health -= 2 * accessory.StatBonus;
-            if (Health < 1)
-                Health = 1;
-        }
+        ModifyStat(accessory.ChangedStat, -accessory.StatBonus);
+        if (Health < 1 && !Downed) Health = 1;
     }
 
     public void SetItem(Item item, int i, bool fromUnitEditor = false)
@@ -3555,7 +3405,9 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
         Race = unit.Race;
         Name = unit.Name;
         level = unit.level;
-        Stats = unit.Stats;
+        unit.EnsureFourStats();
+        Stats = (int[])unit.Stats.Clone();
+        FourStatVersion = 1;
         TempBoosts = unit.TempBoosts;
         CopyAppearance(unit);
         ClearAllTraits();

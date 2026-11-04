@@ -1,6 +1,7 @@
 // Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Use the requested metadata species for hover; restrict unapproved previews to the gated editor (spec 03A2).
 // 2026-10-30: Block permanently retired species even during developer inspection (spec 03B1).
+// 2026-11-03: Match species hover-card chrome to the selected palette without changing unit sprites (spec 28).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using TMPro;
 using UnityEngine;
@@ -18,6 +19,7 @@ public class HoveringRacePicture : MonoBehaviour
 
     private void Start()
     {
+        UITheme.StylePopup(gameObject);
         rect = GetComponent<RectTransform>();
         text = GetComponentInChildren<TextMeshProUGUI>();
     }

@@ -6,6 +6,7 @@
 // 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // 2026-11-03: Keep developer tag selections stable across empty lists, sparse IDs and editor refreshes (spec 22).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+// 2026-11-03: Implement four active stats and agreed combat rules (spec 29).
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -122,6 +123,14 @@ public class RaceEditorPanel : MonoBehaviour
 
     private void OnEnable()
     {
+        FavoredStat.ClearOptions();
+        FavoredStat.AddOptions(WarbandStats.Active.Select(WarbandStats.Name).ToList());
+        foreach (var field in new[] { MinDexterity, MinEndurance, MinWill, MinStomach })
+            if (field != null) field.transform.parent.gameObject.SetActive(false);
+        if (MinMind != null)
+            foreach (var label in MinMind.transform.parent.GetComponentsInChildren<TMP_Text>(true))
+                if (label.text.Trim().TrimEnd(':') == "Mind" || label.text.Trim().TrimEnd(':') == "MND") label.text = "Intelligence";
+
         if (State.GameManager == null || State.GameManager.Menu == null || !State.GameManager.Menu.HasRaceEditorAccess)
             gameObject.SetActive(false);
     }
@@ -218,9 +227,9 @@ public class RaceEditorPanel : MonoBehaviour
 
             if (FavoredStat.options?.Any() == false)
             {
-                foreach (Stat stat in ((Stat[])Enum.GetValues(typeof(Traits))).Where((s) => s < Stat.Leadership))
+                foreach (Stat stat in WarbandStats.Active)
                 {
-                    FavoredStat.options.Add(new TMP_Dropdown.OptionData(stat.ToString()));
+                    FavoredStat.options.Add(new TMP_Dropdown.OptionData(WarbandStats.Name(stat)));
                 }
                 FavoredStat.RefreshShownValue();
             }
@@ -500,7 +509,7 @@ public class RaceEditorPanel : MonoBehaviour
                 item.MinWeight = Convert.ToInt32(MinWeight.text) - 1;
                 item.MaxWeight = Convert.ToInt32(MaxWeight.text) - 1;
 
-                item.FavoredStat = (Stat)FavoredStat.value;
+                item.FavoredStat = WarbandStats.Active[FavoredStat.value];
                 item.FavoredStatSet = true;
 
                 int spellIndex = InnateSpellDropdown.value;
@@ -594,6 +603,7 @@ public class RaceEditorPanel : MonoBehaviour
                 item.Stats.Stomach.Minimum = Convert.ToInt32(MinStomach.text);
                 item.Stats.Stomach.Roll = 1 + Convert.ToInt32(MaxStomach.text) - item.Stats.Stomach.Minimum;
                 if (item.Stats.Stomach.Roll < 1) item.Stats.Strength.Roll = 1;
+                item.Stats.Mirror();
 
                 item.PowerAdjustment = Convert.ToInt32(PowerAdjustment.text)/100f;
                 item.Upkeep = float.TryParse(Upkeep.text, out float outputUpkeep) ? outputUpkeep : 1;
@@ -729,7 +739,7 @@ public class RaceEditorPanel : MonoBehaviour
                 BoobText.text = $"Breasts 1 - {Math.Max(raceData.BreastSizes, 1)}";
                 DickText.text = $"Dick 1 - {Math.Max(raceData.DickSizes, 1)}";
 
-                FavoredStat.value = (int)State.RaceSettings.GetFavoredStat(race);
+                FavoredStat.value = Math.Max(0, Array.IndexOf(WarbandStats.Active, WarbandStats.Canonical(State.RaceSettings.GetFavoredStat(race))));
                 FavoredStat.RefreshShownValue();
 
                 var spell = Array.IndexOf(Enum.GetValues(typeof(SpellTypes)), State.RaceSettings.GetInnateSpell(race));
@@ -771,6 +781,7 @@ public class RaceEditorPanel : MonoBehaviour
                 BladderVoreDisabled.isOn = !item.AllowedVoreTypes.Contains(VoreType.BladderVore);
                 BladderVoreDisabled.interactable = racePar.AllowedVoreTypes.Contains(VoreType.BladderVore);
 
+                item.Stats.Consolidate();
                 MinStrength.text = item.Stats.Strength.Minimum.ToString();
                 MaxStrength.text = (item.Stats.Strength.Minimum + item.Stats.Strength.Roll - 1).ToString();
                 MinDexterity.text = item.Stats.Dexterity.Minimum.ToString();

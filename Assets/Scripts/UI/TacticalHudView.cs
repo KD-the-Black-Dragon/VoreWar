@@ -1,4 +1,4 @@
-﻿// Added by the VoreWar mercenary-company conversion fork.
+// Added by the VoreWar mercenary-company conversion fork.
 // 2026-11-02: Apply blue tactical chrome and four weapon/spell readouts without resizing core commands/stats (spec 16).
 // 2026-11-02: Restore boxed/blank equipment slots and space primary, utility and AI controls (spec 16 feedback).
 // 2026-11-02: Match selector pivot to command buttons and clear stats above equipment boxes (spec 16 feedback).
@@ -6,7 +6,10 @@
 // 2026-11-03: Force solid HP rendering and cover one-pixel tactical screen-edge seams (spec 16 feedback).
 // 2026-11-03: Preserve transparent status-bar backgrounds so the barrier overlay cannot hide HP (spec 16 feedback).
 // 2026-11-03: Theme the retained auto-resolve options popup (spec 17).
+// 2026-11-03: Apply framed gradient chrome to tactical panels without touching slider fills or artwork (spec 28).
+// 2026-11-03: Keep only the outer combat-log left edge, removing the inset duplicate (spec 28 feedback).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+// 2026-11-03: Compact tactical stat rows and restrict hover to active controls (spec 29 feedback).
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -22,14 +25,14 @@ internal sealed class TacticalHudView
         foreach (var image in mode.UI.GetComponentsInChildren<Image>(true))
         {
             // Barrier shares the HP rectangle; its transparent background must stay transparent.
-            if (image.GetComponentInParent<Slider>() != null) continue;
+            if (image.GetComponentInParent<Slider>() != null || image.GetComponentInParent<UIUnitSprite>() != null) continue;
             string name = image.name.ToLowerInvariant();
             if (name.Contains("panel") || name == "background" || name == "viewport" || name == "scroll view" || name == "stats block")
-                image.color = UITheme.Panel;
+                UITheme.Surface(image.gameObject, UITheme.Panel, true);
         }
         foreach (var control in mode.UI.GetComponentsInChildren<Selectable>(true))
         {
-            if (control is Slider) continue;
+            if (control is Slider || control.GetComponentInParent<UIUnitSprite>() != null) continue;
             UITheme.StyleSelectable(control);
             var image = control.targetGraphic as Image;
             if (image != null && !(control is Slider)) UITheme.Surface(image.gameObject, UITheme.Control, true);
@@ -56,6 +59,7 @@ internal sealed class TacticalHudView
         var selection = mode.StatusUI.ButtonSelection.GetComponent<RectTransform>();
         selection.pivot = new Vector2(0, 1);
         selection.sizeDelta = new Vector2(120, 50);
+        UITheme.Frame(selection.gameObject, true);
         Button aiFinish = null;
         foreach (var text in mode.UI.GetComponentsInChildren<Text>(true))
         {
@@ -77,6 +81,15 @@ internal sealed class TacticalHudView
         if (aiFinish != null) PlaceButton(aiFinish, 1432, 54, 280, 40);
         PlaceButton(mode.LogUI.Restore, 1744, 6, 140, 40);
         UITheme.Surface(mode.LogUI.gameObject, UITheme.Panel, true);
+        // Only the outer log panel draws a left edge; other inset edges and shading are retained.
+        for (var panel = mode.LogUI.Text.transform.parent;
+            panel != null && panel != mode.LogUI.transform && panel.IsChildOf(mode.LogUI.transform);
+            panel = panel.parent)
+        {
+            var surface = panel.GetComponent<UIThemeSurface>();
+            if (surface != null) surface.HideLeftBorder();
+        }
+
 
         UITheme.StylePopup(mode.SkipUI.gameObject);
         var info = mode.InfoUI;
@@ -97,14 +110,17 @@ internal sealed class TacticalHudView
         // Keep the old slot objects/references for existing generic hover code.
         row.gameObject.SetActive(false);
         var labels = new TextMeshProUGUI[4];
+        info.TacticalEquipmentHeaders = new RectTransform[4];
+        info.TacticalEquipmentBoxes = new RectTransform[4];
         string[] headings = { "Melee", "Ranged", "Spell 1", "Spell 2" };
         for (int i = 0; i < labels.Length; i++)
         {
             float x = 5 + (i % 2) * 118;
             float y = 318 + (i / 2) * 56;
-            UITheme.Label(info.transform, headings[i], x, y, 112, 18, 14);
+            info.TacticalEquipmentHeaders[i] = UITheme.Label(info.transform, headings[i], x, y, 112, 18, 14).rectTransform;
             var box = UITheme.Node("Tactical equipment box " + i, info.transform);
-            UITheme.Place(box.GetComponent<RectTransform>(), x, y + 19, 112, 30);
+            info.TacticalEquipmentBoxes[i] = box.GetComponent<RectTransform>();
+            UITheme.Place(info.TacticalEquipmentBoxes[i], x, y + 19, 112, 30);
             UITheme.Surface(box, UITheme.Control, true);
             var go = UITheme.Node("Item name", box.transform);
             UITheme.Stretch(go.GetComponent<RectTransform>(), 4, 4, 2, 2);
@@ -116,9 +132,31 @@ internal sealed class TacticalHudView
             labels[i] = text;
         }
         equipment[info] = labels; info.TacticalEquipmentLabels = labels;
-        // Two rows of labelled boxes replace the old single equipment row.
+    }
+
+    internal static void CompactStats(UnitInfoPanel info)
+    {
+        if (!IsTacticalPanel(info)) return;
+        var stats = info.StatBlock.GetComponent<RectTransform>();
+        int rows = info.StatBlock.transform.GetChild(4).gameObject.activeSelf ? 3 : 2;
+        // The inherited flexible grid otherwise stretches two rows over the old eight-stat area.
+        stats.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, rows * 30);
+        var grid = stats.GetComponent<FlexibleGridLayoutGroup>();
+        grid.offAxisScaling = FlexibleGridLayoutGroup.OffAxisCellSize.Count;
+        grid.offAxisCount = rows;
+        LayoutRebuilder.ForceRebuildLayoutImmediate(stats);
+
+        float equipmentTop = -stats.anchoredPosition.y + rows * 30 + 8;
+        for (int i = 0; i < 4; i++)
+        {
+            float x = 5 + (i % 2) * 118;
+            float y = equipmentTop + (i / 2) * 56;
+            UITheme.Place(info.TacticalEquipmentHeaders[i], x, y, 112, 18);
+            UITheme.Place(info.TacticalEquipmentBoxes[i], x, y + 19, 112, 30);
+        }
+        // Preserve the bottom edge; reclaimed vertical space belongs to the traits/status viewport.
         var scroll = info.InfoText.transform.parent.parent as RectTransform;
-        if (scroll != null) scroll.offsetMax -= new Vector2(0, 112);
+        if (scroll != null) scroll.offsetMax = new Vector2(scroll.offsetMax.x, -(equipmentTop + 112));
     }
 
     static void PlaceButton(Button button, float x, float y, float width, float height)

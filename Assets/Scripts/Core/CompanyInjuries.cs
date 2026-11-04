@@ -3,6 +3,7 @@
 // 2026-11-01: Announce each new injury in the battle log and queue visible-unit tactical text (spec 11 feedback).
 // 2026-11-02: Restore the inherited 60 percent daily mana recovery through the single company/target daily stage (spec 12).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+// 2026-11-03: Implement four active stats and agreed combat rules (spec 29).
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -69,7 +70,7 @@ internal static class CompanyInjuries
     internal static int Severity(CompanyInjury injury, int minor, int serious, int old)
     { return injury.Grade == CompanyInjuryGrade.Minor ? minor : injury.Grade == CompanyInjuryGrade.Serious ? serious : old; }
     internal static int StatPenalty(Unit unit, Stat stat)
-    { return unit.Injuries.Where(i => (stat == Stat.Dexterity && i.Part == CompanyBodyPart.Hand) || (stat == Stat.Mind && i.Part == CompanyBodyPart.Head)).Sum(i => Severity(i, 2, 5, 2)); }
+    { return unit.Injuries.Where(i => (stat == Stat.Agility && i.Part == CompanyBodyPart.Hand) || (stat == Stat.Intelligence && i.Part == CompanyBodyPart.Head)).Sum(i => Severity(i, 2, 5, 2)); }
     internal static int MovementPenalty(Unit unit)
     { return unit.Injuries.Where(i => i.Part == CompanyBodyPart.Leg).Sum(i => Severity(i, 1, 2, 1)); }
     internal static int DamagePenalty(Unit unit)
@@ -87,8 +88,8 @@ internal static class CompanyInjuries
     }
     internal static string Description(CompanyInjury injury)
     {
-        string penalty = injury.Part == CompanyBodyPart.Hand ? "DEX -" + Severity(injury, 2, 5, 2) :
-            injury.Part == CompanyBodyPart.Head ? "MIND -" + Severity(injury, 2, 5, 2) :
+        string penalty = injury.Part == CompanyBodyPart.Hand ? "AGI -" + Severity(injury, 2, 5, 2) :
+            injury.Part == CompanyBodyPart.Head ? "INT -" + Severity(injury, 2, 5, 2) :
             injury.Part == CompanyBodyPart.Leg ? "Movement -" + Severity(injury, 1, 2, 1) :
             "Weapon damage -" + (injury.Part == CompanyBodyPart.Arm ? Severity(injury, 1, 5, 2) : Severity(injury, 1, 4, 1));
         return Name(injury) + " [" + injury.Grade + "] — " + penalty +

@@ -3,6 +3,7 @@
 // 2026-11-01: Complete approved ability retirement and close legacy reactivation paths (spec 05A3B17).
 // 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+// 2026-11-03: Implement four active stats and agreed combat rules (spec 29).
 using OdinSerializer;
 using System.Collections.Generic;
 using UnityEngine;
@@ -59,26 +60,18 @@ class Prey
             EscapeRate = 0;
             return;
         }
-        if (Predator.Unit.HasTrait(Traits.Endosoma) && Unit.Stamina <= 0)
-        {
-            EscapeRate = 0;
-            return;
-        }
         if (Unit.GetStatusEffect(StatusEffectType.Sleeping) != null)
         {
             EscapeRate = 0;
             return;
         }
 
-        float predVoracity = Mathf.Pow(15 + Predator.Unit.GetStat(Stat.Voracity), 1.5f);
-        float predStomach = Mathf.Pow(15 + Predator.Unit.GetStat(Stat.Stomach), 1.5f);
-        float preyStrength = Mathf.Pow(15 + Unit.GetStat(Stat.Strength), 1.5f);
-        float preyDexterity = Mathf.Pow(15 + Unit.GetStat(Stat.Dexterity), 1.5f);
-        float preyEndurance = Mathf.Pow(15 + Unit.GetStat(Stat.Endurance), 1.5f);
-        float preyWill = Mathf.Pow(15 + Unit.GetStat(Stat.Will), 1.5f);
-
-        float predScore = 4 * ((10 + Predator.PredatorComponent.TotalCapacity()) / 10 + predStomach * 2 + predVoracity) * (Predator.Unit.HealthPct + 1) / (1 + Predator.PredatorComponent.UsageFraction);
-        float preyScore = 2 * (preyEndurance + preyStrength + preyDexterity + 3 * preyWill) / 2 * (.2f + (Unit.HealthPct * Unit.HealthPct)) * ((1f + TurnsDigested) / (4f + TurnsDigested));
+        float predPower = Mathf.Pow(15 + Predator.Unit.GetStat(Stat.Voracity), 1.5f);
+        float preyPower = Mathf.Pow(15 + Unit.GetStat(Stat.Intelligence), 1.5f);
+        float predScore = 4 * ((10 + Predator.PredatorComponent.TotalCapacity()) / 10 + predPower * 3) *
+            (Predator.Unit.HealthPct + 1) / (1 + Predator.PredatorComponent.UsageFraction);
+        float preyScore = 6 * preyPower * (.2f + Unit.HealthPct * Unit.HealthPct) *
+            ((1f + TurnsDigested) / (4f + TurnsDigested));
 
         preyScore *= Unit.TraitBoosts.Incoming.ChanceToEscape;
         predScore /= Predator.Unit.TraitBoosts.Outgoing.ChanceToEscape;
@@ -115,7 +108,7 @@ class Prey
         EscapeRate = (preyScore / (predScore + preyScore));
         EscapeRate *= Predator.Surrendered ? Config.SurrenderedPredEscapeMult : 1;
         EscapeRate *= TagConditionChecker.ApplyTagEffect(Unit, Predator.Unit, UnitTagModifierEffect.ChanceToEscapeMult);
-        EscapeRate *= Unit.StamPct;
+        // Escape depends on INT versus VOR and condition, never hidden stamina.
         //float statRatio = (float)Predator.Unit.GetStat(Stat.Stomach) / (Unit.GetStat(Stat.Strength) + Unit.GetStat(Stat.Dexterity) + Unit.GetStat(Stat.Will)) * 3;
         //float healthRatio = (Predator.Unit.Health / (float)Predator.Unit.MaxHealth) / (Unit.Health / (float)Unit.MaxHealth);
         //float timeRatio;

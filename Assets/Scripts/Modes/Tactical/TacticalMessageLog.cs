@@ -2,6 +2,7 @@
 // 2026-10-30: Replace typed combat prose with neutral functional feedback; remove Human dummy context (spec 04B1).
 // Upstream narrative contributions credited to Tatltuae are retained in this notice.
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+// 2026-11-03: Implement four active stats and agreed combat rules (spec 29).
 using OdinSerializer;
 using System;
 using System.Collections.Generic;
@@ -58,6 +59,7 @@ public class TacticalMessageLog
         internal string Message;
         [OdinSerialize]
         internal string Extra;
+        [OdinSerialize] internal string WeaponResult;
     }
 
 
@@ -215,7 +217,9 @@ public class TacticalMessageLog
         switch (action.Type)
         {
             case MessageLogEvent.Hit:
-                message = $"{actor} hit {target} with {weapon} for {action.Damage} damage.";
+                message = action.WeaponResult == "graze" ? $"{actor} grazed {target} with {weapon} for {action.Damage} damage." :
+                    action.WeaponResult == "critical" ? $"{actor} critically hit {target} with {weapon} for {action.Damage} damage." :
+                    $"{actor} hit {target} with {weapon} for {action.Damage} damage.";
                 break;
             case MessageLogEvent.Miss:
                 message = $"{actor} missed {target} with {weapon}.";
@@ -370,7 +374,7 @@ public class TacticalMessageLog
         return "Unknown spell";
     }
 
-    public void RegisterHit(Unit Attacker, Unit Defender, Weapon weapon, int damage, float odds)
+    public void RegisterHit(Unit Attacker, Unit Defender, Weapon weapon, int damage, float odds, string result = null)
     {
         events.Add(new EventLog
         {
@@ -379,6 +383,7 @@ public class TacticalMessageLog
             Damage = damage,
             Target = Defender,
             Weapon = weapon,
+            WeaponResult = result,
             Odds = odds
         });
         UpdateListing();

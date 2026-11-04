@@ -5,6 +5,7 @@
 // 2026-11-03: Theme shared hover and slider-value tooltips (spec 17).
 // 2026-11-03: Keep hover graphics from intercepting the pointer or blocking slider targeting (spec 17 feedback).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+// 2026-11-03: Implement four active stats and agreed combat rules (spec 29).
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -149,10 +150,15 @@ public class HoveringTooltip : MonoBehaviour
         {
             return "";
         }
+        if (unit != null)
+            foreach (var active in WarbandStats.Active)
+                if (words[2] == WarbandStats.ShortName(active) || words[2] == WarbandStats.Name(active))
+                    return WarbandStats.Description(active) + "\n" + StatData(active) +
+                        (active == Stat.Agility ? "\nBase AP: " + WarbandStats.BaseAP(unit.Race) : "");
         string STRDef = $"Affects melee accuracy and damage, also has a lesser impact on health, has minor effects on vore defense and vore escape\n{StatData(Stat.Strength)}";
         string DEXDef = $"Affects ranged accuracy and damage, has minor effect on vore escape\n{StatData(Stat.Dexterity)}";
         string VORDef = $"Affects vore odds, also has a minor effect on keeping prey down, also affects digestion damage to a minor degree\n{StatData(Stat.Voracity)}";
-        string AGIDef = $"Affects melee and ranged evasion and movement speed\n{StatData(Stat.Agility)}\nMovement: {actor?.MaxMovement() ?? Mathf.Max(3 + ((int)Mathf.Pow(unit.GetStat(Stat.Agility) / 4, .8f)), 1)} tiles";
+        string AGIDef = $"Affects melee and ranged evasion\n{StatData(Stat.Agility)}\nMovement: {actor?.MaxMovement() ?? WarbandStats.BaseAP(unit.Race)} tiles";
         string WLLDef = $"Affects vore defense, escape rate, mana capacity, and magic defense\n{StatData(Stat.Will)}";
         string MNDDef = $"Affects spell damage, success odds, and duration with a minor amount of mana capacity\n{StatData(Stat.Mind)}";
         string ENDDef = $"Affects total health, also reduces damage from acid, has a minor role in escape chance.\n{StatData(Stat.Endurance)}";

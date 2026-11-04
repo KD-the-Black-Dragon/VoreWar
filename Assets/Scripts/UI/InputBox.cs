@@ -1,6 +1,7 @@
 ﻿// Modified for the VoreWar mercenary-company conversion.
 // 2026-11-03: Use the shared blue popup palette without changing dialog actions (spec 17).
 // 2026-11-03: Use black entered text and medium-grey placeholders on light popup inputs (spec 17 feedback).
+// 2026-11-03: Frame the retained light input field with the selected gold treatment (spec 28).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using TMPro;
@@ -12,6 +13,9 @@ public class InputBox : MonoBehaviour
     private void Awake()
     {
         UITheme.StylePopup(gameObject);
+        if (InputField != null && InputField.targetGraphic is Image)
+            UITheme.Surface(InputField.targetGraphic.gameObject, Color.white, true);
+        UITheme.StyleSelectable(InputField);
         InputField.textComponent.color = Color.black;
         if (InputField.placeholder != null) InputField.placeholder.color = new Color32(128, 128, 128, 255);
         InputField.customCaretColor = true;

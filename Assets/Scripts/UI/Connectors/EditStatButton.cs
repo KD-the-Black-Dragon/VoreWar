@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-03: Implement four active stats and agreed combat rules (spec 29).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,8 +19,8 @@ public class EditStatButton : MonoBehaviour
 
     internal void SetData(Stat stat, int value, Action<Stat, int> statAction, Action<Stat, int> levelAction, Action<Stat, int> manualSetAction, Unit unit, UnitEditorPanel parent)
     {
-        Label.text = $"{stat}\n{value.ToString()}";
-        defaultText = $"{stat}\n{value.ToString()}";
+        Label.text = $"{WarbandStats.Name(stat)}\n{value.ToString()}";
+        defaultText = $"{WarbandStats.Name(stat)}\n{value.ToString()}";
         Stat = stat;
         Unit = unit;
         Parent = parent;
@@ -29,20 +32,20 @@ public class EditStatButton : MonoBehaviour
         button.onClick.AddListener(() => manualSetAction(stat, 0));
         if (Stat == Stat.Leadership && Unit.Type != UnitType.Leader)
         {
-            Label.text = $"{Stat}\nN/A";
-            defaultText = $"{Stat}\nN/A";
+            Label.text = $"{WarbandStats.Name(Stat)}\nN/A";
+            defaultText = $"{WarbandStats.Name(Stat)}\nN/A";
         }
 
     }
 
     public void UpdateLabel()
     {
-        Label.text = $"{Stat}\n{Unit.GetStat(Stat)}";
-        defaultText = $"{Stat}\n{Unit.GetStat(Stat)}";
+        Label.text = $"{WarbandStats.Name(Stat)}\n{Unit.GetStat(Stat)}";
+        defaultText = $"{WarbandStats.Name(Stat)}\n{Unit.GetStat(Stat)}";
         if (Stat == Stat.Leadership && Unit.Type != UnitType.Leader)
         {
-            Label.text = $"{Stat}\nN/A";
-            defaultText = $"{Stat}\nN/A";
+            Label.text = $"{WarbandStats.Name(Stat)}\nN/A";
+            defaultText = $"{WarbandStats.Name(Stat)}\nN/A";
         }
     }
 

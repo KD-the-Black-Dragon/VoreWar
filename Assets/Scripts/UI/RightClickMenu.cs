@@ -2,6 +2,7 @@
 // 2026-11-02: Use the shared distance-selected Attack command in the tactical context menu (spec 16).
 // 2026-11-01: Omit direct attacks against downed targets and label lethal physical previews as downing (spec 10).
 // 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
+// 2026-11-03: Theme tactical context-menu surfaces while retaining their existing commands (spec 28).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,12 @@ using UnityEngine.UI;
 
 public class RightClickMenu : MonoBehaviour
 {
+    void Awake()
+    {
+        UITheme.StylePopup(gameObject);
+        if (PouncePanel != null) UITheme.StylePopup(PouncePanel.gameObject);
+    }
+
     Button[] Buttons;
     public Transform ButtonFolder;
     public GameObject ButtonPrefab;

@@ -6,6 +6,7 @@
 // 2026-11-02: Restore vore terminology in the existing tactical retreat log (Options feedback).
 // 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+// 2026-11-03: Implement four active stats and agreed combat rules (spec 29).
 using OdinSerializer;
 using System;
 using System.Collections.Generic;
@@ -505,7 +506,7 @@ public abstract class TacticalAI : ITacticalAI
 
     protected virtual void RunBellyRub(Actor_Unit actor, int spareAP)
     {
-        int cost = actor.MaxMovement() / 3;
+        int cost = Math.Max(1, actor.MaxMovement() / 3);
         List<PotentialTarget> targets = GetListOfPotentialRubTargets(actor, actor.Position, spareAP);
 
         if (!targets.Any())
@@ -567,7 +568,7 @@ public abstract class TacticalAI : ITacticalAI
             if (unit.Targetable == true && unit.Unit.Predator && !TacticalUtilities.TreatAsHostile(actor, unit) && TacticalUtilities.GetMindControlSide(unit.Unit) == -1 && !unit.Surrendered && unit.PredatorComponent?.PreyCount > 0 && !unit.ReceivedRub) // includes self
             {
                 int distance = unit.Position.GetNumberOfMovesDistance(position);
-                if (distance - 1 + (actor.MaxMovement() / 3) <= moves)
+                if (distance - 1 + (Math.Max(1, actor.MaxMovement() / 3)) <= moves)
                 {
                     if (distance > 1 && TacticalUtilities.FreeSpaceAroundTarget(unit.Position, actor) == false)
                         continue;

@@ -6,6 +6,7 @@
 // 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 // Defaults and loading logic are extracted from the upstream ContentSettings component.
+// 2026-11-03: Implement four active stats and agreed combat rules (spec 29).
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -108,8 +109,8 @@ internal static class ContentSettingsData
         ["DayNightRandom"] = true,
         ["NightMonsters"] = false,
         ["NightMoveMonsters"] = false,
-        ["CombatComplicationsEnabled"] = false,
-        ["StatCrit"] = false,
+        ["CombatComplicationsEnabled"] = true,
+        ["StatCrit"] = true,
         ["StatGraze"] = false,
         ["StatBoostsAffectMaxHP"] = false,
         ["OverfeedingDamage"] = false,

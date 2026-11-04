@@ -1,4 +1,4 @@
-﻿// Added by the VoreWar mercenary-company conversion fork.
+// Added by the VoreWar mercenary-company conversion fork.
 // 2026-11-01: Leader creator, recruitment, canonical roster/debt and nine-slot commerce views (specs 07–08).
 // 2026-11-01: Host mission/result views, preserve clear deadline decisions and exclude enemy-only natural weapons from shops (specs 09–10).
 // 2026-11-01: Use singular species names in creation, recruitment and company views (09–10 feedback).
@@ -11,7 +11,10 @@
 // 2026-11-02: Correct portrait magnification/alignment after visual feedback (spec 15D).
 // 2026-11-03: Present the leader creator as a blue single-screen layout with species dropdown (spec 18).
 // 2026-11-03: Forward prototype checkpoint browsing to the named save/load interface (spec 19).
+// 2026-11-03: Frame company/town pages and roster rows without moving text or paper dolls (spec 28).
+// 2026-11-03: Inset and shorten member-row buttons so they clear the accepted roster frames (spec 28 feedback).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+// 2026-11-03: Implement four active stats and agreed combat rules (spec 29).
 using System;
 using System.Linq;
 using UnityEngine;
@@ -37,6 +40,8 @@ internal sealed class CompanyManagementUI
         townLayout = townServices;
         view.ShowManagement(townServices, campaign);
         foreach (Transform child in Page.transform) { child.gameObject.SetActive(false); UnityEngine.Object.Destroy(child.gameObject); }
+        view.Box(Page.transform, "Management surface", townServices ? 238 : 20, 82,
+            townServices ? 1022 : 1240, campaign ? 558 : 654, UITheme.Panel).transform.SetAsFirstSibling();
         view.Label(Page.transform, title, townServices ? 250 : 30, 90, townServices ? 980 : 1180, 42, 25);
     }
     float ContentX(float x) { return townLayout ? 250 + (x - 30) * .81f : x; }
@@ -45,6 +50,14 @@ internal sealed class CompanyManagementUI
     { view.Label(Page.transform, text, ContentX(x), y, ContentWidth(w), h, size); }
     internal void Button(string text, float x, float y, float w, Action callback, bool enabled = true)
     { view.Action(Page.transform, text, ContentX(x), y, ContentWidth(w), callback).interactable = enabled; }
+    void RosterButton(string text, float x, float y, float width, Action callback, bool enabled = true)
+    {
+        var button = view.Action(Page.transform, text, ContentX(x + 3), y, ContentWidth(width - 6), callback);
+        var rect = button.GetComponent<RectTransform>();
+        rect.sizeDelta = new Vector2(rect.sizeDelta.x, 34);
+        button.GetComponentInChildren<Text>().rectTransform.sizeDelta = new Vector2(rect.sizeDelta.x - 6, 28);
+        button.interactable = enabled;
+    }
     void Portrait(CompanyCharacter character, float x, float y, float scale = .9f)
     {
         var go = view.Panel("Character portrait", Page.transform); view.Place(go, ContentX(x) + 38, y + 22 + 30 * scale, 0, 0);
@@ -54,6 +67,12 @@ internal sealed class CompanyManagementUI
         display.SetIndex(-1);
         var actor = new Actor_Unit(character.Unit); actor.UpdateBestWeapons(); display.UpdateSprites(actor);
         foreach (var image in go.GetComponentsInChildren<Image>()) image.raycastTarget = false;
+    }
+    void RosterRow(float y, float height)
+    {
+        // Backplates stay behind every paper doll, including parts extending beyond one row.
+        view.Box(Page.transform, "Roster surface", ContentX(24), y - 3, ContentWidth(1192), height,
+            UITheme.Row).transform.SetSiblingIndex(1);
     }
     void Change(Action operation, Action redraw)
     {
@@ -124,6 +143,7 @@ internal sealed class CompanyManagementUI
         var nameGo = view.Panel("Leader name", Page.transform); view.Place(nameGo, 420, 650, 440, 38);
         UITheme.Surface(nameGo, UITheme.Control, true);
         var nameField = nameGo.AddComponent<InputField>();
+        UITheme.StyleSelectable(nameField);
         nameField.textComponent = view.Label(nameGo.transform, draft.Unit.Name, 8, 2, 424, 34, 18);
         nameField.characterLimit = 100; nameField.text = draft.Unit.Name;
         nameField.onEndEdit.AddListener(value => { draft.Unit.Name = value.Trim(); creator.DisplayedSprite.Name.text = draft.Unit.Name; });
@@ -162,6 +182,7 @@ internal sealed class CompanyManagementUI
         for (int i = 0; i < 4 && offset + i < offers.Length; i++)
         {
             var c = offers[offset + i]; int y = 190 + i * 84;
+            RosterRow(y, 80);
             Portrait(c, 30, y);
             Text(c.Unit.Name + " — " + SpeciesPolicy.DisplayName(c.Unit.Race) + "  Lv" + c.Unit.Level + "  " + CompanyEconomy.Wage(State, c) + "/week\n" + c.Biography + (c.Employment == CompanyEmployment.Former ? " [Former member; debt " + c.Debt + "]" : ""), 150, y, 680, 77);
             int price = CompanyEconomy.HirePrice(State, c);
@@ -179,6 +200,7 @@ internal sealed class CompanyManagementUI
         for (int i = 0; i < 5 && offset + i < roster.Length; i++)
         {
             var c = roster[offset + i]; var member = State.Members.Find(m => m.CharacterId == c.Id); int y = 180 + i * 82;
+            RosterRow(y, 79);
             bool leader = c.Id == State.LeaderId, ready = c.Unit.HasEnoughExpToLevelUp();
             Portrait(c, 30, y);
             string progress = c.Unit.CurrentLevelExperience.ToString("0.#") + "/" + c.Unit.CurrentLevelExperienceRequired;
@@ -187,11 +209,11 @@ internal sealed class CompanyManagementUI
                 "\nHP " + c.Unit.Health + "/" + c.Unit.MaxHealth + " | " + status +
                 "\nInjuries " + c.Unit.Injuries.Count(CompanyInjuries.Temporary) + " | Old " + c.Unit.Injuries.Count(injury => !CompanyInjuries.Temporary(injury)) +
                 " | Wage " + CompanyEconomy.Wage(State, c) + "/week | Debt " + c.Debt, 112, y, 605, 77, 17);
-            Button(leader ? "Always active" : member.Reserve ? "Reserve" : "Active", 735, y, 130, () => Change(() => member.Reserve = !member.Reserve, () => Company(offset)), !leader && !State.InBattle && !State.Busy);
-            Button("Manage", 880, y, 140, () => Member(c.Id));
-            Button(ready ? "Level up!" : "Level up", 1035, y, 180, () => ChooseLevel(c.Id), ready && !State.Busy);
-            Button("Pay " + c.Debt, 735, y + 40, 130, () => Change(() => CompanyEconomy.Pay(State, c), () => Company(offset)), c.Debt > 0 && State.Gold >= c.Debt);
-            Button("Injuries", 880, y + 40, 140, () => view.Recovery.Injuries(c.Id));
+            RosterButton(leader ? "Always active" : member.Reserve ? "Reserve" : "Active", 735, y, 130, () => Change(() => member.Reserve = !member.Reserve, () => Company(offset)), !leader && !State.InBattle && !State.Busy);
+            RosterButton("Manage", 880, y, 140, () => Member(c.Id));
+            RosterButton(ready ? "Level up!" : "Level up", 1035, y, 180, () => ChooseLevel(c.Id), ready && !State.Busy);
+            RosterButton("Pay " + c.Debt, 735, y + 40, 130, () => Change(() => CompanyEconomy.Pay(State, c), () => Company(offset)), c.Debt > 0 && State.Gold >= c.Debt);
+            RosterButton("Injuries", 880, y + 40, 140, () => view.Recovery.Injuries(c.Id));
         }
         Button("Previous", 30, 600, 155, () => Company(offset - 5), offset > 0);
         Button("Next", 200, 600, 155, () => Company(offset + 5), offset + 5 < roster.Length);
@@ -218,9 +240,7 @@ internal sealed class CompanyManagementUI
     }
     static string Stats(Unit unit)
     {
-        return "STR " + unit.GetStat(Stat.Strength) + "  DEX " + unit.GetStat(Stat.Dexterity) + "  MIND " + unit.GetStat(Stat.Mind) +
-            "  WILL " + unit.GetStat(Stat.Will) + "  END " + unit.GetStat(Stat.Endurance) + "  AGI " + unit.GetStat(Stat.Agility) +
-            "  VOR " + unit.GetStat(Stat.Voracity) + "  STOM " + unit.GetStat(Stat.Stomach);
+        return string.Join("  ", WarbandStats.Active.Select(stat => WarbandStats.ShortName(stat) + " " + unit.GetStat(stat)).ToArray());
     }
     void ChooseLevel(string id)
     {
@@ -232,7 +252,7 @@ internal sealed class CompanyManagementUI
         for (int i = 0; i < choices.Length; i++)
         {
             Stat stat = choices[i];
-            Button(stat.ToString(), 30 + i % 4 * 285, 230 + i / 4 * 70, 270,
+            Button(WarbandStats.Name(stat), 30 + i % 4 * 285, 230 + i / 4 * 70, 270,
                 () => Change(() => CompanyEconomy.Level(State, c, stat), () => Company(offset)), !State.Busy);
         }
     }
@@ -247,8 +267,8 @@ internal sealed class CompanyManagementUI
     void Nickname(string id)
     {
         var c = State.Characters.Find(x => x.Id == id); Clear("Give a nickname");
-        var go = view.Panel("Nickname", Page.transform); view.Place(go, 30, 180, 650, 50); go.AddComponent<Image>().color = new Color(.2f,.25f,.3f);
-        var field = go.AddComponent<InputField>(); var text = view.Label(go.transform, c.Unit.Name, 8, 5, 630, 40); field.textComponent = text; field.characterLimit = 100; field.text = c.Unit.Name;
+        var go = view.Panel("Nickname", Page.transform); view.Place(go, 30, 180, 650, 50); UITheme.Surface(go, UITheme.Control, true);
+        var field = go.AddComponent<InputField>(); UITheme.StyleSelectable(field); var text = view.Label(go.transform, c.Unit.Name, 8, 5, 630, 40); field.textComponent = text; field.characterLimit = 100; field.text = c.Unit.Name;
         Button("Save nickname", 30, 280, 220, () =>
         {
             if (string.IsNullOrWhiteSpace(field.text)) throw new InvalidOperationException("Enter a nickname first.");

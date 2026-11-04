@@ -1,5 +1,6 @@
-﻿// Added by the VoreWar mercenary-company conversion fork.
+// Added by the VoreWar mercenary-company conversion fork.
 // 2026-11-03: Single-screen blue leader customization with retained native controls and a contained center portrait (spec 18).
+// 2026-11-03: Share gold/gradient dropdown templates with the accepted leader creator (spec 28).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
 using System.Linq;
@@ -71,16 +72,15 @@ internal sealed class CompanyLeaderCreatorView
         var dropdown = control.GetComponent<TMP_Dropdown>();
         if (dropdown != null && dropdown.template != null)
         {
-            foreach (var background in dropdown.template.GetComponentsInChildren<Image>(true))
+            UITheme.Surface(dropdown.template.gameObject, UITheme.Panel, true);
+            foreach (var bar in dropdown.template.GetComponentsInChildren<Scrollbar>(true))
             {
-                Color color = UITheme.Control; color.a = background.color.a;
-                background.color = color;
+                UITheme.Surface(bar.gameObject, UITheme.Background, true);
+                if (bar.targetGraphic != null) UITheme.Surface(bar.targetGraphic.gameObject, UITheme.Control, true);
+                UITheme.StyleSelectable(bar);
             }
             foreach (var toggle in dropdown.template.GetComponentsInChildren<Toggle>(true))
-            {
-                UITheme.StyleSelectable(toggle);
-                if (toggle.graphic != null) toggle.graphic.color = UITheme.Foreground;
-            }
+                UITheme.StyleDropdownItem(toggle);
         }
         foreach (var text in control.GetComponentsInChildren<Text>(true))
         { text.fontSize = 14; text.resizeTextForBestFit = false; }

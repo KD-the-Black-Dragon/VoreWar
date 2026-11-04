@@ -5,6 +5,7 @@
 // 2026-11-01: Accept progression/notice rules version 4 without regenerating saved contracts (spec 11 feedback).
 // 2026-11-02: Share approved enemy construction and validate explicit road-battle sources without fake contracts (spec 13).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+// 2026-11-03: Implement four active stats and agreed combat rules (spec 29).
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +30,7 @@ internal static class CompanyContracts
     internal static double Power(Unit unit)
     {
         // Accessory bonuses already live in base stats: count them here, not again as gear.
-        double stats = Enumerable.Range(0, (int)Stat.Leadership).Sum(i => Math.Max(0, unit.GetStatBase((Stat)i))) * .18;
+        double stats = WarbandStats.Active.Sum(stat => Math.Max(0, unit.GetStatBase(stat))) * .36;
         double weapons = unit.Items.OfType<Weapon>().Sum(w => w.Damage * (w.Range > 1 ? 1.5 : 1));
         double spells = unit.UseableSpells.Count * 7;
         double traits = unit.GetTraits.Sum(t => t == Traits.Featherweight || t == Traits.NaturalCaster ? 5 : 2);
