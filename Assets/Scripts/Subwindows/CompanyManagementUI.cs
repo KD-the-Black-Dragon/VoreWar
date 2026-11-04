@@ -1,4 +1,5 @@
-// Added by the VoreWar mercenary-company conversion fork.
+﻿// Added by the VoreWar mercenary-company conversion fork.
+// 2026-11-04: Apply approved injury tiers, base-STR HP, healing ceilings and recovery rules (spec 33).
 // 2026-11-01: Leader creator, recruitment, canonical roster/debt and nine-slot commerce views (specs 07–08).
 // 2026-11-01: Host mission/result views, preserve clear deadline decisions and exclude enemy-only natural weapons from shops (specs 09–10).
 // 2026-11-01: Use singular species names in creation, recruitment and company views (09–10 feedback).
@@ -206,7 +207,7 @@ internal sealed class CompanyManagementUI
             string progress = c.Unit.CurrentLevelExperience.ToString("0.#") + "/" + c.Unit.CurrentLevelExperienceRequired;
             string status = "XP " + progress + (ready ? " <color=#F4D47B>LEVEL UP READY</color>" : "");
             Text(c.Unit.Name + " — " + SpeciesPolicy.DisplayName(c.Unit.Race) + " Lv" + c.Unit.Level + (leader ? " [Leader]" : "") +
-                "\nHP " + c.Unit.Health + "/" + c.Unit.MaxHealth + " | " + status +
+                "\nHP " + c.Unit.Health + "/" + c.Unit.MaxHealth + (CompanyInjuries.DamageTier(c.Unit) > 0 ? " [" + CompanyInjuries.DamageName(c.Unit) + "]" : "") + " | " + status +
                 "\nInjuries " + c.Unit.Injuries.Count(CompanyInjuries.Temporary) + " | Old " + c.Unit.Injuries.Count(injury => !CompanyInjuries.Temporary(injury)) +
                 " | Wage " + CompanyEconomy.Wage(State, c) + "/week | Debt " + c.Debt, 112, y, 605, 77, 17);
             RosterButton(leader ? "Always active" : member.Reserve ? "Reserve" : "Active", 735, y, 130, () => Change(() => member.Reserve = !member.Reserve, () => Company(offset)), !leader && !State.InBattle && !State.Busy);

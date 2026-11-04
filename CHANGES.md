@@ -1,4 +1,4 @@
-# VoreWar fork changes
+﻿# VoreWar fork changes
 
 This checkout is developing a mercenary-company total conversion of VoreWar. The original project is described in [README.md](README.md) as a continuation of darkevilme's Vore War. This record distinguishes this fork's work from that earlier work; original copyright, attribution, license, and warranty notices remain applicable.
 
@@ -997,3 +997,166 @@ Record user acceptance of 03B8 and revise AGENTS.md, roadmap and resume checkpoi
 ## 2026-11-01 — People/economy preparation and terrain-art requirement (documentation only)
 
 Record user acceptance of06 preview and requirement to reuse original4X terrain artwork. Trace grouped07–08 Unit/item/customizer/wage dependencies and request species/tuning decisions together. No runtime source, assets, species approvals or numerical tuning changed. See docs/implementation/07-08-people-economy-preparation.md.
+
+
+## 2026-11-04 — Single Battle outcome styling
+
+- Modified `Assets/Scripts/UI/Connectors/StatScreenPanel.cs`: shared blue/gold surfaces, 30-point outcome title, 23-point side/species headings, 17-point details and a subtle central divider. Preserve information and existing timing/exit controls.
+- Modified `Assets/Scripts/Modes/Tactical/TacticalStats.cs`: Damage Dealt becomes Dmg; omit weapon kill suffixes while preserving spell and other statistics.
+- Dated source notices added; inherited licensing/attribution preserved. License4–5 reviewed; no external code/assets/dependencies or file moves/deletions. Existing distribution review remains open.
+
+
+## 2026-11-04 — Outcome typography feedback
+
+- Modified `Assets/Scripts/UI/Connectors/StatScreenPanel.cs`: increase outcome title from30 to48, side/species headings from23 to32, and detail text from17 to24; use1.15line spacing on both detail columns for a few extra reference pixels per line. Preserve accepted palette, divider, information and controls.
+- Dated modification notice added; inherited notices/licensing retained. No external material or dependencies introduced; existing distribution review remains open. Source adjustment only, no build or playtest run.
+
+
+## 2026-11-04 — Trait curation round one
+
+- Modified `Assets/Scripts/Enums/Tags.cs`: extend the authoritative retirement policy by36 user-approved traits (exact list in `Logs/traits31-retired.json` and spec31). Existing HasTrait/GetTraits/GetTrait/random-pool/Help filters disable these definitions without renumbering stored IDs. Retain the four size traits, AdaptiveTactics and all undecided candidates. Update AdaptiveTactics enum description to match10% action XP.
+- Modified `Assets/Scripts/Races/Traits.cs`: AdaptiveTactics now multiplies action experience by1.1 instead of2, with its player-facing description updated.
+- Dated notices and previous attribution/license notices preserved; actual License4–5 reviewed. No copied external material, dependencies, file moves/deletions or unrelated source changes. Dormant implementations and serialized IDs remain for compatibility; no claim of physical removal of every code reference. No build/tests/playtest run. Existing provenance/distribution gates remain open.
+
+
+## 2026-11-04 — Trait curation round two
+
+- Modified `Assets/Scripts/Enums/Tags.cs`.
+- Modified `Assets/Scripts/Races/Traits.cs`.
+- Modified `Assets/Scripts/Entities/Units/Actor_Unit.cs`.
+- Modified `Assets/Scripts/Modes/TacticalMode.cs`.
+- Modified `Assets/Scripts/Entities/Units/Unit.cs`.
+- Modified `Assets/Scripts/Utility/Texts/HelpText.cs`.
+- Modified `Assets/Scripts/Utility/Texts/HoveringTooltip.cs`.
+
+Retire19 additional approved traits: TraitBorrower, Symbiote, Parasite, CreateSpawn, InfectiousReproduction, AstralCall, AntPheromones, CursedMark, BookEater, Clever, Pathfinder, SlowBreeder, ProlificBreeder, Resourceful, BookWormI, BookWormII, BookWormIII, CurseOfImmolation, CurseOfEquivalency. QuickLearner is the player-facing name for the unchanged AdaptiveTactics saved identifier and +10% XP bonus. DoubleAttack (melee/ranged) and Maul (melee) leave1AP on the first ordinary weapon attack if unmoved and starting with at least2AP; no stacking, free reactions do not consume the bonus, saved actor state persists eligibility. Movement/relocation consumes standing eligibility, legitimate safe Undo restores it. Existing unrelated multiattack traits unchanged. Per-source dated notices and prior attribution retained; no external additions/dependencies, no files deleted/moved. No compile/build/playtest performed. Existing distribution/provenance gates remain open.
+
+
+## 2026-11-04 — DoubleShot refinement
+
+- Modified `Assets/Scripts/Enums/Tags.cs`.
+- Modified `Assets/Scripts/Entities/Units/Actor_Unit.cs`.
+- Modified `Assets/Scripts/Races/Traits.cs`.
+- Modified `Assets/Scripts/Utility/Texts/HoveringTooltip.cs`.
+
+DoubleShot is now the display name for the compatible DoubleAttack ID; Help/unit lists use the shared name and hover parsing accepts it. Its standing-ground bonus requires a ranged first weapon attack; Maul remains melee-only. No AP, movement, stacking or reaction-rule changes otherwise. Descriptions updated. Dated notices/previous attribution retained; no external additions or file moves/deletions. No build/tests/playtest run; existing distribution review remains open.
+
+
+## 2026-11-04 — Pack traits and obsolete stat wording
+
+- Modified `Assets/Scripts/Enums/Tags.cs`.
+- Modified `Assets/Scripts/Races/Traits.cs`.
+- Modified `Assets/Scripts/Utility/Texts/HoveringTooltip.cs`.
+
+Retire PackWill, PackDefense, PackStomach and all four Blessing traits through the shared gameplay/Help filter. Display PackDexterity as PackAgility, retaining its saved ID and hover compatibility. Other pack names/effects remain; pack descriptions now use current stat names. Update Finesse, DexterousDefense and BoundWeapon stat wording, and old blessing descriptions, without numerical changes. Dated modification notices and prior license/attribution preserved; no external material/dependencies or files moved/deleted. No compile/build/playtest run. Existing distribution/provenance review remains open.
+
+
+## 2026-11-04 — FastCaster and QuickShooter
+
+- Modified `Assets/Scripts/Enums/Tags.cs`.
+- Modified `Assets/Scripts/Races/Traits.cs`.
+- Modified `Assets/Scripts/Entities/Units/Actor_Unit.cs`.
+
+QuickShooter retired through shared runtime/Help gates. FastCaster first spell cast while unmoved and starting with at least2AP leaves1AP; replaces unconditional extra spell count. All four actor spell-spending paths use the shared helper; first-cast flag persists in battle saves and resets each actor turn. Other retained modifiers unchanged. Source notices/earlier licensing preserved, no external additions or file moves/deletions. No compile/build/playtest run. Existing distribution review remains open.
+
+
+## 2026-11-04 — Dodger, KeenEye and action-economy decisions
+
+- Modified `Assets/Scripts/Enums/Tags.cs`.
+- Modified `Assets/Scripts/Races/Traits.cs`.
+- Modified `Assets/Scripts/Entities/Units/Actor_Unit.cs`.
+- Modified `Assets/Scripts/Utility/Texts/HoveringTooltip.cs`.
+- Modified `Assets/Scripts/Modes/Tactical/OpportunityAttacks.cs`.
+
+Retire LightFrame, WildFury, StrongGullet, KillingMomentum, SlowMovement, VerySlowMovement, Charge, SlowStart, Slacker. Juggernaut retains doubled stats and alternate skipped turns. Clumsy loses only its movement modifier. Dodger display alias preserves AccuteDodge ID, replaces obsolete graze shift with minus10percentage points to hostile weapon accuracy through the shared preview/roll calculation. KeenEye replaces bonus critical chance with guaranteed miss-rescue graze at accuracy>=51%, retaining normal graze damage and no grazes below threshold; opportunity AI estimates match. Hover aliases/descriptions updated. Previous notices retained and dated source notices added; no outside assets/code/dependencies or file moves/deletions. Source review only, no compile/build/playtest; distribution gates remain open.
+
+
+## 2026-11-04 — EasyPrey, MadMage and EvasiveBattler
+
+- Modified `Assets/Scripts/Enums/Tags.cs`.
+- Modified `Assets/Scripts/Races/Traits.cs`.
+- Modified `Assets/Scripts/Entities/Units/Actor_Unit.cs`.
+- Modified `Assets/Scripts/Utility/Texts/HoveringTooltip.cs`.
+- Modified `Assets/Scripts/Modes/TacticalMode.cs`.
+- Modified `Assets/Scripts/Modes/Tactical/TacticalAction.cs`.
+
+Retire TheGreatEscape, Donor, ExtraNutritious, ArtfulDodge, Temptation, PredGusher, Infertile, ShunGokuSatsu, WillingRace, Brainless. EasyPrey display alias replaces Defenseless1000x multiplier with+15percentage points in the shared vore-chance function, clamped at100%. MadMage display alias retains MadScience saved identifier and behavior. EvasiveBattler gains right-side Instant Retreat command from its existing allowed turn (normally4), bypassing map-edge requirement while retaining AP, Fearless, summon, captive and other normal retreat restrictions. MagicSynthesis/NaturalCaster unchanged. Dated notices/old attribution preserved; no external additions or file moves/deletions. No compilation/build/playtest run. Existing distribution gates remain open.
+
+
+## 2026-11-04 — Final trait decisions
+
+- Modified `Assets/Scripts/Enums/Tags.cs`.
+- Modified `Assets/Scripts/Entities/Units/Actor_Unit.cs`.
+- Modified `Assets/Scripts/Entities/Units/PredatorComponent.cs`.
+- Modified `Assets/Scripts/Races/Traits.cs`.
+- Modified `Assets/Scripts/Utility/Texts/HoveringTooltip.cs`.
+
+Dazzle replaces separate cancellation with hostile weapon/resistible-magic accuracy penalty, provisional0.2percentage points perINT capped20; old vore cancellation removed. Vindication display alias replaces DyingStrike: guaranteed digestion-only retaliation, three normal-melee damage applications, no accuracy/graze/critical rolls. ArcaneMagistrate awards5Focus on a newly downed target (or kill),1otherwise. Talented aliases AdeptLearner; FocusedDevelopment retired. Elemental resistance and temporary healing descriptions aligned, spell/focus Mind wording replaced with INT. Existing grants/IDs/notices preserved; no external additions/files moved/deleted. No compile/build/playtest; existing distribution gates remain open.
+
+
+## 2026-11-04 — Grouped trait validation
+
+- Added `Assets/Editor/TraitCurationAudit.cs` and `.meta`: user-requested isolated native Play-mode checks for trait retirement, labels, action economy, accuracy/graze thresholds and outcome presentation properties. Uses synthetic company data under unique Logs roots; existing diagnostic save redirection suppresses deletion. Reuses the fork’s existing audit lifecycle/reflection helpers; no external framework/dependency. Dated addition notice and inherited license/attribution retained. Results pending execution.
+
+
+## 2026-11-04 — Grouped review corrections
+
+- Modified `Assets/Scripts/Entities/Units/Actor_Unit.cs`: correct Dazzle placement from generic stat-clash function to actual spell accuracy; add a serialized actual-skipped-turn flag, separate from Juggernaut's next-turn skip counter.
+- Modified `Assets/Scripts/Modes/Tactical/OpportunityAttacks.cs`: use actual skipped state for command/reaction eligibility so Juggernaut retains active turns.
+- Extended `Assets/Editor/TraitCurationAudit.cs`: native downing/digestion/retreat checks, Juggernaut active/skip/active cycle and actor eligibility serialization. Disable drawing only inside the headless diagnostic to avoid Unity2018 null-graphics tilemap crash. Initial failed compile/audit attempts retained in Logs; successful results recorded separately. No external material/dependencies or files deleted/moved. Dated source notices and existing licenses/attribution preserved; distribution/provenance gates unchanged.
+
+Grouped review completed:151 native runtime checks passed, clean standalone build produced. Evidence in spec31 and Logs/traits31-result.json; rendered UI/interaction review remains with the user. No public distribution clearance asserted.
+
+
+## 2026-11-04 — Further trait pruning and plain descriptions
+
+- Modified `Assets/Scripts/Enums/Tags.cs`.
+- Modified `Assets/Scripts/Entities/Units/Unit.cs`.
+- Modified `Assets/Scripts/Races/Traits.cs`.
+- Modified `Assets/Scripts/Entities/Units/Actor_Unit.cs`.
+- Modified `Assets/Scripts/Entities/Units/PredatorComponent.cs`.
+- Modified `Assets/Scripts/Utility/Texts/HoveringTooltip.cs`.
+- Modified `Assets/Scripts/Modes/Tactical/TacticalAction.cs`.
+
+Retire Prey, TentacleHarassment, Cruel, EnthrallingDepths, FriendlyStomach, Honeymaker, WetNurse, ForceFeeder, ViralDigestion, Growth, IncreasedGrowth, DoubleGrowth, PersistentGrowth, MinorGrowth, SlowedGrowth, FleetingGrowth, TotalAbsorption, DimensionalAntilock, TightNethers, HaplessPrey, AllIn, EnviousPrey, CompetetivePredator, RoughMassage, VoreObsession. PermanentGrowth was already retired. Five requested display aliases preserve saved IDs; Smoke Out command matches SmokeOut. Frenzy uses new serialized per-battle enemy-digestion counter reset on BeginCombat; ordinary kill counts retained as statistics only. TasteForBlood now triggers only on enemy digestion. Talented no longer grants unrestricted stat choice; keeps two random+1stat gains. Petrifier verified existing4turnDuration, description clarified; no permanent transformation. Plain-effect descriptions replace nonmechanical filler in stat/XP modifiers and Juggernaut describes AP skips. User confirmed ArcaneMagistrate retains its downing bonus. Removed the duplicate ViralDigestion callback from retained ViralBiology, preserving its swallow resistance and reduced nutrition; description now states those effects. Source notices/prior licensing preserved; no external additions/files moved/deleted. No compile/build/playtest run for this batch; previous151check build predates it.
+
+
+## 2026-11-04 — Baseline trait families and categorized Help (spec 32)
+
+- Modified `Assets/Scripts/Enums/Tags.cs`.
+- Modified `Assets/Scripts/Races/Traits.cs`.
+- Added `Assets/Scripts/Races/TieredTraits.cs`.
+- Modified `Assets/Scripts/Entities/Units/Unit.cs`.
+- Modified `Assets/Scripts/Entities/Units/Actor_Unit.cs`.
+- Modified `Assets/Scripts/Entities/Units/PredatorComponent.cs`.
+- Modified `Assets/Scripts/Modes/Tactical/OpportunityAttacks.cs`.
+- Modified `Assets/Scripts/Modes/TacticalMode.cs`.
+- Modified `Assets/Scripts/Utility/Texts/HoveringTooltip.cs`.
+- Modified `Assets/Scripts/Utility/Texts/HelpText.cs`.
+- Added Unity metadata `Assets/Scripts/Races/TieredTraits.cs.meta`; associated addition/date notice is recorded here and in its source companion.
+
+Implemented28 exclusive three-tier families using user-selected names, flat1/2/4 damage,10/20/30percentage-point accuracy,1/2/4HP/mana per character level and5/10/15percentage-point critical chance. Physical and magic incoming damage are separate; MagicResistance repurposed, MagicVulnerable added. HardPrey merges AwkwardShape/MetalBody without nutrition drawback. Preserved serialized base IDs;73new explicit enum IDs600–672. Added resolved/cached tier modifiers, upgrade replacement and compatibility conflict resolution, shared grant/reset handling, resource caps, matching hover labels, weapon/spell/vore calculations, opportunity critical evaluation and spell flat-modifier previews. Damaging hits floor at1 after block/resistance before barrier absorption. Help categorized/alphabetized with canonical entries and adjacent tiers. No automatic trait acquisition schedule or injury changes added.
+
+Source review only; no compile/runtime/visual test or new build for this batch. Prior151-check build predates it and previous pruning. Per-file dated modification/addition notices cover all listed source paths; earlier notices, GPL license and attribution retained. New code is original fork work, using existing framework APIs; no copied external code/assets/dependencies introduced. Existing distribution/provenance review gates remain unresolved; no distribution or complete compliance claim. No files deleted/moved.
+
+
+## 2026-11-04 — Injury and old-complication revamp (spec 33)
+
+- Modified `Assets/Scripts/Core/CompanyInjuries.cs`.
+- Modified `Assets/Scripts/Core/WarbandStats.cs`.
+- Modified `Assets/Scripts/Entities/Units/Unit.cs`.
+- Modified `Assets/Scripts/Entities/Units/Actor_Unit.cs`.
+- Modified `Assets/Scripts/Entities/Units/Prey.cs`.
+- Modified `Assets/Scripts/Entities/Units/PredatorComponent.cs`.
+- Modified `Assets/Scripts/Modes/Tactical/OpportunityAttacks.cs`.
+- Modified `Assets/Scripts/Subwindows/InfoPanel.cs`.
+- Modified `Assets/Scripts/Subwindows/CompanyRecoveryUI.cs`.
+- Modified `Assets/Scripts/Subwindows/CompanyManagementUI.cs`.
+- Modified `Assets/Scripts/Utility/Texts/HelpText.cs`.
+- Modified `Assets/Editor/TraitCurationAudit.cs`.
+
+Implemented the approved eight body parts with Bruised/Battered/Mangled severity, corresponding old families capped atIII, additive penalties, normal-base-STR HP and non-destructive healing ceilings. HP no longer follows combat STR or equipment STR bonuses. Added derived Light/Moderate/Severe Damage conditions, explicit graze injury suppression, lasting-loss threshold and armor coverage, saved hidden recovery rolls, treatment thresholds, 5%/10% daily complications and the four approved systemic old injuries. Integrated spell/weapon/vore odds, damage/AP/mana/recovery/escape effects, UI/Help and save-equivalence validation. Preserved old enum numeric identities; legacy injury records are validated/migrated without random load-time rerolls. Extended existing synthetic Unity audit without a new framework.
+
+Per-file dated modification notices identify this batch; previous notices, GPL terms and attribution preserved. No outside code, assets or dependencies introduced. Runtime2 caught a mana rounding issue, corrected; final verification/build results recorded below when complete. No graphical playtest claimed, no personal save tests, no agent file deletion/moves. Existing provenance/distribution gates remain open.
+
+Grouped specs31–33 verification completed:457 native runtime checks passed (139 retirement gates and318 functional/metadata/UI-property checks); runtime6 editor exit0. Final handoff standalone build exit0, no C#/shader errors or new compiler warnings. Corrected PoorFocus percentage rounding and verified STR equipment does not grant HP. Added preview-null guard and preserved Submissive escape prohibition under SensitiveStomach. Final help-only wording consistency correction compiled into handoff build. Evidence: Logs/traits-injuries33-runtime6-result.json, traits-injuries33-runtime6.log and traits-injuries33-handoff-build.log. No rendered visual playtest.

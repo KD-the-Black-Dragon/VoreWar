@@ -1,4 +1,6 @@
-// Modified for the VoreWar mercenary-company conversion.
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-04: Apply approved injury tiers, base-STR HP, healing ceilings and recovery rules (spec 33).
+// 2026-11-04: Implement exclusive baseline trait tiers, flat combat modifiers and categorized Help (spec 32).
 // 2026-10-30: Reject disallowed disguise templates before appearance, trait or side changes (spec 03A2).
 // 2026-10-30: 04B2: Replace callback prose with neutral action and status notices.
 // 2026-10-31: Retire Respawns grants/death triggers and CloseCall casualty presentation (spec 05A3B7).
@@ -18,6 +20,16 @@
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 // 2026-11-03: Implement four active stats and agreed combat rules (spec 29).
 // 2026-11-04: Free melee reactions before move commands, without reaction knockback or AP spending (spec 30).
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-04: Track turn movement and first weapon attack for conditional DoubleAttack and Maul; persist battle state (spec 31).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+// 2026-11-04: Rename DoubleAttack presentation to DoubleShot and restrict its bonus to ranged attacks (spec 31).
+// 2026-11-04: Retire QuickShooter and align FastCaster with standing-ground action economy (spec 31).
+// 2026-11-04: Apply approved Dodger, KeenEye and action-economy trait refinements (spec 31).
+// 2026-11-04: Apply EasyPrey, MadMage, retreat and approved trait retirements (spec 31).
+// 2026-11-04: Implement approved Dazzle, Vindication, Talented and description refinements (spec 31).
+// 2026-11-04: Distinguish Juggernaut active turns from scheduled and actual skipped turns (grouped review).
+// 2026-11-04: Apply approved trait removals, digestion triggers, names and plain-effect descriptions (spec 31).
 using OdinSerializer;
 using System;
 using System.Collections.Generic;
@@ -242,10 +254,48 @@ public class Actor_Unit
 
     public void ClearMovement() => Movement = 0;
     public void DrainExp(int damage) => Unit.GiveExp(-1 * damage);
-    public void SetPos(Vec2i p) => Position = p;
+    [OdinSerialize] internal bool MovedThisTurn;
+    [OdinSerialize] bool WeaponAttackThisTurn;
+    [OdinSerialize] bool SpellCastThisTurn;
+    public void SetPos(Vec2i p)
+    {
+        if (Position != null && !Position.Matches(p)) MovedThisTurn = true;
+        Position = p;
+    }
+
+    void SpendWeaponAP(bool ranged, int attacks, bool free)
+    {
+        if (free) return;
+        bool extra = !MovedThisTurn && !WeaponAttackThisTurn && Movement > 1 &&
+            ((ranged && Unit.HasTrait(Traits.DoubleAttack)) || (!ranged && Unit.HasTrait(Traits.Maul)));
+        WeaponAttackThisTurn = true;
+        if (extra) Movement = 1;
+        else if (attacks > 1)
+        {
+            int cost = 1 + MaxMovement() / attacks;
+            Movement = Movement > cost ? Movement - cost : 0;
+        }
+        else Movement = 0;
+    }
+
+    void SpendSpellAP()
+    {
+        bool extra = !MovedThisTurn && !SpellCastThisTurn && Movement > 1 && Unit.HasTrait(Traits.FastCaster);
+        SpellCastThisTurn = true;
+        if (extra) Movement = 1;
+        else if (Unit.TraitBoosts.SpellAttacks > 1)
+        {
+            int cost = 1 + MaxMovement() / Unit.TraitBoosts.SpellAttacks;
+            Movement = Movement > cost ? Movement - cost : 0;
+        }
+        else Movement = 0;
+    }
+
+    [OdinSerialize] internal bool SkippedBySlacking;
 
     private void RestoreMP()
     {
+        SkippedBySlacking = false;
         if (WasJustFreed)
         {
             Movement = Mathf.Min(Mathf.Max(2, (int)(.2f * CurrentMaxMovement())), 5);
@@ -288,6 +338,7 @@ public class Actor_Unit
         }
         else if (TurnsSlacking >= 1) 
         {
+            SkippedBySlacking = true;
             Movement = 0;
             TurnsSlacking--;
         }
@@ -843,7 +894,9 @@ public class Actor_Unit
         }
 
         float shift = Unit.TraitBoosts.Incoming.MagicShift + attacker.Unit.TraitBoosts.Outgoing.MagicShift + modifier + TagConditionChecker.ApplyTagEffect(Unit, attacker.Unit, UnitTagModifierEffect.MagicShift);
-        return (float)attackStat / (attackStat + (defenseStat * (1 + shift)));
+        return Mathf.Clamp01((float)attackStat / (attackStat + (defenseStat * (1 + shift))) - DazzlePenalty(attacker) +
+            TieredTraits.Amount(attacker.Unit, TierEffect.MagicAccuracy) - CompanyInjuries.AccuracyPenalty(attacker.Unit) +
+            (TacticalUtilities.TreatAsHostile(attacker, this) ? TieredTraits.Amount(Unit, TierEffect.AttackAccuracyReceived) : 0));
     }
 
     //public float GetMeleeChance(Actor_Unit attacker, bool includeSecondaries = false)
@@ -884,6 +937,12 @@ public class Actor_Unit
     //    return odds / 100;
     //}
 
+
+    float DazzlePenalty(Actor_Unit attacker)
+    {
+        return Unit.HasTrait(Traits.Dazzle) && TacticalUtilities.TreatAsHostile(attacker, this)
+            ? Mathf.Min(.20f, Unit.GetStat(Stat.Intelligence) * .002f) : 0f;
+    }
 
     public float GetAttackChance(Actor_Unit attacker, bool ranged, bool includeSecondaries = false, float mod = 0)
     {
@@ -1043,10 +1102,7 @@ public class Actor_Unit
 
         if (includeSecondaries)
         {
-            if (Unit.HasTrait(Traits.Dazzle))
-            {
-                odds *= 1 - WillCheckOdds(attacker, this);
-            }
+
         }
         if (odds > 100)
         {
@@ -1056,7 +1112,10 @@ public class Actor_Unit
         {
             odds = 0;
         }
-        return Mathf.Clamp01(odds / 100 + (Unit.GetStatusEffect(StatusEffectType.Marked)?.Strength ?? 0) * .01f);
+        float accuracy = odds / 100 + (Unit.GetStatusEffect(StatusEffectType.Marked)?.Strength ?? 0) * .01f;
+        accuracy += TieredTraits.Amount(attacker.Unit, ranged ? TierEffect.RangedAccuracy : TierEffect.MeleeAccuracy) - CompanyInjuries.AccuracyPenalty(attacker.Unit);
+        if (TacticalUtilities.TreatAsHostile(attacker, this)) accuracy += TieredTraits.Amount(Unit, TierEffect.AttackAccuracyReceived);
+        return Mathf.Clamp01(accuracy - DazzlePenalty(attacker));
     }
 
     public int WeaponDamageAgainstTarget(Actor_Unit target, bool ranged, float multiplier = 1, bool forceBite = false, bool opportunity = false)
@@ -1113,8 +1172,7 @@ public class Actor_Unit
             if (Unit.HasTrait(Traits.Finesse))
             { statBoost = (int)(Unit.GetStat(Stat.Strength) * .8f + Unit.GetStat(Stat.Agility) * .3f) + (Unit.HasTrait(Traits.SpellBlade) ? Unit.GetStat(Stat.Intelligence) / 2 : 0); }
             damage = (int)(damageScalar * (BestRanged?.Damage ?? 2) * (60 + statBoost) / 60);
-            if (target.Unit.HasTrait(Traits.Resilient))
-                damage--;
+
             if (target.Unit.GetStatusEffect(StatusEffectType.Staggering) != null)
             {
                 damage += (int)(damage * 0.2f);
@@ -1197,8 +1255,7 @@ public class Actor_Unit
 
 
 
-            if (target.Unit.HasTrait(Traits.Resilient))
-                damage--;
+
             if (target.Unit.GetStatusEffect(StatusEffectType.Staggering) != null)
             {
                 damage += (int)(damage * 0.2f);
@@ -1310,6 +1367,8 @@ public class Actor_Unit
         }
 
 
+        damage += (int)Math.Round(TieredTraits.Amount(Unit, ranged ? TierEffect.RangedDamage : TierEffect.MeleeDamage) * multiplier);
+        damage += (int)TieredTraits.Amount(target.Unit, TierEffect.PhysicalDamageReceived);
         damage -= CompanyInjuries.DamagePenalty(Unit);
         if (damage < 1)
             damage = 1;
@@ -1658,18 +1717,6 @@ public class Actor_Unit
         //check range
         int targetRange = target.Position.GetNumberOfMovesDistance(Position);
 
-        if (target.Unit.HasTrait(Traits.Dazzle))
-        {
-            float chance = WillCheckOdds(this, target);
-            if (State.Rand.NextDouble() < chance)
-            {
-                if (!freeAttack) Movement = 0;
-                UnitSprite.DisplayDazzle();
-                Unit.ApplyStatusEffect(StatusEffectType.Shaken, 0.3f, 1);
-                TacticalUtilities.Log.RegisterDazzle(Unit, target.Unit, chance);
-                return false;
-            }
-        }
 
         if (Unit.HasTrait(Traits.HaplessPrey) && target.Unit.Predator && targetRange < 2)
         {
@@ -1705,18 +1752,7 @@ public class Actor_Unit
 
                 int rangedattacks = Unit.TraitBoosts.RangedAttacks;
                 rangedattacks += extraAttacks + Unit.TempBoosts.ExtraAttacks;
-                if (!freeAttack)
-                {
-                    if (rangedattacks > 1)
-                    {
-                        int movementFraction = 1 + MaxMovement() / rangedattacks;
-                        if (Movement > movementFraction)
-                            Movement -= movementFraction;
-                        else
-                            Movement = 0;
-                    }
-                    else Movement = 0;
-                }
+                SpendWeaponAP(true, rangedattacks, freeAttack);
                 int remainingHealth = target.Unit.Health;
                 float resolvedChance;
                 int result = ResolveWeaponHit(target, true, out resolvedChance);
@@ -1729,7 +1765,7 @@ public class Actor_Unit
                 if (Unit.GetStatusEffect(StatusEffectType.Sharpness) != null)
                     damage += damage * (Unit.GetStatusEffect(StatusEffectType.Sharpness).Duration / 100);
                 State.GameManager.SoundManager.PlaySwing(this);
-                if (target.Defend(this, ref damage, true, out float chance, canKill, result != 0, resolvedChance))
+                if (target.Defend(this, ref damage, true, out float chance, canKill, result != 0, resolvedChance, result != 3))
                 {
                     EquipmentFunctions.CheckEquipment(Unit, EquipmentActivator.OnRangedHit, new object[] { this, target, damage });
 
@@ -1808,18 +1844,7 @@ public class Actor_Unit
                     meleeAttacks++;
                 if (Unit.HasTrait(Traits.WildFury) && Unit.GetBestMelee() == State.World.ItemRepository.Claws)
                     meleeAttacks++;
-                if (!freeAttack)
-                {
-                    if (meleeAttacks > 1)
-                    {
-                        int movementFraction = 1 + MaxMovement() / meleeAttacks;
-                        if (Movement > movementFraction)
-                            Movement -= movementFraction;
-                        else
-                            Movement = 0;
-                    }
-                    else Movement = 0;
-                }
+                SpendWeaponAP(false, meleeAttacks, freeAttack);
                 int remainingHealth = target.Unit.Health;
                 float resolvedChance;
                 int result = ResolveWeaponHit(target, false, out resolvedChance);
@@ -1854,7 +1879,7 @@ public class Actor_Unit
                     }
                     if (!freeAttack && !Surrendered && SelfPrey == null) Movement = movementholder; // Do not revive incapacitated attackers.
                 }
-                if (target.Defend(this, ref damage, false, out float chance, canKill, result != 0, resolvedChance))
+                if (target.Defend(this, ref damage, false, out float chance, canKill, result != 0, resolvedChance, result != 3))
                 {
 
                     EquipmentFunctions.CheckEquipment(Unit, EquipmentActivator.OnMeleeHit, new object[] { this, target, damage });
@@ -1976,8 +2001,7 @@ public class Actor_Unit
             RestoreMP();
             Movement /= 2;
         }       
-        if (Unit.HasTrait(Traits.TasteForBlood))
-            GiveRandomBoost();
+
         if (Unit.HasTrait(Traits.InfectiousReproduction) && target.Unit.GetStatusEffect(StatusEffectType.Poisoned) != null)
         {
             Race spawnRace = Unit.DetermineSpawnRace();
@@ -1985,14 +2009,7 @@ public class Actor_Unit
         }
 
         Unit.GiveScaledExp(4 * target.Unit.ExpMultiplier, Unit.Level - target.Unit.Level);
-        if (target.Unit.HasTrait(Traits.DyingStrike) && target.Position.GetNumberOfMovesDistance(Position) <= 1 && State.Rand.Next(2) == 0)
-        {
-            this.Damage(target.WeaponDamageAgainstTarget(this, false));
-            if (State.Rand.Next(2) == 0)
-                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{target.Unit.Name} counterattacked {Unit.Name} for {target.WeaponDamageAgainstTarget(this, false)} damage.");
-            else
-                State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{target.Unit.Name} counterattacked {Unit.Name} for {target.WeaponDamageAgainstTarget(this, false)} damage.");
-        }
+
     }
 
     private void KillUnit(Actor_Unit target, Spell spell)
@@ -2021,8 +2038,7 @@ public class Actor_Unit
             RestoreMP();
             Movement /= 2;
         }
-        if (Unit.HasTrait(Traits.TasteForBlood))
-            GiveRandomBoost();
+
         Unit.GiveScaledExp(4 * target.Unit.ExpMultiplier, Unit.Level - target.Unit.Level);
     }
 
@@ -2061,6 +2077,12 @@ public class Actor_Unit
         float r = (float)State.Rand.NextDouble();
         return r < chance;
 
+    }
+
+    internal int ApplySpellTraitDamage(Actor_Unit attacker, int damage)
+    {
+        return Math.Max(1, damage - CompanyInjuries.DamagePenalty(attacker.Unit) + (int)TieredTraits.Amount(attacker.Unit, TierEffect.MagicDamage) +
+            (int)TieredTraits.Amount(Unit, TierEffect.MagicDamageReceived));
     }
 
     internal bool DefendDamageSpell(DamageSpell spell, Actor_Unit attacker, int damage)
@@ -2104,9 +2126,12 @@ public class Actor_Unit
                     damage += damage / 2; 
                 }
             }
+            damage = ApplySpellTraitDamage(attacker, damage);
             EquipmentFunctions.CheckEquipment(Unit, EquipmentActivator.WhenHitBySpellDamage, new object[] { this, attacker, damage });
             State.GameManager.TacticalMode.TacticalStats.RegisterHit(spell, Mathf.Min(damage, Unit.Health), attacker.Unit.Side);
-            Damage(damage, true, damageType: spell.DamageType);
+            bool wasDowned = Surrendered;
+            damage = Math.Max(1, damage);
+            Damage(damage, true, damageType: spell.DamageType, damagingHit: true);
             State.GameManager.TacticalMode.Log.RegisterSpellHit(attacker.Unit, Unit, spell.SpellType, damage, chance);
             if (attacker.Unit.FixedSide == TacticalUtilities.GetMindControlSide(Unit))
             {
@@ -2120,7 +2145,7 @@ public class Actor_Unit
                 Unit.ApplyStatusEffect(StatusEffectType.Fractured, 1, 1);
             if (attacker.Unit.HasTrait(Traits.ArcaneMagistrate))
             {
-                attacker.Unit.AddFocus((Unit.IsDead ? 5 : 1));
+                attacker.Unit.AddFocus((Unit.IsDead || (!wasDowned && Surrendered) ? 5 : 1));
             }
             if (Unit.HasTrait(Traits.MagicSynthesis))
             {
@@ -2242,7 +2267,7 @@ public class Actor_Unit
         return false;
     }
 
-    public bool Defend(Actor_Unit attacker, ref int damage, bool ranged, out float chance, bool canKill = true, bool? resolvedHit = null, float resolvedChance = 0)
+    public bool Defend(Actor_Unit attacker, ref int damage, bool ranged, out float chance, bool canKill = true, bool? resolvedHit = null, float resolvedChance = 0, bool canCauseInjury = true)
     {
         EquipmentFunctions.CheckEquipment(Unit, ranged ? EquipmentActivator.WhenRangedAttacked : EquipmentActivator.WhenMeleeAttacked, new object[] { this, attacker, damage });
 
@@ -2266,7 +2291,8 @@ public class Actor_Unit
         {
             EquipmentFunctions.CheckEquipment(Unit, ranged ? EquipmentActivator.WhenRangedHit : EquipmentActivator.WhenMeleeHit, new object[] { this, attacker, damage });
 
-            Damage(damage, canKill: canKill);
+            damage = Math.Max(1, damage);
+            Damage(damage, canKill: canKill, damagingHit: true, canCauseInjury: canCauseInjury);
             if (canKill == false && attacker.Unit.HasTrait(Traits.VenomousBite))
             {
                 Unit.ApplyStatusEffect(StatusEffectType.Poisoned, 3, 3);
@@ -2355,12 +2381,10 @@ public class Actor_Unit
 
         if (includeSecondaries)
         {
-            if (Unit.HasTrait(Traits.Dazzle))
-            {
-                odds *= 1 - WillCheckOdds(attacker, this);
-            }
+
         }
-        return odds / 100;
+        return Mathf.Clamp01(odds / 100 + TieredTraits.Amount(attacker.Unit, TierEffect.VoreAccuracy) - CompanyInjuries.AccuracyPenalty(attacker.Unit) +
+            (TacticalUtilities.TreatAsHostile(attacker, this) ? TieredTraits.Amount(Unit, TierEffect.VoreAccuracyReceived) : 0));
 
 
     }
@@ -2619,6 +2643,7 @@ public class Actor_Unit
         battle.Translator.SetTranslator(UnitSprite.transform, Position, destination, delay, battle.IsPlayerTurn);
         battle.AITimer = delay;
         battle.DirtyPack = true;
+        MovedThisTurn = true;
         Position = destination;
         Movement -= cost;
         if (completing) reactions.Finish(false);
@@ -2683,6 +2708,9 @@ public class Actor_Unit
 
     public void NewTurn()
     {
+        MovedThisTurn = false;
+        WeaponAttackThisTurn = false;
+        SpellCastThisTurn = false;
         AIAvoidEat--;
 
         EquipmentFunctions.TickCoolDown(Unit, EquipmentType.RechargeTactical);
@@ -2952,9 +2980,9 @@ public class Actor_Unit
         return extra;
     }
 
-    public void SubtractHealth(int damage)
+    public void SubtractHealth(int damage, bool canCauseInjury = true)
     {
-        Unit.ApplyCombatDamage(damage);
+        Unit.ApplyCombatDamage(damage, canCauseInjury);
         if (Unit.Health > Unit.MaxHealth)
             Unit.Health = Unit.MaxHealth;
         if (damage <= 0)
@@ -2998,7 +3026,7 @@ public class Actor_Unit
     }
 
 
-    public bool Damage(int damage, bool spellDamage = false, bool canKill = true, DamageTypes damageType = DamageTypes.Generic)
+    public bool Damage(int damage, bool spellDamage = false, bool canKill = true, DamageTypes damageType = DamageTypes.Generic, bool damagingHit = false, bool canCauseInjury = true)
     {
         if (Unit.IsDead)
         {
@@ -3010,10 +3038,11 @@ public class Actor_Unit
             return false;
         }        
         int modifiedDamage = CalculateDamageWithResistance(damage, damageType);
+        if (damagingHit) modifiedDamage = Math.Max(1, modifiedDamage);
         if (damageType != DamageTypes.Mutual)//Prevents damage from flashing every unit.
             UnitSprite.DisplayDamage(modifiedDamage, spellDamage);
         modifiedDamage = Unit.DamageBarrier(modifiedDamage);
-        SubtractHealth(modifiedDamage);
+        SubtractHealth(modifiedDamage, canCauseInjury);
         if (Unit.GetStatusEffect(StatusEffectType.Agony) != null)
         {
             StatusEffect eff = Unit.GetStatusEffect(StatusEffectType.Agony);
@@ -3215,10 +3244,11 @@ public class Actor_Unit
     {
         chance = target.GetAttackChance(this, ranged);
         if (State.Rand.NextDouble() >= chance)
-            return chance >= .51f && State.Rand.NextDouble() < chance ? 3 : 0;
+            return chance >= .51f && (Unit.HasTrait(Traits.KeenEye) || State.Rand.NextDouble() < chance) ? 3 : 0;
         float critical = CritCheck(this, target);
         critical += Unit.TraitBoosts.Outgoing.CritRateShift - target.Unit.TraitBoosts.Incoming.CritRateShift;
         critical *= TagConditionChecker.ApplyTagEffect(Unit, target.Unit, UnitTagModifierEffect.CritRateShift);
+        critical += TieredTraits.Amount(Unit, TierEffect.CriticalChance) - CompanyInjuries.CriticalPenalty(Unit);
         return State.Rand.NextDouble() < Mathf.Clamp01(critical) ? 2 : 1;
     }
     internal float ResultDamageMultiplier(Actor_Unit target, int result)
@@ -3247,16 +3277,7 @@ public class Actor_Unit
         if (target?.UnitSprite != null)
             State.GameManager.SoundManager.PlaySpellHit(spell, target.UnitSprite.transform.position);
 
-        if (Unit.TraitBoosts.SpellAttacks > 1)
-        {
-            int movementFraction = 1 + MaxMovement() / Unit.TraitBoosts.SpellAttacks;
-            if (Movement > movementFraction)
-                Movement -= movementFraction;
-            else
-                Movement = 0;
-        }
-        else
-            Movement = 0;
+        SpendSpellAP();
         return true;
     }
 
@@ -3319,16 +3340,7 @@ public class Actor_Unit
                 }
             }
         }
-        if (Unit.TraitBoosts.SpellAttacks > 1)
-        {
-            int movementFraction = 1 + MaxMovement() / Unit.TraitBoosts.SpellAttacks;
-            if (Movement > movementFraction)
-                Movement -= movementFraction;
-            else
-                Movement = 0;
-        }
-        else
-            Movement = 0;
+        SpendSpellAP();
     }
     internal void CastOffensiveSpell(DamageSpell spell, Actor_Unit target, Vec2i targetArea = null)
     {
@@ -3403,16 +3415,7 @@ public class Actor_Unit
             }
             State.GameManager.SoundManager.PlaySpellHit(spell, targetArea);
         }
-        if (Unit.TraitBoosts.SpellAttacks > 1)
-        {
-            int movementFraction = 1 + MaxMovement() / Unit.TraitBoosts.SpellAttacks;
-            if (Movement > movementFraction)
-                Movement -= movementFraction;
-            else
-                Movement = 0;
-        }
-        else
-            Movement = 0;
+        SpendSpellAP();
         void CheckDead(Actor_Unit hitTarget)
         {
             if (hitTarget.Unit.IsDead)
@@ -3464,16 +3467,7 @@ public class Actor_Unit
             State.GameManager.SoundManager.PlaySpellHit(spell, targetArea);
         }
 
-        if (Unit.TraitBoosts.SpellAttacks > 1)
-        {
-            int movementFraction = 1 + MaxMovement() / Unit.TraitBoosts.SpellAttacks;
-            if (Movement > movementFraction)
-                Movement -= movementFraction;
-            else
-                Movement = 0;
-        }
-        else
-            Movement = 0;
+        SpendSpellAP();
 
         return hit;
     }

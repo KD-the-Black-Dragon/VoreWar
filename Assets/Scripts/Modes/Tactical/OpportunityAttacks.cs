@@ -1,6 +1,10 @@
-// Added by the VoreWar mercenary-company conversion fork.
+﻿// Added by the VoreWar mercenary-company conversion fork.
+// 2026-11-04: Account for old-injury critical penalties in opportunity risk (spec 33).
+// 2026-11-04: Implement exclusive baseline trait tiers, flat combat modifiers and categorized Help (spec 32).
 // 2026-11-04: Shared move-command reactions, sequencing and deterministic risk estimates (spec 30).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+// 2026-11-04: Apply approved Dodger, KeenEye and action-economy trait refinements (spec 31).
+// 2026-11-04: Distinguish Juggernaut active turns from scheduled and actual skipped turns (grouped review).
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +29,7 @@ internal sealed class OpportunityAttacks
     {
         return actor != null && actor.Unit != null && actor.Targetable && !actor.Fled &&
             !actor.Unit.IsDead && !actor.Surrendered && actor.SelfPrey == null && !actor.Paralyzed && actor.TurnsSinceLastParalysis > 0 &&
-            actor.TurnsSlacking < 1 && actor.Unit.GetStatusEffect(StatusEffectType.Petrify) == null &&
+            !actor.SkippedBySlacking && actor.Unit.GetStatusEffect(StatusEffectType.Petrify) == null &&
             actor.Unit.GetStatusEffect(StatusEffectType.Frozen) == null &&
             actor.Unit.GetStatusEffect(StatusEffectType.Sleeping) == null &&
             actor.Unit.GetStatusEffect(StatusEffectType.Stunned) == null;
@@ -137,10 +141,11 @@ internal sealed class OpportunityAttacks
     {
         // No random rolls and no temporarily changed positions/stats during planning.
         float chance = Mathf.Clamp01(target.GetAttackChance(attacker, false, true));
-        float graze = chance >= .51f ? (1 - chance) * chance * attacker.ResultDamageMultiplier(target, 3) : 0;
+        float graze = chance >= .51f ? (1 - chance) * (attacker.Unit.HasTrait(Traits.KeenEye) ? 1f : chance) * attacker.ResultDamageMultiplier(target, 3) : 0;
         float crit = attacker.CritCheck(attacker, target) + attacker.Unit.TraitBoosts.Outgoing.CritRateShift -
             target.Unit.TraitBoosts.Incoming.CritRateShift;
         crit = Mathf.Clamp01(crit * TagConditionChecker.ApplyTagEffect(attacker.Unit, target.Unit, UnitTagModifierEffect.CritRateShift));
+        crit = Mathf.Clamp01(crit + TieredTraits.Amount(attacker.Unit, TierEffect.CriticalChance) - CompanyInjuries.CriticalPenalty(attacker.Unit));
         float hits = chance * (1 + crit * (attacker.ResultDamageMultiplier(target, 2) - 1));
         return Math.Max(0, attacker.WeaponDamageAgainstTarget(target, false, opportunity: true)) * (hits + graze);
     }

@@ -1,4 +1,5 @@
 ﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-04: Implement exclusive baseline trait tiers, flat combat modifiers and categorized Help (spec 32).
 // 2026-10-30: Filter trait summons and legacy building reinforcements before constructing units (spec 03A2).
 // 2026-10-31: Reject direct legacy campaign battle setup before tactical state changes (spec 05A3A).
 // 2026-10-31: Retire campaign reincarnation/village-copy returns and post-battle soldier replacement (spec 05A3B1).
@@ -16,6 +17,10 @@
 // 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 // 2026-11-04: Sequence move reactions, commit Undo, guard save/input and show threatened path steps (spec 30).
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-04: Preserve standing-ground eligibility when legitimately undoing safe movement (spec 31).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+// 2026-11-04: Apply EasyPrey, MadMage, retreat and approved trait retirements (spec 31).
 using LegacyAI;
 using System;
 using System.Collections.Generic;
@@ -371,12 +376,15 @@ public class TacticalMode : SceneBase
         RebuildInfo();
     }
 
+    bool startingMovedThisTurn;
+
     void PlaceUndoMarker()
     {
         if (SelectedUnit == null || Opportunities.Busy)
             return;
         startingLocation = SelectedUnit.Position;
         startingMP = SelectedUnit.Movement;
+        startingMovedThisTurn = SelectedUnit.MovedThisTurn;
     }
 
     void UndoMovement()
@@ -386,6 +394,7 @@ public class TacticalMode : SceneBase
         SelectedUnit.Movement = startingMP;
         Translator.SetTranslator(SelectedUnit.UnitSprite.transform, SelectedUnit.Position, startingLocation, .2f, State.GameManager.TacticalMode.IsPlayerTurn || PseudoTurn);
         SelectedUnit.SetPos(startingLocation);
+        SelectedUnit.MovedThisTurn = startingMovedThisTurn;
         DirtyPack = true;
         RebuildInfo();
     }
@@ -2217,6 +2226,7 @@ Turns: {currentTurn}
                 {
                     spellDamage += (int)Math.Round(target.Unit.GetStat(Stat.Mind) * 0.1f);
                 }
+                spellDamage = target.ApplySpellTraitDamage(actor, spellDamage);
             }
              
             float magicChance = CurrentSpell.Resistable ? target.GetMagicChance(actor, CurrentSpell) : 1;
@@ -2685,9 +2695,17 @@ Turns: {currentTurn}
         RebuildInfo();
     }
 
-    internal void AttemptRetreat(Actor_Unit actor, bool silent, bool fromWarp = false)
+    internal void EvasiveRetreat()
+    {
+        if (!ButtonsInteractable || !OpportunityAttacks.CanAct(SelectedUnit)) return;
+        AttemptRetreat(SelectedUnit, false, instant: true);
+        RebuildInfo();
+    }
+
+    internal void AttemptRetreat(Actor_Unit actor, bool silent, bool fromWarp = false, bool instant = false)
     {
         if (actor.Surrendered || actor.Unit.IsDead || actor.Fled) return;
+        if (instant && !actor.Unit.HasTrait(Traits.EvasiveBattler)) return;
         if ((State.GameManager.CompanyBattle != null ? actor.Unit.Side == defenderSide : !TacticalUtilities.IsUnitControlledByPlayer(actor.Unit)) && actor.PredatorComponent != null && actor.PredatorComponent.GetAllPrey().Any(p => !p.Unit.IsDead))
         {
             if (!silent) State.GameManager.CreateMessageBox("Release all living captives before retreating.");
@@ -2729,7 +2747,7 @@ Turns: {currentTurn}
 
         if (actor.Unit.Side == defenderSide)
         {
-            if (actor.Position.y == 0 || fromWarp)
+            if (actor.Position.y == 0 || fromWarp || instant)
             {
                 RetreatUnit(actor, true);
             }
@@ -2738,7 +2756,7 @@ Turns: {currentTurn}
         }
         else
         {
-            if (actor.Position.y == tiles.GetUpperBound(1) || fromWarp)
+            if (actor.Position.y == tiles.GetUpperBound(1) || fromWarp || instant)
             {
                 RetreatUnit(actor, false);
             }
@@ -3232,7 +3250,7 @@ Turns: {currentTurn}
             {
                 damMod += (int)Math.Round(target.Unit.GetStat(Stat.Mind) * 0.1f);
             }
-            return damMod;
+            return target.ApplySpellTraitDamage(attacker, damMod);
         }
     }
 

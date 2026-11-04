@@ -1,4 +1,7 @@
-﻿using OdinSerializer;
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-04: Compact outcome damage labels and omit redundant weapon kill counts.
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+using OdinSerializer;
 using System.Collections.Generic;
 using System.Text;
 
@@ -143,13 +146,13 @@ public class TacticalStats
     {
         foreach (var item in Stats.DamageDealtBy)
         {
-            sb.AppendLine($"{item.Key.Name} - Damage Dealt: {Stats.DamageDealtBy[item.Key]} - Kills: {(Stats.KillsWith.ContainsKey(item.Key) ? Stats.KillsWith[item.Key] : 0)}");
+            sb.AppendLine($"{item.Key.Name} - Dmg: {Stats.DamageDealtBy[item.Key]}");
         }
         if (Stats.DamageDealtBySpell != null && Stats.KillsWithSpell != null)
         {
             foreach (var item in Stats.DamageDealtBySpell)
             {
-                sb.AppendLine($"{item.Key.Name} - Damage Dealt: {Stats.DamageDealtBySpell[item.Key]} - Kills: {(Stats.KillsWithSpell.ContainsKey(item.Key) ? Stats.KillsWithSpell[item.Key] : 0)}");
+                sb.AppendLine($"{item.Key.Name} - Dmg: {Stats.DamageDealtBySpell[item.Key]} - Kills: {(Stats.KillsWithSpell.ContainsKey(item.Key) ? Stats.KillsWithSpell[item.Key] : 0)}");
             }
         }
         sb.AppendLine($"Hits: {Stats.Hits}");

@@ -1,4 +1,4 @@
-# Current work checkpoint
+﻿# Current work checkpoint
 
 Updated: 2026-11-02. Current handoff:15A slider/hover/terminology feedback corrected; compile/read-only scene passed. Remaining layout mostly okay; focused slider endpoints/fill and larger hover-text check pending. Vore terminology recorded in AGENTS.md. Beautification/Help rewrite remain deferred.
 
@@ -1163,3 +1163,126 @@ User says opportunities mostly work; do not treat that as confirmation of all or
 ## Accepted — Spec30 opportunity attacks, 2026-11-04
 
 The user reports: "Okay, I believe this module looks good." Record the opportunity-attack milestone, including the final-AP AI correction, as accepted. Current accepted local player: `Builds/Warband-Review-20261104-19b7a6be/Win64/VoreWar.exe`. This is user acceptance, not a new agent playtest or confirmation that every optional scenario was individually exercised. Documentation only; no game source, assets, saves, settings or builds changed, and no tests run. Previous handoff requests for further module confirmation are superseded. Preserve the accepted implementation and await the user's next direction. Existing provenance/distribution review gates remain separate and open.
+
+
+## Outcome UI correction — 2026-11-04
+
+Opportunity module accepted. User requests outcome blue/gold colors, compact details, larger title and intermediate species headings, center divider, Dmg label and no weapon kill suffixes. Implemented in StatScreenPanel.cs and TacticalStats.cs only, with dated notices/CHANGES. No scene/art changes or files deleted/moved. No compile/build/playtest run for this correction; current standalone19b7a6be predates it. Next focused review: finish Single Battle and inspect hierarchy/divider/info/exit controls; compile/build when requested. Spell kill counts retained because request specifically targets weapon lines.
+
+
+## Outcome font feedback — 2026-11-04
+
+Colors accepted; user found initial outcome fonts much too small. StatScreenPanel only: title48, side headings32, details24, detail lineSpacing1.15. Prior30/23/17 superseded. Palette/divider/info unchanged. Notice/CHANGES updated; no build/tests/playtest run, no files moved/deleted. NEXT focused visual confirmation of larger hierarchy, line spacing and full info visibility. Standalone19b7a6be still predates outcome UI work.
+
+
+## ACTIVE review — Trait curation round1, 2026-11-04
+
+User requests two phases: traits first, injuries later. Reviewed Help/IsRetired/definitions/runtime references and recorded docs/implementation/31-trait-curation-round-one.md. Explicitly retired traits already filtered from Help; no source edit necessary for them. Listed explicit cheats, esoteric mechanics and obsolete strategic candidates for judgment; no new retirement applied. No confidently established surviving OC-exclusive trait; removed Tatltuae EntropicChaos is an attack/animation, not evidence against a generic retained trait. GeneEater actual booster50x absorptionXP and Huge2x differ from enum descriptions. Preserve pending outcome UI sources. Documentation only, no source/assets/settings changes, tests/build/playtest, personal data access or deletions/moves. NEXT user decisions on grouped trait candidates; do not touch injuries or remove undecided mechanics.
+
+
+## HANDOFF — Trait round1 retirement and second scan, 2026-11-04
+
+Implemented36 newly retired traits through Tags.cs authoritative filter; preserved enum IDs/dormant definitions and all previously undecided keeps. AdaptiveTactics booster/description now+10%actionXP in Traits.cs and matching enum description. Exact list and round2judgment candidates in docs/implementation/31-trait-curation-round-one.md; Logs/traits31-before.json, traits31-retired.json, traits31-source.diff. GetTrait/HasTrait/GetTraits/Help/random-generation gating traced; no direct raw-list Contains bypass found for newly retired IDs. Two source notices/CHANGES updated, License4–5 reviewed, no new deps/art/files moved/deleted or personal data access. Pending outcome UI work preserved. No compile/build/tests/playtest run; current standalone predates this retirement. NEXT user judgment on round2 candidates (borrowing, spawning, automatic reinforcements, CursedMark, BookEater, Clever, DoubleAttack/Maul, obsolete campaign/loadout traits and two additional curses); no unapproved removals and injuries still deferred. Focused future player check: Help excludes retired entries and AdaptiveTactics says10%; size traits and default-keeps remain. Distribution/provenance gates unchanged.
+
+
+## Trait round2 implemented — 2026-11-04
+
+19 additional traits retired per user list (BookWorm all3); QuickLearner display name preserves stored AdaptiveTactics identifier/+10% XP, with Help/roster/hover integration. DoubleAttack and Maul reworked: first ordinary weapon attack if unmoved and at least2AP leaves1AP; Maul melee only, no stacking or opportunity trigger. Odin fields persist movement/firstattack state, NewTurn resets, SetPos/MoveTo mark movement, safe Undo restores prior moved flag. Seven source paths in Logs/traits31-round2-paths.txt and CHANGES; previous notices preserved, no external additions/files deleted/moved. No compile/build/tests/playtest run. NEXT source/compile validation when requested; focused playtest standing first attack vs moved actor, second attack spends finalAP, ranged DoubleAttack vs melee-only Maul, save/restore, QuickLearner hover and retired Help/roster entries. Injuries remain deferred.
+
+
+## DoubleShot refinement — 2026-11-04
+
+User requests DoubleAttack renamed DoubleShot and ranged-only. Implemented shared DisplayName mapping (compatible internal ID unchanged), hover alias, ranged condition in SpendWeaponAP and updated descriptions. Maul melee only; first weapon attack/unmoved/at least2AP rule unchanged. Four source notices/CHANGES updated; no build/tests/playtest. Next focused check: DoubleShot appears in Help/unit tooltip, standing ranged first attack leaves1AP, melee does not receive DoubleShot bonus. Pending trait/outcome work preserved.
+
+
+## Traits stat-name review — 2026-11-04
+
+Discussion only: PackWill works via WILL->INT mapping, duplicates PackMind; PackDexterity/PackDefense bothAGI, PackStomach/PackVoracity bothVOR. Different traits can stack even though one-trait aliases deduplicate. Recommend four pack traits plus judge PackTactics. Finesse/DexterousDefense/BoundWeapon/blessings have stale stat wording; AccuteDodge graze shift appears ineffective, speed traits conflict with fixed AP claims, QuickShooter/FastCaster need action-economy consistency. Findings appended spec31. No gameplay source changes/checks/build; await user choices, preserve existing pending trait/outcome source changes and defer injuries.
+
+
+## Pack traits implemented — 2026-11-04
+
+User-approved7 retirements: PackWill/PackDefense/PackStomach and four BlessingOfX. PackAgility display alias for saved PackDexterity; shared Help/roster name and hover parsing updated. Keep remaining pack traits/names/effects. PackStat descriptions canonical stat names; obvious Finesse/DexterousDefense/BoundWeapon stat wording corrected. Three sources Tags.cs/Traits.cs/HoveringTooltip.cs notices/CHANGES updated, no source files deleted/moved or external additions. No build/tests/playtest run. NEXT focused future Help review for PackAgility and its hover, absent retired entries and modern stat wording; unresolved speed/graze/caster traits and injuries unchanged.
+
+
+## FastCaster implemented and action-economy review — 2026-11-04
+
+QuickShooter retired. FastCaster no unconditional SpellAttacks increment; first spell cast if unmoved and >=2AP leaves1AP through all4spell-spending paths, later casts spend normally. Odin firstspell flag/reset eachactorNewTurn; existing moved flag/Undo reused. Three source notices/CHANGES updated, no compile/build/tests/playtest. User also requests explanation of remaining graze/AP modifiers; report AccuteDodge obsolete field, LightFrame/WildFury legacy fractional AP (2AP often still only1attack), StrongGullet same for vore, KillingMomentum triggers only actual non-vore kills, speed traits partly dormant; preserve previously accepted traits pending explicit decision. Injuries deferred.
+
+
+## Dodger/KeenEye decisions implemented — 2026-11-04
+
+Retired9traits: LightFrame, WildFury, StrongGullet, KillingMomentum, SlowMovement, VerySlowMovement, Charge, SlowStart, Slacker. Juggernaut retained, Clumsy movement modifier removed. Dodger player name for AccuteDodge stored ID; shared hostile weapon accuracy minus.10 affects previews/rolls. KeenEye no longer adds crit chance, guarantees rescued graze after missed weapon roll at>=.51, usual graze damage, <=.50 no graze. AI opportunity expected damage updated. Five source notices/CHANGES updated; no compile/build/playtest or new tests, external additions/files moved/deleted. NEXT focused future checks 50%vs51%KeenEye, Dodger accuracy reduction, ordinary crit/graze/opportunity parity, Help retired entries, Clumsy and retained Juggernaut. Injuries deferred.
+
+
+## Remaining trait fit review — 2026-11-04
+
+Discussion only, findings appended spec31. Highlight TheGreatEscape digestion immunity/obsolete assumed-outcome tooltip; Donor transfer, ExtraNutritious permanent random stats perpreylevel, ArtfulDodge multiplicativeweapon/vore overlap with Dodger, Defenseless1000xweakness; Temptation/PredGusher/Infertile/EvasiveBattler old systems; WillingRace persistentstatus; MadScience/ShunGokuSatsu/innate spell access judgment. No new retirements/source/tests/build. Help lists all retained definitions not just curated availability. Standalone19b7a6be predates current curation; distinguish source changes from built executable. Await user judgment, keep injuries deferred and previously approved keeps intact.
+
+
+## EasyPrey/MadMage/retreat implemented — 2026-11-04
+
+Retired10approvedtraits: TheGreatEscape, Donor, ExtraNutritious, ArtfulDodge, Temptation, PredGusher, Infertile, ShunGokuSatsu, WillingRace, Brainless. EasyPrey saved Defenseless ID now neutral booster and+15percentage points final incoming vore chance (50->65), cap100. MadMage alias/hover for saved MadScience, behavior unchanged. EvasiveBattler right-side Instant Retreat command uses existing turn4restriction/AP and standard eligibility while bypassing edge only; no opportunity trigger. MagicSynthesis/NaturalCaster retained. Six source notices/CHANGES recorded, no compile/build/tests/playtest or external additions/files moved/deleted. NEXT inspect/build when requested; focused checks Help aliases/retirements, EasyPrey chance, Instant Retreat fromturn4 with normal blockers. Injury phase still deferred.
+
+
+## Final trait-fit review — 2026-11-04
+
+Review only: Dazzle separate INTbased attack cancellation, DyingStrike actual25% digestion retaliation vs75%tooltip, ArcaneMagistrate extraFocus on actualkill notDowned, AdeptLearner permanent extra statgrowth vsFocusedDevelopment choiceonly. Numeric descriptions: FastAbsorption1.5x, elementalresistances*.25 (75%reduction); spellblade/focus Mind wording remains. No source changes/tests/build; explicit keeps preserved. Resolve judgments then group compile/playtest; injuries stilldeferred.
+
+
+## Final trait decisions implemented — 2026-11-04
+
+Dazzle now INT accuracy subtraction (provisional0.2pp/INT cap20pp) sharedweapon/magic; removed cancellation/vore effects. Vindication savedDyingStrike alias now guaranteed3normaldamage applications on freshdigestion, ordinaryweapondeath retaliation removed. ArcaneMagistrate newlyDowned bonus5Focus, otherhit1. Talented aliasAdeptLearner, FocusedDevelopment retired. Updated elemental/healing/SpellBlade/focus descriptions. Five sources notices/CHANGES updated; no compile/build/playtest. NEXT grouped compile/source review before any claims of playable completion; check3strike deathcallback safety and trait alias hovers. Injuries deferred.
+
+
+## ACTIVE grouped review — 2026-11-04
+
+User explicitly requested compile/gameplay review. Added authorized Assets/Editor/TraitCurationAudit.cs/meta using synthetic company+native battle, diagnostic save root under Logs/deletion suppression. Initial compile revealed misplaced Dazzle in genericstatclash; corrected to actualGetMagicChance. Harness access compile errors corrected. runtime3 passed initial checks but nullgfxTilemapRenderer nativecrashed after result; diagnostics now disable cameras/tilemapdrawing only, no game renderer changes. runtime5 passed147; source review caught Juggernaut future-skip marker blocking active turns. Added serialized SkippedBySlacking flag in Actor_Unit and eligibility helper uses it. runtime6-result.json passed151 checks including Jugg active/skip/active, serialized eligibility flags, native spell downing Focusbonus, swallowing/digestion Vindication, interior InstantRetreat and outcome font/divider properties. No graphical visual playtest. Initial standalone traits31-build.log passed0 before Jugg fix. FINAL build running to fresh path in Logs/traits31-final-build-target.txt; log traits31-final-build.log. NEXT inspect final exit/errors/warnings, review source notices/CHANGES/diff, package7existingnotices, updateREADME/finalresult and handoff one focused visual review. Do not claim earlier failed attempts clean or visual coverage. All files retained, no personal saves exercised/modified.
+
+
+## HANDOFF — Grouped trait/outcome review passed, 2026-11-04
+
+User requested grouped compilation/gameplay review. Native runtime6 passed151 (114retirement+37runtime/UIproperty) checks, actualexit0. Final standalone traits31-final-build.log passed0/noC#shadererrors/exceptions/newwarnings. Current Builds/Warband-Review-20261104-008d6398/Win64/VoreWar.exe; README updated. Corrected misplaced Dazzle magic-accuracy compile error and Juggernaut active-turn rejection using serialized actualSkippedBySlacking flag. Tests prove Jugg active/skip/active and eligibility serialization, APspender helper rules, KeenEye threshold sampling, accuracy changes, native spell downingFocus5, native swallowing/digestionVindication, interiorEvasiveRetreat and outcomefonts/spacing/divider properties. No rendered visual/human input playtest. Initial harness accesserrors and runtime3 nullgraphicsTilemapRenderer crash retained; audit disables drawing only and clean final6 pass supersedes failures. No game graphics disabled. Sources12game+1newEditorAudit/meta, all datednotice/CHANGES/priornotices reviewed, sevennotices packaged, no scene/art/prefab/package changes/files deleted/moved. Synthetic saves redirected to unique Logs root and preserved; no personal saves exercised. Evidence Logs/traits31-runtime6-result.json, traits31-final-source.diff, traits31-result.json. NEXT await focused user visual review: outcome text hierarchy/info fitting, trait names/hover, right-side InstantRetreat. Do not start injury phase before feedback. Existing distribution/provenance gates remain open.
+
+
+## ACTIVE further trait pruning — 2026-11-04
+
+User-approved25 additional retirements including whole remainingGrowthfamily (PermanentGrowth alreadyretired). Requested5displayaliases+hover; SmokeOut command renamedSmoke Out. Talented removedAnyStat bonus, keeps2random+1. Frenzy uses serialized EnemiesDigestedThisBattle resetBeginCombat; onlyhostile freshdigestions count; TasteForBlood attackkill triggers removed, enemy digestiononly. Plain Fit/PeakCondition/Illness/Diseased/Elite/Jugg descriptions, Petrifier verifiednative4turneffect and clarified. Seven source notices/CHANGES updated. No tests/build fornewbatch; preserve previousvalidatedbuild008d6398. PENDING asyncuserquestion ArcaneMagistrate retainpreviousDowningbonus or move undergeneralDigest rule; finishdependentcode afteranswer. No files moved/deleted or externaladditions; injuries deferred.
+
+
+## Further trait pruning source handoff — 2026-11-04
+
+User confirmed ArcaneMagistrate keeps downing bonus; tooltip now states downing, not killing. Retained ViralBiology contained a duplicate ViralDigestion callback: removed that callback while preserving swallow resistance/reduced nutrition, updated description. Latest seven-source batch remains uncompiled/unplayed; previous standalone 008d6398 predates it. No files deleted/moved. Next requested grouped check should update audit expectations for five aliases and new retirements before compilation/runtime checks. Injuries remain deferred.
+
+
+## Baseline trait coverage review — 2026-11-04
+
+Source review only, documented in docs/implementation/32-baseline-trait-coverage.md. Ten new family names needed; existing candidates need flat-tier retuning. No gameplay/Help edits, tests or build in this packet. Proposed Help categories and damage/accuracy/stacking scope decisions await user. Latest pruning batch remains uncompiled; previous build008d6398 predates it. Injuries remain deferred.
+
+
+## HANDOFF — Baseline trait implementation, 2026-11-04
+
+User resolved names/scope: MagicResistance reduced spell damage, MagicVulnerable increased; HP/mana±1/2/4 PER CHARACTER LEVEL; critical±5/10/15pp; merge MetalBody/AwkwardShape as HardPrey without nutrition drawback. Implemented28exclusive3tier families,73newIDs600–672 plus11reusedbaseIDs; canonicallegacyMetalBody alias. Clumsy accuracy-only; MagicFinesse rename; flatfinalaccuracy10/20/30pp; damage1/2/4; separatephysical/spellincoming; minimum1afterblock/resistance beforebarrier; no digestion/status tick changes. Cached modifiers rebuild with existingInitializeTraits; grants replace earlier/opposingtiers, direct conflicts strongest/stableID; sharedgrant/reset fixes, caps clamp currentresources. Help six categories alphabetical, sharedcanonicaltooltips, legacyHardPrey dedup. Source changes10paths +newmeta listedCHANGES; datednotices preservedpriorattribution/noexternalassets/deps. Spec32 updated with values/edgecases/nextchecks. No files moved/deleted.
+
+NO compile/test/build this packet (none requested). Current build008d6398 and151checks predate both latestpruning andspec32. NEXT when user requests grouped verification: update TraitCurationAudit stalealias/bonus expectations and validate tierfamilies, odds/damagefloors/caps, grantsexclusivity/sharedreset, save/reload and Helpdedup; preserve syntheticfiles/deletionsuppression. Then freshbuild +onecombinedplayerreview. Do not claim current source passed previouschecks. Injury phase remains deferred until traitmilestone feedback.
+
+
+## ACTIVE — Combined trait/injury milestone, 2026-11-04
+
+User authorized implementing all discussed traits/injuries. Full spec33 source implemented, including graze immunity/lasting damage threshold, base natural STR HP excluding equipment STR, additive chest healing ceilings, all8bodyparts, saved recovery rolls, tiered old/systemic complications and5%/10%daily risks. User approved provisional10%hitthreshold, risk scaling and3/5/8durations; temporary HP alone cannot cause injury. Runtime1 previoussuite passed after initial new-helper import errors; runtime2 caught PoorFocus truncation, fixed; runtime3 passed415; runtime4 passed451 (alltemporaryeffects/armor/STRgearHP). Runtime5 currently running PID9812, log Logs/traits-injuries33-runtime5.log, output traits-injuries33-runtime5-result.json; adds actualmagicaccuracy/minimumafterelemental/SensitiveStomach/leaderimmunity. NEXT inspect runtime5/pass/exit, source/GPLdiff checks then fresh standalone build, package7existingnotices, updateREADME/evidence/finalhandoff. No personal saves touched; diagnostic roots underLogs preserved/deletion suppressed. Do not claim pixels tested. Allsource/notices/CHANGES/spec33 updated. Current standalone008d6398 still predates latestsource.
+
+
+## HANDOFF — Traits and injuries complete, 2026-11-04
+
+All approved spec31pruning/spec32tiers/spec33injuries implemented and grouped-verified. Final runtime6 passed457 (139retirement+318other), actualexit0. Final standalone Warband-Review-20261104-1b8b2f8d/Win64/VoreWar.exe buildexit0/noC#shadererrors/newcompilerwarnings. README points there. Seven existing notices copied/verifiedSHA, sourceper-filedates/CHANGES exactpaths reviewed; no outsideassets/deps, no scenes/prefabs/art/packagechanges/filesdeleted/moved. Personal saves untested/untouched; syntheticdiagnosticdata retained underLogs/deletion suppressed. Initialimporterrors/runtime2roundingfailure preserved; runtime3/4/5 earlierpasses superseded byclean6. Finalpost-runtime Help-only sparring wording correction compiled intohandoffbuild.
+
+Implemented eightbodyparts, Bruised/Battered/Mangled, twelveoldfamilies cappedIII, 33/66%recoverycomplications (treated17/33), storedinjury-time rolls; grazenoinjury/lastinglossonly; approvedprovisional10%threshold/hit-scaledrisk/3/5/8days;5/10%dailycomplicationrisk pool7body+4systemic/excludeknee/leaderimmune. NaturalSTRHPexcludesgear/combatSTR; healingceilingsaddwithoutHPdamage; Light/Moderate/SevereDamage followscurrentHPinclgrey at75/50/25%; all agreedpenalties applied anddisplayed. Submissiveescapeprohibitionpreserved; previewHPnullguardrestored.
+
+Evidence Logs/traits-injuries33-result.json, runtime6-result.json/runtime6.log, handoff-build.log; specs32/33 containdetails. NEXT await onecombinedplayerreview: Helpcategories/descriptions; tacticaldamageconditions/injuryreadability/HPhealing; town treatment/rest/save-reloadpresentation. No graphical playtestclaimed; tuningprovisional. Existingdistribution/provenancegatesremainopen. Do not restartacceptedpriorpackets.
+
+
+## Provisional user acceptance — 2026-11-04
+
+The user provisionally accepted the combined trait/injury milestone. Help content is acceptable for now. Focused manual injury testing is deferred because the probabilistic mechanics are difficult to exercise deliberately; this is not a manual gameplay pass. The existing457 automated checks and clean build remain the performed verification.
+
+Deferred editorial work: rewrite Help as concise, task-oriented player guidance rather than exhaustive design notes. Keep detailed formulas, edge cases and implementation rationale in developer documentation; Help should prioritize what players need to do and understand. Do not start this rewrite or demand injury testing without further user direction.

@@ -1,10 +1,15 @@
-// Modified for the VoreWar mercenary-company conversion.
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-04: Apply approved injury tiers, base-STR HP, healing ceilings and recovery rules (spec 33).
+// 2026-11-04: Implement exclusive baseline trait tiers, flat combat modifiers and categorized Help (spec 32).
 // 2026-11-02: Replace retired empire guidance with company gameplay, save boundaries and retained references; correct trait enumeration (spec 12).
 // 2026-11-02: Restore vore terminology in existing help without rewriting its deferred content (Options feedback).
 // 2026-11-03: Describe named saves, exact battle resumption and Ironman recovery (spec 19).
 // 2026-11-03: Match saving help to the renamed Load Game button (spec 20).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 // 2026-11-03: Implement four active stats and agreed combat rules (spec 29).
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-04: Show the QuickLearner name in Help (spec 31).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
 using System;
 using System.Linq;
 using System.Text;
@@ -66,7 +71,7 @@ Base AP is fixed by species specialty: melee/vore 3, ranged/magic 2. AGI does no
 
 A missed weapon attack with at least 51% accuracy gets one silent retry at that same percentage for a graze. A graze uses reduced damage; a successful hit can become a critical. Only the final result is shown.
 
-Injuries and equipment still modify combat. Hand injuries reduce AGI, head injuries INT, leg injuries movement, and arm/body injuries weapon damage. Leadership remains retired.";
+Injuries and equipment still modify combat. Head/arm/leg/abdomen injuries reduce INT/STR/AGI/VOR. Eye injuries reduce all four attack accuracies, hand injuries reduce weapon/spell damage, chest injuries limit healing and knee injuries reduce AP (minimum 1). Leadership remains retired.";
 
     public static string Items = @"Company equipment
 
@@ -76,7 +81,7 @@ Buy gear at a town merchant, then equip it through Company > Manage. Equipment c
 
 An HP-granting item changes current and maximum HP by the same amount when equipped/removed. If removing one would leave its wearer without positive HP, recover first.
 
-Armor also reduces injury risk for its covered body part. Helmets protect the head, torso armor the body, leg armor the legs and arm armor the hands/arms. There is no armor appearance system in this version.
+Armor also reduces injury risk for its covered body part. Helmets protect Head/Eyes, torso armor Chest/Abdomen, leg armor Leg/Knee and arm armor Arm/Hand. There is no armor appearance system in this version.
 
 Digested mercenaries' equipped gear is lost with them. The initial contract reward is gold only. Pure Tactical keeps its original equipment setup.";
 
@@ -98,7 +103,7 @@ Current cumulative XP thresholds without trait modifiers are 20, 56, 121, 238, 4
 
 Contract completion awards participants challenge-scaled XP; reserves receive no participation award. Actions against weaker enemies give veterans much less XP. Repeating easy contracts is progressively less useful for development and their small payouts may not cover veteran wages.
 
-All healthy current members gain a little daily sparring XP, active or reserve. Healthy means full lasting HP with no recovering temporary injury after daily recovery; old injuries alone do not prevent sparring. Sparring does not pick a level-up improvement for you. Wages rise with actual level.
+All healthy current members gain a little daily sparring XP, active or reserve. Healthy means lasting HP at its healing ceiling with no recovering temporary injury after daily recovery; old injuries alone do not prevent sparring. Sparring does not pick a level-up improvement for you. Wages rise with actual level.
 
 These values are provisional and may be tuned after integrated playtesting.";
 
@@ -114,13 +119,25 @@ F5 creates a Quicksave in a normal company battle; F9 opens Save / Load. Escape 
 
     public static string Teams = @"Injuries and recovery
 
-Minor and serious injuries can arise from lasting combat damage and deep attrition. Neither reaching 1 HP nor becoming downed guarantees an injury. Temporary HP protects against injury risk. New injuries appear in the battle log and as outlined orange tactical text.
+Normal maximum HP comes from base STR and explicit HP modifiers. Combat STR bonuses and penalties never change it.
 
-Minor injuries heal away. Serious injuries impose stronger penalties while recovering, then become weaker permanent old injuries. Old injuries stack and cannot be cured. The leader never retains permanent old injuries, and special revival clears their temporary injuries.
+Below 75% / 50% / 25% of normal maximum HP, Light / Moderate / Severe Damage reduces all four combat stats by 10% / 20% / 30%. Temporary HP counts immediately. The condition returns if temporary HP expires and lasting HP is still low.
 
-Ordinary days recover a little HP and one injury recovery day. Resting in the field recovers more HP and two injury recovery days; town rest gives the best recovery and three injury recovery days. Surviving contract targets recover normally over elapsed days too. Mana recovers 60% of maximum per campaign day.
+Grazes never cause body-part injuries. Other damage must remove lasting HP equal to at least 10% of normal maximum HP before it can cause one. Larger hits carry greater risk. Armor reduces injury risk for its covered parts. Neither 1 HP nor downing guarantees an injury. New injuries appear in the battle log and as tactical popup text.
 
-Town treatment costs gold per injured member and shortens untreated temporary injuries. It does not instantly refill HP, leaves at least one recovery day, and cannot treat the same injury repeatedly or cure an old injury. Inspect Company > Manage > Injuries / recovery for exact current penalties and recovery.";
+Bruised / Battered / Mangled injuries take 3 / 5 / 8 recovery days. Head, Arm, Abdomen and Leg reduce INT, STR, VOR and AGI by 20% / 40% / 60%. Eyes reduce melee, ranged, magic and vore accuracy by 10 / 20 / 30 percentage points. Hands reduce weapon and spell damage by 1 / 2 / 4. Knees reduce AP by 1 / 2 / 3, never below 1.
+
+Chest injuries limit healing to 90% / 80% / 70% of normal maximum HP. Existing HP is not removed. The normal maximum remains the denominator for damage conditions. Shortened Breath adds another 5% / 10% / 15% reduction to that healing ceiling.
+
+Bruised injuries leave no permanent complication. Battered injuries have a 33% chance, reduced to 17% if treated; Mangled injuries have a 66% chance, reduced to 33% if treated. The hidden roll is saved when the injury occurs; treatment changes its threshold, not its roll. Old injury families advance I to II to III and cap at III. They cannot be cured. The leader is immune to permanent complications.
+
+Old Head/Arm/Abdomen/Leg injuries reduce their associated stat by 10% / 15% / 20%. Blurred Vision reduces all four attack accuracies by 5 / 10 / 15 percentage points; Weak Grip reduces weapon/spell damage by 1 / 2 / 3; Weak Knees reduce AP by 1 / 2 / 3 (minimum 1). Temporary and old penalties add together.
+
+Each campaign day begins recovery with a 5% complication chance for Moderate Damage, or 10% for Severe Damage. Complications can affect Head, Eyes, Arm, Hand, Chest, Abdomen or Leg, or cause Poor Focus, Dulled Instincts, Sluggish Recovery or Sensitive Stomach. Knees are excluded from this daily pool. Poor Focus reduces maximum mana by 5% / 10% / 15%; Dulled Instincts reduce critical chance by 5 / 10 / 15 percentage points. Sluggish Recovery removes 1 / 2 / 3 daily HP recovery, with a minimum of 1. Sensitive Stomach adds 5 / 10 / 15 percentage points to swallowed enemies' escape chances.
+
+Ordinary days provide one injury recovery day. Field rest gives two; town rest gives three and better HP recovery. Daily HP recovery is 3% normally, 10% while resting in the field, 15% while resting in town (rounded up, before Sluggish Recovery). Surviving contract targets recover 2% daily. Mana recovers 60% daily. Healthy members can spar at their lasting healing ceiling with no recovering injuries.
+
+Town treatment costs gold per injured member, shortens untreated temporary injuries and lowers their complication risk. At least one recovery day remains. Treatment does not instantly refill HP. Inspect Company > Manage > Injuries / recovery for current penalties and recovery.";
 
     public static string Diplomacy = @"Contracts and reputation
 
@@ -156,11 +173,15 @@ This proof of concept has provisional tuning and documented limitations. Help de
 
     public static string Traits()
     {
-        var sb = new StringBuilder("Retained traits. A trait's presence here does not guarantee it can appear on every species.\n\n");
-        foreach (Traits trait in Enum.GetValues(typeof(Traits)))
+        var sb = new StringBuilder("Traits I, II and III are increasing tiers. Only one tier or opposing trait in a family can apply at a time. A trait's presence here does not guarantee it can appear on every species.\n\n");
+        var traits = Enum.GetValues(typeof(Traits)).Cast<Traits>()
+            .Where(t => !TraitsMethods.IsRetired(t) && (int)t < 1000).Select(TieredTraits.Canonical).Distinct().ToList();
+        foreach (var category in new[] { "Combat Bonuses", "Combat Penalties", "Personal Development", "Vore and Digestion", "Special Abilities", "Species and Biology" })
         {
-            if (TraitsMethods.IsRetired(trait) || (int)trait >= 1000) continue;
-            sb.AppendLine(trait + " - " + HoveringTooltip.GetTraitData(trait).Replace('\n', ' '));
+            sb.AppendLine("<b>" + category + "</b>");
+            foreach (var trait in traits.Where(t => TieredTraits.Category(t) == category).OrderBy(TraitsMethods.DisplayName))
+                sb.AppendLine(TraitsMethods.DisplayName(trait) + " - " + HoveringTooltip.GetTraitData(trait).Replace('\n', ' '));
+            sb.AppendLine();
         }
         return sb.ToString();
     }

@@ -1,7 +1,19 @@
-// Modified for the VoreWar mercenary-company conversion.
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-04: Implement exclusive baseline trait tiers, flat combat modifiers and categorized Help (spec 32).
+// 2026-11-04: Permanently retire the user-approved round-one traits from gameplay and Help (spec 31).
 // 2026-11-01: Complete approved ability retirement and close legacy reactivation paths (spec 05A3B17).
 // 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-04: Retire round-two traits and provide the QuickLearner display name (spec 31).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+// 2026-11-04: Rename DoubleAttack presentation to DoubleShot and restrict its bonus to ranged attacks (spec 31).
+// 2026-11-04: Retire approved duplicate pack/blessing traits and align displayed stat terminology (spec 31).
+// 2026-11-04: Retire QuickShooter and align FastCaster with standing-ground action economy (spec 31).
+// 2026-11-04: Apply approved Dodger, KeenEye and action-economy trait refinements (spec 31).
+// 2026-11-04: Apply EasyPrey, MadMage, retreat and approved trait retirements (spec 31).
+// 2026-11-04: Implement approved Dazzle, Vindication, Talented and description refinements (spec 31).
+// 2026-11-04: Apply approved trait removals, digestion triggers, names and plain-effect descriptions (spec 31).
 /// <summary>
 /// The list of possible unit traits
 /// </summary>
@@ -149,7 +161,7 @@ public enum Traits
     MagicProwess = 74,
     /// <summary>Unit gains <b>Empowered</b> buff after digesting a victim.</summary>
     MetabolicSurge = 75,
-    /// <summary>Doubles prey absorption rate.</summary>
+    /// <summary>Unit absorbs dead prey 50% faster (1.5x normal rate).</summary>
     FastAbsorption = 76,
     /// <summary>Halves prey absorption rate.</summary>
     SlowAbsorption = 77,
@@ -205,7 +217,7 @@ public enum Traits
     RangedIneptitude = 101,
     /// <summary>Unit deals 20% more damage with ranged attacks.</summary>
     KeenShot = 102,
-    /// <summary>Unit takes 25% less damage from fire attacks.</summary>
+    /// <summary>Unit takes 75% less fire damage.</summary>
     HotBlooded = 103,
     /// <summary>When levelling up, any stat can be boosted.</summary>
     FocusedDevelopment = 104,
@@ -559,7 +571,7 @@ public enum Traits
     Huge = 254,
     /// <summary>Cheat Trait: Increases unit's scale by 2.5x.</summary>
     Colossal = 255,
-    /// <summary>Cheat Trait: Doubles experience gained by unit.</summary>
+    /// <summary>Unit gains 10% more experience from actions.</summary>
     AdaptiveTactics = 256,
     /// <summary>Cheat Trait: Unit gains +1 to all stats for every 4 non-vore kills.</summary>
     KillerKnowledge = 257,
@@ -593,9 +605,9 @@ public enum Traits
     Symbiote = 298,
     /// <summary>creates a spawn unit on prey Absorption</summary>
     CreateSpawn = 299,
-    /// <summary>Unit takes 25% less damage from electric attacks.</summary>
+    /// <summary>Unit takes 75% less electric damage.</summary>
     Grounded = 300,
-    /// <summary>Unit takes 25% less damage from ice attacks.</summary>
+    /// <summary>Unit takes 75% less ice damage.</summary>
     ColdTolerance = 301,
     /// <summary>Unit takes extra damage from all sources of ice. (150%)</summary>
     IceVulnerable = 302,
@@ -668,7 +680,82 @@ public enum Traits
     /// <summary>Doubles unit's absorption rate.</summary>
     FasterAbsorption = 280,
     /// <summary>Doubles unit's absorption rate.</summary>
-    Eeveeolutionist = 281
+    Eeveeolutionist = 281,
+
+    // Vore Warband baseline trait tiers; existing numeric IDs remain unchanged.
+    Precise = 600,
+    PreciseII = 601,
+    PreciseIII = 602,
+    ClumsyII = 603,
+    ClumsyIII = 604,
+    Deadeye = 605,
+    DeadeyeII = 606,
+    DeadeyeIII = 607,
+    Nearsighted = 608,
+    NearsightedII = 609,
+    NearsightedIII = 610,
+    MagicFinesseII = 611,
+    MagicFinesseIII = 612,
+    ErrantMage = 613,
+    ErrantMageII = 614,
+    ErrantMageIII = 615,
+    WideMaw = 616,
+    WideMawII = 617,
+    WideMawIII = 618,
+    WeakGullet = 619,
+    WeakGulletII = 620,
+    WeakGulletIII = 621,
+    StrongMeleeII = 622,
+    StrongMeleeIII = 623,
+    WeakAttackII = 624,
+    WeakAttackIII = 625,
+    KeenShotII = 626,
+    KeenShotIII = 627,
+    RangedIneptitudeII = 628,
+    RangedIneptitudeIII = 629,
+    PowerCaster = 630,
+    PowerCasterII = 631,
+    PowerCasterIII = 632,
+    MagicIneptitude = 633,
+    MagicIneptitudeII = 634,
+    MagicIneptitudeIII = 635,
+    ResilientII = 636,
+    ResilientIII = 637,
+    WeakBones = 638,
+    WeakBonesII = 639,
+    WeakBonesIII = 640,
+    MagicResistanceII = 641,
+    MagicResistanceIII = 642,
+    MagicVulnerable = 643,
+    MagicVulnerableII = 644,
+    MagicVulnerableIII = 645,
+    DodgerII = 646,
+    DodgerIII = 647,
+    Flatfooted = 648,
+    FlatfootedII = 649,
+    FlatfootedIII = 650,
+    HardPreyII = 651,
+    HardPreyIII = 652,
+    EasyPreyII = 653,
+    EasyPreyIII = 654,
+    Hearty = 655,
+    HeartyII = 656,
+    HeartyIII = 657,
+    Frail = 658,
+    FrailII = 659,
+    FrailIII = 660,
+    ManaBattery = 661,
+    ManaBatteryII = 662,
+    ManaBatteryIII = 663,
+    Fizzler = 664,
+    FizzlerII = 665,
+    FizzlerIII = 666,
+    Assassin = 667,
+    AssassinII = 668,
+    AssassinIII = 669,
+    Brutish = 670,
+    BrutishII = 671,
+    BrutishIII = 672,
 
 }
 
@@ -676,12 +763,132 @@ static class TraitsMethods
 {
 
     // Retain serialized IDs; this list controls active conversion abilities.
+    public static string DisplayName(Traits trait) => TieredTraits.DisplayName(trait) ?? (trait == Traits.AdaptiveTactics ? "QuickLearner" : trait == Traits.DoubleAttack ? "DoubleShot" : trait == Traits.PackDexterity ? "PackAgility" : trait == Traits.AccuteDodge ? "Dodger" : trait == Traits.Defenseless ? "EasyPrey" : trait == Traits.MadScience ? "MadMage" : trait == Traits.DyingStrike ? "Vindication" : trait == Traits.AdeptLearner ? "Talented" : trait == Traits.EvasiveBattler ? "SmokeOut" : trait == Traits.MetalBody ? "HardPrey" : trait == Traits.HealingBlood ? "Regeneration" : trait == Traits.Fearless ? "Spartan" : trait == Traits.Cowardly ? "Opossum" : trait.ToString());
+
+    public static bool TryParse(string name, out Traits trait)
+    {
+        foreach (var family in TieredTraits.Families)
+            if (family.Name == name) { trait = family.Tiers[0]; return true; }
+        foreach (Traits value in System.Enum.GetValues(typeof(Traits)))
+            if (DisplayName(value) == name) { trait = TieredTraits.Canonical(value); return true; }
+        return System.Enum.TryParse(name, out trait);
+    }
+
     public static bool IsRetired(Traits trait)
     {
         if ((int)trait < 1000 && !System.Enum.IsDefined(typeof(Traits), trait))
             return true;
         switch (trait)
         {
+            // Approved round-one retirement; preserve numeric IDs for stored data.
+            case Traits.Alacrity:
+            case Traits.LightningSpeed:
+            case Traits.DivineBloodline:
+            case Traits.GeneEater:
+            case Traits.InstantDigestion:
+            case Traits.InstantAbsorption:
+            case Traits.Inescapable:
+            case Traits.Irresistable:
+            case Traits.UnlimitedCapacity:
+            case Traits.Inedible:
+            case Traits.HealingBelly:
+            case Traits.Assimilate:
+            case Traits.AdaptiveBiology:
+            case Traits.InfiniteAssimilation:
+            case Traits.SynchronizedEvolution:
+            case Traits.KillerKnowledge:
+            case Traits.EssenceAbsorption:
+            case Traits.Extraction:
+            case Traits.Annihilation:
+            case Traits.Endosoma:
+            case Traits.Changeling:
+            case Traits.GreaterChangeling:
+            case Traits.InherentGlamour:
+            case Traits.Multifaceted:
+            case Traits.CurseOfSacrifice:
+            case Traits.CurseOfPhasing:
+            case Traits.CurseOfCraving:
+            case Traits.CurseOfPreyportaion:
+            case Traits.PermanentGrowth:
+            case Traits.Hoarder:
+            case Traits.Cartography:
+            case Traits.Eeveeolutionist:
+            case Traits.Infiltrator:
+            case Traits.Untamable:
+            case Traits.RaceLoyal:
+            case Traits.Camaraderie:
+            case Traits.TraitBorrower:
+            case Traits.Symbiote:
+            case Traits.Parasite:
+            case Traits.CreateSpawn:
+            case Traits.InfectiousReproduction:
+            case Traits.AstralCall:
+            case Traits.AntPheromones:
+            case Traits.CursedMark:
+            case Traits.BookEater:
+            case Traits.Clever:
+            case Traits.Pathfinder:
+            case Traits.SlowBreeder:
+            case Traits.ProlificBreeder:
+            case Traits.Resourceful:
+            case Traits.BookWormI:
+            case Traits.BookWormII:
+            case Traits.BookWormIII:
+            case Traits.CurseOfImmolation:
+            case Traits.CurseOfEquivalency:
+            case Traits.PackWill:
+            case Traits.PackDefense:
+            case Traits.PackStomach:
+            case Traits.BlessingOfNature:
+            case Traits.BlessingOfEarth:
+            case Traits.BlessingOfWater:
+            case Traits.BlessingOfFerocity:
+            case Traits.QuickShooter:
+            case Traits.LightFrame:
+            case Traits.WildFury:
+            case Traits.StrongGullet:
+            case Traits.KillingMomentum:
+            case Traits.SlowMovement:
+            case Traits.VerySlowMovement:
+            case Traits.Charge:
+            case Traits.SlowStart:
+            case Traits.Slacker:
+            case Traits.TheGreatEscape:
+            case Traits.Donor:
+            case Traits.ExtraNutritious:
+            case Traits.ArtfulDodge:
+            case Traits.Temptation:
+            case Traits.PredGusher:
+            case Traits.Infertile:
+            case Traits.ShunGokuSatsu:
+            case Traits.WillingRace:
+            case Traits.Brainless:
+            case Traits.FocusedDevelopment:
+            case Traits.Prey:
+            case Traits.TentacleHarassment:
+            case Traits.Cruel:
+            case Traits.EnthrallingDepths:
+            case Traits.FriendlyStomach:
+            case Traits.Honeymaker:
+            case Traits.WetNurse:
+            case Traits.ForceFeeder:
+            case Traits.ViralDigestion:
+            case Traits.Growth:
+            case Traits.IncreasedGrowth:
+            case Traits.DoubleGrowth:
+            case Traits.PersistentGrowth:
+            case Traits.MinorGrowth:
+            case Traits.SlowedGrowth:
+            case Traits.FleetingGrowth:
+            case Traits.TotalAbsorption:
+            case Traits.DimensionalAntilock:
+            case Traits.TightNethers:
+            case Traits.HaplessPrey:
+            case Traits.AllIn:
+            case Traits.EnviousPrey:
+            case Traits.CompetetivePredator:
+            case Traits.RoughMassage:
+            case Traits.VoreObsession:
             case Traits.Eternal:
             case Traits.Replaceable:
             case Traits.LuckySurvival:

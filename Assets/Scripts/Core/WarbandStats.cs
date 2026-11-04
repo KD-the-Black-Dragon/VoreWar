@@ -1,4 +1,5 @@
-// Added by the VoreWar mercenary-company conversion fork.
+﻿// Added by the VoreWar mercenary-company conversion fork.
+// 2026-11-04: Apply approved injury tiers, base-STR HP, healing ceilings and recovery rules (spec 33).
 // 2026-11-03: Four active stats, compatibility mapping, fixed species AP and combat tuning (spec 29).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System;
@@ -57,7 +58,7 @@ internal static class WarbandStats
     {
         switch (Canonical(stat))
         {
-            case Stat.Strength: return "Melee accuracy and damage, maximum HP, and resistance to digestion damage.";
+            case Stat.Strength: return "Melee accuracy and damage, and resistance to digestion damage. Base STR determines maximum HP; combat STR modifiers do not.";
             case Stat.Agility: return "Ranged accuracy and damage, melee/ranged evasion, and vore evasion. Does not increase AP.";
             case Stat.Intelligence: return "Magic accuracy, damage and effects, maximum mana, magic resistance, escape chance while swallowed, and critical chance.";
             case Stat.Voracity: return "Swallow chance, stomach capacity, digestion speed, and keeping prey from escaping.";

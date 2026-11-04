@@ -1,4 +1,5 @@
-// Modified for the VoreWar mercenary-company conversion.
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-04: Apply approved injury tiers, base-STR HP, healing ceilings and recovery rules (spec 33).
 // 2026-10-30: Reject disallowed transformation destinations before prey-state callbacks (spec 03A2).
 // 2026-11-01: Complete approved ability retirement and close legacy reactivation paths (spec 05A3B17).
 // 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
@@ -60,7 +61,7 @@ class Prey
             EscapeRate = 0;
             return;
         }
-        if (Unit.GetStatusEffect(StatusEffectType.Sleeping) != null)
+        if (Unit.GetStatusEffect(StatusEffectType.Sleeping) != null || Unit.TraitBoosts.Incoming.ChanceToEscape <= 0)
         {
             EscapeRate = 0;
             return;
@@ -108,6 +109,8 @@ class Prey
         EscapeRate = (preyScore / (predScore + preyScore));
         EscapeRate *= Predator.Surrendered ? Config.SurrenderedPredEscapeMult : 1;
         EscapeRate *= TagConditionChecker.ApplyTagEffect(Unit, Predator.Unit, UnitTagModifierEffect.ChanceToEscapeMult);
+        if (TacticalUtilities.TreatAsHostile(Predator, Actor)) EscapeRate += CompanyInjuries.EscapeBonus(Predator.Unit);
+        EscapeRate = Mathf.Clamp01(EscapeRate);
         // Escape depends on INT versus VOR and condition, never hidden stamina.
         //float statRatio = (float)Predator.Unit.GetStat(Stat.Stomach) / (Unit.GetStat(Stat.Strength) + Unit.GetStat(Stat.Dexterity) + Unit.GetStat(Stat.Will)) * 3;
         //float healthRatio = (Predator.Unit.Health / (float)Predator.Unit.MaxHealth) / (Unit.Health / (float)Unit.MaxHealth);

@@ -1,4 +1,5 @@
-// Modified for the VoreWar mercenary-company conversion.
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-04: Apply approved injury tiers, base-STR HP, healing ceilings and recovery rules (spec 33).
 // 2026-10-30: Remove the retired Unit Editor hyperlink from unit inspection (spec 02B).
 // 2026-11-01: Label out-of-fight units as downed in character information (spec 10).
 // 2026-11-01: Use the shared individual display names for retained species (09–10 feedback).
@@ -557,8 +558,9 @@ public class InfoPanel
             if (unit.Injuries.Count > 0) sb.AppendLine("Injuries:\n" + string.Join("\n", unit.Injuries.Select(CompanyInjuries.Description).ToArray()));
             StringBuilder sbSecond = new StringBuilder();
             sbSecond.AppendLine("Status:");
-            if (unit.HasTrait(Traits.Frenzy) && unit.EnemiesKilledThisBattle > 0)
-                sbSecond.AppendLine($"Frenzy ({unit.EnemiesKilledThisBattle})");
+            if (CompanyInjuries.DamageTier(unit) > 0) sbSecond.AppendLine(CompanyInjuries.DamageDescription(unit));
+            if (unit.HasTrait(Traits.Frenzy) && unit.EnemiesDigestedThisBattle > 0)
+                sbSecond.AppendLine($"Frenzy ({unit.EnemiesDigestedThisBattle})");
             if (unit.HasTrait(Traits.Growth) && unit.BaseScale > 1)
                 sbSecond.AppendLine($"Growth ({Math.Round(unit.BaseScale, 2)}x)");
             if (actor?.Slimed ?? false)

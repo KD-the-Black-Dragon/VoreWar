@@ -1,4 +1,5 @@
 ﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-04: Implement exclusive baseline trait tiers, flat combat modifiers and categorized Help (spec 32).
 // 2026-11-01: Complete approved ability retirement and close legacy reactivation paths (spec 05A3B17).
 // 2026-11-01: Explain downed status and retained fear/retreat traits without the retired surrender reset (spec 10).
 // 2026-11-02: Use the preferred vore terminology in the downed-unit tooltip (Options feedback).
@@ -6,6 +7,15 @@
 // 2026-11-03: Keep hover graphics from intercepting the pointer or blocking slider targeting (spec 17 feedback).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 // 2026-11-03: Implement four active stats and agreed combat rules (spec 29).
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-04: Resolve QuickLearner hover text without changing stored trait names (spec 31).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+// 2026-11-04: Rename DoubleAttack presentation to DoubleShot and restrict its bonus to ranged attacks (spec 31).
+// 2026-11-04: Retire approved duplicate pack/blessing traits and align displayed stat terminology (spec 31).
+// 2026-11-04: Apply approved Dodger, KeenEye and action-economy trait refinements (spec 31).
+// 2026-11-04: Apply EasyPrey, MadMage, retreat and approved trait retirements (spec 31).
+// 2026-11-04: Implement approved Dazzle, Vindication, Talented and description refinements (spec 31).
+// 2026-11-04: Apply approved trait removals, digestion triggers, names and plain-effect descriptions (spec 31).
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -103,7 +113,7 @@ public class HoveringTooltip : MonoBehaviour
     }
     string GetTraitDescription(string[] words)
     {
-        if (Enum.TryParse(words[2], out Traits trait))
+        if (TraitsMethods.TryParse(words[2], out Traits trait))
         {
             return GetTraitData(trait);
         }
@@ -210,7 +220,7 @@ public class HoveringTooltip : MonoBehaviour
             return $"{race}\n{racePar.RaceDescription}\nRace Body Size: {bodySize}\nCurrent Bulk: {actor?.Bulk()}\nBase Stomach Size: {stomachSize}\nFavored Stat: {State.RaceSettings.GetFavoredStat(race)}\nDeployment Cost: {State.RaceSettings.GetDeployCost(race) * unit.TraitBoosts.DeployCostMult}\nUpkeep: {State.RaceSettings.GetUpkeep(race) * unit.TraitBoosts.UpkeepMult}";
         }
 
-        if (Enum.TryParse(words[2], out Traits trait))
+        if (TraitsMethods.TryParse(words[2], out Traits trait))
         {            
             if (trait == Traits.Multifaceted)
             {
@@ -433,6 +443,8 @@ public class HoveringTooltip : MonoBehaviour
 
     public static string GetTraitData(Traits trait)
     {
+        var tierDescription = TieredTraits.Description(trait);
+        if (tierDescription != null) return tierDescription;
         if (TraitsMethods.IsRetired(trait))
             return "Retired in the mercenary-company conversion.";
         if (trait >= (Traits)6000)
@@ -529,7 +541,7 @@ public class HoveringTooltip : MonoBehaviour
             case Traits.Intimidating:
                 return "Enemies within 1 tile get a penalty to accuracy against all targets";
             case Traits.AdeptLearner:
-                return "All stats are favored, randomly get 1 point in 2 different stats with level up";
+                return "Two random stats gain an additional +1 on level-up.";
             case Traits.SlowBreeder:
                 return "Race produces new population at a slower rate than normal";
             case Traits.ProlificBreeder:
@@ -555,7 +567,7 @@ public class HoveringTooltip : MonoBehaviour
             case Traits.NimbleClimber:
                 return "Unit is a strong climber and can pass through trees unhindered";
             case Traits.Dazzle:
-                return "Units attacking this unit have to run a check based on the comparison of the will values, units failing the check will simply end their turn without attacking and suffer a stat penalty until their next turn (chance caps at 20% at 5x will, and is reflected in shown hit odds)";
+                return "Intelligence reduces hostile weapon and resistible spell accuracy by 0.2 percentage points per INT, capped at 20 percentage points.";
             case Traits.Charge:
                 return "Unit has a signficant boost to movement speed for the first two turns of every battle";
             case Traits.Feral:
@@ -617,7 +629,7 @@ public class HoveringTooltip : MonoBehaviour
             case Traits.GlueBomb:
                 return "Gives access to a single use ability that applies the glued status effect to a 3x3 group.  Glued units are very slow, and it takes a while to get it off.";
             case Traits.TasteForBlood:
-                return "After digesting or killing someone, the unit will get a random positive buff for 5 turns.";
+                return "Digesting an enemy grants one random positive combat effect for 5 turns.";
             case Traits.PleasurableTouch:
                 return "This unit's belly rub actions are more effective on others (doubled effect).";
             case Traits.PoisonSpit:
@@ -635,7 +647,7 @@ public class HoveringTooltip : MonoBehaviour
             case Traits.AntPheromones:
                 return "Unit will summon some friendly ants, depending on how many units have this trait.";
             case Traits.Fearless:
-                return "This unit refuses to flee. It can still become downed from injury or fear and cannot recover command ability during battle.";
+                return "Unit cannot flee.";
             case Traits.Inedible:
                 return "Unit can not be vored by other units.  (It makes their effective size so big that no one has the capacity to eat them)\n(Cheat Trait)";
             case Traits.AllOutFirstStrike:
@@ -643,7 +655,7 @@ public class HoveringTooltip : MonoBehaviour
             case Traits.VenomousBite:
                 return "A missed bite from the biter trait will also poison an enemy, and give them the shaken debuff.";
             case Traits.Petrifier:
-                return "Gives access to a single use ability that applies the petrified status effect to a target.  It prevents the target from acting, but also makes them resistant to damage and bulky to swallow.";
+                return "Grants one use of Petrify per battle. Petrify prevents actions and dodging for 4 turns, reduces incoming damage and makes the target harder to swallow.";
             case Traits.VenomShock:
                 return "Gives this unit significantly increased melee damage and vore odds against targets who are poisoned.";
             case Traits.Tenacious:
@@ -749,7 +761,7 @@ public class HoveringTooltip : MonoBehaviour
             case Traits.MetamorphicConversion:
                 return "Unit changes Race and side upon digestion";
             case Traits.Perseverance:
-                return "Unit heals after not taking damage for a 3 turns, scaling higher with each turn without damage thereafter.";
+                return "After three turns without taking damage, gains temporary combat HP, increasing with further undamaged turns. Temporary HP disappears after battle.";
             case Traits.ManaAttuned:
                 return "Unit thrives on mana, uses 10% of their max mana every turn. Unit falls asleep for 2 turns if they don't have enough mana, but regenerate 50% max mana every turn they are asleep.";
             case Traits.NightEye:
@@ -759,9 +771,9 @@ public class HoveringTooltip : MonoBehaviour
             case Traits.KeenEye:
                 return "Unit gains +10% critical strike chance.";
             case Traits.SpellBlade:
-                return "Unit's weapon damage also scales with mind. (Half as effectively as weapons main stat)";
+                return "Weapon damage also scales with Intelligence, half as effectively as the weapon's main stat.";
             case Traits.ArcaneMagistrate:
-                return "Unit gains 1 focus when it hits a spell, unit gains 4 more if the spell kills the target. Focus: Unit has its mind increased.";
+                return "Gain 1 Focus on a damaging spell hit, or 5 when it newly downs the target. Focus increases Intelligence.";
             case Traits.SwiftStrike:
                 return "Unit deals up 1% more weapon damage per agility it has over it's target, up to 25%, tripled when using light weapons.";
             case Traits.Timid:
@@ -863,21 +875,21 @@ public class HoveringTooltip : MonoBehaviour
             case Traits.Cartography:
                 return "This unit provides the army it's in with +1 MP and allows transversal of all terrain at a movement cost of 1";
             case Traits.BoundWeapon:
-                return "Unit's weapon damage scales purely with mind stat; ignoring the weapon's main stat in damage calculations";
+                return "Unit's weapon damage scales purely with Intelligence; ignoring the weapon's main stat in damage calculations";
             case Traits.Finesse:
-                return "This unit's melee attacks scale with 80% Strength and 30% Dexterity, instead of with 100% Strength.";
+                return "This unit's melee attacks scale with 80% Strength and 30% Agility, instead of with 100% Strength.";
             case Traits.DexterousDefense:
-                return "If this unit is wielding a melee weapon, melee attacks against this unit may deal half damage based on attacker's and unit's dexterity score (max 70% block chance). A successful block sets the attacker's MP to 0.";
+                return "If this unit is wielding a melee weapon, melee attacks against this unit may deal half damage based on attacker's and unit's Agility score (max 70% block chance). A successful block sets the attacker's MP to 0.";
             case Traits.Eeveeolutionist:
                 return "This unit will evolve into a different race based on the current composition of its army at the start of turn if over level 5. This trait is then removed.";
             case Traits.FocusedDodge:
                 return "Unit gains 20% increased dodge. This bonus is disabled for 3 turns after taking damage.";
             case Traits.BlessingOfNature:
-                return "This unit heals any unit that buffs it, equal to 5% of Endurance every turn while the buff persists. This unit gives 'Mending' to an ally within 2 spaces every 4th turn, duration scaling with level.";
+                return "This unit heals any unit that buffs it, equal to 5% of Strength every turn while the buff persists. This unit gives 'Mending' to an ally within 2 spaces every 4th turn, duration scaling with level.";
             case Traits.BlessingOfEarth:
-                return "This unit grants barrier to any unit that buffs it, equal to 10% of Will every turn while the buff persists. This unit gives 'Shield' to an ally within 2 spaces every other turn, duration scaling with level.";
+                return "This unit grants barrier to any unit that buffs it, equal to 10% of Intelligence every turn while the buff persists. This unit gives 'Shield' to an ally within 2 spaces every other turn, duration scaling with level.";
             case Traits.BlessingOfWater:
-                return "This unit restores mana to any unit that buffs it, for 10% of Mind every turn while the buff persists. This unit gives 'Focus' to an ally within 2 spaces every other turn, stacks scaling with level.";
+                return "This unit restores mana to any unit that buffs it, for 10% of Intelligence every turn while the buff persists. This unit gives 'Focus' to an ally within 2 spaces every other turn, stacks scaling with level.";
             case Traits.BlessingOfFerocity:
                 return "This unit grants sharpness to any unit that buffs it, equal to 10% of Strength every turn while the buff persists. This unit gives 'Valor' to an ally within 2 spaces every other turn, duration scaling with level.";
             case Traits.TotalAbsorption:
@@ -885,7 +897,7 @@ public class HoveringTooltip : MonoBehaviour
             case Traits.Crystaline:
                 return "Unit takes 25% reduced damage from all sources, but each time it is hit it has a 1/4 chance to gain the 'Fractured' status effect, canceling out this trait and greatly increasing damage from all sources. 'Fractured' lasts until the battle is over.";
             case Traits.DyingStrike:
-                return "When unit is killed in melee or digested does has a 1/3 chance of hitting with a melee attack against the aggressor, 3/4 hit chance if vored.";
+                return "When digested, always retaliates against the predator with the damage of three successful normal melee attacks.";
             case Traits.DimensionalAntilock:
                 return "This unit is not completely fixed to the space around it. \n(Allows using the Dimension Shift ability once per battle, which attempts to teleport the User to a random open tile within 20 tiles.)";
             case Traits.Hoarder:
@@ -994,7 +1006,7 @@ public class HoveringTooltip : MonoBehaviour
                 return lis.First().name;
             }
         }
-        return trait.ToString();
+        return TraitsMethods.DisplayName(trait);
     }
     public static string GetAIData(RaceAI ai)
     {

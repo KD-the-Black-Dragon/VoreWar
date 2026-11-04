@@ -1,4 +1,6 @@
-// Modified for the VoreWar mercenary-company conversion.
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-04: Apply approved injury tiers, base-STR HP, healing ceilings and recovery rules (spec 33).
+// 2026-11-04: Implement exclusive baseline trait tiers, flat combat modifiers and categorized Help (spec 32).
 // 2026-10-30: Validate new shape destinations before mutation; leave original-form restoration unrestricted (spec 03A2).
 // 2026-10-31: Exclude retired Resurrection from all assembled usable spell sources (spec 05A3B6).
 // 2026-11-01: Enforce retired ability/status/control policy and remove Leadership effects (spec 05A3B17).
@@ -14,6 +16,10 @@
 // 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 // 2026-11-03: Implement four active stats and agreed combat rules (spec 29).
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-04: Show QuickLearner and exclude retired stored traits in unit lists (spec 31).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+// 2026-11-04: Apply approved trait removals, digestion triggers, names and plain-effect descriptions (spec 31).
 using OdinSerializer;
 using OdinSerializer.Utilities;
 using System;
@@ -94,11 +100,11 @@ public class Unit
     [OdinSerialize] internal bool PermanentInjuryImmune;
     [OdinSerialize] internal bool AttritionInjuryChecked;
     internal List<CompanyInjury> Injuries { get { return injuries ?? (injuries = new List<CompanyInjury>()); } }
-    internal void ApplyCombatDamage(int amount)
+    internal void ApplyCombatDamage(int amount, bool canCauseInjury = true)
     {
         int before = LastingHealth;
         Health -= amount;
-        CompanyInjuries.RecordDamage(this, Math.Max(0, before - LastingHealth));
+        if (canCauseInjury) CompanyInjuries.RecordDamage(this, Math.Max(0, before - LastingHealth));
     }
     public int Health
     {
@@ -116,11 +122,12 @@ public class Unit
     }
     internal int LastingHealth { get { return Math.Max(0, Health - TemporaryHealth); } }
     internal void BeginCombat()
-    { TemporaryHealth = 0; Downed = false; Digested = false; AttritionInjuryChecked = false; BattleActive = true; }
+    { EnemiesDigestedThisBattle = 0; TemporaryHealth = 0; Downed = false; Digested = false; AttritionInjuryChecked = false; BattleActive = true; }
     internal void FinishCombat()
     {
         int lasting = LastingHealth; BattleActive = false; TemporaryHealth = 0;
-        if (!Digested && Type != UnitType.Summon) Health = Math.Min(MaxHealth, Math.Max(lasting, Math.Max(1, (int)Math.Ceiling(MaxHealth * .15))));
+        int baseline = Math.Min(HealingCeiling, Math.Max(1, (int)Math.Ceiling(MaxHealth * .15)));
+        if (!Digested && Type != UnitType.Summon) Health = Math.Min(MaxHealth, Math.Max(lasting, baseline));
         Downed = false;
     }
     internal int HealLasting(int amount)
@@ -129,7 +136,7 @@ public class Unit
         try
         {
             // Lasting recovery replaces grey HP before raising the total, so it is never lost at the cap.
-            int share = BattleActive ? Math.Min(Math.Max(0, amount), TemporaryHealth) : 0;
+            int share = BattleActive ? Math.Min(Math.Min(Math.Max(0, amount), TemporaryHealth), Math.Max(0, HealingCeiling - LastingHealth)) : 0;
             int convert = share;
             var necrosis = GetStatusEffect(StatusEffectType.Necrosis);
             if (necrosis != null) convert -= (int)Math.Round(convert * .25f * necrosis.Strength);
@@ -166,41 +173,22 @@ public class Unit
     internal int Barrier { get; private set; }
     [OdinSerialize]
     internal int MaxBarrier { get; private set; }
-    internal int MaxMana => (int)(3 * GetStatBase(Stat.Intelligence) * TraitBoosts.ManaMultiplier);
+    internal int MaxMana => Math.Max(0, (int)Math.Floor(((int)(3 * GetStatBase(Stat.Intelligence) * TraitBoosts.ManaMultiplier) +
+        (int)TieredTraits.Amount(this, TierEffect.MaxMana)) * (double)CompanyInjuries.ManaMultiplier(this) + .0001));
     internal int MaxStamina => (int)((3 * GetStatBase(Stat.Strength)) * TraitBoosts.StaminaMultiplier);
 
-    private int _maxHealth = 99999;
-
-    public int MaxHealth
+    // Combat STR modifiers never change HP capacity or the damage-condition denominator.
+    int BaseStrengthForHealth()
     {
-        get // Ah yes, a simple getter function u?u. Keeps health percentage consistent after gaining/losing stats mid battle, doesn't break Thrillseeker, doesn't cause prey orphans, doesn't break on save/load... etc.
-        {
-            if (Stats == null) return 1;
-            if (CompanyLoadout || BattleActive)
-            {
-                // Company equipment owns explicit HP deltas; a display/read must not heal.
-                int strength = Config.StatBoostsAffectMaxHP ? GetStat(Stat.Strength) : GetStatBase(Stat.Strength);
-                return (int)((strength * 3) * TraitBoosts.HealthMultiplier) + TempBoosts.HealthBoost;
-            }
-            if (!Config.StatBoostsAffectMaxHP) {
-                _maxHealth = 3 * GetStatBase(Stat.Strength);
-                 return (int)(_maxHealth * TraitBoosts.HealthMultiplier) + TempBoosts.HealthBoost;
-            }
-
-            int oldMax = _maxHealth;
-            _maxHealth = 3 * GetStat(Stat.Strength);
-            if (oldMax > 1 && oldMax != _maxHealth && _healthPct > 0)
-            {
-                int lowestHP = 0;
-                if ((_maxHealth - oldMax) * _healthPct > 0.4)
-                    lowestHP = 1;
-                int healthChange = (int)Math.Round((_maxHealth - oldMax) * _healthPct);
-                Health = Math.Min(_maxHealth,Math.Max(lowestHP, Health + healthChange));
-            }
-            return (int)(_maxHealth * TraitBoosts.HealthMultiplier) + TempBoosts.HealthBoost;
-        }
-        set => _maxHealth = value;
+        int equipped = Items == null ? 0 : Items.OfType<Accessory>().Where(i => i.ChangedStat >= 0 && i.ChangedStat < 8 &&
+            WarbandStats.Canonical((Stat)i.ChangedStat) == Stat.Strength).Sum(i => i.StatBonus);
+        return Math.Max(1, GetStatBase(Stat.Strength) - equipped);
     }
+    public int MaxHealth => Stats == null ? 1 : Math.Max(1, (int)(3 * BaseStrengthForHealth() * TraitBoosts.HealthMultiplier) +
+        TempBoosts.HealthBoost + (int)TieredTraits.Amount(this, TierEffect.MaxHealth));
+    internal int HealingCeiling => CompanyInjuries.HealingCeiling(this);
+    internal void ClampInjuryMana() { Mana = Math.Min(Mana, MaxMana); }
+
     private int GetHealthBoosts()
     {
         throw new NotImplementedException();
@@ -754,6 +742,7 @@ public class Unit
 
     [OdinSerialize]
     internal int EnemiesKilledThisBattle;
+    [OdinSerialize] internal int EnemiesDigestedThisBattle;
 
     internal Unit CurrentLeader;
 
@@ -1496,27 +1485,12 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
         InitializeTraits();
     }
 
-    internal List<Traits> GetTraits
-    {
-        get
-        {
-            if (PermanentTraits == null)
-                return (Tags.ToList()).Where(t => !TraitsMethods.IsRetired(t)).ToList();
-            if (SharedTraits == null)
-            {
-                if (ActiveConditionalTraits == null)              
-                    return (Tags.Concat(PermanentTraits).ToList()).Where(t => !TraitsMethods.IsRetired(t)).ToList();
-                return (Tags.Concat(PermanentTraits).ToList().Concat(ActiveConditionalTraits).ToList()).Where(t => !TraitsMethods.IsRetired(t)).ToList();
-            }
-            if (ActiveConditionalTraits == null)
-            {
-                return (Tags.Concat(PermanentTraits).ToList().Concat(SharedTraits).ToList()).Where(t => !TraitsMethods.IsRetired(t)).ToList();
-            }
-            return (Tags.Concat(PermanentTraits).ToList().Concat(SharedTraits).ToList().Concat(ActiveConditionalTraits).ToList()).Where(t => !TraitsMethods.IsRetired(t)).ToList();
-        }
-    }
+    internal List<Traits> GetTraits => TieredTraits.Resolve((Tags ?? new List<Traits>())
+        .Concat(PermanentTraits ?? new List<Traits>()).Concat(SharedTraits ?? new List<Traits>())
+        .Concat(ActiveConditionalTraits ?? new List<Traits>()));
 
-    internal int BaseTraitsCount => Tags.Count(t => !TraitsMethods.IsRetired(t)) + PermanentTraits.Count(t => !TraitsMethods.IsRetired(t));
+    internal int BaseTraitsCount => TieredTraits.Resolve((Tags ?? new List<Traits>())
+        .Concat(PermanentTraits ?? new List<Traits>())).Count;
 
     [OdinSerialize] protected int FourStatVersion;
     internal bool NeedsFourStatUpgrade { get { return FourStatVersion != 1; } }
@@ -1669,7 +1643,7 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
             case Stat.Voracity: multiplier = StrongestMultiplier(TraitBoosts.VoracityMult, TraitBoosts.StomachMult); break;
         }
         total *= multiplier;
-        total -= CompanyInjuries.StatPenalty(this, stat);
+        total *= CompanyInjuries.StatMultiplier(this, stat);
         if (total < 1)
             return 1;
 
@@ -1762,6 +1736,8 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
     {
         if (TraitsMethods.IsRetired(tag))
             return false;
+        if (TieredTraits.Find(tag) != null)
+            return GetTraits.Contains(TieredTraits.Canonical(tag));
         if (Tags != null)
             return Tags.Contains(tag) || (PermanentTraits?.Contains(tag) ?? false);
         return false;
@@ -1769,64 +1745,25 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
 
     public void HealPercentageCap(float rate, int cap)
     {
-        int heal = (int)(MaxHealth * rate);
-        if (heal <= 0) { heal = 1; }
-        heal = Math.Min(heal, cap);
-        if (heal > MaxHealth - Health)
-            heal = MaxHealth - Health;
-        var actor = TacticalUtilities.Units.FirstOrDefault(s => s.Unit == this);
-        int modAmount = heal;
-        if (GetStatusEffect(StatusEffectType.Necrosis) != null)
-        {
-            float effect = 0.25f * GetStatusEffect(StatusEffectType.Necrosis).Strength;
-            modAmount -= (int)Math.Round(modAmount * effect);
-        }
-        if (actor != null && heal != 0)
-            actor.UnitSprite.DisplayDamage(-modAmount);
-        Health += modAmount;
-        EquipmentFunctions.CheckEquipment(this, EquipmentActivator.OnHeal, new object[] { this, heal, null });
+        int actual = Heal(Math.Min(Math.Max(1, (int)(MaxHealth * rate)), cap));
+        var actor = TacticalUtilities.Units?.FirstOrDefault(u => u.Unit == this);
+        if (actor?.UnitSprite != null && actual > 0) actor.UnitSprite.DisplayDamage(-actual);
     }
 
     public void HealPercentage(float rate)
-    {
-        rate *= TraitBoosts.PassiveHeal;
-        int h = (int)(MaxHealth * rate);
-        if (h <= 0) { h = 1; }
-        int modAmount = h;
-        if (GetStatusEffect(StatusEffectType.Necrosis) != null)
-        {
-            float effect = 0.25f * GetStatusEffect(StatusEffectType.Necrosis).Strength;
-            modAmount -= (int)Math.Round(modAmount * effect);
-        }
-        Health += modAmount;
-        if (Health > MaxHealth)
-        {
-            Health = MaxHealth;
-        }
-        EquipmentFunctions.CheckEquipment(this, EquipmentActivator.OnHeal, new object[] { this, h, null });
-    }
+    { Heal(Math.Max(1, (int)(MaxHealth * rate * TraitBoosts.PassiveHeal))); }
 
     public int Heal(int amount, bool mutual = false)
     {
-        int diff = MaxHealth - Health;
-        int modAmount = amount;
-        if (GetStatusEffect(StatusEffectType.Necrosis) != null)
-        {
-            float effect = 0.25f * GetStatusEffect(StatusEffectType.Necrosis).Strength;
-            modAmount -= (int)Math.Round(modAmount * effect);
-        }      
-        Health += modAmount;
-        if (Health > MaxHealth)
-        {
-            Health = MaxHealth;
-        }
-        int actualHeal = Math.Min(diff, modAmount);
+        int modAmount = Math.Max(0, amount);
+        var necrosis = GetStatusEffect(StatusEffectType.Necrosis);
+        if (necrosis != null) modAmount -= (int)Math.Round(modAmount * .25f * necrosis.Strength);
+        int actualHeal = Math.Max(0, Math.Min(HealingCeiling - Health, modAmount));
+        Health += actualHeal; // Never reduce current HP merely because it exceeds the healing ceiling.
         EquipmentFunctions.CheckEquipment(this, EquipmentActivator.OnHeal, new object[] { this, actualHeal, null });
-        State.GameManager.TacticalMode?.TacticalStats?.RegisterHealing(actualHeal, Side);
-        if (State.GameManager.TacticalMode != null && HasTrait(Traits.MutualBiology) && !mutual)
-        {
-            TacticalUtilities.MutuallyHealUnits(this, amount);
-        }
+        State.GameManager?.TacticalMode?.TacticalStats?.RegisterHealing(actualHeal, Side);
+        if (State.GameManager?.TacticalMode != null && HasTrait(Traits.MutualBiology) && !mutual)
+            TacticalUtilities.MutuallyHealUnits(this, actualHeal);
         return actualHeal;
     }
 
@@ -1842,56 +1779,17 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
 
     internal string ListTraits(bool hideSecret = false)
     {
-        if (Tags.Count == 0 && (PermanentTraits == null || PermanentTraits.Count == 0))
-            return "";
-        string ret = "";
-        for (int i = 0; i < Tags.Count; i++)
+        var labels = new List<string>();
+        foreach (var trait in TieredTraits.Resolve((Tags ?? new List<Traits>()).Concat(PermanentTraits ?? new List<Traits>())))
         {
-            if (!(hideSecret && secretTags.Contains(Tags[i])))
-            {
-                bool color = false;
-                string tagString = "";
-                if (ret != "")
-                    ret += "\n";
-                if (TemporaryTraits != null && TemporaryTraits.Count > 0 && TemporaryTraits.Contains(Tags[i]))
-                {
-                    if (PermanentTraits != null && PermanentTraits.Count > 0 && !PermanentTraits.Contains(Tags[i]))
-                        color = true;
-                }
-                if (State.RandomizeLists.Any(rl => (Traits)rl.id == Tags[i]))
-                    tagString = State.RandomizeLists.Where(rl => (Traits)rl.id == Tags[i]).FirstOrDefault().name;
-                else if (State.CustomTraitList.Any(ct => (Traits)ct.id == Tags[i]))
-                    tagString = State.CustomTraitList.Where(ct => (Traits)ct.id == Tags[i]).FirstOrDefault().name;
-                else if (State.ConditionalTraitList.Any(ct => (Traits)ct.id == Tags[i]))
-                    tagString = State.ConditionalTraitList.Where(ct => (Traits)ct.id == Tags[i]).FirstOrDefault().name;
-                else
-                    tagString = Tags[i].ToString();
-
-                ret += color ? "<color=#402B8Dff>" + tagString + "</color>" : tagString;
-            }
+            if (!GetTraits.Contains(trait) || (hideSecret && secretTags.Contains(trait))) continue;
+            string label = State.RandomizeLists.FirstOrDefault(t => (Traits)t.id == trait)?.name ??
+                State.CustomTraitList.FirstOrDefault(t => (Traits)t.id == trait)?.name ??
+                State.ConditionalTraitList.FirstOrDefault(t => (Traits)t.id == trait)?.name ?? TraitsMethods.DisplayName(trait);
+            bool temporary = (TemporaryTraits?.Contains(trait) ?? false) && !(PermanentTraits?.Contains(trait) ?? false);
+            labels.Add(temporary ? "<color=#402B8Dff>" + label + "</color>" : label);
         }
-        if (PermanentTraits != null && PermanentTraits.Count > 0)
-        {
-            for (int i = 0; i < PermanentTraits.Count; i++)
-            {
-                if (Tags.Contains(PermanentTraits[i]))
-                    continue;
-                if (!(hideSecret && secretTags.Contains(PermanentTraits[i])))
-                {
-                    if (ret != "")
-                        ret += "\n";
-                    if (State.RandomizeLists.Any(rl => (Traits)rl.id == PermanentTraits[i]))
-                        ret += State.RandomizeLists.Where(rl => (Traits)rl.id == PermanentTraits[i]).FirstOrDefault().name;
-                    else if (State.CustomTraitList.Any(ct => (Traits)ct.id == PermanentTraits[i]))
-                        ret += State.CustomTraitList.Where(ct=> (Traits)ct.id == PermanentTraits[i]).FirstOrDefault().name;
-                    else if (State.ConditionalTraitList.Any(ct => (Traits)ct.id == PermanentTraits[i]))
-                        ret += State.ConditionalTraitList.Where(ct=> (Traits)ct.id == PermanentTraits[i]).FirstOrDefault().name;
-                    else
-                        ret += PermanentTraits[i].ToString();
-                    }
-            }
-        }
-        return ret;
+        return string.Join("\n", labels);
     }
 
     public bool IsEnemyOfSide(int side)
@@ -1909,8 +1807,22 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
         return;
     }
 
+    // An explicit grant upgrades/replaces its family rather than stacking tier effects.
+    bool PrepareTierGrant(ref Traits trait)
+    {
+        trait = TieredTraits.Canonical(trait);
+        var family = TieredTraits.Find(trait);
+        if (family == null) return true;
+        int tier = System.Array.IndexOf(family.Tiers, trait);
+        if (GetTraits.Any(t => TieredTraits.Find(t) == family && System.Array.IndexOf(family.Tiers, t) >= tier)) return false;
+        foreach (var list in new[] { Tags, PermanentTraits, SharedTraits, PersistentSharedTraits, ActiveConditionalTraits, TemporaryTraits })
+            if (list != null) list.RemoveAll(t => TieredTraits.Find(t)?.Effect == family.Effect);
+        return true;
+    }
+
     public void AddTrait(Traits traitIdToAdd)
     {
+        if (!PrepareTierGrant(ref traitIdToAdd)) return;
         if (Tags == null)
             Tags = new List<Traits>();
 
@@ -1929,6 +1841,7 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
 
     public bool AddPermanentTrait(Traits traitIdToAdd)
     {
+        if (!PrepareTierGrant(ref traitIdToAdd)) return false;
         if (PermanentTraits == null)
             PermanentTraits = new List<Traits>();
 
@@ -1980,15 +1893,33 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
 
         if (HasTrait(traitToRemove))
         {
-            Tags.Remove(traitToRemove);
-            PermanentTraits?.Remove(traitToRemove);
+            if (TieredTraits.Find(traitToRemove) != null)
+            {
+                var canonical = TieredTraits.Canonical(traitToRemove);
+                Tags.RemoveAll(t => TieredTraits.Canonical(t) == canonical);
+                PermanentTraits?.RemoveAll(t => TieredTraits.Canonical(t) == canonical);
+            }
+            else
+            {
+                Tags.Remove(traitToRemove);
+                PermanentTraits?.Remove(traitToRemove);
+            }
             RecalculateStatBoosts();
         }
 
     }
 
+    void ClampTierResources(bool healthChanged = false, bool manaChanged = false)
+    {
+        if (Stats == null) return;
+        if (healthChanged || TieredTraits.Amount(this, TierEffect.MaxHealth) != 0) Health = Math.Min(Health, MaxHealth);
+        if (manaChanged || TieredTraits.Amount(this, TierEffect.MaxMana) != 0) Mana = Math.Min(Mana, MaxMana);
+    }
+
     protected void RecalculateStatBoosts()
     {
+        bool healthTierChanged = (_traitBoosts?.TierValues[(int)TierEffect.MaxHealth] ?? 0) != 0;
+        bool manaTierChanged = (_traitBoosts?.TierValues[(int)TierEffect.MaxMana] ?? 0) != 0;
         float healthBefore = HealthPct;
         RefreshSecrecy();
         InitializeFixedSide(Side);
@@ -2072,6 +2003,8 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
                     booster.Boost(TraitBoosts);
             }
         }
+        TieredTraits.Apply(TraitBoosts, GetTraits);
+        ClampTierResources(healthTierChanged, manaTierChanged);
     }
 
     internal void SetMaxItems()
@@ -2144,6 +2077,14 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
 
     public void AddSharedTrait(Traits trait)
     {
+        if (TieredTraits.Find(trait) != null)
+        {
+            trait = TieredTraits.Canonical(trait);
+            AddTrait(trait);
+            if (SharedTraits == null) SharedTraits = new List<Traits>();
+            if (HasTrait(trait) && !SharedTraits.Contains(trait)) SharedTraits.Add(trait);
+            return;
+        }
         if (SharedTraits == null)
             SharedTraits = new List<Traits>();
         if (!SharedTraits.Contains(trait) && !HasTrait(trait))
@@ -2161,6 +2102,7 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
             RemoveTrait(trait);
         }
         SharedTraits.Clear();
+        RecalculateStatBoosts();
     }
 
     public void RemoveSharedTrait(Traits trait)
@@ -2181,6 +2123,14 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
 
     public void AddPersistentSharedTrait(Traits trait)
     {
+        if (TieredTraits.Find(trait) != null)
+        {
+            trait = TieredTraits.Canonical(trait);
+            AddTrait(trait);
+            if (PersistentSharedTraits == null) PersistentSharedTraits = new List<Traits>();
+            if (HasTrait(trait) && !PersistentSharedTraits.Contains(trait)) PersistentSharedTraits.Add(trait);
+            return;
+        }
         if (PersistentSharedTraits == null)
             PersistentSharedTraits = new List<Traits>();
         if (!PersistentSharedTraits.Contains(trait) && !HasTrait(trait))
@@ -2198,6 +2148,7 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
             RemoveTrait(trait);
         }
         PersistentSharedTraits.Clear();
+        RecalculateStatBoosts();
     }
 
     public void RemovePersistentSharedTrait(Traits trait)
@@ -2218,6 +2169,14 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
 
     public void AddActiveConditionalTrait(Traits trait)
     {
+        if (TieredTraits.Find(trait) != null)
+        {
+            trait = TieredTraits.Canonical(trait);
+            AddTrait(trait);
+            if (ActiveConditionalTraits == null) ActiveConditionalTraits = new List<Traits>();
+            if (HasTrait(trait) && !ActiveConditionalTraits.Contains(trait)) ActiveConditionalTraits.Add(trait);
+            return;
+        }
         if (ActiveConditionalTraits == null)
             ActiveConditionalTraits = new List<Traits>();
         if (!ActiveConditionalTraits.Contains(trait) && !HasTrait(trait))
@@ -2235,6 +2194,7 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
             RemoveTrait(trait);
         }
         ActiveConditionalTraits.Clear();
+        RecalculateStatBoosts();
     }
 
     public void RemoveActiveConditionalTrait(Traits trait)
@@ -2586,6 +2546,7 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
         }
 
         RandomizeTraits();
+        ClampTierResources();
     }
 
     public void LeaderLevelDown()
@@ -2818,12 +2779,14 @@ internal void SetGenderRandomizeName(Race race, Gender gender)
 
     void AddAccessory(Accessory accessory)
     {
-        ModifyStat(accessory.ChangedStat, accessory.StatBonus);
+        EnsureFourStats();
+        Stats[(int)WarbandStats.Canonical((Stat)accessory.ChangedStat)] += accessory.StatBonus;
     }
 
     void RemoveAccessory(Accessory accessory)
     {
-        ModifyStat(accessory.ChangedStat, -accessory.StatBonus);
+        EnsureFourStats();
+        Stats[(int)WarbandStats.Canonical((Stat)accessory.ChangedStat)] -= accessory.StatBonus;
         if (Health < 1 && !Downed) Health = 1;
     }
 

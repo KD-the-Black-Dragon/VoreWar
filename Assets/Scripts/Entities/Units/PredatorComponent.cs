@@ -1,4 +1,6 @@
-// Modified for the VoreWar mercenary-company conversion.
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-04: Apply approved injury tiers, base-STR HP, healing ceilings and recovery rules (spec 33).
+// 2026-11-04: Implement exclusive baseline trait tiers, flat combat modifiers and categorized Help (spec 32).
 // 2026-10-30: Guard spawn creation and respect a rejected shape change before sharing traits (spec 03A2).
 // 2026-10-30: Replace callback prose and presentation-only choice switches; preserve containment effects (spec 04B2).
 // Upstream additional narrative contributions were credited to Tatltuae; credit retained after reset.
@@ -9,6 +11,8 @@
 // 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 // 2026-11-03: Implement four active stats and agreed combat rules (spec 29).
+// 2026-11-04: Implement approved Dazzle, Vindication, Talented and description refinements (spec 31).
+// 2026-11-04: Apply approved trait removals, digestion triggers, names and plain-effect descriptions (spec 31).
 using OdinSerializer;
 using System;
 using System.Collections.Generic;
@@ -1728,8 +1732,11 @@ public class PredatorComponent
             unit.DigestedUnits++;
             if (unit.HasTrait(Traits.EssenceAbsorption) && unit.DigestedUnits % 4 == 0)
                 unit.GeneralStatIncrease(1);
-            if (unit.HasTrait(Traits.TasteForBlood))
-                actor.GiveRandomBoost();
+            if (TacticalUtilities.TreatAsHostile(actor, preyUnit.Actor))
+            {
+                unit.EnemiesDigestedThisBattle++;
+                if (unit.HasTrait(Traits.TasteForBlood)) actor.GiveRandomBoost();
+            }
             unit.EnemiesKilledThisBattle++;
             preyUnit.Unit.KilledBy = unit;
             preyUnit.Unit.Kill();
@@ -1778,13 +1785,16 @@ public class PredatorComponent
 
         if (freshKill)
         {
-            if (preyUnit.Unit.HasTrait(Traits.DyingStrike) && State.Rand.Next(4) == 0)
+            if (preyUnit.Unit.HasTrait(Traits.DyingStrike))
             {
-                actor.Damage(preyUnit.Actor.WeaponDamageAgainstTarget(actor, false));
-                if (State.Rand.Next(2) == 0)
-                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{preyUnit.Unit.Name} counterattacked {actor.Unit.Name} for {preyUnit.Actor.WeaponDamageAgainstTarget(actor, false)} damage.");
-                else
-                    State.GameManager.TacticalMode.Log.RegisterMiscellaneous($"{preyUnit.Unit.Name} counterattacked {actor.Unit.Name} for {preyUnit.Actor.WeaponDamageAgainstTarget(actor, false)} damage.");
+                int total = 0;
+                for (int strike = 0; strike < 3 && !unit.IsDead; strike++)
+                {
+                    int damage = preyUnit.Actor.WeaponDamageAgainstTarget(actor, false);
+                    total += damage;
+                    actor.Damage(damage);
+                }
+                TacticalUtilities.Log.RegisterMiscellaneous($"{preyUnit.Unit.Name}'s Vindication struck {unit.Name} for {total} damage.");
             }
             preyUnit.Actor.Unit.Health = 0;
             foreach (IVoreCallback callback in Callbacks)
@@ -2814,18 +2824,7 @@ public class PredatorComponent
         if (target.Bulk() <= FreeCap() && (actor.BodySize() >= target.BodySize() * 3 || !actor.Unit.HasTrait(Traits.TightNethers) || (preyType != PreyLocation.womb && preyType != PreyLocation.balls)))
         {
             bool bit = false;
-            if (target.Unit.HasTrait(Traits.Dazzle) && target.Surrendered == false)
-            {
-                float chance = actor.WillCheckOdds(actor, target);
-                if (State.Rand.NextDouble() < chance)
-                {
-                    actor.Movement = 0;
-                    actor.UnitSprite.DisplayDazzle();
-                    actor.Unit.ApplyStatusEffect(StatusEffectType.Shaken, 0.3f, 1);
-                    TacticalUtilities.Log.RegisterDazzle(actor.Unit, target.Unit, chance);
-                    return false;
-                }
-            }
+
             actor.SetPredMode(preyType);
             if (TacticalUtilities.SneakAttackCheck(unit, target.Unit) && (!actor.Unit.HasTrait(Traits.FriendlyStomach) || !actor.Unit.HasTrait(Traits.Endosoma)))
             {
@@ -3264,10 +3263,7 @@ public class PredatorComponent
 
         if (includeSecondaries)
         {
-            if (target.Unit.HasTrait(Traits.Dazzle))
-            {
-                odds *= 1 - target.WillCheckOdds(actor, target);
-            }
+
         }
         return odds / 100;
     }
@@ -3420,8 +3416,6 @@ public class PredatorComponent
         if (prey.Unit.HasTrait(Traits.GelatinousBody))
             attackerScore *= 1.15f;
 
-        if (prey.Unit.HasTrait(Traits.MetalBody))
-            attackerScore *= .7f;
 
         if (prey.Unit.HasTrait(Traits.Slippery))
             attackerScore *= 1.5f;
@@ -3436,12 +3430,10 @@ public class PredatorComponent
 
         if (includeSecondaries)
         {
-            if (actor.Unit.HasTrait(Traits.Dazzle))
-            {
-                odds *= 1 - actor.WillCheckOdds(attacker, actor);
-            }
+
         }
-        return odds / 100;
+        return Mathf.Clamp01(odds / 100 + TieredTraits.Amount(attacker.Unit, TierEffect.VoreAccuracy) - CompanyInjuries.AccuracyPenalty(attacker.Unit) +
+            (TacticalUtilities.TreatAsHostile(attacker, prey.Actor) ? TieredTraits.Amount(prey.Unit, TierEffect.VoreAccuracyReceived) : 0));
     }
 
     private Prey GetVoreSteal(Actor_Unit target)

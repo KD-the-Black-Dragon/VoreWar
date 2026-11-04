@@ -2,6 +2,8 @@
 // 2026-11-01: Remove the voluntary surrender action from both tactical modes (spec 10).
 // 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+// 2026-11-04: Apply EasyPrey, MadMage, retreat and approved trait retirements (spec 31).
+// 2026-11-04: Apply approved trait removals, digestion triggers, names and plain-effect descriptions (spec 31).
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -80,6 +82,11 @@ static class TacticalActionList
         TargetedDictionary = new Dictionary<SpecialAction, TargetedTacticalAction>();
         TargetedActions = new List<TargetedTacticalAction>();
         UntargetedActions = new List<UntargetedTacticalAction>();
+        UntargetedActions.Add(new UntargetedTacticalAction(
+            name: "Smoke Out",
+            onClicked: () => State.GameManager.TacticalMode.EvasiveRetreat(),
+            conditional: a => a.Unit.HasTrait(Traits.EvasiveBattler) && a.Movement > 0 &&
+                State.GameManager.TacticalMode.currentTurn >= a.Unit.TraitBoosts.TurnCanFlee));
 
         TargetedActions.Add(new TargetedTacticalAction(
             name: "Belly Rub",

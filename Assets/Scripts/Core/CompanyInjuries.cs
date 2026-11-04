@@ -1,15 +1,17 @@
-// Added by the VoreWar mercenary-company conversion fork.
-// 2026-11-01: Persistent injuries, derived penalties, daily recovery, treatment and sparring (spec 11).
-// 2026-11-01: Announce each new injury in the battle log and queue visible-unit tactical text (spec 11 feedback).
-// 2026-11-02: Restore the inherited 60 percent daily mana recovery through the single company/target daily stage (spec 12).
-// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
-// 2026-11-03: Implement four active stats and agreed combat rules (spec 29).
+﻿// Added by the VoreWar mercenary-company conversion fork.
+// 2026-11-01: Persistent injuries, recovery, treatment, sparring and tactical announcements (spec 11).
+// 2026-11-02: Restore daily mana recovery through the company/target daily stage (spec 12).
+// 2026-11-03: Implement four active stats (spec 29).
+// 2026-11-04: Implement approved body-part injuries, saved complication rolls and tiered old injuries (spec 33).
+// See CHANGES.md and License.txt for GPL-3.0 terms; upstream notices remain applicable.
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-internal enum CompanyBodyPart { Hand, Arm, Leg, Head, Torso }
-internal enum CompanyInjuryGrade { Minor, Serious, Old }
+// Preserve legacy serialized numbers; Chest replaces the old Torso name.
+internal enum CompanyBodyPart { Hand = 0, Arm = 1, Leg = 2, Head = 3, Chest = 4, Eyes = 5, Abdomen = 6, Knee = 7 }
+internal enum CompanyInjuryGrade { Bruised = 0, Mangled = 1, Old = 2, Battered = 3 }
+internal enum CompanyComplication { BodyPart, PoorFocus, DulledInstincts, SluggishRecovery, SensitiveStomach }
 [Serializable]
 internal sealed class CompanyInjury
 {
@@ -18,87 +20,153 @@ internal sealed class CompanyInjury
     public CompanyInjuryGrade Grade;
     public int DaysRemaining;
     public bool Treated;
+    public int Tier = 1;
+    public CompanyComplication Complication;
+    public double RecoveryRoll = -1;
 }
 
 internal static class CompanyInjuries
 {
-    // Provisional tuning; deliberately kept here rather than exposed as player balance options.
-    internal const int MinorDays = 3, SeriousDays = 8, TreatmentCost = 10, TreatmentDays = 2;
-    internal static bool Temporary(CompanyInjury injury) { return injury.Grade != CompanyInjuryGrade.Old; }
-    internal static bool Leader(Unit unit) { return unit.PermanentInjuryImmune || unit.Type == UnitType.Leader; }
-    internal static bool Healthy(Unit unit)
-    { return !unit.Digested && unit.LastingHealth >= unit.MaxHealth && !unit.Injuries.Any(Temporary); }
+    internal const int MinorDays = 3, ModerateDays = 5, SeriousDays = 8, TreatmentCost = 10, TreatmentDays = 2;
+    internal const double MinimumHitFraction = .10, ModerateDailyRisk = .05, SevereDailyRisk = .10;
+    internal static bool Temporary(CompanyInjury injury) => injury.Grade != CompanyInjuryGrade.Old;
+    internal static bool Leader(Unit unit) => unit.PermanentInjuryImmune || unit.Type == UnitType.Leader;
+    internal static bool Healthy(Unit unit) => !unit.Digested && unit.LastingHealth >= HealingCeiling(unit) && !unit.Injuries.Any(Temporary);
+    internal static int InjuryTier(CompanyInjury injury) => Temporary(injury) ?
+        injury.Grade == CompanyInjuryGrade.Bruised ? 1 : injury.Grade == CompanyInjuryGrade.Battered ? 2 : 3 : Math.Max(1, Math.Min(3, injury.Tier));
+
+    internal static int DamageTier(Unit unit)
+    {
+        double fraction = unit.Health / (double)Math.Max(1, unit.MaxHealth);
+        return fraction < .25 ? 3 : fraction < .50 ? 2 : fraction < .75 ? 1 : 0;
+    }
+    internal static string DamageName(Unit unit) => new[] { "", "Light Damage", "Moderate Damage", "Severe Damage" }[DamageTier(unit)];
+    internal static string DamageDescription(Unit unit) => DamageTier(unit) == 0 ? "No accumulated-damage penalty" :
+        DamageName(unit) + " — all four combat stats reduced by " + DamageTier(unit) * 10 + "%. Temporary HP counts; normal maximum HP is unchanged.";
+
     internal static void RecordDamage(Unit unit, int lastingDamage)
     {
         if (!unit.BattleActive || unit.Digested || unit.Type == UnitType.Summon || lastingDamage <= 0) return;
         double fraction = Math.Min(1, lastingDamage / (double)Math.Max(1, unit.MaxHealth));
+        if (fraction < MinimumHitFraction) return;
         var part = RandomPart(unit);
-        double protection = RiskMultiplier(unit, part);
-        if (State.Rand.NextDouble() < (.015 + .10 * fraction) * protection) Add(unit, part, CompanyInjuryGrade.Serious);
-        else if (State.Rand.NextDouble() < .08 * (.2 + .8 * fraction) * protection) Add(unit, part, CompanyInjuryGrade.Minor);
-        // One deep-attrition opportunity per battle, triggered by lasting damage rather than grey HP.
-        // Zero HP has no special multiplier over an otherwise comparable near-zero hit.
-        if (!unit.AttritionInjuryChecked && unit.LastingHealth <= unit.MaxHealth * .20)
-        {
-            unit.AttritionInjuryChecked = true;
-            part = RandomPart(unit);
-            if (State.Rand.NextDouble() < .20 * RiskMultiplier(unit, part)) Add(unit, part, CompanyInjuryGrade.Serious);
-        }
+        double chance = Math.Min(.90, .10 + fraction - MinimumHitFraction) * RiskMultiplier(unit, part);
+        if (State.Rand.NextDouble() >= chance) return;
+        var grade = fraction >= .50 ? CompanyInjuryGrade.Mangled : fraction >= .25 ? CompanyInjuryGrade.Battered : CompanyInjuryGrade.Bruised;
+        Add(unit, part, grade);
     }
     static CompanyBodyPart RandomPart(Unit unit)
     {
         bool animal = SpeciesPolicy.IsCurated(unit.Race) && SpeciesPolicy.GetKind(unit.Race) == SpeciesKind.Animal;
-        return animal ? (State.Rand.Next(2) == 0 ? CompanyBodyPart.Head : CompanyBodyPart.Torso) : (CompanyBodyPart)State.Rand.Next(5);
+        return animal ? (State.Rand.Next(2) == 0 ? CompanyBodyPart.Head : CompanyBodyPart.Chest) : (CompanyBodyPart)State.Rand.Next(8);
     }
     internal static double RiskMultiplier(Unit unit, CompanyBodyPart part)
     {
-        CompanySlot slot = part == CompanyBodyPart.Head ? CompanySlot.Helmet : part == CompanyBodyPart.Torso ? CompanySlot.Torso :
-            part == CompanyBodyPart.Leg ? CompanySlot.Legs : CompanySlot.Arms;
+        CompanySlot slot = part == CompanyBodyPart.Head || part == CompanyBodyPart.Eyes ? CompanySlot.Helmet :
+            part == CompanyBodyPart.Chest || part == CompanyBodyPart.Abdomen ? CompanySlot.Torso :
+            part == CompanyBodyPart.Leg || part == CompanyBodyPart.Knee ? CompanySlot.Legs : CompanySlot.Arms;
         return 1.0 / (1 + CompanyEquipment.Protection(unit, slot));
     }
-    static void Add(Unit unit, CompanyBodyPart part, CompanyInjuryGrade grade)
+    static void Announce(Unit unit, string message, string popup)
     {
-        var injury = new CompanyInjury { Part = part, Grade = grade, DaysRemaining = grade == CompanyInjuryGrade.Minor ? MinorDays : SeriousDays };
-        unit.Injuries.Add(injury);
         var mode = State.GameManager == null ? null : State.GameManager.TacticalMode;
         if (mode == null) return;
-        mode.Log?.RegisterMiscellaneous(unit.Name + " suffered " + Description(injury) + ".");
+        mode.Log?.RegisterMiscellaneous(unit.Name + " " + message);
         if (mode.turboMode || TacticalUtilities.Units == null) return;
         var actor = TacticalUtilities.GetActorOf(unit);
-        if (actor != null && actor.Visible && actor.UnitSprite != null) actor.UnitSprite.DisplayInjury(Name(injury));
+        if (actor != null && actor.Visible && actor.UnitSprite != null) actor.UnitSprite.DisplayInjury(popup);
     }
-    internal static int Severity(CompanyInjury injury, int minor, int serious, int old)
-    { return injury.Grade == CompanyInjuryGrade.Minor ? minor : injury.Grade == CompanyInjuryGrade.Serious ? serious : old; }
-    internal static int StatPenalty(Unit unit, Stat stat)
-    { return unit.Injuries.Where(i => (stat == Stat.Agility && i.Part == CompanyBodyPart.Hand) || (stat == Stat.Intelligence && i.Part == CompanyBodyPart.Head)).Sum(i => Severity(i, 2, 5, 2)); }
-    internal static int MovementPenalty(Unit unit)
-    { return unit.Injuries.Where(i => i.Part == CompanyBodyPart.Leg).Sum(i => Severity(i, 1, 2, 1)); }
-    internal static int DamagePenalty(Unit unit)
-    { return unit.Injuries.Sum(i => i.Part == CompanyBodyPart.Arm ? Severity(i, 1, 5, 2) : i.Part == CompanyBodyPart.Torso ? Severity(i, 1, 4, 1) : 0); }
+    internal static void Add(Unit unit, CompanyBodyPart part, CompanyInjuryGrade grade)
+    {
+        var injury = new CompanyInjury { Part = part, Grade = grade,
+            DaysRemaining = grade == CompanyInjuryGrade.Bruised ? MinorDays : grade == CompanyInjuryGrade.Battered ? ModerateDays : SeriousDays,
+            RecoveryRoll = State.Rand.NextDouble() };
+        unit.Injuries.Add(injury);
+        Announce(unit, "suffered " + Description(injury) + ".", Name(injury));
+    }
+    static IEnumerable<CompanyInjury> At(Unit unit, CompanyBodyPart part) => unit.Injuries.Where(i => i.Complication == CompanyComplication.BodyPart && i.Part == part);
+    static float Percent(CompanyInjury injury, float[] recovering, float[] old) => (Temporary(injury) ? recovering : old)[InjuryTier(injury) - 1];
+    static readonly float[] StatTemporary = { .20f, .40f, .60f }, StatOld = { .10f, .15f, .20f };
+    static readonly float[] AccuracyTemporary = { .10f, .20f, .30f }, AccuracyOld = { .05f, .10f, .15f };
+    internal static float StatMultiplier(Unit unit, Stat stat)
+    {
+        var part = stat == Stat.Strength ? CompanyBodyPart.Arm : stat == Stat.Agility ? CompanyBodyPart.Leg :
+            stat == Stat.Intelligence ? CompanyBodyPart.Head : CompanyBodyPart.Abdomen;
+        float penalty = DamageTier(unit) * .10f + At(unit, part).Sum(i => Percent(i, StatTemporary, StatOld));
+        return Math.Max(0, 1 - penalty);
+    }
+    internal static float AccuracyPenalty(Unit unit) => At(unit, CompanyBodyPart.Eyes).Sum(i => Percent(i, AccuracyTemporary, AccuracyOld));
+    internal static int MovementPenalty(Unit unit) => At(unit, CompanyBodyPart.Knee).Sum(InjuryTier);
+    internal static int DamagePenalty(Unit unit) => At(unit, CompanyBodyPart.Hand).Sum(i =>
+        Temporary(i) ? new[] { 1, 2, 4 }[InjuryTier(i) - 1] : InjuryTier(i));
+    internal static float HealingCeilingFraction(Unit unit) => Math.Max(0, 1 - At(unit, CompanyBodyPart.Chest).Sum(i => Percent(i, AccuracyTemporary, AccuracyOld)));
+    internal static int HealingCeiling(Unit unit) => Math.Max(1, (int)Math.Floor(unit.MaxHealth * HealingCeilingFraction(unit) + .0001));
+    static int OldTier(Unit unit, CompanyComplication kind) => unit.Injuries.Where(i => !Temporary(i) && i.Complication == kind).Select(InjuryTier).DefaultIfEmpty(0).Max();
+    internal static float ManaMultiplier(Unit unit) => 1 - OldTier(unit, CompanyComplication.PoorFocus) * .05f;
+    internal static float CriticalPenalty(Unit unit) => OldTier(unit, CompanyComplication.DulledInstincts) * .05f;
+    internal static int RecoveryPenalty(Unit unit) => OldTier(unit, CompanyComplication.SluggishRecovery);
+    internal static float EscapeBonus(Unit unit) => OldTier(unit, CompanyComplication.SensitiveStomach) * .05f;
     internal static string Name(CompanyInjury injury)
     {
-        string[][] names = {
-            new[] { "Sore hand", "Battered hand", "Unsteady hand" },
-            new[] { "Strained arm", "Battered arm", "Stiff arm" },
-            new[] { "Sore leg", "Badly strained leg", "Old leg injury" },
-            new[] { "Ringing head", "Rattled head", "Lingering headaches" },
-            new[] { "Bruised body", "Heavy bruising", "Aching body" }
-        };
-        return names[(int)injury.Part][(int)injury.Grade];
+        if (Temporary(injury)) return injury.Grade + " " + injury.Part;
+        string name;
+        switch (injury.Complication)
+        {
+            case CompanyComplication.PoorFocus: name = "Poor Focus"; break;
+            case CompanyComplication.DulledInstincts: name = "Dulled Instincts"; break;
+            case CompanyComplication.SluggishRecovery: name = "Sluggish Recovery"; break;
+            case CompanyComplication.SensitiveStomach: name = "Sensitive Stomach"; break;
+            default: name = new[] { "Weak Grip", "Stiff Arm", "Leg Pains", "Frequent Headaches", "Shortened Breath", "Blurred Vision", "Poor Digestion", "Weak Knees" }[(int)injury.Part]; break;
+        }
+        return name + " " + new[] { "I", "II", "III" }[InjuryTier(injury) - 1];
     }
     internal static string Description(CompanyInjury injury)
     {
-        string penalty = injury.Part == CompanyBodyPart.Hand ? "AGI -" + Severity(injury, 2, 5, 2) :
-            injury.Part == CompanyBodyPart.Head ? "INT -" + Severity(injury, 2, 5, 2) :
-            injury.Part == CompanyBodyPart.Leg ? "Movement -" + Severity(injury, 1, 2, 1) :
-            "Weapon damage -" + (injury.Part == CompanyBodyPart.Arm ? Severity(injury, 1, 5, 2) : Severity(injury, 1, 4, 1));
-        return Name(injury) + " [" + injury.Grade + "] — " + penalty +
-            (Temporary(injury) ? " | Recovery remaining: " + injury.DaysRemaining + (injury.Treated ? " (treated)" : "") : " | Permanent");
+        int tier = InjuryTier(injury); string effect;
+        if (injury.Complication == CompanyComplication.PoorFocus) effect = "Maximum mana -" + tier * 5 + "%";
+        else if (injury.Complication == CompanyComplication.DulledInstincts) effect = "Critical chance -" + tier * 5 + " percentage points";
+        else if (injury.Complication == CompanyComplication.SluggishRecovery) effect = "Daily HP recovery -" + tier + " (minimum 1)";
+        else if (injury.Complication == CompanyComplication.SensitiveStomach) effect = "Swallowed enemy escape chance +" + tier * 5 + " percentage points";
+        else
+        {
+            switch (injury.Part)
+            {
+                case CompanyBodyPart.Head: effect = "INT"; break;
+                case CompanyBodyPart.Arm: effect = "STR"; break;
+                case CompanyBodyPart.Leg: effect = "AGI"; break;
+                case CompanyBodyPart.Abdomen: effect = "VOR"; break;
+                case CompanyBodyPart.Eyes: effect = "Melee, ranged, magic and vore accuracy -" + Math.Round(100 * Percent(injury, AccuracyTemporary, AccuracyOld)) + " percentage points"; goto Done;
+                case CompanyBodyPart.Hand: effect = "Melee, ranged and spell damage -" + (Temporary(injury) ? new[] { 1, 2, 4 }[tier - 1] : tier); goto Done;
+                case CompanyBodyPart.Chest: effect = "Healing ceiling -" + Math.Round(100 * Percent(injury, AccuracyTemporary, AccuracyOld)) + "% of normal maximum HP"; goto Done;
+                default: effect = "AP per turn -" + tier + " (minimum 1)"; goto Done;
+            }
+            effect += " -" + Math.Round(100 * Percent(injury, StatTemporary, StatOld)) + "%";
+        }
+        Done:
+        return Name(injury) + " — " + effect + (Temporary(injury) ? " | Recovery remaining: " + injury.DaysRemaining + (injury.Treated ? " (treated)" : "") : " | Permanent");
     }
     internal static string Summary(Unit unit)
     {
         int temporary = unit.Injuries.Count(Temporary), old = unit.Injuries.Count - temporary;
-        return unit.Injuries.Count == 0 ? "No injuries" : temporary + " recovering, " + old + " old injuries";
+        return (DamageTier(unit) == 0 ? "" : DamageName(unit) + " | ") +
+            (unit.Injuries.Count == 0 ? "No body-part or old injuries" : temporary + " recovering, " + old + " old injuries") +
+            (HealingCeiling(unit) < unit.MaxHealth ? " | Healing ceiling " + HealingCeiling(unit) + "/" + unit.MaxHealth : "");
+    }
+    internal static void AddOld(Unit unit, CompanyBodyPart part, CompanyComplication kind = CompanyComplication.BodyPart)
+    {
+        if (Leader(unit)) return;
+        var old = unit.Injuries.FirstOrDefault(i => !Temporary(i) && i.Complication == kind && (kind != CompanyComplication.BodyPart || i.Part == part));
+        if (old == null) { old = new CompanyInjury { Grade = CompanyInjuryGrade.Old, Part = part, Complication = kind, Tier = 1, RecoveryRoll = 0 }; unit.Injuries.Add(old); }
+        else old.Tier = Math.Min(3, InjuryTier(old) + 1);
+        unit.ClampInjuryMana();
+    }
+    internal static void DailyComplication(Unit unit)
+    {
+        int tier = DamageTier(unit);
+        if (Leader(unit) || unit.Digested || unit.Type == UnitType.Summon || tier < 2 || State.Rand.NextDouble() >= (tier == 2 ? ModerateDailyRisk : SevereDailyRisk)) return;
+        int choice = State.Rand.Next(11);
+        if (choice < 7) AddOld(unit, new[] { CompanyBodyPart.Head, CompanyBodyPart.Eyes, CompanyBodyPart.Arm, CompanyBodyPart.Hand, CompanyBodyPart.Chest, CompanyBodyPart.Abdomen, CompanyBodyPart.Leg }[choice]);
+        else AddOld(unit, CompanyBodyPart.Head, (CompanyComplication)(choice - 6));
     }
     internal static void Recover(Unit unit, int progress)
     {
@@ -106,35 +174,44 @@ internal static class CompanyInjuries
         {
             injury.DaysRemaining = Math.Max(0, injury.DaysRemaining - progress);
             if (injury.DaysRemaining > 0) continue;
-            if (injury.Grade == CompanyInjuryGrade.Serious && !Leader(unit)) injury.Grade = CompanyInjuryGrade.Old;
-            else unit.Injuries.Remove(injury);
+            double risk = injury.Grade == CompanyInjuryGrade.Bruised ? 0 : injury.Grade == CompanyInjuryGrade.Battered ? (injury.Treated ? .17 : .33) : (injury.Treated ? .33 : .66);
+            unit.Injuries.Remove(injury);
+            if (injury.RecoveryRoll < risk) AddOld(unit, injury.Part);
         }
     }
-    internal static bool CanTreat(Unit unit)
-    { return unit.Injuries.Any(i => Temporary(i) && !i.Treated && i.DaysRemaining > 1); }
+    internal static bool CanTreat(Unit unit) => unit.Injuries.Any(i => Temporary(i) && !i.Treated && i.DaysRemaining > 0);
     internal static void Treat(CompanyCampaign state, string id)
     {
         var c = state.Characters.Single(x => x.Id == id);
-        if (state.Busy || state.Preview || !state.Towns.Any(t => t.Tile == state.Position) || !state.Members.Any(m => m.CharacterId == id) ||
-            state.Gold < TreatmentCost || !CanTreat(c.Unit)) throw new InvalidOperationException("Visit town with enough gold and an untreated temporary injury.");
+        if (state.Busy || state.Preview || !state.Towns.Any(t => t.Tile == state.Position) || !state.Members.Any(m => m.CharacterId == id) || state.Gold < TreatmentCost || !CanTreat(c.Unit))
+            throw new InvalidOperationException("Visit town with enough gold and an untreated temporary injury.");
         state.Gold -= TreatmentCost;
-        foreach (var injury in c.Unit.Injuries.Where(i => Temporary(i) && !i.Treated && i.DaysRemaining > 1))
+        foreach (var injury in c.Unit.Injuries.Where(i => Temporary(i) && !i.Treated && i.DaysRemaining > 0))
         { injury.DaysRemaining = Math.Max(1, injury.DaysRemaining - TreatmentDays); injury.Treated = true; }
     }
     internal static void Validate(Unit unit)
     {
         var ids = new HashSet<string>();
         foreach (var i in unit.Injuries)
+        {
             if (i == null || string.IsNullOrEmpty(i.Id) || !ids.Add(i.Id) || !Enum.IsDefined(typeof(CompanyBodyPart), i.Part) ||
-                !Enum.IsDefined(typeof(CompanyInjuryGrade), i.Grade) || i.DaysRemaining < 0 || i.DaysRemaining > SeriousDays ||
-                (Temporary(i) && i.DaysRemaining == 0) || (!Temporary(i) && (i.DaysRemaining != 0 || Leader(unit))))
+                !Enum.IsDefined(typeof(CompanyInjuryGrade), i.Grade) || !Enum.IsDefined(typeof(CompanyComplication), i.Complication) || i.DaysRemaining < 0 || i.DaysRemaining > SeriousDays ||
+                (Temporary(i) && i.DaysRemaining == 0) || (!Temporary(i) && (i.DaysRemaining != 0 || Leader(unit))) || i.Tier < 0 || i.Tier > 3)
                 throw new InvalidOperationException("Invalid persistent injury state.");
+            if (i.Tier == 0) i.Tier = 1; // Legacy old injuries had no tier.
+            if (i.RecoveryRoll < 0) // Legacy records receive a stable value, never a load-time random reroll.
+            { uint hash = 2166136261; foreach (char c in i.Id) hash = unchecked((hash ^ c) * 16777619); i.RecoveryRoll = hash / ((double)uint.MaxValue + 1); }
+            if (double.IsNaN(i.RecoveryRoll) || double.IsInfinity(i.RecoveryRoll) || i.RecoveryRoll < 0 || i.RecoveryRoll >= 1) throw new InvalidOperationException("Invalid injury recovery roll.");
+        }
+        foreach (var group in unit.Injuries.Where(i => !Temporary(i)).GroupBy(i => i.Complication + ":" + (i.Complication == CompanyComplication.BodyPart ? i.Part.ToString() : "")).ToArray())
+        {
+            var first = group.First(); first.Tier = Math.Min(3, group.Sum(InjuryTier));
+            foreach (var extra in group.Skip(1).ToArray()) unit.Injuries.Remove(extra);
+        }
     }
-    internal static bool Same(Unit first, Unit second)
-    {
-        return first.PermanentInjuryImmune == second.PermanentInjuryImmune && first.Injuries.Count == second.Injuries.Count &&
-            first.Injuries.Zip(second.Injuries, (a, b) => a.Id == b.Id && a.Part == b.Part && a.Grade == b.Grade && a.DaysRemaining == b.DaysRemaining && a.Treated == b.Treated).All(equal => equal);
-    }
+    internal static bool Same(Unit first, Unit second) => first.PermanentInjuryImmune == second.PermanentInjuryImmune && first.Injuries.Count == second.Injuries.Count &&
+        first.Injuries.Zip(second.Injuries, (a, b) => a.Id == b.Id && a.Part == b.Part && a.Grade == b.Grade && a.DaysRemaining == b.DaysRemaining &&
+            a.Treated == b.Treated && a.Tier == b.Tier && a.Complication == b.Complication && a.RecoveryRoll == b.RecoveryRoll).All(equal => equal);
 }
 
 internal sealed class CompanyDailyRecovery : ICompanyDailySystem
@@ -154,9 +231,11 @@ internal sealed class CompanyDailyRecovery : ICompanyDailySystem
     static void Recover(Unit unit, double rate, int progress)
     {
         if (unit.Digested || unit.Type == UnitType.Summon) return;
-        unit.Health = Math.Min(unit.MaxHealth, unit.Health + Math.Max(1, (int)Math.Ceiling(unit.MaxHealth * rate)));
-        unit.RestoreManaPct(.6f); // Carry forward the original Army.Refresh daily mana rate, without its empire side effects.
+        CompanyInjuries.DailyComplication(unit);
         CompanyInjuries.Recover(unit, progress);
+        int healing = Math.Max(1, (int)Math.Ceiling(unit.MaxHealth * rate) - CompanyInjuries.RecoveryPenalty(unit));
+        unit.Health += Math.Max(0, Math.Min(healing, unit.HealingCeiling - unit.Health));
+        unit.RestoreManaPct(.6f); // Carry forward the original Army.Refresh daily mana rate, without its empire side effects.
     }
 }
 internal sealed class CompanySparring : ICompanyDailySystem
