@@ -1,4 +1,4 @@
-// Modified for the VoreWar mercenary-company conversion.
+﻿// Modified for the VoreWar mercenary-company conversion.
 // 2026-10-30: Filter trait summons and legacy building reinforcements before constructing units (spec 03A2).
 // 2026-10-31: Reject direct legacy campaign battle setup before tactical state changes (spec 05A3A).
 // 2026-10-31: Retire campaign reincarnation/village-copy returns and post-battle soldier replacement (spec 05A3B1).
@@ -15,6 +15,7 @@
 // 2026-11-03: Resume tactical snapshots without replaying setup and autosave settled turn boundaries (spec 19).
 // 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
+// 2026-11-04: Sequence move reactions, commit Undo, guard save/input and show threatened path steps (spec 30).
 using LegacyAI;
 using System;
 using System.Collections.Generic;
@@ -246,6 +247,7 @@ public class TacticalMode : SceneBase
 
         set
         {
+            if (Opportunities.Busy) return;
             if (value != 0 && tiles != null && SelectedUnit != null)
             {
                 if (TacticalUtilities.TileContainsMoreThanOneUnit(SelectedUnit.Position.x, SelectedUnit.Position.y))
@@ -328,6 +330,7 @@ public class TacticalMode : SceneBase
 
         set
         {
+            if (Opportunities.Busy) return;
             if (tiles != null && _selectedUnit != null)
             {
                 if (TacticalUtilities.TileContainsMoreThanOneUnit(_selectedUnit.Position.x, _selectedUnit.Position.y) || TacticalUtilities.OpenTile(new Vec2i(_selectedUnit.Position.x, _selectedUnit.Position.y), null))
@@ -357,9 +360,20 @@ public class TacticalMode : SceneBase
 
     }
 
+    internal readonly OpportunityAttacks Opportunities = new OpportunityAttacks();
+
+    internal void CommitOpportunityMovement(Actor_Unit actor, bool settled, bool interrupted = false)
+    {
+        if (interrupted && SelectedUnit == actor) queuedPath = null;
+        if (SelectedUnit != actor) return;
+        startingLocation = null;
+        if (settled) PlaceUndoMarker();
+        RebuildInfo();
+    }
+
     void PlaceUndoMarker()
     {
-        if (SelectedUnit == null)
+        if (SelectedUnit == null || Opportunities.Busy)
             return;
         startingLocation = SelectedUnit.Position;
         startingMP = SelectedUnit.Movement;
@@ -367,7 +381,7 @@ public class TacticalMode : SceneBase
 
     void UndoMovement()
     {
-        if (SelectedUnit == null)
+        if (SelectedUnit == null || startingLocation == null || Opportunities.Busy || !OpportunityAttacks.CanAct(SelectedUnit))
             return;
         SelectedUnit.Movement = startingMP;
         Translator.SetTranslator(SelectedUnit.UnitSprite.transform, SelectedUnit.Position, startingLocation, .2f, State.GameManager.TacticalMode.IsPlayerTurn || PseudoTurn);
@@ -847,10 +861,11 @@ public class TacticalMode : SceneBase
 
         RefreshAIIfNecessary();
 
-        while (!VictoryCheck() && currentTurn < 2000)
+        while ((Opportunities.Busy || !VictoryCheck()) && currentTurn < 2000)
         {
             if (waitingForDialog)
                 return;
+            if (!Opportunities.Advance(0)) continue;
             if (DirtyPack)
                 UpdateAreaTraits();
             if (currentAI.RunAI() == false)
@@ -981,6 +996,7 @@ Turns: {currentTurn}
 
     void GeneralSetup()
     {
+        Opportunities.Reset();
         if (Log == null)
         {
             Log = new TacticalMessageLog();
@@ -1201,6 +1217,7 @@ Turns: {currentTurn}
 
     void Import(TacticalData data)
     {
+        Opportunities.Reset();
         units = data.units;
         armies = data.armies;
         village = data.village;
@@ -2387,7 +2404,7 @@ Turns: {currentTurn}
         }
     }
 
-    internal bool CanSaveCompanyBattle => !battleFinished && !waitingForDialog && queuedPath == null && IsPlayerTurn &&
+    internal bool CanSaveCompanyBattle => !battleFinished && !waitingForDialog && !Opportunities.Busy && queuedPath == null && IsPlayerTurn &&
         !PseudoTurn && !RunningFriendlyAI && foreignAI == null && !SpectatorMode && !turboMode;
     void SaveCompanyTurn()
     {
@@ -2400,12 +2417,13 @@ Turns: {currentTurn}
         }
     }
 
-    bool ButtonsInteractable => (IsPlayerTurn || PseudoTurn) == true && (RunningFriendlyAI || foreignAI != null) == false && queuedPath == null && paused == false;
+    bool ButtonsInteractable => (IsPlayerTurn || PseudoTurn) == true && (RunningFriendlyAI || foreignAI != null) == false && queuedPath == null && !Opportunities.Busy && paused == false;
 
 
 
     public void ButtonCallback(int ID)
     {
+        if (Opportunities.Busy) return;
         if (battleFinished) return;
         RightClickMenu.CloseAll();
         if (ButtonsInteractable)
@@ -2755,7 +2773,7 @@ Turns: {currentTurn}
 
     void UpdateStatus(float dt)
     {
-        if (VictoryCheck()) return;
+        if (!Opportunities.Busy && VictoryCheck()) return;
         if (SpectatorMode) RunningFriendlyAI = true;
 
         Translator?.UpdateLocation();
@@ -2863,6 +2881,9 @@ Turns: {currentTurn}
                 }
             }
         }
+        // Keep portraits, hit effects and attack animations updating while the
+        // transaction blocks further commands, movement and turn processing.
+        if (!Opportunities.Advance(dt)) return;
         if (waitingForDialog)
             return;
         var foreignUnits = units.Where(unit => unit.Unit.Side == activeSide && !TacticalUtilities.IsUnitControlledByPlayer(unit.Unit) && unit.Movement > 0).ToList();
@@ -2960,7 +2981,7 @@ Turns: {currentTurn}
                         queuedPath.RemoveAt(0);
                         RebuildInfo();
                     }
-                    else
+                    else if (!Opportunities.Busy)
                         queuedPath = null;
 
                 }
@@ -3215,6 +3236,8 @@ Turns: {currentTurn}
         }
     }
 
+    int pathOpportunityCount;
+
     private void CheckPath(Vec2i mouseLocation)
     {
         if (ActionMode != 5)
@@ -3227,7 +3250,11 @@ Turns: {currentTurn}
             return;
 
         if (currentPathDestination != null && mouseLocation.Matches(currentPathDestination))
+        {
+            if (pathOpportunityCount > 0) StatusUI.HitRate.text = "Opportunity attacks: " + pathOpportunityCount + " (orange steps)";
             return;
+        }
+        pathOpportunityCount = 0;
         if (TacticalUtilities.OpenTile(mouseLocation, SelectedUnit) == false)
             return;
         currentPathDestination = mouseLocation;
@@ -3237,10 +3264,18 @@ Turns: {currentTurn}
             return;
         int remainingMP = SelectedUnit.Movement;
 
+        Vec2i departure = SelectedUnit.Position;
+        int reactions = 0;
         for (int i = 0; i < path.Count; i++)
         {
-            remainingMP -= TacticalTileInfo.TileCost(new Vec2(path[i].X, path[i].Y));
-            if (remainingMP > 1)
+            bool threatened = OpportunityAttacks.Threats(SelectedUnit, departure).Any();
+            int stepCost = OpportunityAttacks.MoveCost(SelectedUnit, path[i]);
+            if (remainingMP >= stepCost) reactions += OpportunityAttacks.Threats(SelectedUnit, departure).Count();
+            remainingMP -= stepCost;
+            departure = new Vec2i(path[i].X, path[i].Y);
+            if (threatened && remainingMP >= 0)
+                arrowManager.PlaceNode(new Color(1f, .5f, .1f), departure);
+            else if (remainingMP > 1)
                 arrowManager.PlaceNode(Color.green, new Vec2i(path[i].X, path[i].Y));
             else if (remainingMP == 1)
                 arrowManager.PlaceNode(Color.yellow, new Vec2i(path[i].X, path[i].Y));
@@ -3251,6 +3286,8 @@ Turns: {currentTurn}
 
         }
 
+        pathOpportunityCount = reactions;
+        if (reactions > 0) StatusUI.HitRate.text = "Opportunity attacks: " + reactions + " (orange steps)";
         UpdateMovementGrid();
         UpdateAttackGrid(mouseLocation);
 
@@ -3269,7 +3306,7 @@ Turns: {currentTurn}
             StatusUI.MeleeButton.interactable = SelectedUnit.BestMelee != null || SelectedUnit.BestRanged != null;
             StatusUI.RangedButton.interactable = SelectedUnit.BestRanged != null;
             StatusUI.VoreButton.interactable = SelectedUnit.Unit.Predator;
-            StatusUI.UndoMovement.interactable = startingLocation != null && (startingLocation != SelectedUnit.Position || startingMP > SelectedUnit.Movement);
+            StatusUI.UndoMovement.interactable = !Opportunities.Busy && startingLocation != null && (startingLocation != SelectedUnit.Position || startingMP > SelectedUnit.Movement);
             if (voreTypes.Count == 1)
             {
                 var type = voreTypes[0];
@@ -3390,7 +3427,14 @@ Turns: {currentTurn}
 
     void ProcessMovement(Actor_Unit unit, int moveCode)
     {
-        if (unit.Move(moveCode, tiles))
+        bool moved = unit.Move(moveCode, tiles);
+        if (!moved && Opportunities.Busy)
+        {
+            var tile = Opportunities.Destination;
+            queuedPath = new List<PathNode> { new PathNode(tile.x, tile.y) };
+            return;
+        }
+        if (moved)
         {
             RemoveHitPercentages();
             RebuildInfo();
@@ -3412,7 +3456,7 @@ Turns: {currentTurn}
     void ProcessLeftClick(int x, int y)
     {
         RightClickMenu.CloseAll();
-        if ((!IsPlayerTurn && !PseudoTurn) || queuedPath != null)
+        if ((!IsPlayerTurn && !PseudoTurn) || queuedPath != null || Opportunities.Busy)
             return;
 
 
@@ -3612,7 +3656,7 @@ Turns: {currentTurn}
 
     void ProcessRightClick(int x, int y)
     {
-        if (queuedPath != null)
+        if (queuedPath != null || Opportunities.Busy)
             return;
 
         Vec2i clickLocation = new Vec2i(x, y);
@@ -3755,6 +3799,7 @@ Turns: {currentTurn}
 
     void EndTurn()
     {
+        if (Opportunities.Busy) return;
         if (battleFinished) return;
         if (waitingForDialog)
             return;
@@ -4103,6 +4148,12 @@ Turns: {currentTurn}
             PausedText.SetActive(paused);
         }
 
+        if (Opportunities.Busy)
+        {
+            if (!paused) UpdateStatus(Time.deltaTime);
+            return;
+        }
+
         if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKeyDown(KeyCode.Z))
         {
             UndoMovement();
@@ -4196,6 +4247,7 @@ Turns: {currentTurn}
 
     public override void CleanUp()
     {
+        Opportunities.Reset();
         ActionMode = 0;
         autoAdvancing = false;
         turboMode = false;

@@ -7,6 +7,8 @@
 // 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 // 2026-11-03: Implement four active stats and agreed combat rules (spec 29).
+// 2026-11-04: Reassess reaction-aware routes, same-turn charges and interrupted movement actions (spec 30).
+// 2026-11-04: Preserve the final AP for reachable melee attacks and execute completed plans before ranged replanning (spec 30 feedback).
 using OdinSerializer;
 using System;
 using System.Collections.Generic;
@@ -243,8 +245,14 @@ public abstract class TacticalAI : ITacticalAI
             TurnAI();
             currentTurn = State.GameManager.TacticalMode.currentTurn;
         }
+        if (path != null && !OpportunityAttacks.CanAct(path.Actor)) path = null;
         foreach (Actor_Unit actor in actors)
-        {            
+        {
+            if (actor.Unit.Side == AISide && !OpportunityAttacks.CanAct(actor))
+            {
+                actor.ClearMovement();
+                continue;
+            }
             if (State.World.IsNight)
             {
                 int unitSightRange = Config.DefualtTacticalSightRange + actor.Unit.TraitBoosts.SightRangeBoost;
@@ -284,30 +292,35 @@ public abstract class TacticalAI : ITacticalAI
                         continue;
                     }
                     Vec2i newLoc = new Vec2i(path.Path[0].X, path.Path[0].Y);
-                    path.Path.RemoveAt(0);
                     if (actor.Movement == 1 && TacticalUtilities.OpenTile(newLoc.x, newLoc.y, actor) == false)
                     {
                         actor.Movement = 0;
                         return true;
                     }
 
-                    if (actor.MoveTo(newLoc, tiles, (State.GameManager.TacticalMode.RunningFriendlyAI ? Config.TacticalFriendlyAIMovementDelay : Config.TacticalAIMovementDelay)) == false)
+                    // Reassess the remaining route after every step/reaction. Never
+                    // execute a destination action just because movement was blocked.
+                    if (!State.GameManager.TacticalMode.Opportunities.Busy && !retreating && !OpportunityAttacks.RouteAllowed(actor, path.Path, path.ChargeTarget))
                     {
-                        //Can't move -- most likely a multiple movement point tile when on low MP
-                        path.Action?.Invoke();
-                        actor.Movement = 0;
                         path = null;
                         return true;
                     }
-                    if (actor.Movement == 1 && IsRanged(actor) && TacticalUtilities.TileContainsMoreThanOneUnit(actor.Position.x, actor.Position.y) == false)
+                    if (actor.MoveTo(newLoc, tiles, (State.GameManager.TacticalMode.RunningFriendlyAI ? Config.TacticalFriendlyAIMovementDelay : Config.TacticalAIMovementDelay)) == false)
                     {
+                        if (State.GameManager.TacticalMode.Opportunities.Busy) return true;
                         path = null;
+                        return true;
                     }
-                    else if (path.Path.Count == 0 || actor.Movement == 0)
+                    path.Path.RemoveAt(0);
+                    if (path.Path.Count == 0 || actor.Movement == 0)
                     {
-                        path.Action?.Invoke();
+                        if (path.Path.Count == 0 && actor.Movement > 0 && OpportunityAttacks.CanAct(actor)) path.Action?.Invoke();
                         if (path.Action == null)
                             actor.Movement = 0;
+                        path = null;
+                    }
+                    else if (actor.Movement == 1 && IsRanged(actor) && TacticalUtilities.TileContainsMoreThanOneUnit(actor.Position.x, actor.Position.y) == false)
+                    {
                         path = null;
                     }
                     return true;
@@ -316,6 +329,7 @@ public abstract class TacticalAI : ITacticalAI
                 {
                     if (onlyForeignTroopsLeft)
                         HandleLeftoverForeigns(actor);
+                    if (!retreating && this is StandardTacticalAI && TryOpportunityCharge(actor)) return true;
                     GetNewOrder(actor);
                     return true; 
                 }
@@ -778,21 +792,50 @@ public abstract class TacticalAI : ITacticalAI
         }
     }
 
+    // Prefer a safe route. Risk is a utility check, never extra AP/terrain cost.
     protected virtual void MoveToAndAction(Actor_Unit actor, Vec2i p, int howClose, int maxDistance, Action action)
     {
-        var tempPath = TacticalPathfinder.GetPath(actor.Position, p, howClose, actor, maxDistance);
-        if (tempPath == null || tempPath.Count == 0)
-            foundPath = false;
-        else
+        var tempPath = TacticalPathfinder.GetPath(actor.Position, p, howClose, actor, maxDistance, avoidOpportunity: true);
+        Actor_Unit target = action == null ? null : actors.FirstOrDefault(u => u.Position.Matches(p) &&
+            OpportunityAttacks.CanAct(u) && TacticalUtilities.TreatAsHostile(actor, u));
+        int safeCost = tempPath == null ? int.MaxValue : tempPath.Sum(n => OpportunityAttacks.MoveCost(actor, n));
+        if (tempPath == null || (target != null && safeCost >= actor.Movement))
         {
-            foundPath = true;
-            path = new AIPlottedPath
-            {
-                Actor = actor,
-                Path = tempPath,
-                Action = action
-            };
+            var direct = TacticalPathfinder.GetPath(actor.Position, p, howClose, actor, maxDistance);
+            if (direct != null && OpportunityAttacks.RouteAllowed(actor, direct, target)) tempPath = direct;
         }
+        foundPath = tempPath != null && tempPath.Count > 0;
+        if (foundPath) path = new AIPlottedPath { Actor = actor, Path = tempPath, Action = action, ChargeTarget = target };
+    }
+
+    bool TryOpportunityCharge(Actor_Unit actor)
+    {
+        if (!OpportunityAttacks.Threats(actor, actor.Position).Any() || actor.Movement < 2) return false;
+        float currentPayoff = actors.Where(t => OpportunityAttacks.CanAct(t) &&
+            TacticalUtilities.TreatAsHostile(actor, t) && t.Position.GetNumberOfMovesDistance(actor.Position) == 1)
+            .Select(t => OpportunityAttacks.ExpectedDamage(actor, t)).DefaultIfEmpty(0).Max();
+        AIPlottedPath best = null;
+        float bestValue = currentPayoff;
+        foreach (var target in actors.Where(t => OpportunityAttacks.CanAct(t) &&
+            TacticalUtilities.TreatAsHostile(actor, t) && (t.InSight || !State.World.IsNight) &&
+            OpportunityAttacks.IsPriorityTarget(t) && t.Position.GetNumberOfMovesDistance(actor.Position) > 1 &&
+            t.Position.GetNumberOfMovesDistance(actor.Position) <= actor.Movement))
+        {
+            var route = TacticalPathfinder.GetPath(actor.Position, target.Position, 1, actor, actor.Movement);
+            if (!OpportunityAttacks.CanAffordCharge(actor, target, route)) continue;
+            int cost;
+            float risk = OpportunityAttacks.RouteRisk(actor, actor.Position, route, int.MaxValue, out cost);
+            float value = 1.75f * OpportunityAttacks.ExpectedDamage(actor, target) - risk;
+            if (value <= bestValue) continue;
+            bestValue = value;
+            var captured = target;
+            best = new AIPlottedPath { Actor = actor, Path = route, ChargeTarget = target,
+                Action = () => { if (OpportunityAttacks.CanAct(captured) && TacticalUtilities.TreatAsHostile(actor, captured)) actor.Attack(captured, false); } };
+        }
+        if (best == null) return false;
+        path = best;
+        foundPath = true;
+        return true;
     }
 
     protected virtual int CheckMoveTo(Actor_Unit actor, Vec2i actorPosition, Vec2i p, int howClose, int maxDistance)
@@ -816,6 +859,8 @@ public abstract class TacticalAI : ITacticalAI
     protected virtual bool RandomWalk(Actor_Unit actor)
     {
 
+        // Aimless movement is not a reason to accept a reaction (or to kite).
+        if (OpportunityAttacks.Threats(actor, actor.Position).Any()) return false;
         int r = State.Rand.Next(8);
         int d = 8;
         while (!actor.Move(r, tiles))
@@ -1089,11 +1134,16 @@ public abstract class TacticalAI : ITacticalAI
             }
             else
             {
-                if (targets[0].actor.Position.GetNumberOfMovesDistance(position) < ap) //discard the clearly impossible
+                // Reaching the adjacent attack tile costs one fewer step than
+                // reaching the enemy itself. A 2-AP actor can move once and attack.
+                if (targets[0].actor.Position.GetNumberOfMovesDistance(position) <= ap)
                 {
-                    int distance = CheckMoveTo(actor, position, targets[0].actor.Position, 1, ap);
-                    if (distance < ap && distance >= 0)
-                        return distance + 1;
+                    var route = TacticalPathfinder.GetPath(position, targets[0].actor.Position, 1, actor, ap);
+                    if (route != null && route.Count > 0)
+                    {
+                        int cost = route.Sum(node => OpportunityAttacks.MoveCost(actor, node));
+                        if (cost < ap) return cost + 1;
+                    }
                 }
             }
             targets.RemoveAt(0);
@@ -1128,7 +1178,7 @@ public abstract class TacticalAI : ITacticalAI
             }
             else
             {
-                if (targets[0].actor.Position.GetNumberOfMovesDistance(actor.Position) < actor.Movement && (targets[0].actor.InSight || !State.World.IsNight)) //discard the clearly impossible
+                if (targets[0].actor.Position.GetNumberOfMovesDistance(actor.Position) <= actor.Movement && (targets[0].actor.InSight || !State.World.IsNight)) //discard the clearly impossible
                 {
                     if ((State.Rand.Next(2) == 0) && TacticalActionList.TargetedDictionary[SpecialAction.DireInfection].AppearConditional(actor))
                         MoveToAndAction(actor, targets[0].actor.Position, 1, actor.Movement, () => actor.DireInfection(targets[0].actor));
@@ -1138,7 +1188,7 @@ public abstract class TacticalAI : ITacticalAI
                         MoveToAndAction(actor, targets[0].actor.Position, 1, actor.Movement, () => actor.AllInVore(targets[0].actor, SpecialAction.None, true));
                     else
                         MoveToAndAction(actor, targets[0].actor.Position, 1, actor.Movement, () => actor.Attack(targets[0].actor, false));
-                    if (foundPath && path.Path.Count() < actor.Movement)
+                    if (foundPath && path.Path.Sum(node => OpportunityAttacks.MoveCost(actor, node)) < actor.Movement)
                         return;
                 }
             }

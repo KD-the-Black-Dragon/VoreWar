@@ -1,6 +1,6 @@
 # Opportunity attacks — feasibility and proposed implementation
 
-Recorded 2026-11-03. **Planning only; no implementation authorized.** The user accepted the Spec29 tactical spacing/hover corrections before raising this feature.
+Initially recorded 2026-11-03 as planning only. **Implementation requested and completed 2026-11-04; see implementation and handoff sections below.** The user accepted the Spec29 tactical spacing/hover corrections before raising this feature.
 
 ## Requested behavior
 
@@ -86,3 +86,36 @@ One feature milestone: shared reaction resolution/free melee context and interru
 Future validation should cover: zero-AP reactors; one/multiple enemies; diagonal and still-adjacent steps; repeated steps with no cap; invalid movement; normal hit/miss/graze/critical parity and weapons/unarmed; downed/contained/incapacitated exclusion; mover/reactor incapacitation and displaced targets; approved special/forced movement; player/AI/turbo equivalence; no recursive movement chains; Undo button/hotkeys/implicit paths and selection/save-load; occupied-tile interruption; and pending reactions blocking save/turn transitions. No test framework or new automated checks are authorized by this planning request.
 
 No source, scenes, prefabs, assets, saves or settings changed during this feasibility review. No build, tests or graphical playtest run. The accepted Spec29 review build remains `Builds/Warband-Review-20261103-4b5894ed/Win64/VoreWar.exe`.
+
+
+## Implementation authorized — 2026-11-04
+
+The user requested implementation of the agreed design. This section supersedes the planning-only status above. Implemented shared pre-step reaction transactions, ordinary free melee attack context, no automatic reaction knockback, per-reaction Undo commitment through the resulting step, safe/charge AI routes, final-result log labels and orange threatened-route feedback. Actor-list order is deterministic and repeated threatened departures trigger again without a per-turn cap. Visible attacks are separated by at least the existing one-second attack animation interval; auto-resolve settles the same reactions without that wait.
+
+Three independent target checks remain strict: INT>STR, AGI>STR, or sapient without an actually equipped melee weapon (not natural fallback). Risk checks reserve at least one AP for the endpoint melee attack, reject expected incoming damage >=60% of current HP and require immediate damage payoff to justify risk; priority targets receive provisional1.75x utility. Risk counts every enemy on every departure step. This tuning is provisional, not a new role restriction or reaction cap. Safe movement toward distant targets remains available, and existing retreat paths may deliberately accept reactions. Aimless random movement while engaged is suppressed.
+
+Occupied-tile policy: do not enter an occupied flying/pass-through transit tile if either its departure or arrival tile is threatened. Otherwise a downed interruption could strand overlapping units and the old automatic Undo would rewind combat. Open threatened tiles remain legal; unthreatened occupied transit remains supported. Forced knockback, direct pounces/leaps/teleports/regurgitation/setup and edge Retreat remain outside move-command reactions.
+
+Sources, notices and exact paths are recorded in CHANGES.md. `Logs/opportunity30-before.json` preserves the source/scene/prefab/license baseline; packet diff and build evidence are recorded separately. No new automated tests/framework or artwork are part of this milestone. No personal saves/settings accessed and no files moved/deleted. Build and player-review status will be recorded after the compilation pass.
+
+Combined player review: adjacent/diagonal/still-adjacent moves; several enemies and repeated steps; spent-AP enemies still reacting; ordinary melee weapon/unarmed hit/miss/graze/critical behavior and reaction log labels; movement stopping on downing; no Undo rerolls but later safe Undo allowed; special/forced movement exempt and no reaction knockback; useful short AI charges versus safe distant pursuit; AI: Finish Turn/Auto-resolve; settled mid-battle save/load continuing without replaying reactions.
+
+
+## Build and handoff — 2026-11-04
+
+Native Unity compilation and the final standalone build passed with exit0, with no scanned C# errors, shader errors, exceptions or new compiler warnings compared with the accepted Spec29 build. Final log: `Logs/opportunity30-review-build.log`. Review executable: `Builds/Warband-Review-20261104-46c6d405/Win64/VoreWar.exe`. Initial successful internal builds are retained; the final artifact includes keyboard-move queuing, the alternate-AI risk policy, and auto-resolve settling a pending reaction before checking for victory. No graphical/interaction playtest or automated tests were run. One combined player review is pending; the code path review is not evidence of playtested outcomes.
+
+Scope/notice review verifies exactly eight existing C# sources modified and one original helper/meta added, preserved previous modification/legal notices and scene/prefab/license hashes, with no missing source paths or external dependencies/assets. Packet diff: `Logs/opportunity30-source.diff`; result/source hashes/notices: `Logs/opportunity30-result.json`. Seven existing license/change/dependency notices packaged in the private player. Actual License4–5 reviewed; inherited attribution and version grants retained. Existing asset provenance and public-distribution/Corresponding Source gates remain unresolved separately; this build is not a public release.
+
+
+## Player feedback — final-AP melee follow-through, 2026-11-04
+
+User reports generally working opportunities, but2-AP melee-equipped Avians sometimes move once and do not attack an adjacent opponent. Source trace confirms a legacy off-by-one: CheckMelee and RunMelee require distance-to-enemy <AP; distance2/AP2 falls into movement-only pursuit, whose null endpoint action clears the remaining AP. Correct to inclusive target-tile distance and check actual route cost <AP to reserve the final point, including expensive terrain/Flight. This is not a change to Avian AP or ordinary attack cost. Also execute completed-path actions before the one-AP ranged replanning branch, so carrying a bow cannot discard a planned melee action. Short opportunity charges use the inclusive pathfinder bound, with the existing exact-cost/risk checks still authoritative. Source only at this checkpoint; graphical reproduction not claimed. Evidence Logs/opportunity30-last-ap-before.json and opportunity30-last-ap-source.diff. Native build status follows.
+
+
+Final feedback build passed native Unity compile/player build, exit0 with no scanned C#/shader errors, exceptions or new compiler warnings: `Logs/opportunity30-last-ap-build.log`. Latest review player: `Builds/Warband-Review-20261104-19b7a6be/Win64/VoreWar.exe`. Source/hash review confirms only TacticalAI.cs changed since the feedback baseline, all previous notices/scene/prefab/license hashes preserved, and seven existing notices packaged. Result: `Logs/opportunity30-last-ap-result.json`. No graphical reproduction/playtest or automated tests run. Focused pending player check: melee-equipped2-AP Avian moves one ordinary1-AP step (straight or diagonal), then attacks using the remaining1AP; repeat with dual weapons if convenient. A2-AP terrain step must still leave no AP to attack. No broad repeated opportunity/UI tests required for this correction. Existing provenance/distribution gates remain open.
+
+
+## Accepted — Spec30 opportunity attacks, 2026-11-04
+
+The user reports: "Okay, I believe this module looks good." Record the opportunity-attack milestone, including the final-AP AI correction, as accepted. Current accepted local player: `Builds/Warband-Review-20261104-19b7a6be/Win64/VoreWar.exe`. This is user acceptance, not a new agent playtest or confirmation that every optional scenario was individually exercised. Documentation only; no game source, assets, saves, settings or builds changed, and no tests run. Previous handoff requests for further module confirmation are superseded. Preserve the accepted implementation and await the user's next direction. Existing provenance/distribution review gates remain separate and open.

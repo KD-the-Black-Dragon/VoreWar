@@ -1,5 +1,9 @@
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-04: Preserve reaction steps and apply shared safe-route/charge restrictions (spec 30).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
 using System.Collections.Generic;
+using System.Linq;
 namespace LegacyAI
 {
     public class LegacyTacticalAI : ITacticalAI
@@ -15,6 +19,7 @@ namespace LegacyAI
         readonly int AISide;
         List<PathNode> path;
         Actor_Unit pathIsFor;
+        Actor_Unit chargeTarget;
 
         public StandardTacticalAI.RetreatConditions RetreatPlan
         {
@@ -51,8 +56,14 @@ namespace LegacyAI
 
         public bool RunAI()
         {
+            if (pathIsFor != null && !OpportunityAttacks.CanAct(pathIsFor)) path = null;
             foreach (Actor_Unit actor in actors)
             {
+                if (actor.Unit.Side == AISide && !OpportunityAttacks.CanAct(actor))
+                {
+                    actor.ClearMovement();
+                    continue;
+                }
                 if (actor.Targetable == true && actor.Unit.Side == AISide && actor.Movement > 0)
                 {
                     if (path != null && pathIsFor == actor)
@@ -63,11 +74,25 @@ namespace LegacyAI
                             continue;
                         }
                         Vec2i newLoc = new Vec2i(path[0].X, path[0].Y);
-                        path.RemoveAt(0);
+                        if (!State.GameManager.TacticalMode.Opportunities.Busy && !OpportunityAttacks.RouteAllowed(actor, path, chargeTarget))
+                        {
+                            path = null;
+                            actor.ClearMovement();
+                            return true;
+                        }
                         if (actor.MoveTo(newLoc, tiles, (State.GameManager.TacticalMode.RunningFriendlyAI ? Config.TacticalFriendlyAIMovementDelay : Config.TacticalAIMovementDelay)) == false)
                         {
-                            //Can't move -- most likely a multiple movement point tile when on low MP
+                            if (State.GameManager.TacticalMode.Opportunities.Busy) return true;
+                            // Blocked/interrupted; never replay the step's reactions.
                             actor.Movement = 0;
+                            path = null;
+                            return true;
+                        }
+                        path.RemoveAt(0);
+                        if (path.Count == 0 && actor.Movement > 0 && OpportunityAttacks.CanAct(chargeTarget) &&
+                            actor.Position.GetNumberOfMovesDistance(chargeTarget.Position) == 1)
+                        {
+                            actor.Attack(chargeTarget, false);
                             path = null;
                             return true;
                         }
@@ -158,29 +183,26 @@ namespace LegacyAI
 
         bool Walkto(Actor_Unit actor, Vec2i p)
         {
-            path = TacticalPathfinder.GetPath(actor.Position, p, 1, actor);
-            if (path == null || path.Count == 0)
-            {
-                return false;
-            }
-            foundPath = true;
-            return true;
+            return Walkto(actor, p, 999);
         }
 
         bool Walkto(Actor_Unit actor, Vec2i p, int maxDistance)
         {
-            path = TacticalPathfinder.GetPath(actor.Position, p, 1, actor, maxDistance);
-            if (path == null || path.Count == 0)
+            chargeTarget = actors.FirstOrDefault(t => t.Position.Matches(p) && OpportunityAttacks.CanAct(t) &&
+                TacticalUtilities.TreatAsHostile(actor, t));
+            path = TacticalPathfinder.GetPath(actor.Position, p, 1, actor, maxDistance, avoidOpportunity: true);
+            if (path == null || path.Sum(n => OpportunityAttacks.MoveCost(actor, n)) >= actor.Movement)
             {
-                return false;
+                var direct = TacticalPathfinder.GetPath(actor.Position, p, 1, actor, maxDistance);
+                if (direct != null && OpportunityAttacks.RouteAllowed(actor, direct, chargeTarget)) path = direct;
             }
-            foundPath = true;
-            return true;
+            foundPath = path != null && path.Count > 0;
+            return foundPath;
         }
-
 
         bool RandomWalk(Actor_Unit actor)
         {
+            if (OpportunityAttacks.Threats(actor, actor.Position).Any()) return false;
             int r = State.Rand.Next(8);
             int d = 8;
             while (!actor.Move(r, tiles))

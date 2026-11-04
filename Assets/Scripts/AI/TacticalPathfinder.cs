@@ -1,3 +1,6 @@
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-04: Optional reaction-free routes and safe occupied-tile transit, separate from AP costs (spec 30).
+// See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -8,7 +11,7 @@ public static class TacticalPathfinder
 {
 
 
-    internal static List<PathNode> GetPath(Vec2i origin, Vec2i destination, int howClose, Actor_Unit actor, int maxDistance = 999)
+    internal static List<PathNode> GetPath(Vec2i origin, Vec2i destination, int howClose, Actor_Unit actor, int maxDistance = 999, bool avoidOpportunity = false)
     {
         if (origin.GetNumberOfMovesDistance(destination) > maxDistance) //Can't possibly get it in under this distance
             return null;
@@ -68,6 +71,12 @@ public static class TacticalPathfinder
 
 
 
+            if (avoidOpportunity && OpportunityAttacks.Threats(actor, new Vec2i(current.X, current.Y)).Any())
+            {
+                openList.Remove(current);
+                continue;
+            }
+
             // add the current square to the closed list
             closedList.Add(current);
 
@@ -84,6 +93,10 @@ public static class TacticalPathfinder
 
             foreach (var adjacentSquare in adjacentSquares)
             {
+                // A reaction-interrupted actor must not be stranded on another actor.
+                if (!TacticalUtilities.OpenTile(adjacentSquare.X, adjacentSquare.Y, actor) &&
+                    (OpportunityAttacks.Threats(actor, new Vec2i(current.X, current.Y)).Any() ||
+                     OpportunityAttacks.Threats(actor, new Vec2i(adjacentSquare.X, adjacentSquare.Y)).Any())) continue;
                 int additionalCost = flight ? 0 : (TacticalTileInfo.TileCost(new Vec2(adjacentSquare.X, adjacentSquare.Y)) - 1);
                 // if this adjacent square is already in the closed list, ignore it
                 if (closedList.FirstOrDefault(l => l.X == adjacentSquare.X && l.Y == adjacentSquare.Y) != null)

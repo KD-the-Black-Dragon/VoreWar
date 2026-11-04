@@ -3,6 +3,7 @@
 // Upstream narrative contributions credited to Tatltuae are retained in this notice.
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 // 2026-11-03: Implement four active stats and agreed combat rules (spec 29).
+// 2026-11-04: Persist and label final opportunity-attack results in the combat log (spec 30).
 using OdinSerializer;
 using System;
 using System.Collections.Generic;
@@ -60,6 +61,7 @@ public class TacticalMessageLog
         [OdinSerialize]
         internal string Extra;
         [OdinSerialize] internal string WeaponResult;
+        [OdinSerialize] internal bool Opportunity;
     }
 
 
@@ -362,7 +364,7 @@ public class TacticalMessageLog
         }
         if (ShowOdds && action.Odds > 0)
             message += $" ({Math.Round(action.Odds * 100f, 2)}% success)";
-        return message;
+        return action.Opportunity ? "Opportunity attack: " + message : message;
     }
 
     private string SpellName(EventLog action)
@@ -379,6 +381,7 @@ public class TacticalMessageLog
         events.Add(new EventLog
         {
             Type = MessageLogEvent.Hit,
+            Opportunity = OpportunityAttacks.Resolving,
             Unit = Attacker,
             Damage = damage,
             Target = Defender,
@@ -394,6 +397,7 @@ public class TacticalMessageLog
         events.Add(new EventLog
         {
             Type = MessageLogEvent.Miss,
+            Opportunity = OpportunityAttacks.Resolving,
             Unit = Attacker,
             Target = Defender,
             Weapon = weapon,
@@ -710,6 +714,7 @@ public class TacticalMessageLog
         events.Add(new EventLog
         {
             Type = MessageLogEvent.Block,
+            Opportunity = OpportunityAttacks.Resolving,
             Unit = Attacker,
             Damage = damage,
             Target = Defender,

@@ -17,6 +17,7 @@
 // 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 // 2026-11-03: Implement four active stats and agreed combat rules (spec 29).
+// 2026-11-04: Free melee reactions before move commands, without reaction knockback or AP spending (spec 30).
 using OdinSerializer;
 using System;
 using System.Collections.Generic;
@@ -1058,7 +1059,7 @@ public class Actor_Unit
         return Mathf.Clamp01(odds / 100 + (Unit.GetStatusEffect(StatusEffectType.Marked)?.Strength ?? 0) * .01f);
     }
 
-    public int WeaponDamageAgainstTarget(Actor_Unit target, bool ranged, float multiplier = 1, bool forceBite = false)
+    public int WeaponDamageAgainstTarget(Actor_Unit target, bool ranged, float multiplier = 1, bool forceBite = false, bool opportunity = false)
     {
         int damage;
         if (ranged)
@@ -1168,7 +1169,7 @@ public class Actor_Unit
             {
                 damageScalar *= 1 - target.Unit.GetStatusEffect(StatusEffectType.DivineShield).Strength;
             }
-            if (Unit.HasTrait(Traits.ForcefulBlow))
+            if (!opportunity && Unit.HasTrait(Traits.ForcefulBlow))
                 TacticalUtilities.CheckKnockBack(this, target, ref damageScalar);
             if (Unit.HasTrait(Traits.SenseWeakness))
             {
@@ -1638,8 +1639,10 @@ public class Actor_Unit
         return true;
     }
 
-    public bool Attack(Actor_Unit target, bool ranged, bool forceBite = false, float damageMultiplier = 1, bool canKill = true, bool canRecurse = true)
+    public bool Attack(Actor_Unit target, bool ranged, bool forceBite = false, float damageMultiplier = 1, bool canKill = true, bool canRecurse = true, bool opportunity = false)
     {
+        bool freeAttack = opportunity || OpportunityAttacks.Resolving;
+        if (freeAttack && (!OpportunityAttacks.CanAct(this) || !OpportunityAttacks.CanAct(target))) return false;
         if (Surrendered || target == null || target.Surrendered && !forceBite) return false;
         Weapon weapon;
         if (ranged)
@@ -1648,7 +1651,7 @@ public class Actor_Unit
             weapon = BestMelee;
         if (forceBite)
             weapon = State.World.ItemRepository.Bite;
-        if (Movement == 0 || weapon == null)
+        if ((!freeAttack && Movement == 0) || weapon == null)
         {
             return false;
         }
@@ -1660,7 +1663,7 @@ public class Actor_Unit
             float chance = WillCheckOdds(this, target);
             if (State.Rand.NextDouble() < chance)
             {
-                Movement = 0;
+                if (!freeAttack) Movement = 0;
                 UnitSprite.DisplayDazzle();
                 Unit.ApplyStatusEffect(StatusEffectType.Shaken, 0.3f, 1);
                 TacticalUtilities.Log.RegisterDazzle(Unit, target.Unit, chance);
@@ -1677,7 +1680,7 @@ public class Actor_Unit
             haplessChance += levelDiff / 20;
             if (haplessChance >= State.Rand.NextDouble())
             {
-                Movement = 0;
+                if (!freeAttack) Movement = 0;
                 TacticalUtilities.ForceFeed(this, target, false);
                 return false;
             }
@@ -1702,16 +1705,18 @@ public class Actor_Unit
 
                 int rangedattacks = Unit.TraitBoosts.RangedAttacks;
                 rangedattacks += extraAttacks + Unit.TempBoosts.ExtraAttacks;
-                if (rangedattacks > 1)
+                if (!freeAttack)
                 {
-                    int movementFraction = 1 + MaxMovement() / rangedattacks;
-                    if (Movement > movementFraction)
-                        Movement -= movementFraction;
-                    else
-                        Movement = 0;
+                    if (rangedattacks > 1)
+                    {
+                        int movementFraction = 1 + MaxMovement() / rangedattacks;
+                        if (Movement > movementFraction)
+                            Movement -= movementFraction;
+                        else
+                            Movement = 0;
+                    }
+                    else Movement = 0;
                 }
-                else
-                    Movement = 0;
                 int remainingHealth = target.Unit.Health;
                 float resolvedChance;
                 int result = ResolveWeaponHit(target, true, out resolvedChance);
@@ -1803,22 +1808,24 @@ public class Actor_Unit
                     meleeAttacks++;
                 if (Unit.HasTrait(Traits.WildFury) && Unit.GetBestMelee() == State.World.ItemRepository.Claws)
                     meleeAttacks++;
-                if (meleeAttacks > 1)
+                if (!freeAttack)
                 {
-                    int movementFraction = 1 + MaxMovement() / meleeAttacks;
-                    if (Movement > movementFraction)
-                        Movement -= movementFraction;
-                    else
-                        Movement = 0;
+                    if (meleeAttacks > 1)
+                    {
+                        int movementFraction = 1 + MaxMovement() / meleeAttacks;
+                        if (Movement > movementFraction)
+                            Movement -= movementFraction;
+                        else
+                            Movement = 0;
+                    }
+                    else Movement = 0;
                 }
-                else
-                    Movement = 0;
                 int remainingHealth = target.Unit.Health;
                 float resolvedChance;
                 int result = ResolveWeaponHit(target, false, out resolvedChance);
                 grazebool = result == 3; critbool = result == 2;
                 damageMultiplier *= ResultDamageMultiplier(target, result);
-                int damage = WeaponDamageAgainstTarget(target, false, multiplier: damageMultiplier, forceBite);
+                int damage = WeaponDamageAgainstTarget(target, false, multiplier: damageMultiplier, forceBite: forceBite, opportunity: freeAttack);
 
                 if (Unit.GetStatusEffect(StatusEffectType.Sharpness) != null)
                     damage += damage * (Unit.GetStatusEffect(StatusEffectType.Sharpness).Duration / 50);
@@ -1832,7 +1839,7 @@ public class Actor_Unit
                     {
                         blocked = true;
                         damage /= 2;
-                        Movement = 0;
+                        if (!freeAttack) Movement = 0;
                     }
                 }
                 if (Unit.HasTrait(Traits.SweepingStrikes) && canRecurse)
@@ -1841,10 +1848,11 @@ public class Actor_Unit
                     var inrange = TacticalUtilities.UnitsWithinTiles(target.Position, 1).Where(u => u != target && u != this).ToList();
                     foreach (var sweepTarget in inrange)
                     {
-                        Movement = 1; //Grant movement for each target
-                        Attack(sweepTarget, false, false, 0.33f, true, false);
+                        if (!freeAttack) Movement = 1; // Ordinary sweep AP only; reactions never grant/restore AP.
+                        if (freeAttack && !OpportunityAttacks.CanAct(this)) break;
+                        Attack(sweepTarget, false, false, 0.33f, true, false, freeAttack);
                     }
-                    Movement = movementholder; //Reset AP
+                    if (!freeAttack && !Surrendered && SelfPrey == null) Movement = movementholder; // Do not revive incapacitated attackers.
                 }
                 if (target.Defend(this, ref damage, false, out float chance, canKill, result != 0, resolvedChance))
                 {
@@ -2514,28 +2522,28 @@ public class Actor_Unit
 
 
 
-    public bool Move(int direction, TacticalTileType[,] tiles)
+    public bool Move(int direction, TacticalTileType[,] tiles, bool forced = false)
     {
         if (Surrendered) return false;
         //check if we can move in that direction
         switch (direction)
         {
             case 0:
-                return Move(0, 1, tiles);
+                return Move(0, 1, tiles, forced);
             case 1:
-                return Move(1, 1, tiles);
+                return Move(1, 1, tiles, forced);
             case 2:
-                return Move(1, 0, tiles);
+                return Move(1, 0, tiles, forced);
             case 3:
-                return Move(1, -1, tiles);
+                return Move(1, -1, tiles, forced);
             case 4:
-                return Move(0, -1, tiles);
+                return Move(0, -1, tiles, forced);
             case 5:
-                return Move(-1, -1, tiles);
+                return Move(-1, -1, tiles, forced);
             case 6:
-                return Move(-1, 0, tiles);
+                return Move(-1, 0, tiles, forced);
             case 7:
-                return Move(-1, 1, tiles);
+                return Move(-1, 1, tiles, forced);
 
         }
 
@@ -2581,36 +2589,46 @@ public class Actor_Unit
     }
 
 
-    internal bool MoveTo(Vec2i destination, TacticalTileType[,] tiles, float delay)
+    internal bool MoveTo(Vec2i destination, TacticalTileType[,] tiles, float delay, bool forced = false)
     {
-        if (Surrendered) return false;
-        if (destination.x < 0 || destination.y < 0 || destination.x > tiles.GetUpperBound(0) || destination.y > tiles.GetUpperBound(1))
-            return false;
-        int cost = TacticalTileInfo.TileCost(new Vec2(destination.x, destination.y));
-        if (Unit.HasTrait(Traits.Flight))
-            cost = 1;
-        if (Movement < cost)
-            return false;
-        if ((TacticalUtilities.PassableOpenTile(destination, this) && ((Unit.HasTrait(Traits.PassThrough) && Movement > 1) || (Unit.HasTrait(Traits.Blitz) && Movement > 1) || (Unit.HasTrait(Traits.SpectralStep) && Movement > 1))) || (Unit.HasTrait(Traits.Flight) && Movement > 1) || TacticalUtilities.OpenTile(destination, this))
+        var battle = State.GameManager.TacticalMode;
+        var reactions = battle.Opportunities;
+        bool completing = reactions.Matches(this, destination);
+        if (reactions.Busy && (!completing || !reactions.Ready)) return false;
+        if ((!forced && !OpportunityAttacks.CanAct(this)) || Surrendered || destination.Matches(Position) ||
+            destination.GetNumberOfMovesDistance(Position) != 1 || destination.x < 0 || destination.y < 0 ||
+            destination.x > tiles.GetUpperBound(0) || destination.y > tiles.GetUpperBound(1))
         {
-            State.GameManager.TacticalMode.Translator.SetTranslator(UnitSprite.transform, Position, destination, delay, State.GameManager.TacticalMode.IsPlayerTurn);
-            State.GameManager.TacticalMode.AITimer = delay;
-            State.GameManager.TacticalMode.DirtyPack = true;
-            Position = destination;
-            //State.GameManager.CameraCall(Position);
-            Movement -= cost;
-            return true;
+            if (completing) reactions.Finish(true);
+            return false;
         }
-        return false;
+        int cost = Unit.HasTrait(Traits.Flight) ? 1 : TacticalTileInfo.TileCost(new Vec2(destination.x, destination.y));
+        bool open = TacticalUtilities.OpenTile(destination, this);
+        bool transit = Movement > 1 && (Unit.HasTrait(Traits.Flight) ||
+            (TacticalUtilities.PassableOpenTile(destination, this) && (Unit.HasTrait(Traits.PassThrough) ||
+            Unit.HasTrait(Traits.Blitz) || Unit.HasTrait(Traits.SpectralStep))));
+        // Do not enter an occupied transit tile where a reaction could strand a
+        // downed actor. Safe, unthreatened flight/pass-through remains available.
+        if (Movement < cost || (!open && (!transit || (!forced &&
+            (OpportunityAttacks.Threats(this, destination).Any() || OpportunityAttacks.Threats(this, Position).Any())))))
+        {
+            if (completing) reactions.Finish(true);
+            return false;
+        }
+        if (!forced && !completing && reactions.Begin(this, destination)) return false;
+        battle.Translator.SetTranslator(UnitSprite.transform, Position, destination, delay, battle.IsPlayerTurn);
+        battle.AITimer = delay;
+        battle.DirtyPack = true;
+        Position = destination;
+        Movement -= cost;
+        if (completing) reactions.Finish(false);
+        return true;
     }
 
-
-
-    bool Move(int changeX, int changeY, TacticalTileType[,] tiles)
+    bool Move(int changeX, int changeY, TacticalTileType[,] tiles, bool forced = false)
     {
-        //float delay = AI ? Config.TacticalPlayerMovementDelay : Config.TacticalAIMovementDelay;
         Vec2i newLocation = new Vec2i(Position.x + changeX, Position.y + changeY);
-        return MoveTo(newLocation, tiles, Config.TacticalPlayerMovementDelay);
+        return MoveTo(newLocation, tiles, Config.TacticalPlayerMovementDelay, forced);
     }
 
 
@@ -3203,7 +3221,7 @@ public class Actor_Unit
         critical *= TagConditionChecker.ApplyTagEffect(Unit, target.Unit, UnitTagModifierEffect.CritRateShift);
         return State.Rand.NextDouble() < Mathf.Clamp01(critical) ? 2 : 1;
     }
-    float ResultDamageMultiplier(Actor_Unit target, int result)
+    internal float ResultDamageMultiplier(Actor_Unit target, int result)
     {
         if (result == 3)
             return Config.GrazeDamageMod * Unit.TraitBoosts.Outgoing.GrazeDamageMult *

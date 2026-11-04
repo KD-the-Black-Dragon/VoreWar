@@ -8,6 +8,7 @@
 // 2026-11-01: Use retained skirmish control/hostility/visibility rules without empire diplomacy (spec 05A6).
 // 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
 // See CHANGES.md for the fork's change record and License.txt for GPL-3.0 terms.
+// 2026-11-04: Exclude forced displacement and reaction-context knockback (spec 30).
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -265,6 +266,7 @@ static class TacticalUtilities
 
     static internal void CheckKnockBack(Actor_Unit Attacker, Actor_Unit Target, ref float damage)
     {
+        if (OpportunityAttacks.Resolving) return;
         int xDiff = Target.Position.x - Attacker.Position.x;
         int yDiff = Target.Position.y - Attacker.Position.y;
         int direction = Attacker.DiffToDirection(xDiff, yDiff);
@@ -280,16 +282,17 @@ static class TacticalUtilities
 
     static internal void KnockBack(Actor_Unit Attacker, Actor_Unit Target)
     {
+        if (OpportunityAttacks.Resolving) return;
         int xDiff = Target.Position.x - Attacker.Position.x;
         int yDiff = Target.Position.y - Attacker.Position.y;
         int direction = Attacker.DiffToDirection(xDiff, yDiff);
 
         Target.Movement += 1;
-        if (Target.Move(direction, tiles))
+        if (Target.Move(direction, tiles, forced: true))
             return;
-        else if (Target.Move((direction + 1) % 8, tiles))
+        else if (Target.Move((direction + 1) % 8, tiles, forced: true))
             return;
-        else if (Target.Move((direction + 7) % 8, tiles))
+        else if (Target.Move((direction + 7) % 8, tiles, forced: true))
             return;
         Target.Movement -= 1;
 
@@ -298,6 +301,7 @@ static class TacticalUtilities
 
     static internal void CheckSpellKnockBack(Vec2i Knocker, Actor_Unit Attacker, Actor_Unit Target, ref float damage)
     {
+        if (OpportunityAttacks.Resolving) return;
         int xDiff = Target.Position.x - Knocker.x;
         int yDiff = Target.Position.y - Knocker.y;
         int direction = Attacker.DiffToDirection(xDiff, yDiff);
@@ -314,16 +318,17 @@ static class TacticalUtilities
 
     static internal void SpellKnockBack(Vec2i Knocker, Actor_Unit Attacker, Actor_Unit Target)
     {
+        if (OpportunityAttacks.Resolving) return;
         int xDiff = Target.Position.x - Knocker.x;
         int yDiff = Target.Position.y - Knocker.y;
         int direction = Attacker.DiffToDirection(xDiff, yDiff);
 
         Target.Movement += 1;
-        if (Target.Move(direction, tiles))
+        if (Target.Move(direction, tiles, forced: true))
             return;
-        else if (Target.Move((direction + 1) % 8, tiles))
+        else if (Target.Move((direction + 1) % 8, tiles, forced: true))
             return;
-        else if (Target.Move((direction + 7) % 8, tiles))
+        else if (Target.Move((direction + 7) % 8, tiles, forced: true))
             return;
         Target.Movement -= 1;
 
