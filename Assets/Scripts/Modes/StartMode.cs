@@ -1,4 +1,5 @@
-// Modified for the VoreWar mercenary-company conversion.
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-04: Add isolated password-gated developer battle/recovery controls (spec 34 slice 2).
 // 2026-10-30: Retire startup authoring/tutorial/map routes and route trait warning through the gate (spec 02B).
 // 2026-10-30: Guard the empty approved roster before entering old campaign setup (spec 03A1).
 // 2026-10-31: Retire legacy world load/preview and empire campaign entry routes (spec 05A1).
@@ -99,6 +100,7 @@ public class StartMode : SceneBase
         PlaceCornerButton("Credits Button", 204);
         PlaceCornerButton("Help Button", 120);
         PlaceCornerButton("Exit Game Button", 0);
+        DeveloperBattleLab.AddMenuButton(this);
         ReplaceTitleWithLogo();
         UITheme.StyleText(versionNumber, 28); versionNumber.color = UITheme.Muted;
         UITheme.StyleText(miscText, 24); miscText.color = UITheme.Muted;

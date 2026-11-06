@@ -1,4 +1,9 @@
 ﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-05: Align vore targeting and chance displays with the downed-prey capacity rule.
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-04: Account for equipment armor in tactical previews and planning (spec 34 slice 4).
+// 2026-11-04: Correct caster targeting and share side-effect-free spell damage estimates (spec 34 slice 1).
 // 2026-11-04: Implement exclusive baseline trait tiers, flat combat modifiers and categorized Help (spec 32).
 // 2026-10-30: Filter trait summons and legacy building reinforcements before constructing units (spec 03A2).
 // 2026-10-31: Reject direct legacy campaign battle setup before tactical state changes (spec 05A3A).
@@ -18,6 +23,7 @@
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 // 2026-11-04: Sequence move reactions, commit Undo, guard save/input and show threatened path steps (spec 30).
 // Modified for the VoreWar mercenary-company conversion.
+// 2026-11-04: Skip intermediate auto-resolve autosaves and log slow simulations without a delayed modal.
 // 2026-11-04: Preserve standing-ground eligibility when legitimately undoing safe movement (spec 31).
 // See CHANGES.md and License.txt for GPL-3.0 terms.
 // 2026-11-04: Apply EasyPrey, MadMage, retreat and approved trait retirements (spec 31).
@@ -891,15 +897,8 @@ public class TacticalMode : SceneBase
         if (State.Warned == false && Time.realtimeSinceStartup - time > 4f)
         {
             State.Warned = true;
-            State.GameManager.CreateMessageBox($@"Just had a quick simulated battle take more than 4 seconds to resolve (I.e. one your settings are set to not show).
-Smaller army sizes will be faster to process, so if the wait bothers you try playing with smaller max armies.
-This warning will only appear once per session.  
-
-Misc Info:
-Battle took {System.Math.Round(Time.realtimeSinceStartup - time, 2)} seconds
-{units.Count()} Total units {AttackerName} vs {DefenderName}.
-Turns: {currentTurn}
-");
+            Debug.LogWarning($"Auto-resolve took {System.Math.Round(Time.realtimeSinceStartup - time, 2)} seconds: " +
+                $"{units.Count} units, {currentTurn} rounds, {AttackerName} vs {DefenderName}.");
 
 
         }
@@ -1789,7 +1788,7 @@ Turns: {currentTurn}
                 continue;
             Vec2i pos = target.Position;
             target.UnitSprite.HitPercentagesDisplayed(true);
-            if (actor.PredatorComponent.FreeCap() < target.Bulk() || (actor.BodySize() < target.BodySize() * 3 && actor.Unit.HasTrait(Traits.TightNethers) && PreyLocationMethods.IsGenital(location)))
+            if (!actor.PredatorComponent.HasCapacityFor(target) || (actor.BodySize() < target.BodySize() * 3 && actor.Unit.HasTrait(Traits.TightNethers) && PreyLocationMethods.IsGenital(location)))
                 target.UnitSprite.DisplayHitPercentage(target.GetDevourChance(actor, true), Color.yellow);
             else if (actor.Unit.CanVore(location) != actor.PredatorComponent.CanVore(location,target))
                 target.UnitSprite.DisplayHitPercentage(target.GetDevourChance(actor, true), Color.yellow);
@@ -1818,7 +1817,7 @@ Turns: {currentTurn}
                 continue;
             Vec2i pos = target.Position;
             target.UnitSprite.HitPercentagesDisplayed(true);
-            if (actor.PredatorComponent.FreeCap() < target.Bulk() || (actor.BodySize() < target.BodySize() * 3 && actor.Unit.HasTrait(Traits.TightNethers) && PreyLocationMethods.IsGenital(location)))
+            if (!actor.PredatorComponent.HasCapacityFor(target) || (actor.BodySize() < target.BodySize() * 3 && actor.Unit.HasTrait(Traits.TightNethers) && PreyLocationMethods.IsGenital(location)))
                 target.UnitSprite.DisplayHitPercentage(target.GetDevourChance(actor, true, skillBoost), Color.yellow);
             else if (actor.Unit.CanVore(location) != actor.PredatorComponent.CanVore(location,target))
                 target.UnitSprite.DisplayHitPercentage(target.GetDevourChance(actor, true, skillBoost), Color.yellow);
@@ -2106,6 +2105,7 @@ Turns: {currentTurn}
             int weaponDamage = actor.WeaponDamageAgainstTarget(target, false);
             if (actor.Unit.HasTrait(Traits.HeavyPounce))
                 weaponDamage = (int)Mathf.Min((weaponDamage + ((weaponDamage * actor.PredatorComponent?.Fullness ?? 0) / 4)), weaponDamage * 2);
+            weaponDamage = target.PreviewHitDamage(weaponDamage);
             Vec2i pos = target.Position;
             if (actor.Position.GetNumberOfMovesDistance(target.Position) <= 4 && actor.Position.GetNumberOfMovesDistance(target.Position) >= 2)
                 target.UnitSprite.DisplayHitPercentage(target.GetAttackChance(actor, false, true), Color.red, weaponDamage);
@@ -2126,7 +2126,7 @@ Turns: {currentTurn}
                 continue;
             Vec2i pos = target.Position;
             target.UnitSprite.HitPercentagesDisplayed(true);
-            if (actor.PredatorComponent.FreeCap() < target.Bulk())
+            if (!actor.PredatorComponent.HasCapacityFor(target))
                 target.UnitSprite.DisplayHitPercentage(target.GetDevourChance(actor, true), Color.yellow);
             else if (actor.Position.GetNumberOfMovesDistance(target.Position) <= 4 && actor.Position.GetNumberOfMovesDistance(target.Position) >= 2)
                 target.UnitSprite.DisplayHitPercentage(target.GetDevourChance(actor, true), Color.red);
@@ -2161,7 +2161,7 @@ Turns: {currentTurn}
             bool legal = CanUseAttack(actor, target, out ranged);
             if ((ranged ? actor.BestRanged : actor.BestMelee) == null) continue;
             target.UnitSprite.DisplayHitPercentage(target.GetAttackChance(actor, ranged, true), legal ? Color.red : Color.black,
-                actor.WeaponDamageAgainstTarget(target, ranged));
+                actor.PreviewWeaponDamageAgainstTarget(target, ranged));
         }
     }
 
@@ -2173,7 +2173,7 @@ Turns: {currentTurn}
                 continue;
             if (target.Targetable == false || target.Visible == false)
                 continue;
-            int weaponDamage = (int)(multiplier * actor.WeaponDamageAgainstTarget(target, false));
+            int weaponDamage = actor.PreviewWeaponDamageAgainstTarget(target, false, multiplier);
             Vec2i pos = target.Position;
             if (actor.Position.GetNumberOfMovesDistance(target.Position) < 2)
                 target.UnitSprite.DisplayHitPercentage(target.GetAttackChance(actor, false, true), Color.red, weaponDamage);
@@ -2191,7 +2191,7 @@ Turns: {currentTurn}
                 continue;
             if (target.Targetable == false || target.Visible == false)
                 continue;
-            int weaponDamage = actor.WeaponDamageAgainstTarget(target, true);
+            int weaponDamage = actor.PreviewWeaponDamageAgainstTarget(target, true);
 
             Vec2i pos = target.Position;
             if (actor.Position.GetNumberOfMovesDistance(target.Position) <= actor.BestRanged.Range && (actor.Position.GetNumberOfMovesDistance(target.Position) > 1 || (actor.BestRanged.Omni && actor.Position.GetNumberOfMovesDistance(target.Position) > 0)))
@@ -2217,16 +2217,7 @@ Turns: {currentTurn}
             int spellDamage = 0;
             if (CurrentSpell is DamageSpell damageSpell)
             {
-                spellDamage = damageSpell.Damage(actor, target);
-                if (TacticalUtilities.SneakAttackCheck(actor.Unit, target.Unit)) // sneakAttack
-                {
-                    spellDamage *= 3;
-                }
-                if (SelectedUnit.Unit.HasTrait(Traits.Multifaceted) && SelectedUnit.Unit.IsHighestStat(Stat.Mind)) //For correct display of damage
-                {
-                    spellDamage += (int)Math.Round(target.Unit.GetStat(Stat.Mind) * 0.1f);
-                }
-                spellDamage = target.ApplySpellTraitDamage(actor, spellDamage);
+                spellDamage = target.PreviewSpellDamage(actor, damageSpell.Damage(actor, target), damageSpell.DamageType);
             }
              
             float magicChance = CurrentSpell.Resistable ? target.GetMagicChance(actor, CurrentSpell) : 1;
@@ -2251,7 +2242,7 @@ Turns: {currentTurn}
         {
             if (target.Targetable == false || target.Visible == false)
                 continue;
-            int weaponDamage = actor.WeaponDamageAgainstTarget(target, true);
+            int weaponDamage = actor.PreviewWeaponDamageAgainstTarget(target, true);
 
             Vec2i pos = target.Position;
             if (target.Unit.IsEnemyOfSide(actor.Unit.Side))
@@ -2418,7 +2409,9 @@ Turns: {currentTurn}
         !PseudoTurn && !RunningFriendlyAI && foreignAI == null && !SpectatorMode && !turboMode;
     void SaveCompanyTurn()
     {
-        if (State.GameManager.CompanyBattle == null) return;
+        // Auto-resolve runs many turns in one synchronous call. Keep the existing recovery save
+        // until the result is settled and saved by the campaign view; never serialize every AI step.
+        if (turboMode || State.GameManager.CompanyBattle == null) return;
         try { State.GameManager.CompanyBattle.Autosave(); }
         catch (Exception ex)
         {
@@ -3065,7 +3058,7 @@ Turns: {currentTurn}
                             bool useRanged;
                             if (CanUseAttack(SelectedUnit, actor, out useRanged))
                             {
-                                int damage = SelectedUnit.WeaponDamageAgainstTarget(actor, useRanged);
+                                int damage = SelectedUnit.PreviewWeaponDamageAgainstTarget(actor, useRanged);
                                 StatusUI.HitRate.text = Math.Round(actor.GetAttackChance(SelectedUnit, useRanged) * 100, 1) + "%\n-" + damage;
                                 actor.UnitSprite.ShowDamagedHealthBar(actor, damage);
                             }
@@ -3074,7 +3067,7 @@ Turns: {currentTurn}
 
                             if (actor.Position.GetNumberOfMovesDistance(SelectedUnit.Position) < 2)
                             {
-                                int weaponDamage = SelectedUnit.WeaponDamageAgainstTarget(actor, false);
+                                int weaponDamage = SelectedUnit.PreviewWeaponDamageAgainstTarget(actor, false);
                                 string str = System.Math.Round(actor.GetAttackChance(SelectedUnit, false) * 100, 1) + "%\n-" + weaponDamage;
                                 StatusUI.HitRate.text = str;
                                 actor.UnitSprite.ShowDamagedHealthBar(actor, weaponDamage);
@@ -3085,7 +3078,7 @@ Turns: {currentTurn}
                                     && actor.Position.GetNumberOfMovesDistance(SelectedUnit.Position) > 1
                                     && actor.Position.GetNumberOfMovesDistance(SelectedUnit.Position) <= SelectedUnit.BestRanged.Range)
                             {
-                                int weaponDamage = SelectedUnit.WeaponDamageAgainstTarget(actor, true);
+                                int weaponDamage = SelectedUnit.PreviewWeaponDamageAgainstTarget(actor, true);
                                 string str = System.Math.Round(actor.GetAttackChance(SelectedUnit, true) * 100, 1) + "%\n-" + weaponDamage;
                                 StatusUI.HitRate.text = str;
                                 actor.UnitSprite.ShowDamagedHealthBar(actor, weaponDamage);
@@ -3094,7 +3087,7 @@ Turns: {currentTurn}
                         case 3:
                             if (actor.Position.GetNumberOfMovesDistance(SelectedUnit.Position) < 2)
                             {
-                                if (SelectedUnit.PredatorComponent?.FreeCap() >= actor.Bulk())
+                                if (SelectedUnit.PredatorComponent != null && SelectedUnit.PredatorComponent.HasCapacityFor(actor))
                                 {
                                     string str = System.Math.Round(actor.GetDevourChance(SelectedUnit) * 100, 1) + "%";
                                     StatusUI.HitRate.text = str;
@@ -3107,7 +3100,7 @@ Turns: {currentTurn}
                         case 4:
                             if (actor.Position.GetNumberOfMovesDistance(SelectedUnit.Position) < 2)
                             {
-                                if (SelectedUnit.PredatorComponent?.FreeCap() >= actor.Bulk())
+                                if (SelectedUnit.PredatorComponent != null && SelectedUnit.PredatorComponent.HasCapacityFor(actor))
                                 {
                                     string str = System.Math.Round(actor.GetDevourChance(SelectedUnit) * 100, 1) + "%";
                                     StatusUI.HitRate.text = str;
@@ -3118,7 +3111,7 @@ Turns: {currentTurn}
                             }
                             else if (specialType == SpecialAction.PounceMelee)
                             {
-                                int weaponDamage = SelectedUnit.WeaponDamageAgainstTarget(actor, false);
+                                int weaponDamage = SelectedUnit.PreviewWeaponDamageAgainstTarget(actor, false);
                                 if (SelectedUnit.Unit.HasTrait(Traits.HeavyPounce))
                                     weaponDamage = (int)Mathf.Min((weaponDamage + ((weaponDamage * SelectedUnit.PredatorComponent?.Fullness ?? 0) / 4)), weaponDamage * 2);
                                 string str = System.Math.Round(actor.GetAttackChance(SelectedUnit, false) * 100, 1) + "%\n-" + weaponDamage;
@@ -3199,9 +3192,9 @@ Turns: {currentTurn}
                             if (actor != null)
                             {
                                 int spellDamage = spell.Damage(SelectedUnit, actor);
-                                spellDamage = SpellDamageMod(SelectedUnit, actor, spellDamage);
+                                spellDamage = SpellDamageMod(SelectedUnit, actor, spellDamage, spell.DamageType);
                                 actor.UnitSprite.ShowDamagedHealthBar(actor, spellDamage);
-                                string str = System.Math.Round(actor.GetMagicChance(SelectedUnit, CurrentSpell) * 100, 1) + "%\n-" + spellDamage;
+                                string str = System.Math.Round((CurrentSpell.Resistable ? actor.GetMagicChance(SelectedUnit, CurrentSpell) : 1f) * 100, 1) + "%\n-" + spellDamage;
                                 StatusUI.HitRate.text = str;
                             }
                         }
@@ -3212,7 +3205,7 @@ Turns: {currentTurn}
                     foreach (var splashTarget in TacticalUtilities.UnitsWithinPattern(mouseLocation, spell.Pattern))
                     {
                         int spellDamage = spell.Damage(SelectedUnit, splashTarget);
-                        spellDamage = SpellDamageMod(SelectedUnit, splashTarget, spellDamage);
+                        spellDamage = SpellDamageMod(SelectedUnit, splashTarget, spellDamage, spell.DamageType);
                         splashTarget.UnitSprite.ShowDamagedHealthBar(splashTarget, spellDamage);
                     }
                 }
@@ -3221,7 +3214,7 @@ Turns: {currentTurn}
                     foreach (var splashTarget in TacticalUtilities.UnitsWithinRotatingPattern(mouseLocation, spell.Pattern, TacticalUtilities.GetRotatingOctant(SelectedUnit.Position, mouseLocation)))
                     {
                         int spellDamage = spell.Damage(SelectedUnit, splashTarget);
-                        spellDamage = SpellDamageMod(SelectedUnit, splashTarget, spellDamage);
+                        spellDamage = SpellDamageMod(SelectedUnit, splashTarget, spellDamage, spell.DamageType);
                         splashTarget.UnitSprite.ShowDamagedHealthBar(splashTarget, spellDamage);
                     }
                 }
@@ -3230,7 +3223,7 @@ Turns: {currentTurn}
                     foreach (var splashTarget in TacticalUtilities.UnitsWithinTiles(mouseLocation, spell.AreaOfEffect))
                     {
                         int spellDamage = spell.Damage(SelectedUnit, splashTarget);
-                        spellDamage = SpellDamageMod(SelectedUnit, splashTarget, spellDamage);
+                        spellDamage = SpellDamageMod(SelectedUnit, splashTarget, spellDamage, spell.DamageType);
                         splashTarget.UnitSprite.ShowDamagedHealthBar(splashTarget, spellDamage);
                     }
                 }
@@ -3239,19 +3232,9 @@ Turns: {currentTurn}
             }
         }
 
-        int SpellDamageMod(Actor_Unit attacker, Actor_Unit target, int damage)
-        {
-            int damMod = damage;
-            if (TacticalUtilities.SneakAttackCheck(SelectedUnit.Unit, target.Unit)) // sneakAttack
-            {
-                damMod *= 3;
-            }
-            if (SelectedUnit.Unit.HasTrait(Traits.Multifaceted) && SelectedUnit.Unit.IsHighestStat(Stat.Mind)) //For correct display of damage
-            {
-                damMod += (int)Math.Round(target.Unit.GetStat(Stat.Mind) * 0.1f);
-            }
-            return target.ApplySpellTraitDamage(attacker, damMod);
-        }
+        int SpellDamageMod(Actor_Unit attacker, Actor_Unit target, int damage, DamageTypes type)
+        { return target.PreviewSpellDamage(attacker, damage, type); }
+
     }
 
     int pathOpportunityCount;

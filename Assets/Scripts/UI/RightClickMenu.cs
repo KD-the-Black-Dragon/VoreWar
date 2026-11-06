@@ -1,4 +1,8 @@
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-05: Align vore command eligibility with the downed-prey capacity rule.
+// See CHANGES.md and License.txt for GPL-3.0 terms.
 // Modified for the VoreWar mercenary-company conversion.
+// 2026-11-04: Account for equipment armor in tactical previews and planning (spec 34 slice 4).
 // 2026-11-02: Use the shared distance-selected Attack command in the tactical context menu (spec 16).
 // 2026-11-01: Omit direct attacks against downed targets and label lethal physical previews as downing (spec 10).
 // 2026-11-03: Remove permanently retired identity branches/entries while preserving shared behavior (spec 21).
@@ -266,12 +270,12 @@ public class RightClickMenu : MonoBehaviour
             foreach (var spell in actor.Unit.UseableSpells.Where(spell => spell.AllowsDownedTarget && spell.AcceptibleTargets.Contains(AbilityTargets.Enemy)))
                 currentButton = AddSpell(spell, actor, target, currentButton, range, target.GetMagicChance(actor, spell));
         }
-        int damage = actor.WeaponDamageAgainstTarget(target, false);
+        int damage = actor.PreviewWeaponDamageAgainstTarget(target, false);
         if (!target.Surrendered && (!TacticalUtilities.IsUnitControlledByPlayer(target.Unit) || Config.AllowInfighting ||  (!State.GameManager.TacticalMode.AIDefender && !State.GameManager.TacticalMode.AIAttacker)))
         {
             bool ranged;
             bool legal = TacticalMode.CanUseAttack(actor, target, out ranged);
-            damage = actor.WeaponDamageAgainstTarget(target, ranged);
+            damage = actor.PreviewWeaponDamageAgainstTarget(target, ranged);
             Buttons[currentButton].onClick.AddListener(() => State.GameManager.TacticalMode.AutoAttack(actor, target));
             Buttons[currentButton].onClick.AddListener(FinishAction);
             Buttons[currentButton].GetComponentInChildren<Text>().text = $"Attack {Math.Round(100 * target.GetAttackChance(actor, ranged, true))}% {(damage >= target.Unit.Health ? "Down" : $"{damage} dmg")} ";
@@ -356,7 +360,7 @@ public class RightClickMenu : MonoBehaviour
                 {
                     Buttons[currentButton].onClick.AddListener(() => targetedAction.OnExecute(data.Actor, data.Target));
                     Buttons[currentButton].onClick.AddListener(FinishAction);
-                    damage = 2 * actor.WeaponDamageAgainstTarget(target, false);
+                    damage = 2 * actor.PreviewWeaponDamageAgainstTarget(target, false);
                     Buttons[currentButton].GetComponentInChildren<Text>().text = $"Shun Goku Satsu {Math.Round(100 * target.GetAttackChance(actor, false, true))}% {(damage >= target.Unit.Health ? "Down" : $"{damage} dmg")} ";
                     if (data.Range != 1)
                         Buttons[currentButton].interactable = false;
@@ -397,7 +401,7 @@ public class RightClickMenu : MonoBehaviour
                     if (data.Range != 1)
                         Buttons[currentButton].interactable = false;
                 }
-                if (data.Actor.PredatorComponent.FreeCap() < data.Target.Bulk())
+                if (!data.Actor.PredatorComponent.HasCapacityFor(data.Target))
                 {
                     Buttons[currentButton].GetComponentInChildren<Text>().text = $"Too bulky to vore";
                     Buttons[currentButton].interactable = false;
@@ -441,7 +445,7 @@ public class RightClickMenu : MonoBehaviour
                     if (data.Range != 1)
                         Buttons[currentButton].interactable = false;
                 }
-                if (data.Actor.PredatorComponent.FreeCap() < data.Target.Bulk())
+                if (!data.Actor.PredatorComponent.HasCapacityFor(data.Target))
                 {
                     Buttons[currentButton].GetComponentInChildren<Text>().text = $"Too bulky to {targetedAction.Name}";
                     Buttons[currentButton].interactable = false;
@@ -547,7 +551,7 @@ public class RightClickMenu : MonoBehaviour
 
         PounceButtons[currentButton].onClick.AddListener(() => actor.MeleePounce(target));
         PounceButtons[currentButton].onClick.AddListener(FinishAction);
-        int damage = actor.WeaponDamageAgainstTarget(target, false);
+        int damage = actor.PreviewWeaponDamageAgainstTarget(target, false);
         PounceButtons[currentButton].GetComponentInChildren<Text>().text = $"Melee Pounce {Math.Round(100 * target.GetAttackChance(actor, false, true))}% {(damage >= target.Unit.Health ? "Down" : $"{damage} dmg")}";
         if (range < 2 || range > 4)
             PounceButtons[currentButton].interactable = false;
@@ -559,7 +563,7 @@ public class RightClickMenu : MonoBehaviour
             {
                 PounceButtons[currentButton].onClick.AddListener(() => actor.VorePounce(target));
                 PounceButtons[currentButton].onClick.AddListener(FinishAction);
-                if (data.Actor.PredatorComponent.FreeCap() < data.Target.Bulk())
+                if (!data.Actor.PredatorComponent.HasCapacityFor(data.Target))
                 {
                     PounceButtons[currentButton].GetComponentInChildren<Text>().text = $"Too bulky to vore";
                     PounceButtons[currentButton].interactable = false;
@@ -591,7 +595,7 @@ public class RightClickMenu : MonoBehaviour
             {
                 PounceButtons[currentButton].onClick.AddListener(() => data.Actor.VorePounce(data.Target, type));
                 PounceButtons[currentButton].onClick.AddListener(FinishAction);
-                if (data.Actor.PredatorComponent.FreeCap() < data.Target.Bulk())
+                if (!data.Actor.PredatorComponent.HasCapacityFor(data.Target))
                 {
                     PounceButtons[currentButton].GetComponentInChildren<Text>().text = $"Too bulky to {targetedAction.Name}";
                     PounceButtons[currentButton].interactable = false;

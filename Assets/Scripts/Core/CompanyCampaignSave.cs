@@ -1,4 +1,5 @@
-﻿// Added by the VoreWar mercenary-company conversion fork.
+// Added by the VoreWar mercenary-company conversion fork.
+// 2026-11-05: Verify upkeep, personal debts and insolvency across save round trips (spec 38 phase B).
 // 2026-11-01: Versioned company checkpoints, validation and corruption recovery (spec 06).
 // 2026-11-01: Rebind nonserialized company item services without re-equipping or changing stats (specs 07–08).
 // 2026-11-01: Verify health and fate values after checkpoint round trips instead of checking only company/day (09–10 feedback).
@@ -58,6 +59,13 @@ internal static class CompanyCampaignSave
     }
     internal static void RequireHealthPreserved(CompanyCampaign source, CompanyCampaign restored)
     {
+        if (source.EconomyVersion != restored.EconomyVersion || source.UpkeepBillsIssued != restored.UpkeepBillsIssued ||
+            source.UpkeepDebt != restored.UpkeepDebt || source.UpkeepDueDay != restored.UpkeepDueDay ||
+            source.NextPayday != restored.NextPayday || source.Gold != restored.Gold ||
+            source.Ended != restored.Ended || source.EndReason != restored.EndReason ||
+            source.PendingDecision != restored.PendingDecision || source.PendingDecisionKind != restored.PendingDecisionKind ||
+            source.DeferredDecisionKind != restored.DeferredDecisionKind)
+            throw new InvalidDataException("Company finances or interrupted decisions changed during serialization.");
         if (source.RestingDay != restored.RestingDay || source.RestDaysRemaining != restored.RestDaysRemaining ||
             source.UpdatingDay != restored.UpdatingDay || source.DailyStage != restored.DailyStage ||
             source.DeferredWageDecision != restored.DeferredWageDecision)
@@ -74,6 +82,8 @@ internal static class CompanyCampaignSave
         {
             CompanyCharacter other;
             if (!characters.TryGetValue(c.Id, out other) || c.Unit.Health != other.Unit.Health ||
+                c.Debt != other.Debt || c.BaseWage != other.BaseWage || c.DebtDueDay != other.DebtDueDay ||
+                c.WarningShownDay != other.WarningShownDay ||
                 c.Unit.TemporaryHealth != other.Unit.TemporaryHealth || c.Unit.Downed != other.Unit.Downed || c.Unit.Digested != other.Unit.Digested || !CompanyInjuries.Same(c.Unit, other.Unit))
                 throw new InvalidDataException("Character health or injuries changed during serialization. The previous checkpoint was preserved.");
             var unit = c.Unit; var copy = other.Unit;

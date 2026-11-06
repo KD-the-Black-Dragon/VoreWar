@@ -1,4 +1,5 @@
 ﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-05: Allow the displayed slider precision and reject non-finite manual values (spec 38 phase C).
 // 2026-11-03: Resolve slider hover from current raycasts and open one value dialog per right-button press (spec 17 feedback).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using System.Collections.Generic;
@@ -48,12 +49,18 @@ public class SliderRevealer : MonoBehaviour
         State.GameManager.HoveringTooltip.UpdateInformation(slider);
         // Poll only the press edge: revealers live below Slider's pointer handlers.
         if (!Input.GetMouseButtonDown(1)) return;
+        OpenValueDialog();
+    }
+
+    internal void OpenValueDialog()
+    {
         var box = State.GameManager.CreateInputBox();
-        box.SetData(TrySetValue, "Set Value", "Cancel", $"Change the value of this slider?  Allowed Range {slider.minValue} - {slider.maxValue}", 4);
+        box.SetData(TrySetValue, "Set Value", "Cancel", $"Change the value of this slider?  Allowed Range {slider.minValue} - {slider.maxValue}", 16);
     }
 
     void TrySetValue(string value)
     {
-        if (float.TryParse(value, out float result)) slider.value = result;
+        if (float.TryParse(value, out float result) && !float.IsNaN(result) && !float.IsInfinity(result))
+            slider.value = result;
     }
 }

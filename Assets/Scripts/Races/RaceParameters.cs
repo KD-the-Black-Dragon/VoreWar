@@ -1,4 +1,5 @@
 // Modified for the VoreWar mercenary-company conversion.
+// 2026-11-05: Remove Flight from every species baseline at the user's direction.
 // 2026-11-01: Resolve species metadata directly without constructing a randomized dummy Unit (spec 05A7).
 // 2026-11-01: Retire all 90 rejected stat prototypes and reject retired metadata lookups (spec 03B3D).
 // 2026-11-01: Provisional approved species specialties and weak SpitterSlug support profile (spec 07).
@@ -357,7 +358,6 @@ static class RaceParameters
             AllowedVoreTypes = new List<VoreType> { VoreType.Oral, VoreType.Unbirth, VoreType.CockVore, VoreType.BreastVore, VoreType.Anal, VoreType.TailVore, VoreType.BladderVore },
             RacialTraits = new List<Traits>()
         {
-                Traits.Flight,
                 Traits.KeenReflexes,
                 Traits.PackDefense,
                 Traits.Stinger
@@ -377,7 +377,6 @@ static class RaceParameters
             Upkeep = 3f,
             RacialTraits = new List<Traits>()
         {
-                Traits.Flight,
                 Traits.ArtfulDodge,
                 Traits.Vampirism
         },
@@ -417,7 +416,6 @@ static class RaceParameters
         {
                 Traits.KeenShot,
                 Traits.Featherweight,
-                Traits.Flight,
         },
             RaceDescription = "Sapient people with a natural affinity for ranged combat.",
         };
@@ -582,7 +580,6 @@ static class RaceParameters
             Upkeep = 5f,
             RacialTraits = new List<Traits>()
         {
-                Traits.Flight,
                 Traits.NaturalCaster,
                 Traits.StrongGullet,
                 Traits.Hoarder,
@@ -835,7 +832,6 @@ static class RaceParameters
             },
             RacialTraits = new List<Traits>()
         {
-                Traits.Flight,
 				Traits.Biter,
 				Traits.Berserk,
 				Traits.Resilient,
@@ -867,7 +863,6 @@ static class RaceParameters
             },
             RacialTraits = new List<Traits>()
         {
-                Traits.Flight,
 				Traits.Biter,
 				Traits.Berserk,
 				Traits.Resilient,
@@ -970,7 +965,6 @@ static class RaceParameters
             },
             RacialTraits = new List<Traits>()
         {
-                Traits.Flight,
                 Traits.EvasiveBattler
         },
             RaceDescription = "A species with large difference in size between genders, the male bats being barely half the female's size. This has led many to believe that the tendency of the females to hunt both for sustenance and pleasure is due to the males being unable to satisfy some of the female's needs.",
@@ -1002,7 +996,6 @@ static class RaceParameters
             },
             RacialTraits = new List<Traits>()
         {
-                Traits.Flight,
                 Traits.Maul,
                 Traits.StrongGullet,
                 Traits.Greedy,
@@ -1037,7 +1030,6 @@ static class RaceParameters
             },
             RacialTraits = new List<Traits>()
         {
-                Traits.Flight,
                 Traits.Tempered
         },
             RaceDescription = "The ambient energies that abound in this world sometimes cause normal creatures to grow to abnormal sizes. These dragonflies have adapted their diet to suit their new size and abilities, and are a terror to face unprepared.",
@@ -1131,7 +1123,6 @@ static class RaceParameters
             },
             RacialTraits = new List<Traits>()
         {
-                Traits.Flight,
                 Traits.Intimidating,
                 Traits.Charge,
                 Traits.Greedy,
@@ -1395,7 +1386,6 @@ static class RaceParameters
             },
             RacialTraits = new List<Traits>()
         {
-                Traits.Flight,
                 Traits.Ravenous,
                 Traits.AdeptLearner,
                 Traits.StrongGullet,
@@ -1619,7 +1609,6 @@ static class RaceParameters
             RacialTraits = new List<Traits>()
         {
                 Traits.ArtfulDodge,
-                Traits.Flight,
                 Traits.Cruel
         },
             RaceDescription = "With an appearance reminiscent of a reptilian bat, the Dratopyr are likely a hybrid race. Smaller than most monsters but just as fierce, the Dratopyr specialize in weakening their prey while avoiding attempts to fend them off. Dratopyr are very fast breeders and would thus be a major threat to everyone, were it not for their tendency toward cannibalism.",
@@ -1811,7 +1800,6 @@ static class RaceParameters
             RacialTraits = new List<Traits>()
         {
             Traits.TailStrike,
-            Traits.Flight,
             Traits.HealingBlood,
             Traits.PoisonSpit,
         },

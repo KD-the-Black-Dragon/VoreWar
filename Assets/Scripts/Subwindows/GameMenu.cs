@@ -1,4 +1,5 @@
-// Modified for the VoreWar mercenary-company conversion.
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-04: Add isolated password-gated developer battle/recovery controls (spec 34 slice 2).
 // 2026-10-30: Gate Race Editor sessions and nested tags; retire obsolete menu routes (spec 02B).
 // 2026-11-03: Present Esc menu as a compact overlay; omit Race Editor and shorten Help label (spec 17).
 // 2026-11-03: Replace the legacy save/load entry with the unified company interface (spec 19).
@@ -129,21 +130,31 @@ public class GameMenu : MonoBehaviour
 
     public void OpenRaceEditor()
     {
-        if (IsRaceEditorSessionActive || raceEditorPrompt != null)
-            return;
+        RequestDeveloperAccess(() => { RaceEditor.gameObject.SetActive(true); RaceEditor.ShowPanel(); }, "Race Editor");
+    }
+
+    public void OpenBattleLab()
+    {
+        if (State.GameManager.CurrentScene != State.GameManager.Start_Mode || State.GameManager.CompanyBattle != null) return;
+        RequestDeveloperAccess(() =>
+        {
+            var lab = State.GameManager.GetComponent<DeveloperBattleLab>() ?? State.GameManager.gameObject.AddComponent<DeveloperBattleLab>();
+            lab.Open();
+        }, "Battle Lab");
+    }
+
+    void RequestDeveloperAccess(Action open, string title)
+    {
+        if (IsRaceEditorSessionActive || raceEditorPrompt != null || DeveloperBattleLab.IsOpen) return;
         raceEditorPrompt = State.GameManager.CreateInputBox();
         raceEditorPrompt.SetData((string value) =>
         {
             raceEditorPrompt = null;
             if (!string.Equals(value, RaceEditorPassword, StringComparison.Ordinal))
-            {
-                State.GameManager.CreateMessageBox("Incorrect developer password.");
-                return;
-            }
+            { State.GameManager.CreateMessageBox("Incorrect developer password."); return; }
             raceEditorUnlocked = true;
-            RaceEditor.gameObject.SetActive(true);
-            RaceEditor.ShowPanel();
-        }, "Unlock", "Cancel", "Enter the developer password to open Race Editor.", 64);
+            open();
+        }, "Unlock", "Cancel", "Enter the developer password to open " + title + ".", 64);
         raceEditorPrompt.InputField.contentType = TMP_InputField.ContentType.Password;
         raceEditorPrompt.InputField.text = "";
     }

@@ -1,5 +1,9 @@
 # Total Conversion Roadmap
 
+## Current planning module — 2026-11-06
+
+Spec 38 is closed and accepted. The user requests design for [module 40](specs/40-authoring-and-campaign-progression.md), ordered as official balance authoring/settings reliability, map route planning, spellbook progression, post-battle trait progression, ending scoreboard/history and calendar difficulty. Race Editor remains the editing surface with export/import into shipped defaults. Species updates preserve existing individuals and affect new generation. Post-battle scenes assign related traits automatically with count-based positive/negative balancing. Both species and personal traits count using internal Good/Bad/Neutral classifications. Featherweight is Neutral; old injuries are separate. Trait count is uncapped, with fewer-trait characters favored as event subjects. Exact classifications and selection weights remain phase-specific design work. This is planning only, with no game-source changes, new tests or build. The historical status and implementation entries below remain preserved.
+
 **Status:** Conversion milestones00–14 are user-accepted at their recorded functional scope; specialist/release gates remain. Map/navigation placement is accepted. Beautification is deferred until a [unified interface design](specs/15-unified-interface-design.md) covers campaign, Options, content menus and tactical view. The user authorized Options first; [15A](implementation/15a-options-redesign.md) now implements the blue categorized scroll column and four requested control removals, the user found the layout mostly okay. Slider alignment, larger hover text and vore terminology corrections now await focused confirmation; beautification and broader screen redesign remain later. Help prose rewriting remains separately deferred.
 
 ## Direction and authority
@@ -163,3 +167,53 @@ Leader creator accepted. [Implementation](implementation/19-save-load-and-battle
 ### 20 — Menu cleanup and shared campaign Help (2026-11-03)
 
 [Implementation](implementation/20-menu-cleanup-and-campaign-help.md) removes obsolete Continue/map-preview entries, uses Load Game, silences routine default race-setting status and unifies Help in a compact blue chapter/scroll layout across menu/campaign/battle. Existing articles/references retained. Clean compilation/read-only scene and private Windows build passed; the user explicitly accepted this milestone on 2026-11-03. Broader help prose editing remains separate.
+
+
+## Post-injury engineering direction — 2026-11-04
+
+Traits/injuries provisionally accepted; focused injury playtests and Help prose remain deferred. The user approved bounded follow-up directions and requested one slice at a time to monitor usage. [Spec34](specs/34-follow-up-engineering-slices.md) orders combat targeting/previews, password-gated developer lab, power scoring, equipment/merchant foundation, gear/reputation progression, balance simulation reports, larger world generation and roads. Crystaline/Fractured gets a known-broken/very-low-priority comment only. Post-battle occurrence-based trait events are recorded as a later design/narrative project, explicitly not to implement now. This entry records a plan, not completed code or permission to run all slices continuously.
+
+## Cleanup, recovery and connected regions — 2026-11-05
+
+User authorized the four follow-up items as one ordered batch. [Spec35](specs/35-cleanup-recovery-and-world.md) and [implementation review](implementation/35-cleanup-recovery-and-world.md) record the approved downed-prey capacity exception/removal of overcapacity self-damage, quicker HP versus longer injuries, focused recovery comparisons, and160x120six-town coherent regions/roads. Native grouped checks890, world/map checks571 and27recovery comparisons passed; fresh private Windows review build compiled. No graphical acceptance claimed. Road costs remain terrain-based and recovery figures provisional pending user steering. Existing campaigns keep their geography. Help prose/post-battle narratives and broader balance work remain deferred.
+
+## Compact zones, road clearings and fields — 2026-11-05
+
+User requested a more compact3x2town layout, bottom-center start, actual road grassland/one-action costs, original farming fields and HP10/20/30. User chose120x80; six daily actions is an explicitly stated provisional value for new companies, preserving existing saved allowances. [Implementation/spec36](implementation/36-compact-zones-roads-and-fields.md) records the changes and focused native evidence. Existing road-bearing maps retain dimensions/town locations but clear routes and gain adjacent non-road fields. Pre-road saves remain geographically unchanged. No4Xsettlement production restored or new artwork imported. Manual visual review remains for the player.
+
+## Five-day road journeys and two exits per town — 2026-11-05
+
+User requested25–35road-move village distances andexactlytwooutgoingroads. [Spec/review37](implementation/37-town-road-journeys.md) retains120x80/sixzones/bottom-centerstart, bringsnewtownsclosertogether andusesa short six-town circuit. Forty seeded regions pass821focusedchecks:240connections28–34moves; mean nearest-town30.125moves (~5.02six-action budgets); everytownhas two physicalexits to differenttowns. Acceptedroadgrass/farms/HP rules preserved. Existing saves retain their layouts. Freshprivateplayerbuild17b72003 compiled; graphicalreview remains.
+
+## Acceptance — World-generation and road slices closed, 2026-11-05
+
+User accepted the final two-exit/five-day-road result and asked whether slice7 remains. Cross-check confirms original spec34slice7(worldgeneration) andslice8(roads/travel/mapintegration) were covered by the subsequently authorized four-item batch plus specs35–37feedback. Both are complete and accepted for the current scope. Current region120x80/sixzones/bottom-centerstart, closer reproducible settlement layout, retained art/farms, single two-exit circuit, grassland roads and measured~five-day nearesttownjourneys. See implementation35–37 and existing native/save/performance/build records. Further geography or travel expansion is future scope, not a pending requirement of those slices. Documentation-only acceptance reconciliation; no source edits, tests or new build.
+
+## Follow-up module closed; calibration and quality plan — 2026-11-05
+
+The user explicitly closes the original spec 34 module. [Spec 38](specs/38-calibration-economy-and-quality-review.md) plans four substantial next phases: mathematical/native combat calibration; connected campaign economy and level-up wage disclosure; grouped resolution/input review; and deliberate injury validation/integrated handoff. The user prefers simulation-derived numerical recommendations. New economic goals include a starter contract funding a basic replacement plus surplus, modest inexpensive basic armor, meaningful premium investment lost with its wearer, and accelerating level-based wages that make low-rating work inadequate for veterans. Surplus accounting, deliberately deferred levels/free-leader sustainability and midweek salary timing are pending clarification. This is planning only: no implementation, new simulations, tests or build. Post-battle narratives, Help prose and Crystaline remain deferred.
+
+Clarification, 2026-11-05: replacement surplus is after wages/recovery; level-up wage increases start next regular payday. The user adds separate compulsory weekly company upkeep, paid before employee wages, including leader-only companies. Unpaid upkeep triggers a critical-insolvency warning and must be cleared before the next payday; outstanding prior upkeep debt at that payday ends the campaign. Upkeep increases should be mostly flat, important early and relatively minor later. Spec 38 records the expanded Phase B scope and pending clock/partial-payment/repayment choices. These are design instructions for the plan, not implemented gameplay.
+
+The user subsequently confirmed a positive starting amount plus a flat weekly increase, automatic spending of available payday gold with only the shortfall recorded as upkeep debt, and an explicit Pay Upkeep control associated with the leader. Upkeep covers the leader's and company's necessities and operating requirements. Spec 38 now incorporates all answers. The economic design is ready for calibration when implementation is requested. Actual tuning values remain to be calculated.
+
+## Phase 38A combat calibration implemented — 2026-11-05
+
+The user authorized Phase A and confirmed eventual roguelike defeat with uncapped flat weekly upkeep. The implementation used 1,072 native calibration battle runs, including independent fixed-roster comparisons, exact mitigation and weapon-outcome math, and 40,000 native probability rolls. Selected light armor totals are 16/28/40. Healthy weapon power includes rescued grazes and KeenEye's guarantee. Final checks passed 446 focused and 893 grouped assertions. A fresh private Windows build compiled with zero new warnings. Player review remains pending. The all-ranged cleanup stalemate has since been traced to cycling flight routes and resolves under the user-directed [global Flight retirement](implementation/39-flight-retirement-and-stalemate.md). Phase B economy/upkeep, Phase C display/input review, Phase D focused injury validation and the deferred ending scoreboard remain subsequent work. [Phase A review](implementation/38a-combat-calibration.md)
+
+
+## Phase 38B company economy implemented — 2026-11-05
+
+The user authorized Phase B after the Flight detour. Upkeep is now charged before wages, starts at 40 and grows by 10 weekly without a cap. Unpaid upkeep ends the company at the following payday unless explicitly repaid through the leader. Existing saves start with the initial bill at their next payday without retroactive debt. Wages accelerate with level and are previewed before commitment. New contract rewards and cheaper basic armor support the agreed replacement target, with 260 starting gold retained to fund two starters. Final checks covered 14 connected histories, 602 native battles and an exact saved continuation to day-210 insolvency, plus 963 grouped assertions and a fresh private build. Numerical values and rendered player workflows remain provisional pending player review. Phase C display/input and Phase D injury review remain subsequent work. [Phase B evidence](implementation/38b-company-economy.md)
+
+## Phase 38C display and input review implemented — 2026-11-05
+
+The user accepted Phase B and authorized Phase C. The five-resolution native matrix passed 306 assertions with 187 rendered frames. A focused resize follow-up passed 24 assertions with 30 frames, and the final grouped regression passed 963 assertions. Corrections cover slider precision/non-finite entry, screen-edge tooltip placement, long roster/save captions and trait scrolling above the combat log, including aspect-ratio changes. A fresh private player compiled without new warnings. Physical mouse/keyboard and standalone resizing remain one grouped player check after desktop capture failed. Phase D injury validation remains subsequent work. [Phase C evidence](implementation/38c-display-and-input-review.md)
+
+## Phase 38D injury and integrated validation complete — 2026-11-05
+
+The user accepted Phase C and authorized Phase D. Focused native verification passed 671 assertions and 170,000 seeded trials covering injury effects, probabilities, treatment/recovery, leaders, reserves, actual combat, saves/resume and Single Battle isolation. Integrated economy boundaries passed 64 checks and the grouped suite passed 963. The approved implementation passed with its existing tuning. This packet adds editor verification/documentation, and accepted player 512e67a8 remains current. Spec 38's four implementation/review phases are complete for the agreed scope. Subjective campaign balance, broad Help/narrative work, ending scoreboard, time-based enemy escalation and public-distribution gates remain future work. [Phase D evidence](implementation/38d-injury-validation-and-integrated-handoff.md)
+
+## Acceptance — Calibration and quality module closed, 2026-11-06
+
+The user accepted Phase D and requested closure. All four spec 38 phases are now complete and accepted. No additional design answer or implementation task is required to close this module. The developer race-settings warning remains separately tracked technical work, alongside the existing public-release gates. Deferred features remain future workstreams. This acceptance update changes documentation only. The accepted player remains 512e67a8. [Closed spec 38](specs/38-calibration-economy-and-quality-review.md)

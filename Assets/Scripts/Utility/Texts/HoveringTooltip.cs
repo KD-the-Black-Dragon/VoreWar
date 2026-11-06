@@ -1,4 +1,6 @@
 ﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-05: Clamp hover panels to both screen axes using actual canvas geometry (spec 38 phase C).
+// 2026-11-05: Remove the obsolete Flight exception from the RangedVore tooltip.
 // 2026-11-04: Implement exclusive baseline trait tiers, flat combat modifiers and categorized Help (spec 32).
 // 2026-11-01: Complete approved ability retirement and close legacy reactivation paths (spec 05A3B17).
 // 2026-11-01: Explain downed status and retained fear/retreat traits without the retired surrender reset (spec 10).
@@ -591,7 +593,7 @@ public class HoveringTooltip : MonoBehaviour
             case Traits.Greedy:
                 return "The unit will avoid giving up prey at all costs -- will not auto regurgitate friendlies regardless of settings, and the regurgitate command is disabled";
             case Traits.RangedVore:
-                return "Unit can perform vore actions at a range of up to 4 tiles, but chance of success drops per tile, but doesn't drop against flying units.";
+                return "Unit can perform vore actions at a range of up to 4 tiles, but chance of success drops per tile.";
             case Traits.HeavyPounce:
                 return "Pounce does extra melee damage based on the weight of prey, but defense is also lowered for one turn after pouncing based on the weight of prey (requires the pounce trait to be useable)";
             case Traits.Cruel:
@@ -1043,10 +1045,26 @@ public class HoveringTooltip : MonoBehaviour
         gameObject.SetActive(true);
         remainingFrames = linger ? 999 : 3;
         text.text = description;
-        float xAdjust = 10;
-        float exceeded = Input.mousePosition.x + (rect.rect.width * Screen.width / 1920) - Screen.width;
-        if (exceeded > 0)
-            xAdjust = -exceeded;
-        transform.position = Input.mousePosition + new Vector3(xAdjust, 0, 0);
+        PositionAt(Input.mousePosition);
+    }
+
+    internal void PositionAt(Vector2 pointer)
+    {
+        var canvas = GetComponentInParent<Canvas>();
+        var camera = canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera;
+        var parent = (RectTransform)rect.parent;
+        Vector3 position;
+        RectTransformUtility.ScreenPointToWorldPointInRectangle(parent, pointer + Vector2.right * 10, camera, out position);
+        rect.position = position;
+        Canvas.ForceUpdateCanvases();
+        var corners = new Vector3[4];
+        rect.GetWorldCorners(corners);
+        var min = RectTransformUtility.WorldToScreenPoint(camera, corners[0]);
+        var max = RectTransformUtility.WorldToScreenPoint(camera, corners[2]);
+        const float padding = 4;
+        float dx = Mathf.Clamp(min.x, padding, Mathf.Max(padding, Screen.width - padding - (max.x - min.x))) - min.x;
+        float dy = Mathf.Clamp(min.y, padding, Mathf.Max(padding, Screen.height - padding - (max.y - min.y))) - min.y;
+        RectTransformUtility.ScreenPointToWorldPointInRectangle(parent, pointer + Vector2.right * 10 + new Vector2(dx, dy), camera, out position);
+        rect.position = position;
     }
 }

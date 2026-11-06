@@ -67,3 +67,7 @@ Seven existing license/notice files accompany the local build. Source notices an
 The user provisionally accepted the combined trait/injury milestone. Help content is acceptable for now. Focused manual injury testing is deferred because the probabilistic mechanics are difficult to exercise deliberately; this is not a manual gameplay pass. The existing457 automated checks and clean build remain the performed verification.
 
 Deferred editorial work: rewrite Help as concise, task-oriented player guidance rather than exhaustive design notes. Keep detailed formulas, edge cases and implementation rationale in developer documentation; Help should prioritize what players need to do and understand. Do not start this rewrite or demand injury testing without further user direction.
+
+## Later recovery changes and focused verification — 2026-11-05
+
+The later approved recovery work changed body-injury durations to 5/14/28 calendar days, with one day of progress per day, and ordinary/field-rest/town-rest HP healing to 10/20/30%. These supersede the historical timing values above. Phase D was subsequently authorized and passed 671 focused assertions and 170,000 seeded trials, including exact probability boundaries, real saves/resume, reserves, wages and Single Battle isolation. See [the current verification record](38d-injury-validation-and-integrated-handoff.md). The approved gameplay rules passed with their existing tuning. Broad Help editorial work remains deferred.

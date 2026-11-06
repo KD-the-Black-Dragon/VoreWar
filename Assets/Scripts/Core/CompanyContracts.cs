@@ -1,4 +1,6 @@
 // Added by the VoreWar mercenary-company conversion fork.
+// 2026-11-05: Quote replacement-supporting rounded rewards for new offers while preserving accepted quotes (spec 38 phase B).
+// 2026-11-04: Apply explainable healthy power and approved capped encounter scaling (spec 34 slice 3).
 // 2026-11-01: Saved rout contracts, bounded power-budget enemies and outcome-only reputation (spec 09).
 // 2026-11-01: Name generated enemy sapients by combat archetype and animals by species (09–10 feedback).
 // 2026-11-01: Accept injury/recovery campaign rules version 3 without regenerating saved enemy forces (spec 11).
@@ -25,19 +27,11 @@ internal sealed class CompanyContract
 internal static class CompanyContracts
 {
     internal const int DeadlineDays = 30, RefreshDays = 7;
+    internal static int Reward(int rating, int variation)
+    { return checked((int)Math.Round(rating * 240.0 * (1 + variation / 100.0) / 10) * 10); }
     // Provisional fixed rating scale, independent of the player's roster or treasury.
     internal static double Budget(int rating) { return 45 + rating * 30; }
-    internal static double Power(Unit unit)
-    {
-        // Accessory bonuses already live in base stats: count them here, not again as gear.
-        double stats = WarbandStats.Active.Sum(stat => Math.Max(0, unit.GetStatBase(stat))) * .36;
-        double weapons = unit.Items.OfType<Weapon>().Sum(w => w.Damage * (w.Range > 1 ? 1.5 : 1));
-        double spells = unit.UseableSpells.Count * 7;
-        double traits = unit.GetTraits.Sum(t => t == Traits.Featherweight || t == Traits.NaturalCaster ? 5 : 2);
-        double armor = Enumerable.Range(0, 4).Sum(i => CompanyEquipment.Protection(unit, (CompanySlot)i));
-        return Math.Round((stats + unit.MaxHealth * .2 + weapons + spells + traits + armor + unit.Level * 2) *
-            (unit.Race == Race.SpitterSlugs ? .65 : 1), 2);
-    }
+    internal static double Power(Unit unit) => CompanyPower.Healthy(unit);
     internal static IEnumerable<CompanyCharacter> Survivors(CompanyCampaign state, CompanyContract contract)
     { return contract.EnemyIds.Except(contract.DefeatedIds).Select(id => state.Characters.Single(c => c.Id == id)); }
     internal static CompanyCharacter Enemy(CompanyCampaign state, Race race, int rating)
@@ -68,14 +62,14 @@ internal static class CompanyContracts
         for (int attempt = 0; attempt < 40; attempt++)
         {
             var force = new List<CompanyCharacter>(); double sum = 0;
-            for (int pick = 0; pick < 96 && sum < low; pick++)
+            for (int pick = 0; pick < 96 && sum * CompanyPower.FormationMultiplier(force.Count) < low; pick++)
             {
                 var c = pool[state.Next(pool.Length)]; double power = powers[c.Id];
-                if (force.Contains(c) || sum + power > high) continue;
+                if (force.Contains(c) || (sum + power) * CompanyPower.FormationMultiplier(force.Count + 1) > high) continue;
                 c.Employment = CompanyEmployment.Unavailable; c.Unit.Side = 1;
                 force.Add(c); sum += power;
             }
-            if (force.Count > 0 && sum >= low) return force;
+            if (force.Count > 0 && sum * CompanyPower.FormationMultiplier(force.Count) >= low) return force;
         }
         throw new InvalidOperationException("The enabled species cannot currently fill this contract's power band. No fallback species were added.");
     }
@@ -99,8 +93,8 @@ internal static class CompanyContracts
             try { force = Generate(state, rating); }
             catch (InvalidOperationException) { continue; } // Safe empty pool: do not invent unapproved enemies.
             var contract = new CompanyContract { Id = Guid.NewGuid().ToString("N"), TownId = town.Id, Rating = rating,
-                Reward = (int)Math.Round((rating * 60 * (.9 + state.Next(21) / 100.0)) / 10) * 10,
-                Tile = possible[state.Next(possible.Length)], Power = force.Sum(c => Power(c.Unit)), EnemyIds = force.Select(c => c.Id).ToList() };
+                Reward = Reward(rating, state.Next(21) - 10),
+                Tile = possible[state.Next(possible.Length)], Power = CompanyPower.Force(force.Select(c => c.Unit)), EnemyIds = force.Select(c => c.Id).ToList() };
             state.Contracts.Add(contract); state.Characters.AddRange(force);
         }
         town.ContractRefreshDay = state.ElapsedDays + RefreshDays;

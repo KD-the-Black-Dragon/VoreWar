@@ -1,3 +1,8 @@
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-05: Show upkeep bills, debt and deadline and resume queued insolvency warnings (spec 38 phase B).
+// 2026-11-05: Render village fields with the retained strategic farm sprites (spec 36).
+// 2026-11-05: Overlay connected roads on the existing virtualized, fog-aware terrain map (spec 35).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
 // Added by the VoreWar mercenary-company conversion fork.
 // 2026-11-01: Runtime company-map preview, daily travel and new-checkpoint navigation (spec 06).
 // 2026-11-01: Connect curated leader/company economy, wage decisions and retained terrain artwork (specs 07–08).
@@ -47,6 +52,7 @@ public sealed class CompanyCampaignView : MonoBehaviour
     Text heading, message, townHeading, companyText;
     Text[] tileLabels;
     Image[] townIcons;
+    CompanyRoadGraphic[] roadGraphics;
     Outline[] tileOutlines;
     Button[] tiles;
     const int TileSize = 42, MapColumns = 29, MapRows = 12;
@@ -143,8 +149,9 @@ public sealed class CompanyCampaignView : MonoBehaviour
         long max = roster.Sum(c => (long)c.Unit.MaxHealth);
         int wounds = roster.Sum(c => c.Unit.Injuries.Count(CompanyInjuries.Temporary));
         int reserves = state.Members.Count(m => m.Reserve);
-        financesText.text = "Gold: " + state.Gold + "    Debt: " + roster.Sum(c => (long)c.Debt) +
-            "\nNext payday wages: " + roster.Sum(c => (long)CompanyEconomy.Wage(state, c));
+        financesText.text = "Gold: " + state.Gold + " | Wage debt: " + roster.Sum(c => (long)c.Debt) +
+            "\nNext bills: " + CompanyEconomy.WeeklyWages(state) + " wages + " + CompanyEconomy.Upkeep(state) + " upkeep" +
+            "\nUpkeep debt: " + state.UpkeepDebt + (state.UpkeepDebt > 0 ? " | Due in " + Math.Max(0, state.UpkeepDueDay - state.ElapsedDays) + " days" : "");
         conditionText.text = "Members: " + roster.Length + " (" + (roster.Length - reserves) + " active, " + reserves + " reserve)" +
             "\nHealth: " + hp + "/" + max + " (" + (max == 0 ? 0 : hp * 100 / max) + "%)" + "\nCurrent injuries: " + wounds;
         int days = Math.Max(0, state.NextPayday - state.ElapsedDays);
@@ -203,10 +210,12 @@ public sealed class CompanyCampaignView : MonoBehaviour
             Place(tiles[i].gameObject, x * TileSize, y * TileSize, TileSize, TileSize);
             int distance = Math.Abs(x - state.Position % state.Width) + Math.Abs(y - state.Position / state.Width);
             tiles[i].interactable = !checkpointFailed && !state.Busy && distance == 1 && state.Actions >= state.MoveCost(tile);
-            int art = StrategicTileInfo.GetTileType((StrategicTileType)terrainTypes[state.Terrain[tile]], x, y);
+            var terrainType = state.Farms != null && state.Farms[tile] ? StrategicTileType.field : (StrategicTileType)terrainTypes[state.Terrain[tile]];
+            int art = StrategicTileInfo.GetTileType(terrainType, x, y);
             var image = tiles[i].GetComponent<Image>();
             image.sprite = seen && sprites != null && art >= 0 && art < sprites.Length ? sprites[art] : null;
             image.color = seen ? Color.white : new Color(.08f, .1f, .12f);
+            roadGraphics[i].SetConnections(seen ? CompanyWorldGeneration.RoadMask(state, tile) : 0);
             bool town = seen && state.Towns.Any(t => t.Tile == tile);
             townIcons[i].sprite = towns != null && towns.Length > 6 ? towns[6] : null;
             townIcons[i].gameObject.SetActive(town && townIcons[i].sprite != null);
@@ -266,6 +275,7 @@ public sealed class CompanyCampaignView : MonoBehaviour
         mapScroll.content = mapContent;
         mapScroll.onValueChanged.AddListener(_ => RefreshMapTiles());
         int tileCount = MapColumns * MapRows;
+        roadGraphics = new CompanyRoadGraphic[tileCount];
         tileLabels = new Text[tileCount]; tiles = new Button[tileCount]; townIcons = new Image[tileCount]; tileOutlines = new Outline[tileCount]; tileIndices = new int[tileCount];
         for (int i = 0; i < tiles.Length; i++)
         {
@@ -273,6 +283,8 @@ public sealed class CompanyCampaignView : MonoBehaviour
             tiles[i] = Action(content.transform, "", 0, 0, TileSize, () => { if (!mapScroll.SuppressTileClick && tileIndices[index] >= 0) Move(tileIndices[index]); });
             Place(tiles[i].gameObject, 0, 0, TileSize, TileSize); tiles[i].transition = Selectable.Transition.None;
             tileOutlines[i] = tiles[i].gameObject.AddComponent<Outline>(); tileOutlines[i].effectDistance = new Vector2(1, -1);
+            var road = Panel("Road", tiles[i].transform); Place(road, 0, 0, TileSize, TileSize);
+            roadGraphics[i] = road.AddComponent<CompanyRoadGraphic>(); roadGraphics[i].raycastTarget = false;
             var townIcon = Panel("Town", tiles[i].transform); Place(townIcon, 5, 3, 32, 36);
             townIcons[i] = townIcon.AddComponent<Image>(); townIcons[i].preserveAspect = true; townIcons[i].raycastTarget = false;
             tileLabels[i] = tiles[i].GetComponentInChildren<Text>(); tileLabels[i].transform.SetAsLastSibling();
@@ -512,7 +524,8 @@ public sealed class CompanyCampaignView : MonoBehaviour
         if (state.PendingDecisionKind == "Departures" && !string.IsNullOrEmpty(state.DeferredWageDecision))
         {
             state.PendingDecision = state.DeferredWageDecision; state.DeferredWageDecision = null;
-            state.PendingDecisionKind = "Payday"; state.PendingCharacterIds = new string[0];
+            state.PendingDecisionKind = state.DeferredDecisionKind ?? "Payday";
+            state.DeferredDecisionKind = null; state.PendingCharacterIds = new string[0];
             Save("Departure acknowledged; a separate wage warning requires your response."); management.Decision(); return;
         }
         state.PendingDecision = null; state.PendingDecisionKind = null; state.PendingCharacterIds = new string[0];

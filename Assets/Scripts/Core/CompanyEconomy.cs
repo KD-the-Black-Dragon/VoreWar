@@ -1,4 +1,7 @@
 // Added by the VoreWar mercenary-company conversion fork.
+// 2026-11-05: Implement upkeep-first weekly billing, grace-week insolvency and accelerating wages with safe save enrollment (spec 38 phase B).
+// 2026-11-04: Apply explainable healthy power and approved capped encounter scaling (spec 34 slice 3).
+// 2026-11-04: Charge quoted recruitment gear, compensate starting funds and generate tiered loadouts (spec 34 slice 5).
 // 2026-11-01: Canonical recruitment, advance wages, persistent debt and player-owned repayment (spec 07).
 // 2026-11-01: Migrate accepted saves non-destructively, count hires and replenish local contract pools (specs 09–10).
 // 2026-11-01: Upgrade saved daily intent without replaying days and identify the leader for old-injury immunity (spec 11).
@@ -11,7 +14,8 @@ using System.Linq;
 
 internal static class CompanyEconomy
 {
-    internal const int StartingGold = 50;
+    internal const int StartingGold = 260;
+    internal const int InitialUpkeep = 40, WeeklyUpkeepIncrease = 10;
     internal const int RecruitRefreshDays = 7;
     internal static Race[] Sapients { get { return SpeciesPolicy.GetAvailable(SpeciesUse.Mercenary); } }
     internal static T Random<T>(CompanyCampaign state, Func<T> operation)
@@ -34,11 +38,13 @@ internal static class CompanyEconomy
             if (leader) foreach (var stat in WarbandStats.Active) unit.SetStatBase(stat, unit.GetStatBase(stat) + 3);
             for (int i = 1; i < level; i++) unit.LevelUp((Stat)(focus == 1 ? (int)Stat.Agility : focus == 2 ? (int)Stat.Intelligence : (int)Stat.Strength));
             if (level > 1) unit.SetExp(unit.GetExperienceRequiredForLevel(level - 1));
-            Item weapon = CompanyEquipment.Create(focus == 1 ? (level >= 5 ? "weapon.compound" : "weapon.bow") : (level >= 5 ? "weapon.axe" : "weapon.mace"));
+            string weaponId = level == 1 ? (focus == 1 ? "weapon.bow" : "weapon.mace") :
+                CompanyEquipment.Generated(state, focus == 1 ? CompanySlot.Ranged : CompanySlot.Melee, level).Id;
+            Item weapon = CompanyEquipment.Create(weaponId);
             unit.SetItem(weapon, focus == 1 ? (int)CompanySlot.Ranged : (int)CompanySlot.Melee);
             if (focus == 2) unit.SetItem(CompanyEquipment.Create("spell.bolt"), (int)CompanySlot.Spell1);
-            if (level >= 3) { string armor = state.Next(2) == 0 ? "armor.helmet" : "armor.torso"; var item = CompanyEquipment.Create(armor); unit.SetItem(item, (int)CompanyEquipment.Find(armor).Slot); }
-            if (level >= 6) { string armor = state.Next(2) == 0 ? "armor.legs" : "armor.arms"; var item = CompanyEquipment.Create(armor); unit.SetItem(item, (int)CompanyEquipment.Find(armor).Slot); }
+            if (level >= 3) { var armor = CompanyEquipment.Generated(state, state.Next(2) == 0 ? CompanySlot.Helmet : CompanySlot.Torso, level); unit.SetItem(CompanyEquipment.Create(armor.Id), (int)armor.Slot); }
+            if (level >= 6) { var armor = CompanyEquipment.Generated(state, state.Next(2) == 0 ? CompanySlot.Legs : CompanySlot.Arms, level); unit.SetItem(CompanyEquipment.Create(armor.Id), (int)armor.Slot); }
             unit.UpdateSpells(); unit.Health = unit.MaxHealth; unit.RestoreManaPct(1);
             return record;
         });
@@ -48,12 +54,19 @@ internal static class CompanyEconomy
         if (state.Characters.Count != 0 || !state.Preview) throw new InvalidOperationException("Create a new company rather than replace an existing leader.");
         state.Characters.Add(leader); leader.Employment = CompanyEmployment.Employed;
         state.Members.Add(new CompanyMember { CharacterId = leader.Id }); state.LeaderId = leader.Id;
-        state.Gold = StartingGold; state.Preview = false;
+        state.Gold = StartingGold; state.Preview = false; state.EconomyVersion = 1;
         AddOwnedGear(state, leader);
         Visit(state, state.Towns.First(t => t.Tile == state.Position));
     }
     internal static void Bind(CompanyCampaign state)
     {
+        if (!state.Preview && state.EconomyVersion == 0)
+        {
+            // Existing campaigns start with the first bill at their next scheduled payday.
+            // Existing advances, debt, accepted rewards and possessions remain untouched.
+            state.EconomyVersion = 1; state.UpkeepBillsIssued = 0;
+            state.UpkeepDebt = 0; state.UpkeepDueDay = 0;
+        }
         bool upgradingStats = state.Characters.Any(person => person.Unit.NeedsFourStatUpgrade);
         foreach (var person in state.Characters)
         {
@@ -106,9 +119,36 @@ internal static class CompanyEconomy
             c.Unit.PermanentInjuryImmune = c.Id == state.LeaderId;
         }
     }
-    internal static int Wage(CompanyCampaign state, CompanyCharacter c) { return c.Id == state.LeaderId ? 0 : c.BaseWage + (c.Unit.Level - 1) * 6; }
+    internal static int WageAtLevel(CompanyCampaign state, CompanyCharacter c, int level)
+    {
+        if (c.Id == state.LeaderId) return 0;
+        long steps = Math.Max(0, level - 1);
+        long veteranSteps = Math.Max(0, steps - 3);
+        return (int)Math.Min(int.MaxValue, c.BaseWage + 3 * steps + 2 * steps * steps +
+            2 * veteranSteps * veteranSteps * veteranSteps);
+    }
+    internal static int Wage(CompanyCampaign state, CompanyCharacter c) => WageAtLevel(state, c, c.Unit.Level);
+    internal static int Upkeep(CompanyCampaign state)
+    { return checked(InitialUpkeep + WeeklyUpkeepIncrease * state.UpkeepBillsIssued); }
+    internal static long WeeklyWages(CompanyCampaign state)
+    { return state.Characters.Where(c => c.Employment == CompanyEmployment.Employed).Sum(c => (long)Wage(state, c)); }
+    internal static void PayUpkeep(CompanyCampaign state)
+    {
+        if (state.Ended || state.InBattle || state.UpkeepDebt <= 0 || state.Gold < state.UpkeepDebt)
+            throw new InvalidOperationException("The entire upkeep debt must be affordable.");
+        state.Gold -= state.UpkeepDebt; state.UpkeepDebt = 0; state.UpkeepDueDay = 0;
+    }
+    internal static string UpkeepWarning(CompanyCampaign state)
+    {
+        if (state.UpkeepDebt == 0) return "The company has no outstanding upkeep debt.";
+        return "The company is in critical danger of insolvency. Pay its upkeep debt of " + state.UpkeepDebt +
+            " gold before the next payday in " + Math.Max(0, state.UpkeepDueDay - state.ElapsedDays) +
+            " days, or the company will cease operating. Use Pay Upkeep on the leader's company entry.";
+    }
+    internal static int AdvanceWages(CompanyCampaign state, CompanyCharacter c)
+    { return (int)Math.Ceiling(Wage(state, c) * Math.Max(1, Math.Min(7, state.NextPayday - state.ElapsedDays)) / 7.0); }
     internal static int HirePrice(CompanyCampaign state, CompanyCharacter c)
-    { return checked(c.Debt + (int)Math.Ceiling(Wage(state, c) * Math.Max(1, Math.Min(7, state.NextPayday - state.ElapsedDays)) / 7.0)); }
+    { return checked(c.Debt + AdvanceWages(state, c) + CompanyEquipment.GearPrice(c.Unit)); }
     internal static void Refresh(CompanyCampaign state, CompanyTown town)
     {
         state.Characters.RemoveAll(c => c.Employment == CompanyEmployment.Candidate && c.TownId == town.Id);
@@ -118,7 +158,14 @@ internal static class CompanyEconomy
             Race race = races[i < races.Length ? i : state.Next(races.Length)];
             int level = 1 + state.Reputation / 40 + (state.Next(40) < state.Reputation % 40 ? 1 : 0);
             int focus = race == Race.Avians ? 1 : race == Race.Lizards ? 2 : 0;
-            var c = Create(state, race, focus, false, level); c.TownId = town.Id; state.Characters.Add(c);
+            CompanyCharacter c = null;
+            for(int attempt=0;attempt<8;attempt++)
+            {
+                var candidate=Create(state,race,focus,false,attempt<4?level:1);
+                if(CompanyPower.Healthy(candidate.Unit)<=CompanyPower.RecruitCeiling(state.Reputation)){c=candidate;break;}
+            }
+            if(c==null)continue; // Never invent an unapproved species or silently exceed the power ceiling.
+            c.TownId = town.Id; state.Characters.Add(c);
         }
         town.RecruitRefreshDay = checked(state.ElapsedDays + RecruitRefreshDays);
     }
@@ -139,7 +186,7 @@ internal static class CompanyEconomy
     internal static void Hire(CompanyCampaign state, CompanyCharacter c, CompanyTown town)
     {
         if (state.Busy || state.InBattle || town.Tile != state.Position || !Offers(state, town).Contains(c)) throw new InvalidOperationException("That candidate is not available here.");
-        int price = HirePrice(state, c); if (state.Gold < price) throw new InvalidOperationException("Not enough gold for the full advance and any debt.");
+        int price = HirePrice(state, c); if (state.Gold < price) throw new InvalidOperationException("Not enough gold for equipment, advance wages and any debt.");
         state.Gold -= price; c.Debt = 0; c.DebtDueDay = -1; c.WarningShownDay = -1;
         c.Employment = CompanyEmployment.Employed; c.TownId = null;
         state.Members.Add(new CompanyMember { CharacterId = c.Id }); state.MercenariesHired++; AddOwnedGear(state, c);
@@ -185,6 +232,10 @@ internal static class CompanyEconomy
     internal static void Validate(CompanyCampaign state)
     {
         if (state.Preview) return; // Old preview saves contain no people/economy state.
+        if (state.EconomyVersion != 1 || state.UpkeepBillsIssued < 0 || state.UpkeepDebt < 0 || state.UpkeepDueDay < 0 ||
+            (state.UpkeepDebt == 0) != (state.UpkeepDueDay == 0) ||
+            (state.UpkeepDebt > 0 && state.UpkeepDueDay != state.NextPayday))
+            throw new InvalidOperationException("Invalid company upkeep state.");
         if (state.Inventory == null || state.PendingCharacterIds == null || state.Reputation < 0) throw new InvalidOperationException("Invalid company economy.");
         var owned = new HashSet<string>();
         foreach (var item in state.Inventory)
@@ -213,16 +264,31 @@ internal sealed class CompanyWages : ICompanyDailySystem
     public void Apply(CompanyCampaign state)
     {
         if (state.Preview) return;
+        bool payday = state.ElapsedDays >= state.NextPayday;
+        if (payday && state.UpkeepDebt > 0)
+        {
+            state.Ended = true;
+            state.EndReason = "The company ceased operating due to critical insolvency. Its upkeep debt was not paid before payday.";
+            state.PendingDecision = null; state.PendingDecisionKind = null;
+            state.DeferredWageDecision = null; state.DeferredDecisionKind = null; state.PendingCharacterIds = new string[0];
+            return;
+        }
+        if (payday)
+        {
+            int bill = CompanyEconomy.Upkeep(state), paid = Math.Min(state.Gold, bill);
+            state.Gold -= paid; state.UpkeepDebt = bill - paid;
+            state.UpkeepBillsIssued = checked(state.UpkeepBillsIssued + 1);
+            state.UpkeepDueDay = state.UpkeepDebt > 0 ? checked(state.NextPayday + 7) : 0;
+        }
         var employed = state.Characters.Where(c => c.Employment == CompanyEmployment.Employed && c.Id != state.LeaderId).ToArray();
         var departed = employed.Where(c => c.Debt > 0 && c.DebtDueDay >= 0 && state.ElapsedDays >= c.DebtDueDay).ToArray();
         foreach (var c in departed) CompanyEconomy.Leave(state, c);
-        bool payday = state.ElapsedDays >= state.NextPayday;
         if (payday)
         {
             employed = employed.Except(departed).ToArray();
-            int oldDebt = employed.Sum(c => c.Debt), bill = employed.Sum(c => CompanyEconomy.Wage(state, c));
+            long oldDebt = employed.Sum(c => (long)c.Debt), bill = employed.Sum(c => (long)CompanyEconomy.Wage(state, c));
             state.NextPayday = checked(state.NextPayday + 7);
-            if (oldDebt == 0 && state.Gold >= bill) state.Gold -= bill;
+            if (oldDebt == 0 && state.Gold >= bill) state.Gold -= (int)bill;
             else foreach (var c in employed)
             {
                 c.Debt = checked(c.Debt + CompanyEconomy.Wage(state, c));
@@ -236,17 +302,21 @@ internal sealed class CompanyWages : ICompanyDailySystem
         var threats = CompanyEconomy.Threatened(state).Where(c => c.WarningShownDay != c.DebtDueDay).ToArray();
         foreach (var c in threats) c.WarningShownDay = c.DebtDueDay;
         bool wageNotice = threats.Length > 0 || (payday && employed.Any(c => c.Debt > 0));
+        string notice = wageNotice ? WageMessage(threats, payday) : null;
+        bool upkeepNotice = payday && state.UpkeepDebt > 0;
+        if (upkeepNotice) notice = CompanyEconomy.UpkeepWarning(state) + (notice == null ? "" : "\n\n" + notice);
         if (departed.Length > 0)
         {
             state.PendingDecisionKind = "Departures";
             state.PendingCharacterIds = departed.Select(c => c.Id).ToArray();
             state.PendingDecision = DepartureMessage(state);
-            state.DeferredWageDecision = wageNotice ? WageMessage(threats, payday) : null;
+            state.DeferredWageDecision = notice;
+            state.DeferredDecisionKind = notice == null ? null : upkeepNotice ? "Upkeep" : "Payday";
         }
-        else if (wageNotice)
+        else if (notice != null)
         {
-            state.PendingDecisionKind = "Payday"; state.PendingCharacterIds = new string[0];
-            state.PendingDecision = WageMessage(threats, payday);
+            state.PendingDecisionKind = upkeepNotice ? "Upkeep" : "Payday"; state.PendingCharacterIds = new string[0];
+            state.PendingDecision = notice;
         }
     }
     internal static string DepartureMessage(CompanyCampaign state)

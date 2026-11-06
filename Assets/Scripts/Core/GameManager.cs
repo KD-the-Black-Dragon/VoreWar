@@ -1,4 +1,5 @@
-// Modified for the VoreWar mercenary-company conversion.
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-04: Add isolated password-gated developer battle/recovery controls (spec 34 slice 2).
 // 2026-10-30: Disable the alternate in-game map editor entry (spec 02B).
 // 2026-10-31: Retire legacy world load/preview and empire campaign entry routes (spec 05A1).
 // 2026-10-31: Block strategic-mode activation while preserving Pure Tactical return to menu (spec 05A2).
@@ -248,6 +249,7 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
+        if (DeveloperBattleLab.IsOpen) return; // Lab advances only through explicit developer controls.
         if (ActiveInput || CompanySaveMenu.IsVisible)
             return;
         if (Menu.HelpScreen.activeSelf)

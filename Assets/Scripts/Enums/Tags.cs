@@ -1,4 +1,5 @@
 ﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-05: Retire Flight globally for existing units and future species defaults (flight removal).
 // 2026-11-04: Implement exclusive baseline trait tiers, flat combat modifiers and categorized Help (spec 32).
 // 2026-11-04: Permanently retire the user-approved round-one traits from gameplay and Help (spec 31).
 // 2026-11-01: Complete approved ability retirement and close legacy reactivation paths (spec 05A3B17).
@@ -780,6 +781,7 @@ static class TraitsMethods
             return true;
         switch (trait)
         {
+            case Traits.Flight:
             // Approved round-one retirement; preserve numeric IDs for stored data.
             case Traits.Alacrity:
             case Traits.LightningSpeed:

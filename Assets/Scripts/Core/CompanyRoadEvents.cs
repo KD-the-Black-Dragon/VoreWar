@@ -1,4 +1,5 @@
-// Added by the VoreWar mercenary-company conversion fork.
+﻿// Added by the VoreWar mercenary-company conversion fork.
+// 2026-11-04: Apply explainable healthy power and approved capped encounter scaling (spec 34 slice 3).
 // 2026-11-02: Saved travel encounters and the approved practice-duel proof of concept (spec 13).
 // 2026-11-02: Reduce new slug encounter power budgets by 30% after player review (spec 13 feedback).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
@@ -34,7 +35,8 @@ internal static class CompanyRoadEvents
     internal static double EncounterPower(CompanyCampaign state)
     {
         return state.Members.Sum(m => CompanyContracts.Power(state.Characters.Single(c => c.Id == m.CharacterId).Unit) *
-            (m.CharacterId == state.LeaderId ? LeaderWeight : 1)) * EnemyPowerFraction;
+            (m.CharacterId == state.LeaderId ? LeaderWeight : 1)) * CompanyPower.FormationMultiplier(state.Members.Count) * EnemyPowerFraction *
+            CompanyPower.HealthMultiplier(state.Members.Select(m => state.Characters.Single(c => c.Id == m.CharacterId).Unit));
     }
     internal static void AfterTravel(CompanyCampaign state, int previousTile)
     {
@@ -60,12 +62,17 @@ internal static class CompanyRoadEvents
             occurrence.Phase = CompanyRoadEventPhase.Battle;
             double budget = EncounterPower(state);
             var first = CompanyContracts.Enemy(state, Race.SpitterSlugs, 1);
-            double power = CompanyContracts.Power(first.Unit);
-            int count = Math.Max(1, (int)Math.Round(budget / Math.Max(1, power)));
-            // Fail explicitly rather than freeze the editor or quietly clamp company scaling.
-            if (count > 128) throw new InvalidOperationException("This company exceeds the road-encounter prototype's supported force size.");
             var enemies = new List<CompanyCharacter> { first };
-            for (int i = 1; i < count; i++) enemies.Add(CompanyContracts.Enemy(state, Race.SpitterSlugs, 1));
+            double sum = CompanyContracts.Power(first.Unit);
+            while(sum * CompanyPower.FormationMultiplier(enemies.Count) < budget)
+            {
+                if(enemies.Count>=128)throw new InvalidOperationException("This company exceeds the road-encounter prototype's supported force size.");
+                var next=CompanyContracts.Enemy(state,Race.SpitterSlugs,1);double nextPower=CompanyContracts.Power(next.Unit);
+                double before=sum*CompanyPower.FormationMultiplier(enemies.Count);
+                double after=(sum+nextPower)*CompanyPower.FormationMultiplier(enemies.Count+1);
+                if(after>=budget && Math.Abs(before-budget)<Math.Abs(after-budget))break;
+                enemies.Add(next);sum+=nextPower;
+            }
             foreach (var enemy in enemies) { enemy.Employment = CompanyEmployment.Unavailable; enemy.Unit.Side = 1; }
             state.Characters.AddRange(enemies);
             occurrence.EnemyIds = enemies.Select(c => c.Id).ToList();

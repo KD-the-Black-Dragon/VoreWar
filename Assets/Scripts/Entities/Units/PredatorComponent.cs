@@ -1,4 +1,7 @@
 ﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-05: Share the empty-predator/downed-prey capacity exception; remove overcapacity self-damage.
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+// Modified for the VoreWar mercenary-company conversion.
 // 2026-11-04: Apply approved injury tiers, base-STR HP, healing ceilings and recovery rules (spec 33).
 // 2026-11-04: Implement exclusive baseline trait tiers, flat combat modifiers and categorized Help (spec 32).
 // 2026-10-30: Guard spawn creation and respect a rejected shape change before sharing traits (spec 03A2).
@@ -946,6 +949,11 @@ public class PredatorComponent
         //c *= unit.GetScale(3);  It may be more realistic, but having huge resulting in 81 times the base stomach capacity is just overkill
         
         return c;
+    }
+
+    internal bool HasCapacityFor(Actor_Unit target)
+    {
+        return target != null && (target.Bulk() <= FreeCap() || (PreyCount == 0 && target.Surrendered));
     }
 
     public float FreeCap()
@@ -1959,7 +1967,7 @@ public class PredatorComponent
 
                 float cap = TotalCapacity();
                 escapeMult = 1.4f + 2 * ((Fullness / cap) - 1);
-                if (Config.OverfeedingDamage) actor.Damage((int)(FreeCap() * -1) / 2);
+                // Overcapacity does not damage the predator (user direction, 2026-11-05).
             }
             if (State.Rand.NextDouble() < preyUnit.EscapeRate * escapeMult && preyUnit.Actor.Surrendered == false)
             {
@@ -2735,7 +2743,7 @@ public class PredatorComponent
             return false;
         }
 
-        if (target.Bulk() <= FreeCap())
+        if (HasCapacityFor(target))
         {
             //actor.SetPredMode(preyType);
             float r = (float)State.Rand.NextDouble();
@@ -2821,7 +2829,7 @@ public class PredatorComponent
             return false;
         if (unit.CanVore(preyType) != CanVore(preyType, target))
             return false;
-        if (target.Bulk() <= FreeCap() && (actor.BodySize() >= target.BodySize() * 3 || !actor.Unit.HasTrait(Traits.TightNethers) || (preyType != PreyLocation.womb && preyType != PreyLocation.balls)))
+        if (HasCapacityFor(target) && (actor.BodySize() >= target.BodySize() * 3 || !actor.Unit.HasTrait(Traits.TightNethers) || (preyType != PreyLocation.womb && preyType != PreyLocation.balls)))
         {
             bool bit = false;
 

@@ -1,4 +1,6 @@
 ﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-04: Add isolated password-gated developer battle/recovery controls (spec 34 slice 2).
+// 2026-11-04: Correct caster targeting and share side-effect-free spell damage estimates (spec 34 slice 1).
 // 2026-11-04: Apply approved injury tiers, base-STR HP, healing ceilings and recovery rules (spec 33).
 // 2026-11-04: Implement exclusive baseline trait tiers, flat combat modifiers and categorized Help (spec 32).
 // 2026-10-30: Validate new shape destinations before mutation; leave original-form restoration unrestricted (spec 03A2).
@@ -187,6 +189,21 @@ public class Unit
     public int MaxHealth => Stats == null ? 1 : Math.Max(1, (int)(3 * BaseStrengthForHealth() * TraitBoosts.HealthMultiplier) +
         TempBoosts.HealthBoost + (int)TieredTraits.Amount(this, TierEffect.MaxHealth));
     internal int HealingCeiling => CompanyInjuries.HealingCeiling(this);
+    internal void ClearLabTraits()
+    {
+        if (!DeveloperBattleLab.IsOpen) throw new InvalidOperationException("Developer lab is not open.");
+        foreach (var list in new[] { Tags, PermanentTraits, SharedTraits, PersistentSharedTraits, ActiveConditionalTraits, TemporaryTraits })
+            list?.Clear();
+        InitializeTraits(); UpdateSpells();
+    }
+    internal void SetLabResources(int lasting, int temporary, int mana)
+    {
+        if (!DeveloperBattleLab.IsOpen) throw new InvalidOperationException("Developer lab is not open.");
+        lasting = Math.Max(0, Math.Min(MaxHealth, lasting));
+        TemporaryHealth = Math.Max(0, Math.Min(MaxHealth - lasting, temporary));
+        health = lasting + TemporaryHealth; Mana = Math.Max(0, Math.Min(MaxMana, mana));
+        Downed = health == 0; BattleActive = true;
+    }
     internal void ClampInjuryMana() { Mana = Math.Min(Mana, MaxMana); }
 
     private int GetHealthBoosts()
@@ -584,9 +601,12 @@ public class Unit
 
     public void SetLevel(int level) => this.level = level;
 
+    internal int ManaCost(int amount)
+    { return amount + amount * ((GetStatusEffect(StatusEffectType.SpellForce)?.Duration ?? 0) / 10); }
+
     internal bool SpendMana(int amount)
     {
-        int ModifiedManaCost = amount + (amount * (GetStatusEffect(StatusEffectType.SpellForce) != null ? GetStatusEffect(StatusEffectType.SpellForce).Duration/10 : 0));
+        int ModifiedManaCost = ManaCost(amount);
         if (Mana >= ModifiedManaCost)
         {
             Mana -= ModifiedManaCost;

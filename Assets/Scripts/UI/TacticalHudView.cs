@@ -1,4 +1,5 @@
 // Added by the VoreWar mercenary-company conversion fork.
+// 2026-11-05: Keep the trait scroll viewport above the visible compact battle log (spec 38 phase C).
 // 2026-11-02: Apply blue tactical chrome and four weapon/spell readouts without resizing core commands/stats (spec 16).
 // 2026-11-02: Restore boxed/blank equipment slots and space primary, utility and AI controls (spec 16 feedback).
 // 2026-11-02: Match selector pivot to command buttons and clear stats above equipment boxes (spec 16 feedback).
@@ -157,6 +158,28 @@ internal sealed class TacticalHudView
         // Preserve the bottom edge; reclaimed vertical space belongs to the traits/status viewport.
         var scroll = info.InfoText.transform.parent.parent as RectTransform;
         if (scroll != null) scroll.offsetMax = new Vector2(scroll.offsetMax.x, -(equipmentTop + 112));
+        FitTraitViewport(State.GameManager.TacticalMode);
+    }
+
+    internal static void FitTraitViewport(TacticalMode mode)
+    {
+        var info = mode.InfoUI;
+        if (info == null || !IsTacticalPanel(info)) return;
+        var scroll = info.InfoText.GetComponentInParent<ScrollRect>();
+        if (scroll == null) return;
+        var log = mode.LogUI.GetComponent<RectTransform>();
+        // Expanded log deliberately covers the battlefield. Keep the compact reservation until it closes.
+        if (mode.LogUI.gameObject.activeSelf && log.anchorMax.y > 0) return;
+        var parent = (RectTransform)scroll.transform.parent;
+        float bottom = 25; // Retain the inherited bottom inset when the log is hidden.
+        if (mode.LogUI.gameObject.activeSelf)
+        {
+            var corners = new Vector3[4];
+            log.GetWorldCorners(corners);
+            bottom = Mathf.Max(bottom, parent.InverseTransformPoint(corners[1]).y - parent.rect.yMin);
+        }
+        var rect = scroll.GetComponent<RectTransform>();
+        rect.offsetMin = new Vector2(rect.offsetMin.x, bottom);
     }
 
     static void PlaceButton(Button button, float x, float y, float width, float height)

@@ -1,4 +1,9 @@
-﻿// Added by the VoreWar mercenary-company conversion fork.
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-05: Persist upkeep enrollment, debt and deadline and stop daily processing on insolvency (spec 38 phase B).
+// 2026-11-05: Persist cultivated fields, clear saved road terrain and use a provisional six-action new-campaign day (spec 36).
+// 2026-11-05: Generate larger six-town regions with saved roads while preserving older campaign geography (spec 35).
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+// Added by the VoreWar mercenary-company conversion fork.
 // 2026-11-01: Company campaign foundation, independent of the retired empire loop (spec 06).
 // 2026-11-01: Candidate/former identity, wage decisions and shared equipment ownership (specs 07–08).
 // 2026-11-01: Persist contracts, battle transition phases, revival preference and active-campaign memorial/statistics (specs 09–10).
@@ -61,16 +66,19 @@ internal sealed class CompanyCampaign
     public int Height = 12;
     public int[] Terrain; // 0 grass, 1 forest, 2 hills, 3 desert (provisional terrain tuning).
     public bool[] Discovered;
+    public bool[] Roads; // Null in older campaigns: preserve their existing geography without generating roads on load.
+    public bool[] Farms; // Saved presentation mask over cultivated grassland, excluding road and town tiles.
     public int Position;
     public int ElapsedDays;
-    public int DailyActions = 10; // Provisional tuning, not a finalized design value.
-    public int Actions = 10;
+    public int DailyActions = 6; // Provisional tuning, not a finalized design value.
+    public int Actions = 6;
     public int TownEntryCost;
     public int Gold;
     public int Reputation;
     public List<Item> Inventory = new List<Item>();
     public string PendingDecisionKind;
-    public string DeferredWageDecision; // A simultaneous wage warning follows a departure acknowledgment.
+    public string DeferredWageDecision; // A simultaneous financial warning follows a departure acknowledgment.
+    public string DeferredDecisionKind; // Null in older saves denotes the original Payday warning.
     public string[] PendingCharacterIds = new string[0];
     public string LastVisitedTownId;
     public bool InBattle;
@@ -88,6 +96,11 @@ internal sealed class CompanyCampaign
     public CompanyRoadEvent RoadEvent;
     public int NextRoadEventDay;
     public int NextPayday = 7;
+    // Version zero denotes a pre-upkeep save. Begin/Bind explicitly enroll it without back billing.
+    public int EconomyVersion;
+    public int UpkeepBillsIssued;
+    public int UpkeepDebt;
+    public int UpkeepDueDay;
     public string LeaderId;
     public List<CompanyCharacter> Characters = new List<CompanyCharacter>();
     public List<CompanyMember> Members = new List<CompanyMember>();
@@ -100,25 +113,8 @@ internal sealed class CompanyCampaign
 
     public static CompanyCampaign Generate(int seed, bool ironman)
     {
-        var state = new CompanyCampaign { Seed = seed, RandomState = unchecked((uint)seed) | 1u, Ironman = ironman, Width = 80, Height = 60 };
-        state.Terrain = new int[state.Width * state.Height];
-        state.Discovered = new bool[state.Terrain.Length];
-        var noise = new Noise.OpenSimplexNoise(seed);
-        for (int y = 0; y < state.Height; y++)
-            for (int x = 0; x < state.Width; x++)
-            {
-                double n = noise.Evaluate(x * .22, y * .22);
-                state.Terrain[y * state.Width + x] = n < -.25 ? 3 : n > .3 ? 2 : n > .05 ? 1 : 0;
-            }
-        // All MVP preview terrain is traversable, so all distinct towns are reachable.
-        for (int i = 0; i < 6; i++)
-        {
-            int tile;
-            do { tile = state.Next(state.Terrain.Length); } while (state.Towns.Any(t => t.Tile == tile));
-            state.Towns.Add(new CompanyTown { Id = Guid.NewGuid().ToString("N"), Name = "Town " + (i + 1), Tile = tile });
-            state.Terrain[tile] = 0;
-        }
-        state.Position = state.Towns[0].Tile;
+        var state = new CompanyCampaign { Seed = seed, RandomState = unchecked((uint)seed) | 1u, Ironman = ironman };
+        CompanyWorldGeneration.Generate(state);
         state.Reveal();
         return state;
     }
@@ -163,8 +159,9 @@ internal sealed class CompanyCampaign
         CompanyContracts.Validate(this);
         CompanyRoadEvents.Validate(this);
         Guid parsedId;
-        if (Schema != 1 || !Guid.TryParseExact(Id, "N", out parsedId) || Width < 4 || Height < 4 || Width > 100 || Height > 100 ||
+        if (Schema != 1 || !Guid.TryParseExact(Id, "N", out parsedId) || Width < 4 || Height < 4 || Width > CompanyWorldGeneration.MaximumDimension || Height > CompanyWorldGeneration.MaximumDimension ||
             Terrain == null || Discovered == null || Terrain.Length != Width * Height || Discovered.Length != Terrain.Length ||
+            (Roads != null && Roads.Length != Terrain.Length) || (Farms != null && Farms.Length != Terrain.Length) ||
             Position < 0 || Position >= Terrain.Length || DailyActions < 2 || DailyActions > 100 || Actions < 0 || Actions > DailyActions ||
             ElapsedDays < 0 || NextPayday < 7 || TownEntryCost < 0 || Gold < 0 || RestDaysRemaining < 0 || RestDaysRemaining > 365 ||
             DailyStage < 0 || DailyStage > 5 || RandomState == 0 || Characters == null || Members == null || Towns == null || Towns.Count == 0 ||
@@ -185,6 +182,7 @@ internal sealed class CompanyCampaign
         foreach (var t in Towns)
             if (t == null || string.IsNullOrEmpty(t.Id) || !townIds.Add(t.Id) || t.Tile < 0 || t.Tile >= Terrain.Length || !locations.Add(t.Tile))
                 throw new InvalidOperationException("Invalid towns.");
+        CompanyWorldGeneration.ApplyLandUse(this);
     }
 }
 
@@ -202,7 +200,7 @@ internal sealed class CompanyClock
     public void Register(ICompanyDailySystem system) { systems.Add(system.Stage, system); }
     public void EndDay(CompanyCampaign state, bool resting = false)
     {
-        if (!string.IsNullOrEmpty(state.PendingDecision)) return;
+        if (state.Ended || !string.IsNullOrEmpty(state.PendingDecision)) return;
         if (resting && !state.UpdatingDay && state.Actions != state.DailyActions)
             throw new InvalidOperationException("Rest requires all daily actions. End the turn first.");
         if (!state.UpdatingDay) { state.UpdatingDay = true; state.DailyStage = 0; state.ElapsedDays++; state.RestingDay = resting; }
@@ -210,7 +208,7 @@ internal sealed class CompanyClock
     }
     public void Resume(CompanyCampaign state)
     {
-        while (state.UpdatingDay && string.IsNullOrEmpty(state.PendingDecision) && state.DailyStage < 5)
+        while (!state.Ended && state.UpdatingDay && string.IsNullOrEmpty(state.PendingDecision) && state.DailyStage < 5)
         {
             // Commit a stage only after it succeeds; rollback all campaign mutations on error.
             var backup = CompanyCampaignSave.Encode(state);
@@ -221,6 +219,12 @@ internal sealed class CompanyClock
                 state.DailyStage++;
             }
             catch { CompanyCampaignSave.Restore(state, backup); throw; }
+        }
+        if (state.Ended)
+        {
+            state.UpdatingDay = false; state.RestingDay = false;
+            state.RestDaysRemaining = 0; state.DailyStage = 0;
+            return;
         }
         if (state.DailyStage == 5 && string.IsNullOrEmpty(state.PendingDecision))
         {

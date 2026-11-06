@@ -1,4 +1,5 @@
 ﻿// Added by the VoreWar mercenary-company conversion fork.
+// 2026-11-05: Ellipsize long save-list captions while preserving full preview details (spec 38 phase C).
 // 2026-11-03: Unified named Save/Load browser, progress previews, confirmations and Ironman controls (spec 19).
 // See CHANGES.md and License.txt for GPL-3.0 terms; inherited notices remain applicable.
 using System;
@@ -76,6 +77,7 @@ internal sealed class CompanySaveMenu : MonoBehaviour
             string leader = entry.State.Characters.First(c => c.Id == entry.State.LeaderId).Unit.Name;
             var button = Button(entry.Name + " — " + leader + " — Day " + (entry.State.ElapsedDays + 1) + (entry.State.SaveKind == 3 ? "" : " [Autosave]"), 24, 122 + (i % 8) * 48, 620, 42, () =>
             { selected = entry; if (entry.State.SaveKind == 3) saveName = entry.Name; Render(); });
+            FitSaveCaption(button);
             var trigger = button.gameObject.AddComponent<EventTrigger>();
             var enter = new EventTrigger.Entry { eventID = EventTriggerType.PointerEnter };
             enter.callback.AddListener(_ => preview.text = entry.Name + "\n\n" + entry.Details); trigger.triggers.Add(enter);
@@ -134,6 +136,15 @@ internal sealed class CompanySaveMenu : MonoBehaviour
         box.SetData(() => { confirming = false; Try(callback); }, action, "Cancel", message, () => confirming = false);
     }
     void RefreshPreview() { if (preview != null) preview.text = selected == null ? "No saved game selected." : selected.Name + "\n\n" + selected.Details; }
+    static void FitSaveCaption(Button button)
+    {
+        var label = button.GetComponentInChildren<Text>();
+        label.horizontalOverflow = HorizontalWrapMode.Overflow;
+        string caption = label.text;
+        int length = caption.Length;
+        while (label.preferredWidth > label.rectTransform.rect.width && length > 0)
+            label.text = caption.Substring(0, --length) + "…";
+    }
     Text Label(string words, float x, float y, float width, float height, int size) { return UITheme.Label(panel.transform, words, x, y, width, height, size); }
     Button Button(string words, float x, float y, float width, float height, Action action, bool enabled = true)
     {

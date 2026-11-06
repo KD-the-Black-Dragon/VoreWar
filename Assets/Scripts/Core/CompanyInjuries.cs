@@ -1,4 +1,9 @@
-﻿// Added by the VoreWar mercenary-company conversion fork.
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-05: Set ordinary/field-rest/town-rest HP recovery to 10/20/30 percent (spec 36).
+// 2026-11-05: Separate faster general HP recovery from longer calendar-day injuries.
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+// Added by the VoreWar mercenary-company conversion fork.
+// 2026-11-04: Add isolated password-gated developer battle/recovery controls (spec 34 slice 2).
 // 2026-11-01: Persistent injuries, recovery, treatment, sparring and tactical announcements (spec 11).
 // 2026-11-02: Restore daily mana recovery through the company/target daily stage (spec 12).
 // 2026-11-03: Implement four active stats (spec 29).
@@ -27,7 +32,7 @@ internal sealed class CompanyInjury
 
 internal static class CompanyInjuries
 {
-    internal const int MinorDays = 3, ModerateDays = 5, SeriousDays = 8, TreatmentCost = 10, TreatmentDays = 2;
+    internal const int MinorDays = 5, ModerateDays = 14, SeriousDays = 28, TreatmentCost = 10, TreatmentDays = 2;
     internal const double MinimumHitFraction = .10, ModerateDailyRisk = .05, SevereDailyRisk = .10;
     internal static bool Temporary(CompanyInjury injury) => injury.Grade != CompanyInjuryGrade.Old;
     internal static bool Leader(Unit unit) => unit.PermanentInjuryImmune || unit.Type == UnitType.Leader;
@@ -186,7 +191,11 @@ internal static class CompanyInjuries
         if (state.Busy || state.Preview || !state.Towns.Any(t => t.Tile == state.Position) || !state.Members.Any(m => m.CharacterId == id) || state.Gold < TreatmentCost || !CanTreat(c.Unit))
             throw new InvalidOperationException("Visit town with enough gold and an untreated temporary injury.");
         state.Gold -= TreatmentCost;
-        foreach (var injury in c.Unit.Injuries.Where(i => Temporary(i) && !i.Treated && i.DaysRemaining > 0))
+        TreatInjuries(c.Unit);
+    }
+    internal static void TreatInjuries(Unit unit)
+    {
+        foreach (var injury in unit.Injuries.Where(i => Temporary(i) && !i.Treated && i.DaysRemaining > 0))
         { injury.DaysRemaining = Math.Max(1, injury.DaysRemaining - TreatmentDays); injury.Treated = true; }
     }
     internal static void Validate(Unit unit)
@@ -216,19 +225,21 @@ internal static class CompanyInjuries
 
 internal sealed class CompanyDailyRecovery : ICompanyDailySystem
 {
+    internal const double OrdinaryRate = .10, FieldRestRate = .20, TownRestRate = .30;
+    internal static double Rate(bool resting, bool town) => !resting ? OrdinaryRate : town ? TownRestRate : FieldRestRate;
     public CompanyDailyStage Stage { get { return CompanyDailyStage.Recovery; } }
     public void Apply(CompanyCampaign state)
     {
         if (state.Preview) return;
         bool town = state.Towns.Any(t => t.Tile == state.Position);
-        double rate = !state.RestingDay ? .03 : town ? .15 : .10;
-        int progress = !state.RestingDay ? 1 : town ? 3 : 2;
+        double rate = Rate(state.RestingDay, town);
+        const int progress = 1; // Specific injuries heal in calendar days; rest primarily restores general condition.
         foreach (var member in state.Members)
             Recover(state.Characters.Single(c => c.Id == member.CharacterId).Unit, rate, progress);
         foreach (var contract in state.Contracts.Where(c => c.Status == CompanyContractStatus.Active))
-            foreach (var c in CompanyContracts.Survivors(state, contract)) Recover(c.Unit, .02, 1);
+            foreach (var c in CompanyContracts.Survivors(state, contract)) Recover(c.Unit, OrdinaryRate, 1);
     }
-    static void Recover(Unit unit, double rate, int progress)
+    internal static void Recover(Unit unit, double rate, int progress)
     {
         if (unit.Digested || unit.Type == UnitType.Summon) return;
         CompanyInjuries.DailyComplication(unit);

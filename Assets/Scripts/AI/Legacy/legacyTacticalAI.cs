@@ -1,4 +1,7 @@
 // Modified for the VoreWar mercenary-company conversion.
+// 2026-11-05: Use the shared downed-prey capacity rule in legacy prey selection.
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+// Modified for the VoreWar mercenary-company conversion.
 // 2026-11-04: Preserve reaction steps and apply shared safe-route/charge restrictions (spec 30).
 // See CHANGES.md for the fork change record and License.txt for GPL-3.0 terms.
 using OdinSerializer;
@@ -138,7 +141,7 @@ namespace LegacyAI
             int chance = 0;
             float distance = 64;
             float cap = actor.PredatorComponent.FreeCap();
-            if (cap >= 8)
+            if (cap >= 8 || actor.PredatorComponent.PreyCount == 0)
             {
                 for (int i = 0; i < actors.Count; i++)
                 {
@@ -146,7 +149,7 @@ namespace LegacyAI
                     if (actors[i].InSight == true && actors[i].InSight == true && actors[i].Targetable == true && d < 8)
                     {
                         Actor_Unit unit = actors[i];
-                        if (unit.Unit.Side != AISide && unit.Bulk() <= cap)
+                        if (unit.Unit.Side != AISide && actor.PredatorComponent.HasCapacityFor(unit))
                         {
                             int c = (int)(100 * unit.GetDevourChance(actor, true));
                             if (c > 50 && c > chance && TacticalUtilities.FreeSpaceAroundTarget(actors[i].Position, actor) && unit.AIAvoidEat <= 0)

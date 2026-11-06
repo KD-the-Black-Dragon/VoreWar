@@ -1,4 +1,5 @@
 ﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-05: Refit the adjacent trait viewport when the combat log or resolution changes (spec 38 phase C).
 // 2026-11-02: Keep a larger eight-line-or-more compact battle log after restoring from full view (spec 16).
 // 2026-11-02: Fix stretched compact log width, restore size controls and refresh scroll layout (spec 16 feedback).
 // 2026-11-03: Shorten compact log three pixels and join it to the bottom bar (spec 16 feedback).
@@ -28,6 +29,17 @@ public class MessageLogPanel : MonoBehaviour
     int size = 1;
 
     bool initialized = false;
+    int layoutWidth, layoutHeight;
+
+    void LateUpdate()
+    {
+        if (!initialized || (layoutWidth == Screen.width && layoutHeight == Screen.height)) return;
+        layoutWidth = Screen.width;
+        layoutHeight = Screen.height;
+        // The side panel and log use different canvases. Refit after both have resized.
+        Canvas.ForceUpdateCanvases();
+        TacticalHudView.FitTraitViewport(State.GameManager.TacticalMode);
+    }
 
     public void SetBase()
     {
@@ -144,6 +156,7 @@ public class MessageLogPanel : MonoBehaviour
     {
         // Reuse the normal next-frame scroll-to-latest path after a resize/filter change.
         Canvas.ForceUpdateCanvases();
+        TacticalHudView.FitTraitViewport(State.GameManager.TacticalMode);
         State.GameManager.TacticalMode.TacticalLogUpdated = true;
     }
 

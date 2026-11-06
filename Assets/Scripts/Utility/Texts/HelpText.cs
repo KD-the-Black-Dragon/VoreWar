@@ -1,4 +1,9 @@
-﻿// Modified for the VoreWar mercenary-company conversion.
+// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-05: Describe upkeep-first payday, insolvency and prospective wage changes (spec 38 phase B).
+// 2026-11-05: Update cleared-road/farm, new daily allowance and 10/20/30 HP recovery information (spec 36).
+// 2026-11-05: Separate faster general HP recovery from longer calendar-day injuries.
+// See CHANGES.md and License.txt for GPL-3.0 terms.
+// Modified for the VoreWar mercenary-company conversion.
 // 2026-11-04: Apply approved injury tiers, base-STR HP, healing ceilings and recovery rules (spec 33).
 // 2026-11-04: Implement exclusive baseline trait tiers, flat combat modifiers and categorized Help (spec 32).
 // 2026-11-02: Replace retired empire guidance with company gameplay, save boundaries and retained references; correct trait enumeration (spec 12).
@@ -30,9 +35,9 @@ Values are provisional. Use the other help chapters for travel, wages, injuries 
 
     public static string StrategyMode = @"World map and days
 
-Your company is the only moving force. Click adjacent map tiles to travel; grass/desert currently cost one action and forest/hills two. Nearby terrain is revealed as you explore. Towns are static, and accepted contracts mark their exact target even under fog.
+Your company is the only moving force. Click adjacent map tiles to travel; grass/desert currently cost one action and forest/hills two. Roads connect the six towns and clear their routes to grassland, costing one action per tile. Fields surround towns beside the roads. Nearby terrain is revealed as you explore. Towns are static, and accepted contracts mark their exact target even under fog.
 
-Each campaign turn is one day with ten actions. At zero actions you cannot pay for further movement; End day advances time and refills actions. Visiting a service and taking individual transactions are separate concepts; most service action costs currently remain zero.
+Each campaign turn is one day. New companies have six actions per day; existing companies retain their saved allowance. At zero actions you cannot pay for further movement; End day advances time and refills actions. Visiting a service and taking individual transactions are separate concepts; most service action costs currently remain zero.
 
 Rest advances the chosen number of days, anywhere. Resting in town improves recovery. Every skipped day still processes wages, contract deadlines, pool refreshes, healing and healthy-member sparring. Required notices interrupt rest; deal with them and explicitly resume or cancel the remaining plan.
 
@@ -44,7 +49,9 @@ Each town has a small separate recruit pool that refreshes over time. Higher com
 
 There is no fixed roster or deployment cap. Wages are the main growth constraint and include rations/upkeep in the fiction. Active and reserve members both draw wages, including when injured. Mark reserves from Company or final deployment; the leader always deploys.
 
-Wages are paid in advance every seven days, first due seven days after campaign start. Midweek hiring costs a prorated advance through the next payday, plus any old debt. Quoted weekly wages rise with level.
+Wages are paid in advance every seven days, first due seven days after campaign start. Midweek hiring costs a prorated advance through the next payday, plus any old debt. Quoted weekly wages rise with level. Before choosing a level-up, review the next weekly wage and company total. The increase starts at the next regular payday, with no midweek top-up.
+
+Company upkeep is charged first on payday, even with only the leader. It starts at 40 gold and rises by 10 each week without a cap. Available gold pays this bill first. Any shortfall becomes upkeep debt. Use Pay Upkeep on the leader in Company to clear the full balance before the next payday. An unpaid upkeep balance at that deadline ends the campaign for critical insolvency, even if gold is available but has not been used to pay it. Warnings interrupt multi-day rest.
 
 If the full payday cannot be covered, everyone owed gains personal debt. You decide whom to pay, in full. Threatened members get their stated grace day. An actual departure gets a separate notice. Former members retain their level, injuries, equipment and unpaid debt, and may offer their services in a town again. Rehiring must settle their old debt.";
 
@@ -52,7 +59,7 @@ If the full payday cannot be covered, everyone owed gains personal debt. You dec
 
 Control your company against the AI using the existing combat actions. Melee and ranged equipment are separate: a unit with both automatically uses the melee weapon for melee attacks. Without one, it attacks unarmed.
 
-At zero HP a permanent character is downed and cannot take any action for the rest of the battle. Fear can also down someone above zero HP. Downed units are not ordinary direct-attack targets; collateral damage does not kill them. They remain vulnerable to vore. Magical summons disappear instead of becoming downed.
+At zero HP a permanent character is downed and cannot take any action for the rest of the battle. Fear can also down someone above zero HP. Downed units are not ordinary direct-attack targets; collateral damage does not kill them. They remain vulnerable to vore. An empty predator can swallow a downed target regardless of capacity; otherwise normal capacity applies. Overcapacity does not damage the predator. Magical summons disappear instead of becoming downed.
 
 Reach the appropriate edge and use Retreat when the existing retreat rules permit it. Downed allies do not silently retreat or become assumed casualties: if opponents can still act, the battle continues. You may use the existing instant simulation to finish it.
 
@@ -125,7 +132,7 @@ Below 75% / 50% / 25% of normal maximum HP, Light / Moderate / Severe Damage red
 
 Grazes never cause body-part injuries. Other damage must remove lasting HP equal to at least 10% of normal maximum HP before it can cause one. Larger hits carry greater risk. Armor reduces injury risk for its covered parts. Neither 1 HP nor downing guarantees an injury. New injuries appear in the battle log and as tactical popup text.
 
-Bruised / Battered / Mangled injuries take 3 / 5 / 8 recovery days. Head, Arm, Abdomen and Leg reduce INT, STR, VOR and AGI by 20% / 40% / 60%. Eyes reduce melee, ranged, magic and vore accuracy by 10 / 20 / 30 percentage points. Hands reduce weapon and spell damage by 1 / 2 / 4. Knees reduce AP by 1 / 2 / 3, never below 1.
+Bruised / Battered / Mangled injuries take 5 / 14 / 28 calendar days before treatment. Head, Arm, Abdomen and Leg reduce INT, STR, VOR and AGI by 20% / 40% / 60%. Eyes reduce melee, ranged, magic and vore accuracy by 10 / 20 / 30 percentage points. Hands reduce weapon and spell damage by 1 / 2 / 4. Knees reduce AP by 1 / 2 / 3, never below 1.
 
 Chest injuries limit healing to 90% / 80% / 70% of normal maximum HP. Existing HP is not removed. The normal maximum remains the denominator for damage conditions. Shortened Breath adds another 5% / 10% / 15% reduction to that healing ceiling.
 
@@ -135,7 +142,7 @@ Old Head/Arm/Abdomen/Leg injuries reduce their associated stat by 10% / 15% / 20
 
 Each campaign day begins recovery with a 5% complication chance for Moderate Damage, or 10% for Severe Damage. Complications can affect Head, Eyes, Arm, Hand, Chest, Abdomen or Leg, or cause Poor Focus, Dulled Instincts, Sluggish Recovery or Sensitive Stomach. Knees are excluded from this daily pool. Poor Focus reduces maximum mana by 5% / 10% / 15%; Dulled Instincts reduce critical chance by 5 / 10 / 15 percentage points. Sluggish Recovery removes 1 / 2 / 3 daily HP recovery, with a minimum of 1. Sensitive Stomach adds 5 / 10 / 15 percentage points to swallowed enemies' escape chances.
 
-Ordinary days provide one injury recovery day. Field rest gives two; town rest gives three and better HP recovery. Daily HP recovery is 3% normally, 10% while resting in the field, 15% while resting in town (rounded up, before Sluggish Recovery). Surviving contract targets recover 2% daily. Mana recovers 60% daily. Healthy members can spar at their lasting healing ceiling with no recovering injuries.
+Every calendar day advances injury recovery by one day, whether traveling or resting. Daily HP recovery is 10% normally, 20% while resting in the field, 30% while resting in town (rounded up, before Sluggish Recovery). Surviving contract targets recover 10% daily. Mana recovers 60% daily. Healthy members can spar at their lasting healing ceiling with no recovering injuries.
 
 Town treatment costs gold per injured member, shortens untreated temporary injuries and lowers their complication risk. At least one recovery day remains. Treatment does not instantly refill HP. Inspect Company > Manage > Injuries / recovery for current penalties and recovery.";
 

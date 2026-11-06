@@ -1,5 +1,9 @@
-﻿// Added by the VoreWar mercenary-company conversion fork.
+// Added by the VoreWar mercenary-company conversion fork.
+// 2026-11-05: Fit long roster summaries with adaptive row paging and readable debt buttons (spec 38 phase C).
+// 2026-11-05: Expose leader upkeep repayment and pre-commit level-up wage previews (spec 38 phase B).
 // 2026-11-04: Apply approved injury tiers, base-STR HP, healing ceilings and recovery rules (spec 33).
+// 2026-11-04: Categorized merchant stock and current-equipment comparisons (spec 34 slice 4).
+// 2026-11-04: Show reputation tier availability and itemized equipment-inclusive hiring quotes (spec 34 slice 5).
 // 2026-11-01: Leader creator, recruitment, canonical roster/debt and nine-slot commerce views (specs 07–08).
 // 2026-11-01: Host mission/result views, preserve clear deadline decisions and exclude enemy-only natural weapons from shops (specs 09–10).
 // 2026-11-01: Use singular species names in creation, recruitment and company views (09–10 feedback).
@@ -31,6 +35,7 @@ internal sealed class CompanyManagementUI
     CustomizerPanel creator;
     int offset;
     bool townLayout;
+    int shopCategory = -1;
     public CompanyManagementUI(CompanyCampaignView owner, Transform parent)
     { view = owner; Page = view.Panel("People and economy", parent); }
     CompanyCampaign State { get { return view.Campaign; } }
@@ -56,7 +61,11 @@ internal sealed class CompanyManagementUI
         var button = view.Action(Page.transform, text, ContentX(x + 3), y, ContentWidth(width - 6), callback);
         var rect = button.GetComponent<RectTransform>();
         rect.sizeDelta = new Vector2(rect.sizeDelta.x, 34);
-        button.GetComponentInChildren<Text>().rectTransform.sizeDelta = new Vector2(rect.sizeDelta.x - 6, 28);
+        var label = button.GetComponentInChildren<Text>();
+        label.rectTransform.sizeDelta = new Vector2(rect.sizeDelta.x - 6, 28);
+        label.resizeTextForBestFit = true;
+        label.resizeTextMinSize = 12;
+        label.resizeTextMaxSize = label.fontSize;
         button.interactable = enabled;
     }
     void Portrait(CompanyCharacter character, float x, float y, float scale = .9f)
@@ -179,13 +188,14 @@ internal sealed class CompanyManagementUI
     {
         offset = Math.Max(0, page); var town = Town(); Clear("Recruitment — " + town.Name, true);
         var offers = CompanyEconomy.Offers(State, town).ToArray();
-        Text("Gold " + State.Gold + " | Advance wages cover the remaining week. Former members also require full old debt.", 30, 136, 1200, 40);
+        Text("Gold " + State.Gold + " | Hire price includes equipment, advance wages and any old debt.", 30, 136, 1200, 40);
         for (int i = 0; i < 4 && offset + i < offers.Length; i++)
         {
             var c = offers[offset + i]; int y = 190 + i * 84;
             RosterRow(y, 80);
             Portrait(c, 30, y);
-            Text(c.Unit.Name + " — " + SpeciesPolicy.DisplayName(c.Unit.Race) + "  Lv" + c.Unit.Level + "  " + CompanyEconomy.Wage(State, c) + "/week\n" + c.Biography + (c.Employment == CompanyEmployment.Former ? " [Former member; debt " + c.Debt + "]" : ""), 150, y, 680, 77);
+            Text(c.Unit.Name + " — " + SpeciesPolicy.DisplayName(c.Unit.Race) + "  Lv" + c.Unit.Level + "  " + CompanyEconomy.Wage(State, c) + "/week\n" + c.Biography +
+                (c.Employment == CompanyEmployment.Former ? " [Former member]" : "") + "\n" + HireQuote(c), 150, y, 680, 77);
             int price = CompanyEconomy.HirePrice(State, c);
             Button("Details", 850, y, 150, () => CandidateDetails(c.Id));
             Button("Hire: " + price, 1020, y, 190, () => Change(() => CompanyEconomy.Hire(State, c, town), () => Recruit(offset)), State.Gold >= price && !State.Busy);
@@ -197,27 +207,48 @@ internal sealed class CompanyManagementUI
     {
         offset = Math.Max(0, page); Clear("Company roster");
         var roster = State.Members.Select(m => State.Characters.Find(c => c.Id == m.CharacterId)).ToArray();
-        Text("Gold " + State.Gold + " | Next payday wages " + roster.Sum(c => CompanyEconomy.Wage(State, c)) + " | Debt " + roster.Sum(c => c.Debt), 30, 136, 1180, 40);
-        for (int i = 0; i < 5 && offset + i < roster.Length; i++)
+        var summaries = roster.Select(RosterSummary).ToArray();
+        var settings = new TextGenerationSettings
         {
-            var c = roster[offset + i]; var member = State.Members.Find(m => m.CharacterId == c.Id); int y = 180 + i * 82;
-            RosterRow(y, 79);
+            font = Resources.GetBuiltinResource<Font>("Arial.ttf"), fontSize = 17, lineSpacing = 1,
+            richText = true, scaleFactor = 1, generationExtents = new Vector2(605, 0),
+            horizontalOverflow = HorizontalWrapMode.Wrap, verticalOverflow = VerticalWrapMode.Overflow
+        };
+        var generator = new TextGenerator();
+        int rowHeight = Math.Max(82, (int)Math.Ceiling(summaries.Select(s => generator.GetPreferredHeight(s, settings)).DefaultIfEmpty(0).Max()) + 6);
+        int pageSize = Math.Max(1, Math.Min(5, 410 / rowHeight));
+        offset = Math.Min(offset / pageSize * pageSize, Math.Max(0, (roster.Length - 1) / pageSize * pageSize));
+        Text("Gold " + State.Gold + " | Next wages " + CompanyEconomy.WeeklyWages(State) + " | Upkeep " + CompanyEconomy.Upkeep(State) + " | Debt " + (roster.Sum(c => (long)c.Debt) + State.UpkeepDebt), 30, 136, 1180, 40);
+        for (int i = 0; i < pageSize && offset + i < roster.Length; i++)
+        {
+            var c = roster[offset + i]; var member = State.Members.Find(m => m.CharacterId == c.Id); int y = 180 + i * rowHeight;
+            RosterRow(y, rowHeight - 3);
             bool leader = c.Id == State.LeaderId, ready = c.Unit.HasEnoughExpToLevelUp();
             Portrait(c, 30, y);
-            string progress = c.Unit.CurrentLevelExperience.ToString("0.#") + "/" + c.Unit.CurrentLevelExperienceRequired;
-            string status = "XP " + progress + (ready ? " <color=#F4D47B>LEVEL UP READY</color>" : "");
-            Text(c.Unit.Name + " — " + SpeciesPolicy.DisplayName(c.Unit.Race) + " Lv" + c.Unit.Level + (leader ? " [Leader]" : "") +
-                "\nHP " + c.Unit.Health + "/" + c.Unit.MaxHealth + (CompanyInjuries.DamageTier(c.Unit) > 0 ? " [" + CompanyInjuries.DamageName(c.Unit) + "]" : "") + " | " + status +
-                "\nInjuries " + c.Unit.Injuries.Count(CompanyInjuries.Temporary) + " | Old " + c.Unit.Injuries.Count(injury => !CompanyInjuries.Temporary(injury)) +
-                " | Wage " + CompanyEconomy.Wage(State, c) + "/week | Debt " + c.Debt, 112, y, 605, 77, 17);
+            Text(summaries[offset + i], 112, y, 605, rowHeight - 5, 17);
             RosterButton(leader ? "Always active" : member.Reserve ? "Reserve" : "Active", 735, y, 130, () => Change(() => member.Reserve = !member.Reserve, () => Company(offset)), !leader && !State.InBattle && !State.Busy);
             RosterButton("Manage", 880, y, 140, () => Member(c.Id));
             RosterButton(ready ? "Level up!" : "Level up", 1035, y, 180, () => ChooseLevel(c.Id), ready && !State.Busy);
-            RosterButton("Pay " + c.Debt, 735, y + 40, 130, () => Change(() => CompanyEconomy.Pay(State, c), () => Company(offset)), c.Debt > 0 && State.Gold >= c.Debt);
+            RosterButton(leader ? "Pay Upkeep" : "Pay " + c.Debt, 735, y + 40, 130,
+                () => Change(() => { if (leader) CompanyEconomy.PayUpkeep(State); else CompanyEconomy.Pay(State, c); }, () => Company(offset)),
+                !State.Ended && (leader ? State.UpkeepDebt > 0 && State.Gold >= State.UpkeepDebt : c.Debt > 0 && State.Gold >= c.Debt));
             RosterButton("Injuries", 880, y + 40, 140, () => view.Recovery.Injuries(c.Id));
         }
-        Button("Previous", 30, 600, 155, () => Company(offset - 5), offset > 0);
-        Button("Next", 200, 600, 155, () => Company(offset + 5), offset + 5 < roster.Length);
+        Button("Previous", 30, 600, 155, () => Company(offset - pageSize), offset > 0);
+        Button("Next", 200, 600, 155, () => Company(offset + pageSize), offset + pageSize < roster.Length);
+    }
+
+    string RosterSummary(CompanyCharacter c)
+    {
+        bool leader = c.Id == State.LeaderId;
+        string progress = c.Unit.CurrentLevelExperience.ToString("0.#") + "/" + c.Unit.CurrentLevelExperienceRequired;
+        string status = "XP " + progress + (c.Unit.HasEnoughExpToLevelUp() ? " <color=#F4D47B>LEVEL UP READY</color>" : "");
+        return c.Unit.Name + " — " + SpeciesPolicy.DisplayName(c.Unit.Race) + " Lv" + c.Unit.Level + (leader ? " [Leader]" : "") +
+            "\nHP " + c.Unit.Health + "/" + c.Unit.MaxHealth + (CompanyInjuries.DamageTier(c.Unit) > 0 ? " [" + CompanyInjuries.DamageName(c.Unit) + "]" : "") + " | " + status +
+            "\nInjuries " + c.Unit.Injuries.Count(CompanyInjuries.Temporary) + " | Old " + c.Unit.Injuries.Count(injury => !CompanyInjuries.Temporary(injury)) +
+            (leader ? " | Upkeep " + CompanyEconomy.Upkeep(State) + "/week | Debt " + State.UpkeepDebt +
+                (State.UpkeepDebt > 0 ? " (due in " + Math.Max(0, State.UpkeepDueDay - State.ElapsedDays) + " days)" : "") :
+                " | Wage " + CompanyEconomy.Wage(State, c) + "/week | Debt " + c.Debt);
     }
 
     public void Member(string id)
@@ -248,7 +279,12 @@ internal sealed class CompanyManagementUI
         var c = State.Characters.Find(x => x.Id == id);
         if (c.LevelChoices == null) view.Mutate(() => CompanyEconomy.LevelChoices(State, c));
         Clear("Choose a level-up improvement — " + c.Unit.Name);
-        Text(Stats(c.Unit), 30, 140, 1170, 60);
+        long total = CompanyEconomy.WeeklyWages(State);
+        int oldWage = CompanyEconomy.Wage(State, c), newWage = CompanyEconomy.WageAtLevel(State, c, c.Unit.Level + 1);
+        Text(Stats(c.Unit) + "\nWeekly wage " + oldWage + " → " + newWage + " from the next regular payday." +
+            "\nCompany weekly bills " + (total + CompanyEconomy.Upkeep(State)) + " → " +
+            (total - oldWage + newWage + CompanyEconomy.Upkeep(State)) +
+            " (includes upkeep " + CompanyEconomy.Upkeep(State) + "). Current advances and debts are unchanged.", 30, 135, 1170, 85, 18);
         var choices = c.LevelChoices ?? new Stat[0];
         for (int i = 0; i < choices.Length; i++)
         {
@@ -264,7 +300,10 @@ internal sealed class CompanyManagementUI
         string traits = string.Join(", ", c.Unit.GetTraits.Select(t => t.ToString()).ToArray());
         string gear = string.Join("\n", c.Unit.Items.Select((item, i) => ((CompanySlot)i) + ": " + (item == null ? "Empty" : item.Name)).ToArray());
         Text(c.Biography + "\n\n" + Stats(c.Unit) + "\nTraits: " + traits + "\n" + CompanyInjuries.Summary(c.Unit) + "\n\n" + gear, 30, 150, 1010, 370);
+        Text("Hire " + CompanyEconomy.HirePrice(State, c) + " gold — " + HireQuote(c), 30, 535, 1160, 60);
     }
+    string HireQuote(CompanyCharacter c)
+    { return "Gear " + CompanyEquipment.GearPrice(c.Unit) + " | Advance wages " + CompanyEconomy.AdvanceWages(State, c) + " | Debt " + c.Debt; }
     void Nickname(string id)
     {
         var c = State.Characters.Find(x => x.Id == id); Clear("Give a nickname");
@@ -291,27 +330,42 @@ internal sealed class CompanyManagementUI
         for (int i = 0; i < 5 && page + i < bag.Length; i++)
         {
             Item item = bag[page + i]; int y = 175 + i * 63;
-            Text(item.Name + " — " + item.Description, 30, y, 900, 55);
+            Text(item.Name + " — " + CompanyEquipment.Summary(item), 30, y, 900, 55);
             Button("Equip", 1010, y, 180, () => Change(() => CompanyEquipment.Equip(State, c, item, slot), () => Member(id)));
         }
         Button("Remove current", 30, 520, 220, () => Change(() => CompanyEquipment.Equip(State, c, null, slot), () => Member(id)), c.Unit.Items[slot] != null);
         Button("Previous", 270, 520, 160, () => Slot(id, slot, page - 5), page > 0);
         Button("Next", 450, 520, 160, () => Slot(id, slot, page + 5), page + 5 < bag.Length);
         Button("Loadout", 640, 520, 160, () => Member(id));
+        Text("Equipped: " + (c.Unit.Items[slot] == null ? "Empty" : c.Unit.Items[slot].Name + " — " + CompanyEquipment.Summary(c.Unit.Items[slot])), 30, 135, 1150, 38, 16);
     }
     public void Shop(int page = 0)
     {
         Town(); Clear("Merchant — gold " + State.Gold, true);
-        var definitions = CompanyEquipment.Catalog.Where(d => !d.EnemyOnly).ToArray();
-        for (int i = 0; i < 5 && page + i < definitions.Length; i++)
+        var categories = new[] { "All", "Helmet", "Torso Armor", "Leg Armor", "Arm Armor", "Accessory", "Melee Weapon", "Ranged Weapon", "Spells" };
+        for (int i = 0; i < categories.Length; i++)
         {
-            var d = definitions[page + i]; int y = 175 + i * 63;
-            Text(d.Name + " — " + d.Slot + "\n" + d.Create().Description, 30, y, 910, 58);
+            int category = i - 1;
+            var button = view.Action(Page.transform, categories[i], ContentX(30 + i % 5 * 235), 140 + i / 5 * 43, ContentWidth(220), () => { shopCategory = category; Shop(); });
+            view.Place(button.gameObject, ContentX(30 + i % 5 * 235), 140 + i / 5 * 43, ContentWidth(220), 36);
+            if (category == shopCategory) UITheme.Surface(button.gameObject, UITheme.Section, true);
+        }
+        var definitions = CompanyEquipment.Available(State).Where(d => shopCategory < 0 || (int)d.Slot == shopCategory).ToArray();
+        page = Math.Max(0, Math.Min(page, Math.Max(0, (definitions.Length - 1) / 4 * 4)));
+        for (int i = 0; i < 4 && page + i < definitions.Length; i++)
+        {
+            var d = definitions[page + i]; int y = 235 + i * 67;
+            Text(d.Name + " — " + CompanyEquipment.SlotName(d.Slot) + " | Tier " + new[] { "I", "II", "III" }[d.Tier - 1] + "\n" + CompanyEquipment.Summary(d.Create()), 30, y, 910, 60);
             Button("Buy " + d.Cost, 1010, y, 180, () => Change(() => CompanyEquipment.Buy(State, d.Id), () => Shop(page)), State.Gold >= d.Cost && !State.Busy);
         }
-        Button("Previous", 30, 520, 160, () => Shop(page - 5), page > 0);
-        Button("Next", 210, 520, 160, () => Shop(page + 5), page + 5 < definitions.Length);
+        if (definitions.Length == 0) Text("No items in this category.", 30, 240, 1100, 40);
+        Button("Previous", 30, 520, 160, () => Shop(page - 4), page > 0);
+        Button("Next", 210, 520, 160, () => Shop(page + 4), page + 4 < definitions.Length);
         Button("Sell spare gear", 390, 520, 220, () => Sell());
+        int tier = CompanyEquipment.UnlockedTier(State.Reputation);
+        Text("Reputation " + State.Reputation + " | Gear through tier " + new[] { "I", "II", "III" }[tier - 1] +
+            (tier < 3 ? " | Next tier: reputation " + CompanyEquipment.RequiredReputation(tier + 1) : " | All tiers available"), 30, 565, 1170, 24, 16);
+        Text("Armor deflects 0–AC damage from weapon and spell hits. Evasion lowers incoming attack accuracy.", 30, 595, 1170, 35, 16);
     }
     void Sell(int page = 0)
     {
@@ -332,7 +386,7 @@ internal sealed class CompanyManagementUI
     }
     public void Decision()
     {
-        Clear(State.PendingDecisionKind == "Departures" ? "Mercenaries left the company" : State.PendingDecisionKind == "Contracts" ? "Contracts expired" : "Unpaid wages");
+        Clear(State.PendingDecisionKind == "Upkeep" ? (State.UpkeepDebt > 0 ? "Critical danger of insolvency" : "Upkeep settled") : State.PendingDecisionKind == "Departures" ? "Mercenaries left the company" : State.PendingDecisionKind == "Contracts" ? "Contracts expired" : "Unpaid wages");
         if (State.PendingDecisionKind == "Departures")
         {
             Text(CompanyWages.DepartureMessage(State), 30, 165, 1170, 270);
@@ -345,7 +399,19 @@ internal sealed class CompanyManagementUI
             Button("OK", 30, 470, 220, Acknowledge);
             return;
         }
-        int total = State.Characters.Where(c => c.Employment == CompanyEmployment.Employed).Sum(c => c.Debt);
+        if (State.PendingDecisionKind == "Upkeep")
+        {
+            Text(CompanyEconomy.UpkeepWarning(State) + "\n\nGold " + State.Gold + " | Wage debt " +
+                State.Characters.Where(c => c.Employment == CompanyEmployment.Employed).Sum(c => (long)c.Debt) +
+                (State.Characters.Any(c => c.Employment == CompanyEmployment.Employed && c.Debt > 0) ?
+                    "\n" + CompanyWages.WageMessage(CompanyEconomy.Threatened(State), false) : ""), 30, 165, 1170, 270);
+            Button("Pay Upkeep " + State.UpkeepDebt, 30, 470, 350, () =>
+            { view.Mutate(() => CompanyEconomy.PayUpkeep(State)); Acknowledge(); }, State.UpkeepDebt > 0 && State.Gold >= State.UpkeepDebt);
+            Button("View company", 410, 470, 220, () => Company());
+            Button("OK", 660, 470, 220, Acknowledge);
+            return;
+        }
+        long total = State.Characters.Where(c => c.Employment == CompanyEmployment.Employed).Sum(c => (long)c.Debt);
         Text(State.PendingDecision + "\n\nGold: " + State.Gold + "   Total debt: " + total + "   Shortfall: " + Math.Max(0, total - State.Gold), 30, 165, 1170, 270);
         int group = CompanyEconomy.Threatened(State).Sum(c => c.Debt);
         Button("Pay threatened members: " + group, 30, 470, 350, () =>

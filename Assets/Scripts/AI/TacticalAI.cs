@@ -1,4 +1,9 @@
+﻿// Modified for the VoreWar mercenary-company conversion.
+// 2026-11-05: Use the shared downed-prey capacity rule in prey selection and cleanup planning.
+// See CHANGES.md and License.txt for GPL-3.0 terms.
 // Modified for the VoreWar mercenary-company conversion.
+// 2026-11-04: Account for equipment armor in tactical previews and planning (spec 34 slice 4).
+// 2026-11-04: Correct caster targeting and share side-effect-free spell damage estimates (spec 34 slice 1).
 // 2026-10-30: 04B2: Replace retreat flavor with a functional objective notice.
 // 2026-10-31: Retire obsolete Resurrection AI action and planning calls (spec 05A3B9).
 // 2026-10-31: Retire obsolete Reanimate and Bind actions/planning (spec 05A3B12).
@@ -132,7 +137,7 @@ public abstract class TacticalAI : ITacticalAI
                     break;
                 foreach (var target in enemies)
                 {
-                    if (actor.PredatorComponent.TotalCapacity() > target.Bulk())
+                    if ((actor.PredatorComponent.HasCapacityFor(target) || actor.PredatorComponent.TotalCapacity() >= target.Bulk()))
                     {
                         tooBig = false;
                         break;
@@ -745,12 +750,12 @@ public abstract class TacticalAI : ITacticalAI
             return targets;
         //check if we have at least 1 unit of capacity free
         float cap = actor.PredatorComponent.FreeCap();
-        if (cap >= 1)
+        if (cap >= 1 || actor.PredatorComponent.PreyCount == 0)
         {
             foreach (Actor_Unit unit in actors)
             {
 
-                if (unit.Targetable && (unit.InSight || !State.World.IsNight) && (TacticalUtilities.TreatAsHostile(actor, unit) || (unit.Unit.GetStatusEffect(StatusEffectType.Hypnotized)?.Duration < 3 && unit != actor)) && unit.Bulk() <= cap)
+                if (unit.Targetable && (unit.InSight || !State.World.IsNight) && (TacticalUtilities.TreatAsHostile(actor, unit) || (unit.Unit.GetStatusEffect(StatusEffectType.Hypnotized)?.Duration < 3 && unit != actor)) && actor.PredatorComponent.HasCapacityFor(unit))
                 {
                     int distance = unit.Position.GetNumberOfMovesDistance(position);
                     if (distance <= movement || anyDistance)
@@ -926,12 +931,12 @@ public abstract class TacticalAI : ITacticalAI
         List<PotentialTarget> targets = new List<PotentialTarget>();
         //check if we have at least 1 unit of capacity free
         float cap = actor.PredatorComponent.FreeCap();
-        if (cap >= 1 && !(State.GameManager.TacticalMode.IsOnlyOneSideVisible() && actor.Unit.IsInfiltratingSide(AISide)))
+        if ((cap >= 1 || actor.PredatorComponent.PreyCount == 0) && !(State.GameManager.TacticalMode.IsOnlyOneSideVisible() && actor.Unit.IsInfiltratingSide(AISide)))
         {
             foreach (Actor_Unit unit in actors)
             {
 
-                if (unit.Targetable && (unit.InSight || !State.World.IsNight) && TacticalUtilities.TreatAsHostile(actor, unit) && unit.Bulk() <= cap && TacticalUtilities.FreeSpaceAroundTarget(unit.Position, actor))
+                if (unit.Targetable && (unit.InSight || !State.World.IsNight) && TacticalUtilities.TreatAsHostile(actor, unit) && actor.PredatorComponent.HasCapacityFor(unit) && TacticalUtilities.FreeSpaceAroundTarget(unit.Position, actor))
                 {
                     int distance = unit.Position.GetNumberOfMovesDistance(position);
                     if (distance <= 2 + moves)
@@ -1113,7 +1118,7 @@ public abstract class TacticalAI : ITacticalAI
             {
                 int distance = target.Position.GetNumberOfMovesDistance(position);
                 float chance = target.GetAttackChance(actor, true, true);
-                int damage = actor.WeaponDamageAgainstTarget(target, true);
+                int damage = actor.PreviewWeaponDamageAgainstTarget(target, true);
                 targets.Add(new PotentialTarget(target, chance, distance, damage,((target.InSight&&State.World.IsNight)? 100:0)));
             }
         }
@@ -1244,7 +1249,7 @@ public abstract class TacticalAI : ITacticalAI
                         continue;
                 }
                 int chance = (int)unit.GetAttackChance(actor, false, true);
-                int damage = actor.WeaponDamageAgainstTarget(unit, false);
+                int damage = actor.PreviewWeaponDamageAgainstTarget(unit, false);
                 targets.Add(new PotentialTarget(unit, chance, distance, damage, ((unit.InSight && State.World.IsNight) ? 100 : 0)));
 
 
@@ -1381,7 +1386,7 @@ public abstract class TacticalAI : ITacticalAI
                 if (spell.AreaOfEffect > 0)
                 {
                     int distance = unit.Position.GetNumberOfMovesDistance(actor.Position);
-                    float chance = unit.GetMagicChance(unit, spell);
+                    float chance = (spell.Resistable ? unit.GetMagicChance(actor, spell) : 1f);
                     int friendlies = 0;
                     int enemies = 0;
                     foreach (var splashTarget in TacticalUtilities.UnitsWithinTiles(unit.Position, spell.AreaOfEffect))
@@ -1402,7 +1407,7 @@ public abstract class TacticalAI : ITacticalAI
                 if (unit.Targetable == true && (unit.InSight || !State.World.IsNight) && unit.Surrendered == false)
                 {
                     int distance = unit.Position.GetNumberOfMovesDistance(position);
-                    float chance = unit.GetMagicChance(unit, spell);
+                    float chance = (spell.Resistable ? unit.GetMagicChance(actor, spell) : 1f);
                     targets.Add(new PotentialTarget(unit, chance, distance, 4));
                 }
             }
@@ -1418,7 +1423,7 @@ public abstract class TacticalAI : ITacticalAI
                 if (unit.Targetable == true && unit.Surrendered == false)
                 {
                     int distance = unit.Position.GetNumberOfMovesDistance(position);
-                    float chance = unit.GetMagicChance(unit, spell);
+                    float chance = (spell.Resistable ? unit.GetMagicChance(actor, spell) : 1f);
                     targets.Add(new PotentialTarget(unit, chance, distance, unit.Unit.Level));
 
                 }
@@ -1434,7 +1439,7 @@ public abstract class TacticalAI : ITacticalAI
                 if (unit.Targetable == true && unit.Surrendered == false)
                 {
                     int distance = unit.Position.GetNumberOfMovesDistance(position);
-                    float chance = unit.GetMagicChance(unit, spell);
+                    float chance = (spell.Resistable ? unit.GetMagicChance(actor, spell) : 1f);
                     targets.Add(new PotentialTarget(unit, chance, distance, unit.Unit.Level));
                 }
             }
